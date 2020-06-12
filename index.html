@@ -6,15 +6,78 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport"
         content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no, viewport-fit=cover">
+    <meta name="description"
+        content="JSDK Guides">
+    <title></title>
 
     <link rel="stylesheet" href="assets/css/vue.css">
     <link rel="stylesheet" href="assets/css/main.css">
 </head>
 
 <body>
+    <center>
+        <h1><a class="anchor"><span>JavaScript Develpment Kit</span></a></h1>
+
+        <p>
+            <a href="https://www.mit-license.org/" target="_blank">
+                <img
+                src="https://img.shields.io/badge/license-MIT-blue"
+                alt="License: MIT"></a>
+            <a href="#">
+                <img
+                src="https://img.shields.io/badge/version-v2.0.0-brightgreen"
+                alt="Version: 2.0.0"></a>
+        </p>
+    </center>
+
+    <nav>
+        <a href="/#/en/quick">EN</a>
+        <a href="#/zh/quick">中文</a>
+    </nav>
+    <div id="app">Loading...</div>
+    <!-- JavaScript -->
     <script>
-        window.location = 'docs/#/en/quick';
+        // Docsify
+        window.$docsify = {
+            // GENERAL
+            // -----------------------------------------------------------------
+            name: 'JSDK Guides',
+            repo: 'https://github.com/fengboyue/jsdk/',
+            loadSidebar: true,
+            homepage: '#/en/quick.md',
+
+            // NAVIGATION
+            // -----------------------------------------------------------------
+            auto2top: true,
+            maxLevel: 3,
+            subMaxLevel: 3,
+            
+            // PLUGINS
+            // -----------------------------------------------------------------
+            executeScript: true,
+            search: {
+                depth: 3,
+                noData: 'No results!',
+                placeholder: 'Search...'
+            }
+        };
+
+        // let href = window.location.href;
+        // if(href.endsWith('/docs/') || href.endsWith('/#/') || href.endsWith('/docs/#/')) window.location = '#/en/quick';
     </script>
+
+    <script src="assets/js/docsify@4.js"></script>
+    <script src="assets/js/docsify-themeable@0.js"></script>
+    <script src="assets/js/docsify-copy-code@2.js"></script>
+    <script src="assets/js/search.js"></script>
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify-themeable@0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/external-script.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.js"></script> -->
+
 </body>
 
 </html>
