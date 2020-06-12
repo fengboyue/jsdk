@@ -4,7 +4,7 @@ var JS;
     (function (example) {
         class SortThread extends Thread {
             run() {
-                this.imports('/examples/lang/QuickSorter.js');
+                this.imports('/jsdk/examples/lang/QuickSorter.js');
                 this.onposted((numbers) => {
                     let sorted = new JS.example.QuickSorter().sort(numbers);
                     this.callMain('print', sorted);

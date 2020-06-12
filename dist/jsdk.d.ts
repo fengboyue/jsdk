@@ -22,6 +22,12 @@
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
+/**
+* JSDK 2.0.0 
+* https://github.com/fengboyue/jsdk/
+* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
+* MIT license
+*/
 /// <reference path="../libs/reflect/2.0.0/reflect.d.ts" />
 /// <reference path="../libs/ua-parser/0.7.20/ua-parser.d.ts" />
 /// <reference path="../libs/jquery/3.2.1/jquery.d.ts" />

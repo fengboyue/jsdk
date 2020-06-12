@@ -60,7 +60,7 @@ module JS {
                     for (let i = 1; i < 5; i++) {
                         html += `<div class="loading-flower circle${i}"></div>`;
                     }
-                    msg = `<div class="items-middle items-center">
+                    msg = `<div class="items-center">
                             <div class="items-middle jsfx-loading-icon flower">
                                 <div class="circle-group group1">${html}</div>
                                 <div class="circle-group group2">${html}</div>

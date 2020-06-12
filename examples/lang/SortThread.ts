@@ -9,7 +9,7 @@ module JS {
         export class SortThread extends Thread {
 
             public run(this:ThreadRunner){
-                this.imports('/examples/lang/QuickSorter.js');
+                this.imports('/jsdk/examples/lang/QuickSorter.js');
                 
                 this.onposted((numbers: number[])=>{
                     let sorted = new JS.example.QuickSorter().sort(numbers);

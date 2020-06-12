@@ -9,7 +9,7 @@ JSDK will greatly help you to develop libraries, components, widgets, applicatio
 
 ## Download
 Click icon to download JSDK：<br>
-<a href="https://github.com/fengboyue/jsdk/" target="_blank" title="Click to download JSDK">
+<a href="https://fengboyue.github.io/jsdk/jsdk-2.0.0-release-200612.zip" target="_blank" title="Click to download JSDK">
     <img
     src="https://img.shields.io/badge/downloads-v2.0.0-green"
     alt="Click to download JSDK">
@@ -42,9 +42,11 @@ You can visit the following online resources to know JSDK more:
 <a href="https://fengboyue.github.io/jsdk/api" target="_blank">JSDK API Docs</a>
 </p>
 
-* Launch Local Resources:
+## Launch Local Resources
+You can launch a http server on your PC to visit these resources quickly.
 1. Unzip JSDK release package to your local directory: <code>{JSDK-DIR}/</code>.
-2. Run a http server on your PC and set the server root to your<code>{JSDK-DIR}/</code>.
+2. Run a http server and set your server path <code>http://localhost/jsdk/</code> to pointer to your <code>{JSDK-DIR}/</code>.
+3. Open your browser and visit the URL.
 
 ## License
 JSDK is licensed under the MIT license since version 2.0.

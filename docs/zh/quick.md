@@ -9,7 +9,7 @@ JSDK 2.0是最全面的JS/TS框架之一，几乎包括了从最底层到最上�
 
 ## 下载
 请点击图标下载：<br>
-<a href="https://github.com/fengboyue/jsdk/" target="_blank" title="Click to download JSDK">
+<a href="https://fengboyue.github.io/jsdk/jsdk-2.0.0-release-200612.zip" target="_blank" title="Click to download JSDK">
     <img
     src="https://img.shields.io/badge/downloads-v2.0.0-green"
     alt="Click to download JSDK">
@@ -30,21 +30,23 @@ JSDK 2.0是基于 <code>ES6 / TypeScript 2.0+</code> 编写的。
 * *我<b>强烈建议你在TS工程中使用JSDK</b>，这将让JSDK的全部特性都生效*
 * *如果你需要在不支持ES6的浏览器上运行JSDK，请使用 [Babel](https://babeljs.io/docs/en/)*
 
-## 在线资源
-你可以访问以下在线资源了解JSDK：
+## JSDK在线资源
+你可以访问以下在线资源更多的了解JSDK：
 <p class="warn">
-<a href="http://localhost/docs/#/zh/quick" target="_blank">JSDK开发指南</a>
+<a href="https://fengboyue.github.io/jsdk/docs/#/zh/quick" target="_blank">JSDK开发指南</a>
 <br>
-<a href="http://localhost/tests" target="_blank">JSDK自测页面</a>
+<a href="https://fengboyue.github.io/jsdk/tests" target="_blank">JSDK自测用例</a>
 <br>
-<a href="http://localhost/examples" target="_blank">JSDK在线示例</a>
+<a href="https://fengboyue.github.io/jsdk/examples" target="_blank">JSDK示例</a>
 <br>
-<a href="http://localhost/api" target="_blank">JSDK的API文档</a>
+<a href="https://fengboyue.github.io/jsdk/api" target="_blank">JSDK API文档</a>
 </p>
 
-* 启动本地资源
-1. 将下载的JSDK压缩包解压至你本地的<code>{JSDK安装目录}</code>下。
-2. 在你本机运行一个Http Server，将服务器根路径指向你的<code>{JSDK安装目录}</code>。
+## 启动本地资源
+启动本地Http Server，访问上述资源将会更快。
+1. 将下载的JSDK压缩包解压至你本地的<code>{JSDK安装目录}</code>。
+2. 在你本机运行一个Http Server，设置服务器的Web路径 <code>http://localhost/jsdk/</code> 指向你的<code>{JSDK安装目录}</code>。
+3. 打开浏览器访问此Web地址。
 
 ## 许可协议
 JSDK自2.0版开始支持MIT许可协议。

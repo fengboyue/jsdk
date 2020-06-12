@@ -1,4 +1,4 @@
 JS.config({
     'minimize': false,
-    'jsdkRoot': '/dist'
+    'jsdkRoot': '/jsdk/dist'
 });
