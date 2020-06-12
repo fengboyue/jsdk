@@ -21,8 +21,7 @@ uglifyjs        首选压缩工具，可选
 |--build  //build scripts
 ```
 
-2. 下载JSDK压缩包并解压至你本地的<code>{JSDK安装目录}</code>下。<br>
-拷贝 <code>/{JSDK安装目录}/libs/</code>下的所有文件到 <code>{工程目录}/libs/</code>;<br>
+2. 拷贝 <code>/{JSDK安装目录}/libs/</code>下的所有文件到 <code>{工程目录}/libs/</code>;<br>
 再拷贝 <code>/{JSDK安装目录}/dist/</code> 下的所有文件到 <code>{工程目录}/libs/jsdk/2.0.0/</code>。
 
 ### 工程配置

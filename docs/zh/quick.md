@@ -8,12 +8,9 @@ JSDK 2.0是最全面的JS/TS框架之一，几乎包括了从最底层到最上�
 基于JSDK来开发你的类库、组件、应用甚至游戏，你的开发工作将得到巨大的助力。
 
 ## 下载
-请点击图标下载：<br>
-<a href="https://fengboyue.github.io/jsdk/jsdk-2.0.0-release-200612.zip" target="_blank" title="Click to download JSDK">
-    <img
-    src="https://img.shields.io/badge/downloads-v2.0.0-green"
-    alt="Click to download JSDK">
-</a>
+```shell
+npm install jsdk -g
+```
 
 ## 基础知识 
 JSDK 2.0是基于 <code>ES6 / TypeScript 2.0+</code> 编写的。
@@ -44,8 +41,8 @@ JSDK 2.0是基于 <code>ES6 / TypeScript 2.0+</code> 编写的。
 
 ## 启动本地资源
 启动本地Http Server，访问上述资源将会更快。
-1. 将下载的JSDK压缩包解压至你本地的<code>{JSDK安装目录}</code>。
-2. 在你本机运行一个Http Server，设置服务器的Web路径 <code>http://localhost/jsdk/</code> 指向你的<code>{JSDK安装目录}</code>。
+1. 假设你本地JSDK安装目录为<code>{JSDK-DIR}</code>。
+2. 在你本机运行一个Http Server，设置服务器的Web路径 <code>http://localhost/jsdk/</code> 指向你的<code>{JSDK-DIR}</code>。
 3. 打开浏览器访问此Web地址。
 
 ## 许可协议

@@ -20,9 +20,8 @@ Then create the following directories in your <code>{PROJECT-ROOT}/</code> direc
 |--build  //build scripts
 ```
 
-2. Unzip JSDK release package to your local directory: <code>{JSDK-INSTALL}/</code>.<br>
-Copy all files under <code>{JSDK-INSTALL}/libs/</code> to <code>{PROJECT-ROOT}/libs/</code>.<br>
-Copy all files under <code>{JSDK-INSTALL}/dist/</code> to <code>{PROJECT-ROOT}/libs/jsdk/2.0.0/</code>.
+2. Copy all files under <code>{JSDK-INSTALL}/libs/</code> to <code>{PROJECT-ROOT}/libs/</code>.<br>
+Then copy all files under <code>{JSDK-INSTALL}/dist/</code> to <code>{PROJECT-ROOT}/libs/jsdk/2.0.0/</code>.
 
 ### Project Configuration
 In order for JSDK to load its configured libraries correctly in your project, you need to modify the global configuration of JSDK.

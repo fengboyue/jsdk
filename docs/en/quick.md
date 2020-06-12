@@ -8,12 +8,9 @@ Annotation, Reflection, AOP, IOC & Component, Dependency Injection, Thread, Time
 JSDK will greatly help you to develop libraries, components, widgets, applications and even games.
 
 ## Download
-Click icon to download JSDK：<br>
-<a href="https://fengboyue.github.io/jsdk/jsdk-2.0.0-release-200612.zip" target="_blank" title="Click to download JSDK">
-    <img
-    src="https://img.shields.io/badge/downloads-v2.0.0-green"
-    alt="Click to download JSDK">
-</a>
+```shell
+npm install jsdk -g
+```
 
 ## Basic knowledge 
 JSDK 2.0 was written in <code>ES6</code> and <code>TypeScript 2.0+</code>.
@@ -44,8 +41,8 @@ You can visit the following online resources to know JSDK more:
 
 ## Launch Local Resources
 You can launch a http server on your PC to visit these resources quickly.
-1. Unzip JSDK release package to your local directory: <code>{JSDK-DIR}/</code>.
-2. Run a http server and set your server path <code>http://localhost/jsdk/</code> to pointer to your <code>{JSDK-DIR}/</code>.
+1. Suppose your local installation directory of JSDK is <code>{JSDK-INSTALL}</code>.
+2. Run a http server and set your server path <code>http://localhost/jsdk/</code> to pointer to your <code>{JSDK-INSTALL}</code>.
 3. Open your browser and visit the URL.
 
 ## License
