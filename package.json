@@ -1,0 +1,36 @@
+{
+  "name": "jsdk-offical",
+  "version": "2.0.0",
+  "description": "JSDK is one of the most comprehensive JS/TS framework, like JDK.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fengboyue/jsdk.git"
+  },
+  "keywords": [
+    "JSDK",
+    "Annotation",
+    "Reflection",
+    "AOP",
+    "IOC",
+    "DI",
+    "Thread",
+    "JSVP",
+    "JSFX",
+    "JSUnit"
+  ],
+  "author": "Frank.Feng <boyue.feng@foxmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fengboyue/jsdk/issues"
+  },
+  "homepage": "https://github.com/fengboyue/jsdk#readme"
+}

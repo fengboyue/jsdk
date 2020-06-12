@@ -9,7 +9,7 @@ JSDK 2.0是最全面的JS/TS框架之一，几乎包括了从最底层到最上�
 
 ## 下载
 ```shell
-npm install jsdk -g
+npm install jsdk-offical -g
 ```
 
 ## 基础知识 

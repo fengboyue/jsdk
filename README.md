@@ -21,7 +21,7 @@ JSDK will greatly help you to develop libraries, components, widgets, applicatio
 
 ## Download
 ```shell
-npm install jsdk -g
+npm install jsdk-offical -g
 ```
 
 ## Basic knowledge 
