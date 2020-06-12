@@ -1,0 +1,38 @@
+.badge {
+    padding: 0.1em 0.2em;
+    vertical-align: middle; //BS bugfix
+}
+
+.badge-pill {
+    padding-right: 0.3em;
+    padding-left: 0.3em;
+}
+
+
+.jsfx-badge {
+    position: relative;
+}
+
+.jsfx-badge[data-badge]:after {
+    content: attr(data-badge);
+    position: absolute;
+    top: -8px;
+    padding: 1px 3px;
+    font-size: 12px;
+    text-align: center;
+    border-radius: 50%;
+    line-height: 13px;
+}
+
+@each $key,
+$value in $color-map {
+    .badge-#{$key} {
+        background-color: var(--color-#{$key});
+    }
+
+    .jsfx-badge.jsfx-badge-#{$key}[data-badge]:after {
+        background: var(--color-#{$key});
+        color: color-yiq($value);
+        box-shadow: 0 0 0 0.05rem rgba($value, 0.5);
+    }
+}

@@ -1,0 +1,197 @@
+.jsfx-select {
+    --bg-color: #fff;
+    --text-color: #444;
+    --border-color: #aaa;
+    --placeholder-color: #999;
+    --arrow-color: #888;
+    --selected-color: #ddd;
+    --hover-bg-color: #5897fb;
+    --hover-text-color: #fff;
+
+    //choice for mutiple
+    --choice-text-color: #000;
+    --choice-back-color: #e4e4e4;
+    --choice-border-color: #aaa;
+    --choice-remove-color: #999;
+}
+
+//for search input
+.select2-container li.select2-search,
+.select2-container input[type=search] {
+    width: 100% !important;
+}
+
+//arrow-offset
+.select2-selection--single .select2-selection__arrow {
+    right: 4px !important;
+}
+
+[dir="rtl"] .select2-selection--single .select2-selection__arrow {
+    left: 4px !important;
+}
+
+//colors
+.select2-selection--single,
+.select2-selection--multiple {
+    background-color: var(--bg-color) !important;
+}
+
+.select2-selection__rendered {
+    color: var(--text-color) !important;
+}
+
+.select2-selection__placeholder {
+    color: var(--placeholder-color) !important;
+}
+
+.select2-selection__arrow b {
+    border-color: var(--arrow-color) transparent transparent transparent !important;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent var(--arrow-color) transparent !important;
+}
+
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    outline: none !important;
+    border-radius: 0;
+    height: auto;
+    border: 1px solid var(--border-color);
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border: 1px solid var(--border-color);
+}
+
+.face-shadow .select2-container--default .select2-selection--single,
+.face-shadow .select2-container--default .select2-selection--multiple,
+.select2-dropdown.face-shadow {
+    box-shadow: 0px 5px 10px 2px rgba(54, 163, 247, 0.19) !important;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: var(--selected-color);
+}
+
+//mutiple-choice
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--choice-back-color);
+    border: 1px solid var(--choice-border-color);
+    border-radius: 0;
+    color: var(--choice-text-color);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: var(--choice-remove-color);
+}
+
+//dropdown
+.select2-dropdown {
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 0;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--hover-bg-color);
+    color: var(--hover-text-color);
+}
+
+//facemode
+$modes: pill round square;
+
+@each $mode in $modes {
+
+    .face-#{$mode} .select2-container--default .select2-selection--single,
+    .face-#{$mode} .select2-container--default .select2-selection--multiple {
+        border-radius: var(--border-#{$mode}) !important;
+    }
+}
+
+//choice-facemode
+.face-round .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    border-radius: 4px;
+}
+
+.face-pill .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    border-radius: var(--border-pill);
+}
+
+//dropdown-facemode
+.select2-dropdown.face-round,
+.select2-dropdown.face-pill {
+    border-radius: 4px;
+}
+
+@each $key,
+$value in $color-map {
+
+    .outline.#{$key} .select2-container--default .select2-selection--single,
+    .outline.#{$key} .select2-container--default .select2-selection--multiple {
+        border-color: var(--color-#{$key});
+    }
+
+    .#{$key} .select2-container--default.select2-container--focus .select2-selection--single,
+    .#{$key} .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border-color: var(--color-#{$key});
+    }
+
+    .select2-dropdown.#{$key} .select2-results__option[aria-selected=true] {
+        background-color: var(--color-#{$key});
+        color: color-yiq($value);
+    }
+
+    .select2-dropdown.#{$key} .select2-results__option--highlighted[aria-selected] {
+        background-color: lighten($value, 10%);
+        color: color-yiq($value);
+    }
+
+    .select2-dropdown.#{$key} {
+        border-color: var(--color-#{$key});
+    }
+
+    //mutiple-choice
+    .#{$key} .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: var(--color-#{$key});
+        border: 1px solid darken($value, 10%);
+        color: color-yiq($value);
+    }
+
+    .#{$key} .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: color-yiq($value);
+    }
+}
+
+//sizes
+@each $k,
+$v in $input-heights {
+
+    .font-#{$k} .select2-container--default .select2-selection--single,
+    .font-#{$k} .select2-container--default .select2-selection--multiple {
+        height: $v;
+        min-height: $v;
+    }
+
+    .font-#{$k} .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: $v;
+    }
+
+    .font-#{$k} .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: $v;
+    }
+}
+
+$top-offsets: (hg: 5px,
+    lg: 4px,
+    md: 4px,
+    sm: 4px,
+    xs: 3px);
+
+@each $k,
+$v in $top-offsets {
+    .font-#{$k} .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        margin-top: $v;
+    }
+}

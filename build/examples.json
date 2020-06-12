@@ -1,0 +1,9 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "noLib": true
+    },
+    "include": [
+        "../examples/**/*.ts"
+    ]
+}

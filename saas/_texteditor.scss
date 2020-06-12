@@ -1,0 +1,15 @@
+.note-editor.note-frame {
+    border: 1px solid #ccc;
+}
+
+.card {
+    border-radius: 0;
+}
+
+div.modal[aria-label=Help] .modal-footer{
+    display: none;
+} 
+
+.note-placeholder {
+    display: block;
+}

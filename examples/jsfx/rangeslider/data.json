@@ -1,0 +1,10 @@
+{
+    "module": "system",
+    "code": "success",
+    "data": [
+        666, 999
+    ],
+    "msg": "执行成功",
+    "lang": "zh",
+    "version": "1.0"
+}

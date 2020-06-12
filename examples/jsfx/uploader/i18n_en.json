@@ -1,0 +1,12 @@
+{
+    "pickTitle": "Select your local files please",
+    "pickTip": "<ACCEPTS> \nFileExts={fileExts}\nMaxTotalSize={maxTotalSize}\nMaxNumbers={maxNumbers}\nMaxSingleSize={maxSingleSize}",
+    "retryTip": "Retry",
+    "removeTip": "Remove",
+    "viewDenied": "The file can\"t be viewed in local mode",
+    "exceedMaxSize":"Exceed the max size of single file",
+    "wrongDuplicate": "Can‘t upload duplicate file",
+    "wrongType": "Wrong file type",
+    "exceedNumbers": "Exceed the max numbers of file",
+    "exceedMaxTotalSize": "Exceed the max size of total files"
+}

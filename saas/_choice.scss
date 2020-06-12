@@ -1,0 +1,219 @@
+//Checkbox
+.jsfx-checkbox {
+    --title-color: inherit;
+    --text-color: inherit;
+    --border-color: #bdc3d4;
+    --checked-color: #7281a4;
+}
+
+.jsfx-checkbox label>.choice:after {
+    border: solid var(--checked-color);
+}
+
+.jsfx-checkbox label>.choice:after {
+    top: 16%;
+    left: 33%;
+    width: 34%;
+    height: 56%;
+    border-width: 0 2px 2px 0 !important;
+    transform: rotate(45deg);
+}
+
+//Radio
+.jsfx-radio {
+    --text-color: inherit;
+    --border-color: #bdc3d4;
+    --checked-color: #7281a4;
+}
+
+.jsfx-radio label>.choice {
+    -webkit-border-radius: 50% !important;
+    -moz-border-radius: 50% !important;
+    -ms-border-radius: 50% !important;
+    -o-border-radius: 50% !important;
+    border-radius: 50% !important;
+}
+
+.jsfx-radio label>.choice:after {
+    top: 50%;
+    left: 50%;
+    margin-left: -3px;
+    margin-top: -3px;
+    height: 6px;
+    width: 6px;
+    border-radius: 100% !important;
+}
+
+.jsfx-radio label>.choice:after {
+    border: solid var(--checked-color);
+}
+
+.jsfx-radio label.dot>.choice:after {
+    background: var(--checked-color);
+}
+.jsfx-radio label.ring>.choice:after {
+    background: #fff;
+}
+
+.jsfx-radio label.ring>input:not([disabled]):checked~.choice {
+    background: var(--checked-color);
+}
+
+.jsfx-radio label.ring>.choice:after {
+    border: solid #fff !important;
+}
+
+//color mode
+@each $key,
+$value in $color-map {
+
+    .jsfx-checkbox label.#{$key}>.choice,
+    .jsfx-checkbox label.#{$key}>input:not([disabled]):checked~.choice {
+        border: 1px solid var(--color-#{$key}) !important;
+    }
+
+    .jsfx-checkbox label.#{$key}>input:not([disabled])~.choice:after {
+        border: solid var(--color-#{$key});
+    }
+
+    .jsfx-radio label.#{$key}>.choice {
+        border: 1px solid var(--color-#{$key});
+    }
+
+    .jsfx-radio label.#{$key}>.choice:after {
+        border: solid var(--color-#{$key});
+    }
+
+    .jsfx-radio label.#{$key}.ring>input:not([disabled]):checked~.choice {
+        background: var(--color-#{$key});
+    }
+}
+
+
+//Choice
+.jsfx-choice-inline {
+    display: inline-flex;
+    float: left;
+}
+
+.jsfx-choice-list {
+    display: inline-grid;
+    text-align: left;
+}
+
+.jsfx-radio label,
+.jsfx-checkbox label {
+    color: var(--text-color);
+    float: left;
+    position: relative;
+    margin: auto 0px;
+    display: flex;
+    align-items: center;
+}
+
+.jsfx-radio label>input,
+.jsfx-checkbox label>input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.jsfx-radio .text,
+.jsfx-checkbox .text {
+    line-height: 1.6;
+}
+
+.jsfx-radio label.square>.choice,
+.jsfx-checkbox label.square>.choice {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0;
+}
+
+.jsfx-radio label.round>.choice,
+.jsfx-checkbox label.round>.choice {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.jsfx-radio label>.choice,
+.jsfx-checkbox label>.choice {
+    cursor: pointer;
+    background-color: #fff;
+    position: absolute;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    border: 1px solid var(--border-color);
+}
+
+.jsfx-radio label>.choice:after,
+.jsfx-checkbox label>.choice:after {
+    content: '';
+    position: absolute;
+    display: none;
+}
+
+.jsfx-radio label>input:checked~.choice:after,
+.jsfx-checkbox label>input:checked~.choice:after {
+    display: block;
+}
+
+.jsfx-radio label>input:disabled~.choice,
+.jsfx-checkbox label>input:disabled~.choice {
+    opacity: 0.6 !important;
+    filter: alpha(opacity=60) !important;
+    pointer-events: none;
+    background-color: lightgray !important;
+    border: 1px solid #bdc3d4 !important;
+}
+
+//text
+.jsfx-radio .text:not(:empty),
+.jsfx-checkbox .text:not(:empty) {
+    margin-right: 10px;
+}
+.jsfx-radio .text:empty,
+.jsfx-checkbox .text:empty {
+    margin-left: 20px;
+}
+
+//size
+@each $key,
+$value in $input-heights {
+
+    .jsfx-radio label.font-#{$key}>.choice,
+    .jsfx-checkbox label.font-#{$key}>.choice {
+        height: $value - 14px;
+        width: $value - 14px;
+    }
+
+    .jsfx-radio .font-#{$key} .text,
+    .jsfx-checkbox .font-#{$key} .text {
+        margin-left: $value - 6px;
+    }
+
+    .jsfx-choice-inline label.font-#{$key} {
+        height: $value;
+    }
+}
+
+//hg/lg
+.jsfx-radio label.font-hg > .choice:after {
+    margin-left: -5px;
+    margin-top: -5px;
+    height: 10px;
+    width: 10px;
+}
+.jsfx-radio label.font-lg > .choice:after {
+    margin-left: -4px;
+    margin-top: -4px;
+    height: 8px;
+    width: 8px;
+}

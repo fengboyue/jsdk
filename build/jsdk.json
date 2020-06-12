@@ -1,0 +1,10 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../dist/jsdk.js",
+        "skipLibCheck": true
+    },
+    "include": [
+        "../source/**/*.ts"
+    ]
+} 

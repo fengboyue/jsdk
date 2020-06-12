@@ -1,0 +1,17 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../dist/jsunit.js",
+        "noResolve": true,
+        "noLib": true
+    },
+    "files": [
+        "../source/unit/TestFailure.ts",
+        "../source/unit/TestListener.ts",
+        "../source/unit/TestResult.ts",
+        "../source/unit/TestCase.ts",
+        "../source/unit/TestSuite.ts",
+        "../source/unit/TestRunner.ts",
+        "../source/unit/TestUI.ts"
+    ]
+} 

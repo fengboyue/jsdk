@@ -1,0 +1,333 @@
+.jsfx-loading {
+    --color: var(--color-primary);
+}
+
+.blockUI.jsfx-loading {
+    padding: 8px !important;
+}
+
+.blockUI {
+    border: none !important;
+}
+
+.blockUI.blockOverlay {
+    background-color: #ccc !important;
+}
+
+//color
+.jsfx-loading .loading-flower {
+    background-color: var(--color);
+}
+
+.jsfx-loading .jsfx-loading-icon.ring div {
+    border-color: var(--color) transparent transparent transparent;
+}
+
+.jsfx-loading .jsfx-loading-progress {
+    border: 1px solid var(--color);
+}
+
+.jsfx-loading .jsfx-loading-progress:before {
+    background: var(--color);
+    box-shadow: 5px 0px 10px 0px var(--color);
+}
+
+.jsfx-loading .jsfx-loading-msg {
+    color: var(--color);
+}
+
+/** icon+loading-msg */
+.flower+.jsfx-loading-msg {
+    padding-left: 25px;
+}
+.ring+.jsfx-loading-msg {
+    padding-left: 10px;
+}
+
+/** loading-flower */
+.group1>div,
+.group2>div,
+.group3>div {
+    width: 5px;
+    height: 5px;
+    border-radius: 100%;
+    position: absolute;
+    -webkit-animation: bouncedelay 1.2s infinite ease-in-out;
+    animation: bouncedelay 1.2s infinite ease-in-out;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+.jsfx-loading-icon.flower .circle-group {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+}
+
+.group2 {
+    -webkit-transform: rotateZ(45deg);
+    transform: rotateZ(45deg);
+}
+
+.group3 {
+    -webkit-transform: rotateZ(90deg);
+    transform: rotateZ(90deg);
+}
+
+.circle1 {
+    top: 0;
+    left: 0;
+}
+
+.circle2 {
+    top: 0;
+    right: 0;
+}
+
+.circle3 {
+    right: 0;
+    bottom: 0;
+}
+
+.circle4 {
+    left: 0;
+    bottom: 0;
+}
+
+.group2 .circle1 {
+    -webkit-animation-delay: -1.1s;
+    animation-delay: -1.1s;
+}
+
+.group3 .circle1 {
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
+}
+
+.group1 .circle2 {
+    -webkit-animation-delay: -0.9s;
+    animation-delay: -0.9s;
+}
+
+.group2 .circle2 {
+    -webkit-animation-delay: -0.8s;
+    animation-delay: -0.8s;
+}
+
+.group3 .circle2 {
+    -webkit-animation-delay: -0.7s;
+    animation-delay: -0.7s;
+}
+
+.group1 .circle3 {
+    -webkit-animation-delay: -0.6s;
+    animation-delay: -0.6s;
+}
+
+.group2 .circle3 {
+    -webkit-animation-delay: -0.5s;
+    animation-delay: -0.5s;
+}
+
+.group3 .circle3 {
+    -webkit-animation-delay: -0.4s;
+    animation-delay: -0.4s;
+}
+
+.group1 .circle4 {
+    -webkit-animation-delay: -0.3s;
+    animation-delay: -0.3s;
+}
+
+.group2 .circle4 {
+    -webkit-animation-delay: -0.2s;
+    animation-delay: -0.2s;
+}
+
+.group3 .circle4 {
+    -webkit-animation-delay: -0.1s;
+    animation-delay: -0.1s;
+}
+
+@keyframes bouncedelay {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0.0);
+        -webkit-transform: scale(0.0);
+    }
+
+    40% {
+        transform: scale(1.0);
+        -webkit-transform: scale(1.0);
+    }
+}
+
+/** loading-ring */
+.jsfx-loading-icon.ring {
+    width: 15px;
+    height: 15px;
+}
+
+.jsfx-loading-icon.ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    border-radius: 50%;
+    animation: ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-width: 3px;
+    border-style: solid;
+    border-color: var(--color-primary) transparent transparent transparent;
+}
+
+.jsfx-loading-icon.ring div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+
+.jsfx-loading-icon.ring div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+
+.jsfx-loading-icon.ring div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+
+@keyframes ring {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/** loading-bar */
+.jsfx-loading .jsfx-loading-bar {
+    position: relative;
+    margin: auto;
+}
+
+.jsfx-loading-progress {
+    position: relative;
+    width: 80%;
+    border-radius: 10px;
+    margin: auto;
+}
+
+.jsfx-loading-progress:before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 0%;
+    height: 100%;
+    animation: load 3s ease-out infinite;
+}
+
+.jsfx-loading-bar .jsfx-loading-msg {
+    width: 100%;
+    position: absolute;
+    text-align: center;
+    top: 12px;
+}
+
+@keyframes load {
+    0% {
+        width: 0%;
+    }
+
+    87.5%,
+    100% {
+        width: 100%;
+    }
+}
+
+/** loading-colors */
+@each $key,
+$value in $color-map {
+    .jsfx-loading.#{$key} .loading-flower {
+        background-color: var(--color-#{$key});
+    }
+
+    .jsfx-loading.#{$key} .jsfx-loading-icon.ring div {
+        border-color: var(--color-#{$key}) transparent transparent transparent;
+    }
+
+    .jsfx-loading.#{$key} .jsfx-loading-progress {
+        border: 1px solid var(--color-#{$key});
+    }
+
+    .jsfx-loading.#{$key} .jsfx-loading-progress:before {
+        background: var(--color-#{$key});
+        box-shadow: 5px 0px 10px 0px var(--color-#{$key});
+    }
+
+    .jsfx-loading.#{$key} .jsfx-loading-msg {
+        color: var(--color-#{$key});
+    }
+}
+
+//sizemode
+$sizes: (hg: 19px,
+    lg: 17px,
+    md: 15px,
+    sm: 13px,
+    xs: 11px);
+
+@each $key,
+$value in $sizes {
+
+    .jsfx-loading.#{$key} .jsfx-loading-msg {
+        font-size: var(--font-#{$key});
+    }
+
+    .jsfx-loading.#{$key} .flower+.jsfx-loading-msg {
+        padding-left: calc(#{$value} + 10px);
+    }
+
+    //flower
+    .jsfx-loading.#{$key} .group1>div,
+    .jsfx-loading.#{$key} .group2>div,
+    .jsfx-loading.#{$key} .group3>div {
+        width: 5px;
+        height: 5px;
+    }
+
+    //flow+ring
+    .jsfx-loading.#{$key} .jsfx-loading-icon.flower .circle-group,
+    .jsfx-loading.#{$key} .jsfx-loading-icon.ring {
+        width: $value;
+        height: $value;
+    }
+
+    //bar
+    .jsfx-loading.#{$key} .jsfx-loading-progress {
+        height: calc(#{$value} - 7px);
+    }
+
+    .jsfx-loading.#{$key} .jsfx-loading-bar .jsfx-loading-msg {
+        top: calc(#{$value} - 3px);
+    }
+
+}
+
+$flower-sizes: (
+    hg: 7px,
+    lg: 6px,
+    md: 5px,
+    sm: 4px,
+    xs: 3px);
+
+@each $key,
+$value in $flower-sizes {
+    //flower
+    .jsfx-loading.#{$key} .group1>div,
+    .jsfx-loading.#{$key} .group2>div,
+    .jsfx-loading.#{$key} .group3>div {
+        width: $value;
+        height: $value;
+    }
+}

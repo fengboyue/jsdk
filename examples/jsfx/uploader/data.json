@@ -1,0 +1,19 @@
+{
+    "module": "system",
+    "code": "success",
+    "data": [
+        {
+            "id": "002",
+            "name": "345.jpg",
+            "uri": "http://www.w3school.com.cn/ui2017/icon4.png"
+        },
+        {
+            "id": "003",
+            "name": "789.jpg",
+            "uri": "http://www.w3school.com.cn/ui2017/icon4.png"
+        }
+    ],
+    "msg": "执行成功",
+    "lang": "zh",
+    "version": "1.0"
+}

@@ -1,0 +1,74 @@
+select {
+    width: 100%;
+    border: solid 1px #c9c9c9;
+    overflow-x: auto;
+    height: 400px;
+}
+
+select>option,
+optgroup {
+    padding-right: 3px;
+    padding-left: 3px;
+    padding-top: 3px;
+}
+
+button {
+    font-size: small !important;
+}
+
+.left50 {
+    width:50%;float:left;
+}
+.right50 {
+    width:50%;float:right;
+}
+
+.text-center {
+    text-align:center;
+}
+.text-left {
+    text-align:left;
+}
+
+.jsunit .title {
+    padding: 5px 10px;
+    color: white;
+    background-color: rgb(43, 129, 175);
+    text-shadow: rgba(0, 0, 0, 0.5) 2px 2px 1px;
+}
+
+.jsunit .result {
+    height: 59px;
+    font-size: 65%;
+    color: rgb(43, 129, 175);
+    background-color: rgb(210, 224, 230);
+}
+.jsunit .result>div {
+    padding: 3px 10px;
+}
+
+.jsunit .time {
+    padding: 3px 10px;
+    color: black;
+    background-color: #d2e0e6a1;
+}
+#info {
+    font-size: 75%;
+}
+
+.progress {
+    margin-left: 10px;
+    height: 10px;
+    border: solid 1px #c9c9c9;
+    margin-top: 8px;
+}
+
+#progress {
+    width: 0%;
+    height: 100%;
+}
+
+.jsunit .list {
+    width:100%;
+    overflow:hidden;
+}

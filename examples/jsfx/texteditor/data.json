@@ -1,0 +1,8 @@
+{
+    "module": "system",
+    "code": "success",
+    "data": "You are using TextEditor.",
+    "msg": "执行成功",
+    "lang": "zh",
+    "version": "1.0"
+}

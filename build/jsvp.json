@@ -1,0 +1,11 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../dist/jsvp.js",
+        "noResolve": true,
+        "noLib": true
+    },
+    "include": [
+        "../source/app/*.ts"
+    ]
+} 

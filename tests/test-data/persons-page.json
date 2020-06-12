@@ -1,0 +1,29 @@
+{
+    "module": "system",
+    "code": "success",
+    "paging": {
+        "pageSize": 3,
+        "total": 3431435,
+        "page": 10
+    },
+    "data": [
+        {
+            "id": 4298835,
+            "name": "Xman",
+            "age": 21.05
+        },
+        {
+            "id": 4298836,
+            "name": "Zoro",
+            "age": 32.75
+        },
+        {
+            "id": 4298837,
+            "name": "Smith",
+            "age": 11.00
+        }
+    ],
+    "msg": "执行成功",
+    "lang": "zh",
+    "version": "1.0"
+}

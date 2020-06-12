@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <script src="/dist/system.js"></script>
+    <script src="/dist/jsdk-config.js"></script>
+
+</head>
+<style>
+    .custom-cls:focus {
+        border-color: var(--color-light);
+        background-color: var(--color-success);
+        color: white;
+    }
+
+    input.placeholder::placeholder {
+        color: white !important;
+    }
+
+    input.placeholder-focus:focus::placeholder {
+        color: white !important;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <br />
+        <hr>
+        <h5>ColorMode</h5>
+        <div id="colors"></div>
+
+        <hr>
+        <h5>Square/Round/Striped/Animated</h5>
+        <div id="face1"></div>
+        <div id="face2"></div>
+        <div id="face3"></div>
+        <div id="face4"></div>
+
+        <hr>
+        <h5>Disabled</h5>
+        <div id="sta1"></div>
+        <div id="sta2"></div>
+        <div id="sta3"></div>
+        <div id="sta4"></div>
+
+        <hr>
+        <h5>SizeMode Height</h5>
+        <div id="size1"></div>
+        <div id="size2"></div>
+        <div id="size3"></div>
+        <div id="size4"></div>
+        <div id="size5"></div>
+
+        <hr>
+        <h5>Custom Height</h5>
+        <div id="height1"></div>
+
+        <hr>
+        <h5>Custom Cls by Vars</h5>
+        <div id="cus1"></div>
+        <br />
+
+    </div>
+
+    <script src="../../env.js"></script>
+    <script src="progress-style.js"></script>
+</body>
+
+</html>

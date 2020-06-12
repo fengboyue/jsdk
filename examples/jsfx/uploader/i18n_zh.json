@@ -1,0 +1,12 @@
+{
+    "pickTitle": "请选择你的本地文件",
+    "pickTip": "<文件限制>\n文件类型为{fileExts}\n总文件尺寸为{maxTotalSize}\n最大文件数{maxNumbers}个\n单个文件最大为{maxSingleSize}",
+    "retryTip": "重试",
+    "removeTip": "删除",
+    "viewDenied": "在本地模式下此文件不可查看",
+    "exceedMaxSize":"超出了单个文件最大尺寸",
+    "wrongDuplicate": "不可上传重复文件",
+    "wrongType": "错误的文件类型",
+    "exceedNumbers": "超出了文件最大数量",
+    "exceedMaxTotalSize": "超出了文件总最大尺寸"
+}

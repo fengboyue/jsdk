@@ -1,0 +1,13 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../dist/jsui.js",
+        "noResolve": true,
+        "noLib": true
+    },
+    "include": [
+        "../source/model/*.ts",
+        "../source/ui/View.ts",
+        "../source/ui/*.ts"
+    ]
+} 

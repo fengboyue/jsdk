@@ -1,0 +1,38 @@
+
+div[jsfx-role="title"] {
+    font-weight: 300;
+    color: var(--title-color) !important;
+}
+div[jsfx-role="title"]:not(:empty) {
+    padding-right: 15px;
+}
+
+div[jsfx-role="body"] {
+    font-weight: 300;
+    padding: 0px 0px;
+}
+
+//tooltip for error
+$tooltip-pos: 
+top,
+bottom,
+left,
+right;
+
+@each $pos in $tooltip-pos {
+    .error.bs-tooltip-#{$pos} .arrow::before,
+    .error.bs-tooltip-auto[x-placement^="#{$pos}"] .arrow::before {
+        border-#{$pos}-color: var(--color-danger);
+    }
+}
+
+.error .tooltip-inner {
+    background-color: var(--color-danger);
+}
+
+// .error .bs-tooltip-left {
+//     left: 5px !important;
+// }
+// .error .bs-tooltip-right {
+//     left: 2px !important;
+// }

@@ -1,0 +1,30 @@
+
+.jsfx-progress {
+    --bgcolor: #e9ecef;
+    --bar-color: var(--color-primary);
+}
+.progress-bar {
+    background-color: var(--bar-color);
+}
+.progress {
+    width: 100%;
+    margin-top: 1px;
+    background-color: var(--bgcolor);
+    height: 0.8rem;
+}
+.progress.hg {
+    height: 1.2rem;
+}
+.progress.lg {
+    height: 1rem;
+}
+.progress.md {
+    height: 0.8rem;
+}
+.progress.sm {
+    height: 0.7rem;
+}
+.progress.xs {
+    height: 0.5rem;
+}
+

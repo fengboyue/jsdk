@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <script src="/dist/system.js"></script>
+    <script src="/dist/jsdk-config.js"></script>
+
+    <style>
+        div[id^="btn"] {
+            display: inline-block;
+        }
+
+        pre[class*="language-"] {
+            background: #f5f2f0;
+            padding: 1em;
+            margin: 0 0 1.5em 0;
+            overflow: auto;
+            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        }
+
+        .keyword {
+            color: #07a;
+        }
+
+        .comment {
+            color: rgb(26, 182, 26);
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <hr>
+        <h5>Enable/Disable Tab</h5>
+        <div id="tab1"></div>
+        <button id="btn1">Enable Tab2</button>
+        <button id="btn2">Disable Tab2</button>
+        <button id="btn3">isEnable Tab2</button>
+        <button id="btn4">active Tab2</button>
+
+        <hr>
+        <h5>Show/Hide Tab</h5>
+        <div id="tab2"></div>
+        <button id="btn5">Show Tab2</button>
+        <button id="btn6">Hide Tab2</button>
+        <button id="btn7">isShown Tab2</button>
+        <button id="btn8">active Tab2</button>
+
+        <hr>
+        <h5>Add/Remove Tab</h5>
+        <button id="btn9">Add last Tab</button>
+        <button id="btn10">Remove last Tab</button>
+        <button id="btn11">active last Tab</button>
+        <br/>
+        <div id="tab3"></div>
+        
+        <template id="vars">
+            <p>Like almost every dynamic language, JavaScript is a "duck-typed" language, and therefore every variable
+                is defined using the <span class="keyword">var</span> keyword, and can contain all types of variables.
+            </p>
+            <p>On top of that, there are two special types called <span class="keyword">undefined</span> and <span
+                    class="keyword">null</span>.
+                When a variable is used without first defining a value for it, it is equal to undefined. For example:
+            </p>
+            <pre
+                class="language-javascript"><span class="keyword">var</span> newVariable;<br/>console.log(newVariable);<span class="comment">//prints undefined</span></pre>
+            <p>However, the <span class="keyword">null</span> value is a different type of value, and is used when a
+                variable should be marked as empty.
+                <span class="keyword">undefined</span> can be used for this purpose, but it should not be used.</p>
+        </template>
+
+        <template id="objects">
+            <p>JavaScript is a functional language, and for object oriented programming it uses both objects and
+                functions, but objects are usually used as a data structure, similar to a dictionary in Python or a map
+                in Java. In this tutorial, we will learn how to use objects as a data structure. The advanced tutorials
+                explain more about object oriented JavaScript.</p>
+            <p>To initialize an object, use curly braces:</p>
+            <pre
+                class="language-javascript"><span class="keyword">var</span> emptyObject = {};<br/><span class="keyword">var</span> personObject = {<br/>    firstName : "John", <br/>    lastName : "Smith" <br/>}</pre>
+        </template>
+
+        <template id="functions">
+            <p>Functions are code blocks that can have arguments, and function have their own scope. In JavaScript,
+                functions are a very important feature of the program, and especially the fact that they can access
+                local variables of a parent function (this is called a closure). </p>
+            <p>There are two ways to define functions in JavaScript - named functions and anonymous functions.</p>
+        </template>
+
+    </div>
+
+    <script src="../../env.js"></script>
+    <script src="tab-methods.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,10 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../tests/tests.js",
+        "noLib": true
+    },
+    "include": [
+        "../tests/**/*.ts"
+    ]
+}

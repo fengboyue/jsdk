@@ -1,0 +1,17 @@
+{
+    "module": "system",
+    "code": "success",
+    "data": {
+        "id": 1,
+        "phone": "1234567890",
+        "email": "123@test.com",
+        "gmtCreated": "2018-06-10 23:19:29",
+        "gmtModified": "2018-06-10 23:19:28",
+        "creatorId": -1,
+        "modifierId": -1,
+        "isDeleted": "n"
+    },
+    "msg": "执行成功",
+    "lang": "zh",
+    "version": "1.0"
+}

@@ -1,0 +1,9 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../libs/jsdk/2.0.0/jsdk.js"
+    },
+    "include": [
+        "../source/**/*.ts"
+    ]
+} 

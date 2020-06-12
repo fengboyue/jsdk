@@ -1,0 +1,24 @@
+{
+    "module": "system",
+    "code": "success",
+    "data": [
+        {
+            "id": 4298835,
+            "field1": "Xman",
+            "field2": 21.05
+        },
+        {
+            "id": 4298836,
+            "field1": "Zoro",
+            "field2": 32.75
+        },
+        {
+            "id": 4298837,
+            "field1": "Smith",
+            "field2": 11.00
+        }
+    ],
+    "msg": "执行成功",
+    "lang": "zh",
+    "version": "1.0"
+}

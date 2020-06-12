@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <script src="/dist/system.js"></script>
+    <script src="/dist/jsdk-config.js"></script>
+
+</head>
+<style>
+
+    .custom-cls:focus {
+        border-color: var(--color-light);
+        background-color: var(--color-success);
+        color: white;
+    }
+
+    input.placeholder::placeholder {
+        color: white !important;
+    }
+
+    input.placeholder-focus:focus::placeholder {
+        color: white !important;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <hr>
+        <h5>Basic</h5>
+        <div id="txt1"></div>
+        <div id="txt2"></div>
+        <div id="txt3"></div>
+        
+        <br />
+        <hr>
+        <h5>Title/Body</h5>
+        <div id="cap1"></div>
+        <div id="cap2"></div>
+        <div id="cap3"></div>
+        <div id="cap4"></div>
+        <div id="cap5"></div>
+        <div id="cap6"></div>
+        <div id="cap7"></div>
+        <div id="cap8"></div>
+
+        <br />
+        <hr>
+        <h5>Focus Colors</h5>
+        <div id="colors"></div>
+
+        <br />
+        <hr>
+        <h5>Outline Colors</h5>
+        <div id="borders"></div>
+
+        <br />
+        <hr>
+        <h5>Disabled/Readonly</h5>
+        <div id="sta1"></div>
+        <div id="sta2"></div>
+
+        <br />
+        <hr>
+        <h5>Square/Round/Pill/Shadow</h5>
+        <div id="face1"></div>
+        <div id="face2"></div>
+        <div id="face3"></div>
+        <div id="face4"></div>
+
+        <br />
+        <hr>
+        <h5>Sizes</h5>
+        <div id="sizes"></div>
+
+        <hr>
+        <h5>Icons/Addons</h5>
+        <div id="t1"></div><br />
+        <div id="t2"></div><br />
+        <div id="t3"></div><br />
+        <div id="t4"></div><br />
+        <div id="t5"></div><br />
+        <div id="t6"></div><br />
+
+        <hr>
+        <h5>Custom Validate Style</h5>
+        <div id="v1"></div>
+        <div id="error"></div><br />
+
+        <hr>
+        <h5>Custom Style by inputCls</h5>
+        <div id="txt4"></div>
+        <div id="txt5"></div>
+        <br />
+        <hr>
+        <h5>Custom Style by Vars</h5>
+        <div id="cus1"></div>
+        <br />
+    </div>
+
+    <script src="../../env.js"></script>
+    <script src="textinput-style.js"></script>
+</body>
+
+</html>

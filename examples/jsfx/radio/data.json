@@ -1,0 +1,17 @@
+{
+    "module": "system",
+    "code": "success",
+    "msg": "执行成功",
+    "lang": "zh",
+    "version": "1.0",
+    "data": [{
+        "id": 0,
+        "text": "large"
+    }, {
+        "id": 1,
+        "text": "medium"
+    }, {
+        "id": 2,
+        "text": "small"
+    }]
+}

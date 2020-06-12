@@ -1,0 +1,120 @@
+## 开发环境安装
+请先自行安装以下开发工具：
+```
+Node.js
+TypeScript      推荐3.0+
+VSCode          推荐1.45+
+uglifyjs        首选压缩工具，可选
+```
+
+## 工程中使用JSDK
+我们以TS工程中使用JSDK为例。
+
+### 创建工程 
+1. 先在VSCode上创建新工作区或导入已有工程入新工作区。<br>
+再在你的<code>{工程目录}/</code>下创建以下目录结构：
+
+```
+|--libs   //library directory for JSDK
+|--dist   //compiled js files
+|--source //source ts/js files
+|--build  //build scripts
+```
+
+2. 下载JSDK压缩包并解压至你本地的<code>{JSDK安装目录}</code>下。<br>
+拷贝 <code>/{JSDK安装目录}/libs/</code>下的所有文件到 <code>{工程目录}/libs/</code>;<br>
+再拷贝 <code>/{JSDK安装目录}/dist/</code> 下的所有文件到 <code>{工程目录}/libs/jsdk/2.0.0/</code>。
+
+### 工程配置
+为了让你工程中的JSDK能正确加载已配置的类库，那么你需要修改JSDK的全局配置。
+
+假设你的<code>{工程目录}</code>的部署网址为：<code>{工程网址}</code> 。<br>
+* *此URL可以使用相对地址*
+
+<b>[方法一]</b><br>
+直接修改JSDK的全局配置文件<code>{工程目录}/libs/jsdk/2.0.0/jsdk-config.js</code>
+```
+libRoot:  '{工程网址}/libs',
+```
+
+<b>[方法二]</b><br>
+或者在TS代码中动态配置
+```
+JS.config({
+    libRoot:  '{工程网址}/libs',
+})
+```
+* *全局配置项的详细说明请参看的“类库管理”章节*
+
+### 使用JSDK库
+
+1. 加载JSDK的核心库。
+
+必须在HTML中先加载JSDK核心库<code>system</code>及全局配置文件<code>jsdk-config.js</code>：
+
+```html
+<!--JSDK's necessary kernel file-->
+<script src="http://mydomain/myproject/libs/jsdk/2.0.0/system.min.js"></script>
+<!--JSDK's global config file-->
+<script src="http://mydomain/myproject/libs/jsdk/2.0.0/jsdk-config.js"></script>
+```
+
+2. 加载JSDK中的已配置类库。
+
+有两种方式加载：动态加载与静态加载。
+
+<b>[动态加载]</b><br>
+在TS／JS代码中加载类库，这是推荐的方式。
+```javascript
+/// <reference path="../libs/jsdk/2.0.0/jsdk.d.ts" /> 
+JS.imports([
+    '$jsunit', 
+]).then(()=>{
+    //do you want
+});
+```
+<b>[静态加载]</b><br>
+在HTML代码中加载类库。
+```html
+<script src="http://mydomain/myproject/libs/jsdk/2.0.0/jsunit.min.js"></script>
+```
+
+### TS工程编译
+创建一个编译配置文件<code>build/build.json</code>：
+```
+{
+    "compilerOptions": {
+        "charset": "utf-8",
+        "module": "none",
+        "target": "es6",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "sourceMap": false,
+        "listFiles":true,
+        "noLib": true,
+        "outFile": "../dist/myproject.js"
+    },
+    "include": [
+        "../source/**/*.ts"
+    ]
+}
+```
+假设你的系统为Linux或MacOS，创建构建脚本<code>build/build.sh</code>：
+```
+#!/bin/bash
+name="myproject"
+echo "Start to complie ${name}"
+tsc -d --target es6 -p build.json
+echo "Start to minify ${name}"
+uglifyjs ../dist/${name}.js --warn --ecma 6 -o ../dist/${name}.min.js
+echo "Finished building ${name}"
+```
+
+最后，执行<code>build.sh</code>来编译工程源码。<br>
+编译成功后的文件位于<code>{工程目录}/dist/</code>下：
+<p class="warn">
+myproject.js<br>
+myproject.min.js
+</p>

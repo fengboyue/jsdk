@@ -1,0 +1,33 @@
+h1 {
+    font-size: 1.8em !important;
+    font-weight: 500 !important;
+}
+
+h2 {
+    font-size: 1.2em !important;
+    font-weight: bold !important;
+}
+
+h3 {
+    font-size: 1.1em !important;
+    font-weight: bold !important;
+}
+
+h4 {
+    font-size: 1em !important;
+    font-weight: bold !important;
+}
+
+em {
+    font-size: smaller !important;
+}
+
+.sidebar>h1 {
+    font-size: 1.2rem !important;
+    font-weight: 300 !important;
+}
+
+/* docsify theme bugfix */
+td::before {
+    content: none !important;
+}

@@ -1,0 +1,16 @@
+.modal-title {
+    font-size: var(--font-lg);
+}
+.modal-header {
+    padding: 0.5rem 1rem;
+}
+.modal-footer {
+    padding: 0.5rem 1rem 0.8rem 1rem;
+    border-top: none;
+}
+.jsfx-dialog-body {
+    padding: 0;
+}
+.jsfx-dialog-body>div {
+    padding: 1rem;
+}

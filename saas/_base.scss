@@ -1,0 +1,208 @@
+@charset "UTF-8";
+
+:root {
+    --font-hg: 1.2rem;
+    --font-lg: 1.1rem;
+    --font-md: 1rem;
+    --font-sm: 0.85rem;
+    --font-xs: 0.75rem;
+
+    --color-primary: $color-primary;
+    --color-secondary: $color-secondary;
+    --color-accent: $color-accent;
+    --color-metal: $color-metal;
+    --color-light: $color-light;
+    --color-dark: $color-dark;
+    --color-success: $color-success;
+    --color-info: $color-info;
+    --color-warning: $color-warning;
+    --color-danger: $color-danger;
+
+    --border-round: 0.2rem;
+    --border-square: 0rem;
+    --border-pill: 1.3rem;
+}
+
+html {
+    font-size: 14px;
+}
+
+.gpu {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+}
+
+.disabled, :disabled {
+    opacity: 0.8 !important;
+    filter: alpha(opacity=80) !important;
+    cursor: not-allowed !important;
+    color: #aaa !important;
+}
+
+.transparent {
+    background: transparent !important;
+}
+
+/** Font Sizes */
+.font-hg {
+    font-size: var(--font-hg);
+}
+
+.font-lg {
+    font-size: var(--font-lg);
+}
+
+.font-md {
+    font-size: var(--font-md);
+}
+
+.font-sm {
+    font-size: var(--font-sm);
+}
+
+.font-xs {
+    font-size: var(--font-xs);
+}
+
+/**
+ * @override Bootstrap4 css
+ **/
+@each $key,
+$value in $color-map {
+    
+    /** Text Colors */
+    .text-#{$key} {
+        color: var(--color-#{$key}) !important;
+    }
+
+    a.text-#{$key}:focus,
+    a.text-#{$key}:hover {
+        color: var(--color-#{$key}) !important;
+    }
+
+    /** Background Colors */
+    .bg-#{$key} {
+        background-color: var(--color-#{$key}) !important;
+    }
+
+    a.bg-#{$key}:focus,
+    a.bg-#{$key}:hover,
+    button.bg-#{$key}:focus,
+    button.bg-#{$key}:hover {
+        background-color: var(--color-#{$key}) !important;
+    }
+
+    .border-#{$key} {
+        border-color: var(--color-#{$key}) !important;
+    }
+    .focus-#{$key}:focus {
+        border-color: var(--color-#{$key}) !important;
+    }
+}
+
+/** items alignment */
+//Vertical 
+.items-middle {
+    display: flex;
+    align-items: center;
+}
+
+.items-top {
+    display: flex;
+    align-items: flex-start;
+}
+
+.items-bottom {
+    display: flex;
+    align-items: flex-end;
+}
+//Horizontal
+.items-left {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.items-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.items-center {
+    display: flex;
+    justify-content: center;
+}
+
+/** Flex */
+.flex-start {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.flex-end {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+}
+
+.flex-around {
+    display: flex;
+    justify-content: space-around;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+}
+
+.border-shadow {
+    box-shadow: 0px 5px 10px 2px rgba(54, 163, 247, 0.19) !important;
+}
+
+/** Border Radius */
+.border-round {
+    border-radius: var(--border-round) !important;
+}
+
+.border-square {
+    border-radius: var(--border-square) !important;
+}
+
+.border-pill {
+    border-radius: var(--border-pill) !important;
+}
+
+.border-square-left {
+    border-top-left-radius: var(--border-square) !important;
+    border-bottom-left-radius: var(--border-square) !important;
+}
+
+.border-square-right {
+    border-top-right-radius: var(--border-square) !important;
+    border-bottom-right-radius: var(--border-square) !important;
+}
+
+.border-round-left {
+    border-top-left-radius: var(--border-round) !important;
+    border-bottom-left-radius: var(--border-round) !important;
+}
+
+.border-round-right {
+    border-top-right-radius: var(--border-round) !important;
+    border-bottom-right-radius: var(--border-round) !important;
+}
+
+.border-pill-left {
+    border-top-left-radius: var(--border-pill) !important;
+    border-bottom-left-radius: var(--border-pill) !important;
+}
+
+.border-pill-right {
+    border-top-right-radius: var(--border-pill) !important;
+    border-bottom-right-radius: var(--border-pill) !important;
+}

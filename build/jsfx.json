@@ -1,0 +1,49 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../dist/jsfx.js",
+        "noResolve": true,
+        "noLib": true
+    },
+    "include": [
+        "../source/fx/Base.ts",
+        "../source/fx/Widget.ts",
+        "../source/fx/FormWidget.ts",
+        
+        "../source/fx/Button.ts",
+        "../source/fx/Select.ts",
+        "../source/fx/Switch.ts",
+        "../source/fx/Uploader.ts",
+        "../source/fx/Progress.ts",
+        "../source/fx/RangeSlider.ts",
+        
+        "../source/fx/Choice.ts",
+        "../source/fx/Checkbox.ts",
+        "../source/fx/Radio.ts",
+
+        "../source/fx/Input.ts",
+        
+        "../source/fx/LineInput.ts",
+        "../source/fx/TextInput.ts",
+        "../source/fx/EmailInput.ts",
+        "../source/fx/TelInput.ts",
+        "../source/fx/NumberInput.ts",
+        "../source/fx/Password.ts",
+        "../source/fx/DatePicker.ts",
+        "../source/fx/DateRangePicker.ts",
+
+        "../source/fx/RowsInput.ts",
+        "../source/fx/TextArea.ts",
+        "../source/fx/TextEditor.ts",
+
+        "../source/fx/MessageBox.ts",
+        "../source/fx/Popup.ts",
+        "../source/fx/Toast.ts",
+        "../source/fx/Loading.ts",
+        "../source/fx/Carousel.ts",
+        "../source/fx/Tab.ts",
+        "../source/fx/Dialog.ts",
+        "../source/fx/Sider.ts",
+        "../source/fx/Grid.ts"
+    ]
+} 

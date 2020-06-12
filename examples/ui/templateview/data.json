@@ -1,0 +1,13 @@
+{
+    "code": "success",
+    "data": [{
+        "name":"red",
+        "color":"#de1515"
+    },{
+        "name":"yellow",
+        "color":"#dde60a"
+    },{
+        "name":"blue",
+        "color":"#0a2ae6"
+    }]
+}

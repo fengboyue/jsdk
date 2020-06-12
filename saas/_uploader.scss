@@ -1,0 +1,253 @@
+.jsfx-uploader {
+    --pick-color: #999;
+    --pick-bgcolor: #fff;
+    --bdcolor: #e0e0e0;
+    --file-color: var(--color-primary);
+    --fail-color: var(--color-danger);
+}
+
+.jsfx-uploader .body {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    border: 1px solid var(--bdcolor);
+    border-top-width: 0px;
+    padding: 0;
+    position: relative;
+    min-width: 120px;
+    min-height: 28px;
+    color: var(--pick-color);
+}
+
+.jsfx-uploader .pick {
+    width: 100%;
+    height: 28px;
+    background: var(--pick-bgcolor);
+    text-align: center;
+    overflow: hidden;
+    border-top: 1px solid var(--bdcolor);
+}
+.jsfx-uploader .jsfx-input-error .pick {
+    border-top: 0px;
+}
+
+.jsfx-uploader .pick [id^=rt_rt_] {
+    //bugfix: webloader pick's wrong position
+    left: 0px !important;
+    top: 0px !important;
+    width: 100% !important;
+    height: 28px !important;
+}
+
+.webuploader-pick {
+    width: 100%;
+}
+
+.font-hg .webuploader-pick {
+    margin-top: -4px;
+}
+.font-lg .webuploader-pick {
+    margin-top: -1px;
+}
+.font-md .webuploader-pick {
+    margin-top: 2px;
+}
+.font-sm .webuploader-pick {
+    margin-top: 4px;
+}
+.font-xs .webuploader-pick {
+    margin-top: 4px;
+}
+
+.jsfx-uploader .pick i {
+    vertical-align: middle;
+    font-size: 20px;
+    margin: -2px 2px 0px 10px;
+}
+
+.jsfx-uploader .font-hg .pick i,
+.jsfx-uploader .font-lg .pick i {
+    margin-top: 0px;
+}
+
+.jsfx-uploader .pick span.pick-title {
+    margin-right: 10px;
+    font-size: 70%;
+}
+
+.files-area {
+    margin: 0;
+    padding: 0px 10px;
+    border-top: 1px solid var(--bdcolor);
+}
+.files-area:empty {
+    border: 0;
+}
+
+.files-area .file-name {
+    font-size: 90%;
+}
+
+/** list */
+.files-area.list [file-id]:first-child{
+    padding-top: 4px;
+}
+.files-area.list [file-id]:last-child{
+    padding-bottom: 6px;
+}
+
+.files-area.list li {
+    list-style: none;
+    clear: both;
+    line-height: normal;
+}
+
+.files-area.list .file-name {
+    display: inline-block;
+    width: calc(100% - 55px);
+    text-align: left;
+    vertical-align: bottom;
+}
+
+.files-area.list .action {
+    padding-left: 3px;
+    font-size: 90%;
+}
+
+.files-area.list .file-actions {
+    float: right;
+}
+
+/** action icon */
+$action-sizes: (
+    hg: 16px,
+    lg: 14px,
+    md: 12px,
+    sm: 11px,
+    xs: 10px);
+
+@each $key, $size in $action-sizes {
+    .size-#{$key} .files-area .action i{
+        width: $size;
+    }
+}    
+/** image */
+$image-size: (
+    hg: 64px,
+    lg: 56px,
+    md: 48px,
+    sm: 40px,
+    xs: 32px);
+
+@each $key,
+$size in $image-size {
+    .size-#{$key} .files-area.image {
+        max-height: calc(#{$size} + 40px);
+    }
+
+    .size-#{$key} .files-area.image div[file-id] {
+        width: calc(#{$size} + 2px);
+        height: calc(#{$size} + 22px);
+    }
+
+    .size-#{$key} .files-area.image .file-image-area,
+    .size-#{$key} .files-area.image .file-image {
+        width: calc(#{$size} + 2px);
+        height: calc(#{$size} + 2px);
+    }
+
+    .size-#{$key} .files-area.image .file-image img {
+        width: $size;
+        height: $size;
+    }
+
+    .size-#{$key} .files-area.image .file-actions {
+        margin-left: calc(#{$size} - 13px);
+    }
+
+    .size-#{$key} .file-image>span {
+        line-height: #{$size};
+    }
+}
+
+.files-area.image div[file-id] {
+    display: inline-block;
+    margin: 9px 10px 0px 0px;
+    text-align: center;
+}
+
+.files-area.image .file-name {
+    height: 20px;
+    line-height: 20px;
+    text-indent: 2px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.files-area.image .file-image-area,
+.files-area.image .file-image {
+    cursor: zoom-in;
+}
+
+.files-area.image .file-actions {
+    display: none;
+    position: absolute;
+    float: right;
+    background-color: #F8F8FF;
+    width: 14px;
+    line-height: 14px;
+    margin-top: 1px;
+    font-size: 12px;
+}
+
+.files-area.image .file-image-area:hover .file-actions {
+    display: grid;
+    float: right;
+}
+
+.files-area.image .file-image {
+    position: absolute;
+    border: 1px solid var(--bdcolor);
+    font-size: 200%;
+}
+
+///////////////////
+.files-area .action {
+    cursor: pointer;
+}
+
+///////color
+.files-area.list li,
+.files-area a,
+.files-area.image .file-name,
+.files-area.image .file-image,
+.files-area .file-actions {
+    color: var(--file-color);
+}
+
+.files-area.list li.fail,
+.files-area .fail a,
+.files-area .fail .file-name,
+.files-area.image .fail .file-image,
+.files-area .fail .file-actions {
+    color: var(--fail-color) !important;
+}
+
+.files-area .action.retry {
+    display: none;
+}
+
+.files-area .fail .action.retry {
+    display: inline-block !important;
+}
+
+//readonly disabled
+.jsfx-uploader .body.readonly .action.remove,
+.jsfx-uploader .body.readonly .action.retry,
+.jsfx-uploader .body.disabled .action.remove,
+.jsfx-uploader .body.disabled .action.retry {
+    display: none !important;
+}

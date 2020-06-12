@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "charset": "utf-8",
+        "module": "none",
+        "target": "es6",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "sourceMap": false,
+        "listFiles":true
+    },
+    "compileOnSave": true
+}

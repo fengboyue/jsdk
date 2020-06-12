@@ -1,0 +1,70 @@
+.jsfx-sider {
+    --bg-color: white;
+    --border-color: #ccc;
+    --over-shadow-color: #bbb;
+    --overlay-shadow-color: #999;
+
+    background-color: var(--bg-color);
+    height: 100%;
+}
+.jsfx-sider.left {
+    border-right: 1px solid var(--border-color);
+}
+.jsfx-sider.right {
+    border-left: 1px solid var(--border-color);
+}
+
+.left.sider-shadow{
+    box-shadow: 7px 0px 5px -5px var(--over-shadow-color);
+}
+.right.sider-shadow{
+    box-shadow: -7px 0px 5px -5px var(--over-shadow-color);
+}
+.left.overlay-sider-shadow{
+    box-shadow: 7px 0px 5px -5px var(--overlay-shadow-color);
+}
+.right.overlay-sider-shadow{
+    box-shadow: -7px 0px 5px -5px var(--overlay-shadow-color);
+}
+
+.jsfx-sider-head {
+    height: 40px;
+    padding: 10px;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.jsfx-sider-head > div {
+    position: absolute;
+    width: calc(100% - 25px);
+}
+.left .jsfx-sider-head > div {
+    padding-right: 30px;
+}
+.right .jsfx-sider-head > div {
+    padding-left: 30px;
+}
+
+.jsfx-sider-head > .close{
+    margin-top: -2px;
+}
+.left .jsfx-sider-head> .close{
+    float: right;
+}
+.right .jsfx-sider-head> .close{
+    float: left;
+}
+
+.jsfx-sider-head > .close > i{
+    vertical-align: middle;
+}
+
+.jsfx-sider-body {
+    height: inherit;
+}
+.jsfx-sider-body > iframe{
+    border: 0px;
+    width: 100%;
+    height: inherit;
+    overflow: auto;
+}

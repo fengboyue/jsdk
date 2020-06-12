@@ -1,0 +1,305 @@
+//覆盖BS样式
+.table th,
+.table td {
+    padding: 0px 8px;
+    vertical-align: middle;
+    border-top: 1px solid var(--grid-bdcolor);
+}
+
+.jsfx-grid .dropdown-toggle,
+.jsfx-grid .dropdown-menu,
+.jsfx-grid .dropdown-item
+{
+    font-size: inherit;
+}
+
+.jsfx-grid {
+    --grid-bdcolor: #dee2e6;
+    --head-bgcolor: rgba(0, 0, 0, 0.075);
+    --head-color: #000;
+    --body-bgcolor: #fff;
+    --body-color: #000;
+    --hover-bgcolor: rgba(0, 0, 0, 0.075);
+    --hover-color: #000;
+    --selected-bgcolor: rgba(0, 0, 0, 0.075);
+    --selected-color: #000;
+    --striped-bgcolor: #f4f4f4;
+    --striped-color: #000;
+    --pager-color: black;
+    --pager-bgcolor: #eee;
+    --pager-selected-color: #fff;
+    --pager-selected-bgcolor: dimgray;
+    --pagesizes-hover-color: inherit;
+    --pagesizes-hover-bgcolor: #ddd;
+    
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.jsfx-grid .table {
+    table-layout: fixed;
+    margin-bottom: 0;
+}
+
+//表头样式
+.jsfx-grid .head {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.jsfx-grid .head table {
+    background-color: var(--head-bgcolor);
+    color: var(--head-color);
+    font-weight: bold;
+}
+
+.jsfx-grid .head tr {
+    height: 35px;
+}
+
+//表体样式
+.jsfx-grid .body {
+    overflow-x: auto;
+    overflow-y: auto;
+    background-color: var(--body-bgcolor);
+    color: var(--body-color);
+}
+
+.jsfx-grid .body tr {
+    height: 32px;
+}
+
+//outline,inline
+.jsfx-grid.outline .head {
+    border: 1px solid;
+    border-bottom: none;
+    border-color: var(--grid-bdcolor);
+}
+
+.jsfx-grid.outline .body {
+    border: 1px solid;
+    border-top: none;
+    border-color: var(--grid-bdcolor);
+}
+
+.jsfx-grid.inline .body td:nth-child(n+2) {
+    border-left: 1px solid var(--grid-bdcolor);
+}
+
+//单元格样式
+.jsfx-grid div.cell {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: inline-flex;
+}
+
+//hover样式
+.jsfx-grid .body tr:hover {
+    background-color: var(--hover-bgcolor) !important;
+    color: var(--hover-color) !important;
+}
+
+//行选中
+.jsfx-grid .body tr.selected {
+    background-color: var(--selected-bgcolor) !important;
+    color: var(--selected-color) !important;
+}
+
+//striped样式
+.jsfx-grid .table.striped tr:not(.selected):nth-child(even) {
+    background-color: var(--striped-bgcolor);
+    color: var(--striped-color);
+}
+
+//单元格内按钮
+.jsfx-grid td .btn {
+    margin-top: 1px;
+    line-height: 10px;
+}
+
+//empty info
+.jsfx-grid .body>empty {
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+}
+
+//pager
+.pager {
+    display: inline;
+    padding: 5px 0px;
+    border-top: 1px solid #f4f5f8;
+}
+
+.pager-nav {
+    float: left;
+    padding-left: 0px;
+    margin: 0px;
+}
+
+.pager-nav li {
+    display: inline;
+    padding: 0.125rem;
+}
+
+.pager-link {
+    cursor: pointer;
+    display: inline-flex;
+    box-sizing: border-box;
+    background-clip: content-box;
+    background-image: none;
+    background-origin: padding-box;
+    background-size: auto;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    vertical-align: middle;
+    height: 21.5px;
+    min-width: 21.5px;
+    padding: 5px;
+    font-size: 0.9em;
+}
+
+.pager-link.pager-link-arrow {
+    color: var(--pager-color) !important;
+    background: var(--pager-bgcolor);
+}
+
+.pager-link:hover,
+.pager-link.selected {
+    background: var(--pager-selected-bgcolor);
+    color: var(--pager-selected-color) !important;
+}
+
+.pager-info {
+    float: right;
+}
+
+.pager-info .btn-group{
+    height: 100%;
+}
+
+.pager-info .btn.dropdown-toggle {
+    line-height: 75%;
+}
+
+.pager-info .btn.dropdown-toggle {
+    color: var(--pager-color);
+    background-color: var(--pager-bgcolor);
+    -webkit-border-radius: 20px !important;
+    -moz-border-radius: 20px !important;
+    -ms-border-radius: 20px !important;
+    -o-border-radius: 20px !important;
+    border-radius: 20px !important;
+}
+
+.pager-info .btn.dropdown-toggle:hover {
+    color: var(--pagesizes-hover-color);
+    background-color: var(--pagesizes-hover-bgcolor);
+}
+
+.pager-info .dropdown-menu {
+    transform: none;
+    min-width: 0.1rem;
+    padding: 0px;
+}
+
+.pager-info .dropdown-item {
+    padding: 0.15rem 0.9rem;
+}
+
+.pager-info .dropdown-item:hover,
+.pager-info .dropdown-item.selected {
+    background-color: #eee;
+}
+
+.pager-info .dropdown-menu i.fa-check {
+    color: olive;
+    padding-left: 10px;
+}
+
+.pager-detail {
+    margin: 0px 5px;
+}
+
+//color mode
+@each $key,
+$value in $color-map {
+    .jsfx-grid.#{$key} .head table {
+        background-color: var(--color-#{$key});
+        color: color-yiq($value);
+    }
+
+    .jsfx-grid.#{$key} .table th,
+    .jsfx-grid.#{$key} .table td {
+        border-top-color: darken($value, 10%);
+    }
+
+    //hover样式
+    .jsfx-grid.#{$key} .body tr:hover{
+        background-color: lighten($value, 5%) !important;
+        color: color-yiq($value) !important;
+    }
+
+    //outline,inline
+    .jsfx-grid.outline.#{$key} .head,
+    .jsfx-grid.outline.#{$key} .body{
+        border-color: var(--color-#{$key});
+    }
+    .jsfx-grid.inline.#{$key} .body td:nth-child(n+2) {
+        border-left: 1px solid var(--color-#{$key});
+    }
+
+    //striped样式
+    .jsfx-grid.#{$key} .table.striped tr:not(.selected):nth-child(even) {
+        background-color: lighten($value, 20%);
+    }
+
+    //行选中
+    .jsfx-grid.#{$key} .body tr.selected {
+        background-color: lighten($value, 10%) !important;
+    }
+
+    //有striped样式则body无须border-top
+    .jsfx-grid.#{$key} .table.striped td {
+        border-top-color: transparent;
+    }
+
+    //pager
+    .jsfx-grid.#{$key} .pager-link:hover,
+    .jsfx-grid.#{$key} .pager-link.selected {
+        background: var(--color-#{$key});
+        color: color-yiq($value) !important;
+    }
+}
+
+//sizemode
+@each $key,
+$value in $input-heights {
+
+    .jsfx-grid.#{$key} {
+        font-size: var(--font-#{$key});
+    }
+
+    .jsfx-grid.#{$key} .head tr {
+        height: $value + 3px;
+    }
+    .jsfx-grid.#{$key} .body tr {
+        height: $value;
+    }
+
+    .jsfx-grid.#{$key} .pager-nav a,
+    .jsfx-grid.#{$key} .pager-info {
+        height: calc(#{$value} - 12px);
+    }
+
+    .jsfx-grid.#{$key} .pager-link {
+        min-width: calc(#{$value} - 12px);
+    }
+}

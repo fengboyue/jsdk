@@ -1,0 +1,73 @@
+.jsfx-switch {
+    --on-color: var(--color-primary);
+    --off-color: #ddd;
+    --button-color: #fff;
+    --bdcolor: #ddd;
+}
+
+/* input-checkbox */
+.jsfx-switch input {
+    position: relative;
+    background-color: var(--off-color);
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    transition: all .2s ease;
+}
+
+.jsfx-switch input[disabled] {
+    background-color: #eee !important;
+}
+
+/* 按钮 */
+.jsfx-switch input::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    border: 1px solid var(--bdcolor);
+    background-color: var(--button-color);
+    border-radius: 50%;
+    transition: all .2s ease;
+}
+
+/* checked状态时，背景颜色改变 */
+.jsfx-switch input:checked {
+    background-color: var(--on-color);
+}
+
+/* checked状态时，按钮位置改变 */
+.jsfx-switch input:checked::after {
+    left: 50%;
+}
+
+@each $key,
+$value in $color-map {
+
+    .jsfx-switch.color-#{$key} input:checked {
+        background-color: var(--color-#{$key});
+    }
+
+    .jsfx-switch.color-#{$key} input::after {
+        border: 1px solid var(--color-#{$key});
+    }
+
+}
+
+//sizes
+@each $key,
+$value in $input-heights {
+    .jsfx-switch.size-#{$key} input {
+        width: $value + 4px;
+        height: ($value + 4px)*0.5;
+    }
+
+    .jsfx-switch.size-#{$key} div[jsfx-role="body"] {
+        height: $value;
+    }
+}

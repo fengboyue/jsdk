@@ -1,0 +1,105 @@
+.jsfx-textinput,
+.jsfx-emailinput,
+.jsfx-telinput,
+.jsfx-numberinput,
+.jsfx-password,
+.jsfx-datepicker,
+.jsfx-daterangepicker {
+    --title-color: inherit;
+    --color: #495057;
+    --bdcolor: #ced4da;
+    --focus-bdcolor: #aaa;
+}
+
+input.form-control {
+    border-radius: 0;
+}
+
+.jsfx-input-group {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.jsfx-numberinput input{
+    padding-right: 0px;
+}
+
+//sizes
+@each $k,
+$v in $input-heights {
+    .jsfx-input-group.font-#{$k} {
+        height: $v;
+    }
+
+    .jsfx-input-group.font-#{$k} .jsfx-input-icon {
+        width: $v;
+    }
+
+    .jsfx-input-group.font-#{$k}>.jsfx-input-div>input {
+        font-size: var(--font-#{$k}) !important;
+    }
+
+    .jsfx-input-group.font-#{$k}>.jsfx-input-div.left-icon>input {
+        padding-left: $v !important;
+    }
+
+    .jsfx-input-group.font-#{$k}>.jsfx-input-div.right-icon>input {
+        padding-right: $v !important;
+    }
+}
+
+.jsfx-input-div {
+    position: relative;
+    padding: 0;
+    width: 100%;
+}
+
+.jsfx-input-div input {
+    color: var(--color);
+    border: 1px solid var(--bdcolor);
+    height: 100%;
+}
+
+.jsfx-input-div input:focus {
+    color: var(--color);
+    border: 1px solid var(--focus-bdcolor);
+    box-shadow: none;
+}
+
+.jsfx-input-icon {
+    position: absolute;
+    height: 100%;
+    display: inline-block;
+    text-align: center;
+    top: 0;
+}
+
+.jsfx-input-icon>span {
+    display: table;
+    height: 100%;
+    width: 100%;
+}
+
+.jsfx-input-icon.left-icon {
+    left: 0;
+}
+
+.jsfx-input-icon.right-icon {
+    right: 0;
+}
+
+.jsfx-input-icon>span>i {
+    display: table-cell;
+    vertical-align: middle;
+    padding-top: 2px;
+    text-align: center;
+    color: var(--bdcolor);
+}
+
+//input for error
+.jsfx-input-error,
+.jsfx-input-error:focus {
+    background-color: #fff6f6 !important;
+    border-color: #ff000042 !important;
+    border-width: 1px !important;
+}
