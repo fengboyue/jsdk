@@ -33,13 +33,13 @@ If you touch JSDK for the first time, you need to have these following basic kno
 ## Online Resources
 You can visit the following online resources to know JSDK more:
 <p class="warn">
-<a href="http://localhost/docs/#/zh/quick" target="_blank">JSDK Guides</a>
+<a href="https://fengboyue.github.io/jsdk/docs/#/en/quick" target="_blank">JSDK Guides</a>
 <br>
-<a href="http://localhost/tests" target="_blank">JSDK Self-Tests</a>
+<a href="https://fengboyue.github.io/jsdk/tests" target="_blank">JSDK Self-Tests</a>
 <br>
-<a href="http://localhost/examples" target="_blank">JSDK Examples</a>
+<a href="https://fengboyue.github.io/jsdk/examples" target="_blank">JSDK Examples</a>
 <br>
-<a href="http://localhost/api" target="_blank">JSDK API Docs</a>
+<a href="https://fengboyue.github.io/jsdk/api" target="_blank">JSDK API Docs</a>
 </p>
 
 * Launch Local Resources:

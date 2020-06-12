@@ -8,7 +8,7 @@ JS.config({
     importMode: 'js',
     minimize: true,
     jsdkRoot: null,
-    libRoot: '/libs',        
+    libRoot: '/jsdk/libs',        
     libs: {
         'jsui': [
             '$jquery',
