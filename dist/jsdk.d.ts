@@ -4,30 +4,6 @@
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
-/**
-* JSDK 2.0.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
-/**
-* JSDK 2.0.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
-/**
-* JSDK 2.0.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
-/**
-* JSDK 2.0.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
 /// <reference path="../libs/reflect/2.0.0/reflect.d.ts" />
 /// <reference path="../libs/ua-parser/0.7.20/ua-parser.d.ts" />
 /// <reference path="../libs/jquery/3.2.1/jquery.d.ts" />
@@ -729,7 +705,7 @@ declare module JS {
     namespace util {
         type Locale = string;
         class Locales {
-            static language(locale: Locale): string;
+            static lang(locale: Locale): string;
             static country(locale: Locale): string;
         }
     }
@@ -960,8 +936,7 @@ declare module JS {
             static isDevice(device: DeviceType): boolean;
             static isBrowser(b: Browser | string): boolean;
             static isOS(os: OS | string, version?: string): boolean;
-            static isLocale(locale: string | Locale): boolean;
-            static isLanguage(lang: string): boolean;
+            static isLang(lang: string): boolean;
             static isCountry(country: string): boolean;
             static timezoneString(tz?: 'GMT' | 'UTC' | 'UT'): string;
             static performance(): Performance;
