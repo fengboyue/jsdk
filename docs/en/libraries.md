@@ -65,7 +65,7 @@ http(s)://domain/path/xxx.{js|css|html}(#async)
 </p>
 - Format 2
 <p class="warn">
-${libName}/path/xxx.{js|css|html}(#async)
+${libName}
 </p>
 - Format 3
 <p class="warn">
