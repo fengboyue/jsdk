@@ -8,6 +8,9 @@ JSDK 2.0是最全面的JS/TS框架之一，几乎包括了从最底层到最上�
 基于JSDK来开发你的类库、组件、应用甚至游戏，你的开发工作将得到巨大的助力。
 
 ## 下载
+从<code>Github</code>上下载: https://github.com/fengboyue/jsdk/releases
+
+或从 <code>npm</code> 上下载:
 ```shell
 npm install jsdk-offical -g
 ```
