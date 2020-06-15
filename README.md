@@ -20,6 +20,10 @@ Annotation, Reflection, AOP, IOC & Component, Dependency Injection, Thread, Time
 JSDK will greatly help you to develop libraries, components, widgets, applications and even games.
 
 ## Download
+
+Download from: https://github.com/fengboyue/jsdk/releases
+
+or download from npm:
 ```shell
 npm install jsdk-offical -g
 ```
