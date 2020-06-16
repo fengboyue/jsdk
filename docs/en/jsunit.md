@@ -1,5 +1,5 @@
 JSUnit is a unit test framework in JSDK, which can help you write and run test cases to improve your code quality.
-* *First you can visit the [JSDK Self-test Page](http://localhost/tests/), it is an visual example of JSUnit.*
+* *First you can visit the [JSDK Self-test Page](http://localhost/jsdk/tests/), it is an visual example of JSUnit.*
 
 Let's learn how to write test cases in JSUnit and how to run them.<br>
 1. Create a testcase in the file: <code>MyTest1.ts</code> .

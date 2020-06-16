@@ -1,5 +1,5 @@
 JSUnit是JSDK附带的单元测试框架，能帮助你编写、运行测试用例来提升你的代码质量。
-* *你可以先访问[JSDK自测页](http://localhost/tests/)，直观看到JSUnit的运行效果。*
+* *你可以先访问[JSDK自测页](http://localhost/jsdk/tests/)，直观看到JSUnit的运行效果。*
 
 我们来学习如何用JSUnit编写测试用例并运行。
 <br>

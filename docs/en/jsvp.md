@@ -93,7 +93,7 @@ JS.imports([
 ```
 
 4. For complete application, please visit:
-http://localhost/examples/app/html/login.html
+http://localhost/jsdk/examples/app/html/login.html
 
 ## Event Processing
 JSVP supports two level events: page-level event and application-level event.
