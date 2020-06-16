@@ -45,7 +45,7 @@ You can visit the following online resources to know JSDK more:
 ## Launch Local Resources
 You can launch a http server on your PC to visit these resources quickly.
 1. Suppose your local installation directory of JSDK is <code>{JSDK-INSTALL}</code>.
-2. Run a http server and set your server path <code>http://localhost/jsdk/</code> to pointer to your <code>{JSDK-INSTALL}</code>.
+2. Run a http server and set your server path <code>http://fengboyue.github.io/jsdk/</code> to pointer to your <code>{JSDK-INSTALL}</code>.
 3. Open your browser and visit the URL.
 
 ## License

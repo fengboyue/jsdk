@@ -125,7 +125,7 @@ JSFX的大多数表单型组件提供:
 - rm: 右中
 - rb: 右下
 
-[表单示例代码](http://localhost/jsdk/examples/ui/formview/formview.html) 展示了一组良好布局的表单组件，全部标题居左且右对齐。
+[表单示例代码](http://fengboyue.github.io/jsdk/examples/ui/formview/formview.html) 展示了一组良好布局的表单组件，全部标题居左且右对齐。
 其代码设置如下：
 
 ```javascript
@@ -318,7 +318,7 @@ JS.imports([
 })
 ```
 
-* *完整的示例代码，请访问 [FormView示例](http://localhost/jsdk/examples/ui/formview/formview.html)*
+* *完整的示例代码，请访问 [FormView示例](http://fengboyue.github.io/jsdk/examples/ui/formview/formview.html)*
 
 
 ## 国际化
@@ -605,4 +605,4 @@ JS.imports([
 ```
 
 ## 更多组件示例
-请访问[JSFX示例](http://localhost/jsdk/examples/jsfx/)
+请访问[JSFX示例](http://fengboyue.github.io/jsdk/examples/jsfx/)

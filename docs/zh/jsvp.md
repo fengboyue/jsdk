@@ -89,7 +89,7 @@ JS.imports([
 ```
 
 4. 完整的示例代码请访问：
-http://localhost/jsdk/examples/app/html/login.html
+http://fengboyue.github.io/jsdk/examples/app/html/login.html
 
 ## 事件处理
 JSVP支持两级事件机制，分别是页面级事件和应用级事件。

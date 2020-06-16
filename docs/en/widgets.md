@@ -125,7 +125,7 @@ In addition, the inner text of title supports 9 location modes:
 - rm: right-middle
 - rb: right-bottom
 
-[Form Sample](http://localhost/jsdk/examples/ui/formview/formview.html) shows a set of well laid out form widgets with all titles aligned right.
+[Form Sample](http://fengboyue.github.io/jsdk/examples/ui/formview/formview.html) shows a set of well laid out form widgets with all titles aligned right.
 
 Its layout code is as follows:
 
@@ -322,7 +322,7 @@ JS.imports([
 })
 ```
 
-* *[Full FormView Sample](http://localhost/jsdk/examples/ui/formview/formview.html)*
+* *[Full FormView Sample](http://fengboyue.github.io/jsdk/examples/ui/formview/formview.html)*
 
 
 ## I18N
@@ -612,4 +612,4 @@ JS.imports([
 ```
 
 ## More Examples
-Please visit [JSFX Examples](http://localhost/jsdk/examples/jsfx/)
+Please visit [JSFX Examples](http://fengboyue.github.io/jsdk/examples/jsfx/)
