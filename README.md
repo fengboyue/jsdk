@@ -27,26 +27,11 @@ or from <code>npm</code>:
 npm install jsdk-offical -g
 ```
 
-## Basic knowledge 
-JSDK 2.0 was written in <code>ES6</code> and <code>TypeScript 2.0+</code>.
-
-If you touch JSDK for the first time, you need to have these following basic knowledge:
-> ES6 core features : class definition / multiline string / arrow function / new native APIs / Promise etc.
->
-> TypeScript 2.0+ syntax and compilation parameters.
->
-> VSCode: installation, configuration, creation and compilation of projects.
-
-*Remarks*
-* *If you only use JSDK in ordinary JS projects, you do not need to learn TypeScript and VSCode.*
-* *It is <b>strongly recommended to use JSDK in TS projects</b>, which will make all features of JSDK effective.*
-* *If you need to run JSDK on a browser that does not support ES6, please use [Babel](https://babeljs.io/docs/en/).*
-
 ## Online Resources
-You can visit the following online resources to know JSDK more:
+Read <a href="https://fengboyue.github.io/jsdk/docs/#/en/quick" target="_blank">JSDK Guides</a> if you touch JSDK at first time.
+
+More online resources to know JSDK more:
 <p class="warn">
-<a href="https://fengboyue.github.io/jsdk/docs/#/en/quick" target="_blank">JSDK Guides</a>
-<br>
 <a href="https://fengboyue.github.io/jsdk/tests" target="_blank">JSDK Self-Tests</a>
 <br>
 <a href="https://fengboyue.github.io/jsdk/examples" target="_blank">JSDK Examples</a>
@@ -59,6 +44,21 @@ You can launch a http server on your PC to visit these resources quickly.
 1. Suppose your local installation directory of JSDK is <code>{JSDK-INSTALL}</code>.
 2. Run a http server and set your server path <code>http://localhost/jsdk/</code> to pointer to your <code>{JSDK-INSTALL}</code>.
 3. Open your browser and visit the URL.
+
+## Basic knowledge 
+JSDK 2.0 was written in <code>ES6</code> and <code>TypeScript 2.0+</code>.
+
+You should have these following basic knowledge before using JSDK:
+> ES6 core features : class definition / multiline string / arrow function / new native APIs / Promise etc.
+>
+> TypeScript 2.0+ syntax and compilation parameters.
+>
+> VSCode: installation, configuration, creation and compilation of projects.
+
+*Remarks*
+* *If you only use JSDK in ordinary JS projects, you do not need to learn TypeScript and VSCode.*
+* *It is <b>strongly recommended to use JSDK in TS projects</b>, which will make all features of JSDK effective.*
+* *If you need to run JSDK on a browser that does not support ES6, please use [Babel](https://babeljs.io/docs/en/).*
 
 ## License
 JSDK is licensed under the MIT license since version 2.0.
