@@ -39,11 +39,11 @@ More online resources to know JSDK more:
 <a href="https://fengboyue.github.io/jsdk/api" target="_blank">JSDK API Docs</a>
 </p>
 
-* Launch Local Resources*
+<b>Launch Local Resources</b>
 You can launch a http server on your PC to visit these resources quickly.
-1. Suppose your local installation directory of JSDK is <code>{JSDK-INSTALL}</code>.
-2. Run a http server and set your server path <code>http://localhost/jsdk/</code> to pointer to your <code>{JSDK-INSTALL}</code>.
-3. Open your browser and visit the URL.
+- 1. Suppose your local installation directory of JSDK is <code>{JSDK-INSTALL}</code>.
+- 2. Run a http server and set your server path <code>http://localhost/jsdk/</code> to pointer to your <code>{JSDK-INSTALL}</code>.
+- 3. Open your browser and visit the URL.
 
 ## Basic knowledge 
 JSDK 2.0 was written in <code>ES6</code> and <code>TypeScript 2.0+</code>.
