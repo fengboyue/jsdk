@@ -28,7 +28,7 @@ npm install jsdk-offical -g
 ```
 
 ## Online Resources
-Read <a href="https://fengboyue.github.io/jsdk/docs/#/en/quick" target="_blank">JSDK Guides</a> if you touch JSDK at first time.
+Please Read <a href="https://fengboyue.github.io/jsdk/docs/#/en/quick" target="_blank">JSDK Guides</a> if you touch JSDK at first time.
 
 More online resources to know JSDK more:
 <p class="warn">
