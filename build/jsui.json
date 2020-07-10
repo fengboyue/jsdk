@@ -6,8 +6,6 @@
         "noLib": true
     },
     "include": [
-        "../source/model/*.ts",
-        "../source/ui/View.ts",
         "../source/ui/*.ts"
     ]
 } 

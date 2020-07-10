@@ -38,7 +38,7 @@ module JS {
                 Assert.equal(json.c, '123');
                 Assert.equal(json.d, 1);
                 Assert.equal(json.e, false);
-                Assert.equal(json.f.isSameDay(Dates.today()), true);
+                Assert.equal(new Date().equals(json.f, 'd'), true);
                 Assert.equal(json.g.length, 4);
                 Assert.equal(json.g[0], null);
                 Assert.equal(json.g[1], null);

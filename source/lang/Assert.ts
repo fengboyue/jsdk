@@ -44,21 +44,31 @@ module JS {
                 if (expected === actual) return true
                 if(Types.isArray(expected) && Types.isArray(actual) && Arrays.equal(expected,actual)) return true
                 if(Types.isJsonObject(expected) && Types.isJsonObject(actual) && Jsons.equal(expected,actual)) return true
+                if(Types.isDate(expected) && Types.isDate(actual) && expected.getTime() === actual.getTime()) return true
                 return false
             }
 
             /**
              * Asserts that two objects are equal.
-             * @throws AssertError if they are not
+             * @throw AssertError if they are not
              */
+            public static equal(expected: Date, actual: Date, msg?: string); 
+            public static equal(expected: any[], actual: any[], msg?: string);
+            public static equal(expected: JsonObject, actual: JsonObject, msg?: string); 
+            public static equal(expected: PrimitiveType, actual: PrimitiveType, msg?: string); 
             public static equal(expected: any, actual: any, msg?: string) {
                 if (this._equal(expected,actual)) return
                 this.failNotEqual(expected, actual, msg)
             }
+
             /**
              * Asserts that two objects are not equal. 
-             * @throws AssertError if they are equal
+             * @throw AssertError if they are equal
              */
+            public static notEqual(expected: Date, actual: Date, msg?: string); 
+            public static notEqual(expected: any[], actual: any[], msg?: string);
+            public static notEqual(expected: JsonObject, actual: JsonObject, msg?: string); 
+            public static notEqual(expected: PrimitiveType, actual: PrimitiveType, msg?: string); 
             public static notEqual(expected: any, actual: any, msg?: string) {
                 if (!this._equal(expected,actual)) return
                 this.failEqual(expected, actual, msg)
@@ -66,7 +76,7 @@ module JS {
 
             /**
              * Asserts that two objects refer to the same type. 
-             * @throws AssertError if they are not same type
+             * @throw AssertError if they are not same type
              */
             public static sameType(expected: any, actual: any, msg?: string) {
                 let eType = Types.type(expected), aType = Types.type(actual);
@@ -75,7 +85,7 @@ module JS {
             }
             /**
              * Asserts that two objects do not refer to the same type. 
-             * @throws AssertError if they are same type
+             * @throw AssertError if they are same type
              */
             public static notSameType(expected: any, actual: any, msg?: string) {
                 if (Types.type(expected) != Types.type(actual)) return
@@ -84,14 +94,14 @@ module JS {
 
             /**
              * Asserts that a condition is true. 
-             * @throws AssertError if condition is false
+             * @throw AssertError if condition is false
              */
             public static true(condition: boolean, msg?: string) {
                 if (!condition) this.fail((msg?msg+' ':'') + 'expected:<TRUE> but was:<FALSE>')
             }
             /**
              * Asserts that a condition is false.
-             * @throws AssertError if condition is true
+             * @throw AssertError if condition is true
              */
             public static false(condition: boolean, msg?: string) {
                 if (condition) this.fail((msg?msg+' ':'') + 'expected:<FALSE> but was:<TRUE>')
@@ -99,59 +109,36 @@ module JS {
 
             /**
              * Asserts that an object isn't null or undefined. 
-             * @throws AssertError if object is null or undefined
+             * @throw AssertError if object is null or undefined
              */
-            public static defined(object: object, msg?: string) {
-                this.true(Types.isDefined(object), msg)
+            public static defined(obj: object, msg?: string) {
+                this.true(obj != void 0, msg)
             }
             /**
              * Asserts that an object is null or undefined. 
-             * @throws AssertError if object is not null or undefined
+             * @throw AssertError if object is not null or undefined
              */
-            public static notDefined(object: object, msg?: string) {
-                this.true(!Types.isDefined(object), msg)
-            }
-
-            /**
-             * Asserts that two arrays are equal. 
-             * @throws AssertError if they are not equal
-             */
-            public static equalArray(expected: any[], actual: any[], msg?: string) {
-                if (expected.length == actual.length) {
-                    if (expected.every((item: object, index: number) => {
-                        return item === actual[index];
-                    })) return 
-                }
-                this.failNotEqual('['+expected.toString()+']', '['+actual.toString()+']', msg)
-            }
-
-            /**
-             * Asserts that two Dates are equal. 
-             * @throws AssertError if they are not equal
-             */
-            public static equalDate(expected: Date, actual: Date, msg?: string) {
-                if (!expected && !actual) return
-                if (expected.getTime() === actual.getTime()) return
-                this.failNotEqual(expected, actual, msg)
+            public static notDefined(obj: object, msg?: string) {
+                this.true(obj == void 0, msg)
             }
 
             /**
              * Asserts that a function has error. 
-             * @throws AssertError if no error
+             * @throw AssertError if no error
              */
-            public static error(cab: Fallback<any>, msg?: string) {
+            public static error(fn: Fallback<any>, msg?: string) {
                 let has = false;
-                try { Functions.call(cab) } catch (e) { has = true }
+                try { Functions.call(fn) } catch (e) { has = true }
 
                 if (!has) this.fail((msg?msg+' ':'') + 'expected throw an error')
             }
             /**
              * Asserts that a function has error. 
-             * @throws AssertError if not equal
+             * @throw AssertError if not equal
              */
-            public static equalError(error: Klass<Error>, cab: Fallback<any>, msg?: string) {
+            public static equalError(error: Klass<Error>, fn: Fallback<any>, msg?: string) {
                 let has = false;
-                try { Functions.call(cab) } catch (e) { if (Types.ofKlass(e, error)) has = true }
+                try { Functions.call(fn) } catch (e) { if (Types.ofKlass(e, error)) has = true }
 
                 if (!has) this.fail((msg?msg+' ':'') + 'expected throw an error')
             }

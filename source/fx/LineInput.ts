@@ -31,7 +31,7 @@ module JS {
             colorMode?: ColorMode;
             outline?: boolean;
             text: string;
-            gradient?: GradientColor;
+            gradient?: {from: HEX, to: HEX};
             iconCls?: string;
             dropMenu?: DropMenuOptions;
         }

@@ -154,7 +154,7 @@ module JS {
              */
             public static newInstance<T>(ctor: string | Klass<T>, ...args): T {
                 let tar = Types.isString(ctor) ? Class.byName(<string>ctor) : <Function>ctor;
-                if (!tar) throw new Errors.NotFoundError(`The class<${ctor}> is not found!`);
+                if (!tar) throw new NotFoundError(`The class<${ctor}> is not found!`);
 
                 return <T>Reflect.construct(tar, Jsons.clone(args))
             }
@@ -164,7 +164,7 @@ module JS {
              */
             public static aliasInstance<T>(alias: string | Klass<T>, ...args): T {
                 let cls = Class.forName(alias, true);
-                if (!cls) throw new Errors.NotFoundError(`The class<${alias}> is not found!`);
+                if (!cls) throw new NotFoundError(`The class<${alias}> is not found!`);
 
                 return cls.newInstance.apply(cls, args)
             }

@@ -45,7 +45,7 @@ module JS {
                 Assert.equal(Types.type(Object), Type.class);
                 Assert.equal(Types.type(JSError), Type.class);
                 Assert.equal(Types.type(new JSError()), Type.object);
-                Assert.equal(Types.type({}), Type.object);
+                Assert.equal(Types.type({}), Type.json);
                 Assert.equal(Types.type([]), Type.array);
                 Assert.equal(Types.type(()=>{}), Type.function);
             }

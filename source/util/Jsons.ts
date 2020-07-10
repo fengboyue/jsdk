@@ -42,7 +42,6 @@ module JS {
 
             /**
              * Clone json object or array or date.
-             * 克隆JSON对象／数组/日期
              */
             public static clone<T>(obj: T): T {
                 if (obj == void 0 || 'object' != typeof obj) return obj;
@@ -112,8 +111,6 @@ module JS {
 
             /**
              * Json1's keys == Json2's keys
-             * @param json1 
-             * @param json2 
              */
             public static equalKeys(json1: JsonObject, json2: JsonObject) {
                 let empty1 = Check.isEmpty(json1), empty2 = Check.isEmpty(json2);
@@ -127,9 +124,7 @@ module JS {
                 return Check.isEmpty(map2);
             }
             /**
-             * Json1's values == Json2's values
-             * @param json1 
-             * @param json2 
+             * Compares two simple JSON objects.
              */
             public static equal(json1: JsonObject<PrimitiveType>, json2: JsonObject<PrimitiveType>) {
                 let empty1 = Check.isEmpty(json1), empty2 = Check.isEmpty(json2);
@@ -144,7 +139,7 @@ module JS {
             }
 
             /**
-             * Returns a new json object with new key-names
+             * Returns a new json object with new key-names.<br>
              * 将JSON对象中指定属性名称替换成新属性名并返回
              */
             public static replaceKeys(json: JsonObject, keyMapping: JsonObject<string> | ((this: JsonObject, val: any, key: string) => string), needClone?: boolean): JsonObject {
@@ -236,7 +231,7 @@ module JS {
             }
 
             /**
-             * Returns {json1} - {json2}
+             * Returns {json1 - json2}
              */
             public static minus(json1: JsonObject, json2: JsonObject) {
                 if (Check.isEmpty(json1) || Check.isEmpty(json2)) return json1;
@@ -248,7 +243,7 @@ module JS {
                 return newJson;
             }
             /**
-             * Returns {json1} ^ {json2} 
+             * Returns {json1 ^ json2} 
              */
             public static intersect(json1: JsonObject, json2: JsonObject) {
                 if (Check.isEmpty(json1) || Check.isEmpty(json2)) return json1;
@@ -275,17 +270,17 @@ module JS {
             }
 
             /**
-             * Gets value by the property path from JSON data.
+             * Gets value by the property path from JSON data.<br>
              * 
              * Example:
              * <pre>
              * let json = {a:{b:{c:1}}};
-             * Jsons.getValueByPath(json, 'a.b.c'); //print 1
+             * Jsons.find(json, 'a.b.c'); //print 1
              * </pre>
              * @param data json data
-             * @param path property path string
+             * @param path the path string of property 
              */
-            public static getValueByPath(data: JsonObject, path: string) {
+            public static find(data: JsonObject, path: string) {
                 if (!path) return data;
 
                 const array = path.split('.');

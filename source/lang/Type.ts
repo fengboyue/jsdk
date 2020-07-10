@@ -13,8 +13,7 @@ module JS {
         /**
          * The primitive type of JS language.
          */
-        export type PrimitiveType = null|undefined|string|number|boolean;
-
+        export type PrimitiveType = null|undefined|string|number|boolean|String|Number|Boolean;
         /**
          * The JsonObject type is a JSON object containing zero or more key-value pairs.
          */
@@ -59,7 +58,14 @@ module JS {
             number = 'number',
             date = 'date',
             array = 'array',
-            object = 'object',
+            /**
+             * json object
+             */
+            json = 'json',    
+            /**
+             * class instance object
+             */
+            object = 'object', 
             function = 'function',
             class = 'class',
             symbol = 'symbol'

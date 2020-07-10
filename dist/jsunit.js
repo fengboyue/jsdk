@@ -427,7 +427,7 @@ var JS;
             }
             _init(suite) {
                 let sys = System.info();
-                $1('#env').html(`${sys.device.type} / ${sys.os.name} ${sys.os.version || ''} / ${sys.browser.name} ${sys.browser.version || ''}`);
+                $1('#env').html(`${sys.browser.name} ${sys.browser.version || ''} / ${sys.os.name} ${sys.os.version || ''} / ${sys.device.type}`);
                 $1('#info').html('');
                 let pro = $1('#progress'), sty = pro.style;
                 sty.width = '0%';

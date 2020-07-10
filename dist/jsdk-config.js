@@ -10,12 +10,22 @@ JS.config({
     jsdkRoot: null,
     libRoot: '/jsdk/libs',        
     libs: {
+        'jsds': [
+            '!/jsds.js'
+        ],
         'jsui': [
-            '$jquery',
             '!/jsui.js'
         ],
-        'jsvp': [
+        'jsmv': [
             '$jsui',
+            '!/jsmv.js'
+        ],
+        'jsan': [
+            '$jsui',
+            '!/jsan.js'
+        ],
+        'jsvp': [
+            '$jsmv',
             '!/jsvp.js'
         ],
         'jsunit': [
@@ -30,7 +40,7 @@ JS.config({
         'polymer': '~/polymer/1.0.17/webcomponents-lite.js',
         //jsfx
         'jsfx.only': [
-            '$jsui',
+            '$jsmv',
             '!/jsfx.css',
             '!/jsfx.js'
         ],

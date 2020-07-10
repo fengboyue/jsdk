@@ -13,8 +13,8 @@ module JS {
             }
 
             public test1() {
-                Assert.equalArray(Arrays.newArray(null), []);
-                Assert.equalArray(Arrays.newArray(undefined), []);
+                Assert.equal(Arrays.newArray(null), []);
+                Assert.equal(Arrays.newArray(undefined), []);
             }
             public test2() {
                 Assert.equal(this.a.findIndex(it=>{return it==1}), 0);
@@ -31,19 +31,19 @@ module JS {
                 let rst = this.a.remove(item => {
                     return 'jsdk' === (item && item.name)
                 });
-                Assert.equal(rst.length, 4);
+                Assert.true(rst);
                 Assert.equal(this.a.length, 4);
                 Assert.equal(null, this.a[this.a.length - 1]);
             }
             public test4() {
                 this.a.remove(it=>{return it==1});
-                Assert.equal(this.a[1], undefined);
+                Assert.equal(undefined, this.a[1]);
             }
             public test5() {
                 let oldLen = this.a.length;
                 this.a.add([new Date(), 'insertAt'], 0);
                 Assert.true(this.a.length==oldLen+2);
-                Assert.true(Dates.isSameDay(new Date(),this.a[0]));
+                Assert.true(new Date().equals(this.a[0], 'd'));
                 Assert.true('insertAt'==this.a[1]);
 
                 let b = [1,2,3];

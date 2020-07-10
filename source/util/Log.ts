@@ -107,4 +107,4 @@ import LogAppender = JS.util.LogAppender;
 import Log = JS.util.Log;
 
 let JSLogger = new Log(`JSDK ${JS.version}`, LogLevel.INFO);
-Konsole.text(`Welcome to JSDK ${JS.version}`, `font-weight:bold;color:blue;text-shadow:1px 1px 1px #D2E9FF;`);
+Konsole.text(`Powered by JSDK ${JS.version}`, 'font-weight:bold;');

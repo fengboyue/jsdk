@@ -90,7 +90,7 @@ module JS {
             }
 
             public set(val: any): any {
-                if(!this.nullable() && val == void 0) throw new Errors.TypeError(`This Field<${this.name()}> must be not null`)
+                if(!this.nullable() && val == void 0) throw new TypeError(`This Field<${this.name()}> must be not null`)
                 let fn = this._config.setter, v = fn?fn.apply(this, [val]): val;
                 return v===undefined?this._config.defaultValue:v
             }

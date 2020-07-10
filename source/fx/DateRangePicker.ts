@@ -103,7 +103,7 @@ module JS {
             }
 
             private _errorType(val) {
-                throw new Errors.TypeError('An invalid date format for DateRangePicker:' + val.toString())
+                throw new TypeError('An invalid date format for DateRangePicker:' + val.toString())
             }
             
             public value(): string[]

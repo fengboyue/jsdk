@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>util | JSDK 2.0.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.0.0 API">
+	<title>util | JSDK 2.1.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.1.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.0.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.1.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -78,6 +78,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-enum tsd-parent-kind-namespace"><a href="../enums/js.util.filesizeunit.html" class="tsd-kind-icon">File<wbr>Size<wbr>Unit</a></li>
 								<li class="tsd-kind-enum tsd-parent-kind-namespace"><a href="../enums/js.util.loglevel.html" class="tsd-kind-icon">Log<wbr>Level</a></li>
+								<li class="tsd-kind-enum tsd-parent-kind-namespace"><a href="../enums/js.util.timerstate.html" class="tsd-kind-icon">Timer<wbr>State</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -124,7 +125,6 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#cycleoptions" class="tsd-kind-icon">Cycle<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter"><a href="js.util.html#eventhandler" class="tsd-kind-icon">Event<wbr>Handler</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter"><a href="js.util.html#eventhandler1" class="tsd-kind-icon">Event<wbr>Handler1</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter"><a href="js.util.html#eventhandler2" class="tsd-kind-icon">Event<wbr>Handler2</a></li>
@@ -139,8 +139,9 @@
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter"><a href="js.util.html#promiseplans" class="tsd-kind-icon">Promise<wbr>Plans</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#querystring" class="tsd-kind-icon">Query<wbr>String</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#resource" class="tsd-kind-icon">Resource</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#timerstate" class="tsd-kind-icon">Timer<wbr>State</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#timerticker" class="tsd-kind-icon">Timer<wbr>Ticker</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#timerconfig" class="tsd-kind-icon">Timer<wbr>Config</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#timerevents" class="tsd-kind-icon">Timer<wbr>Events</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#timertask" class="tsd-kind-icon">Timer<wbr>Task</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#uridata" class="tsd-kind-icon">URIData</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#urlstring" class="tsd-kind-icon">URLString</a></li>
 							</ul>
@@ -149,19 +150,20 @@
 							<h3>Variables</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#chars" class="tsd-kind-icon">CHARS</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#d" class="tsd-kind-icon">D</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#euid" class="tsd-kind-icon">EUID</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#loglevelstyles" class="tsd-kind-icon">Log<wbr>Level<wbr>Styles</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#loglevels" class="tsd-kind-icon">Log<wbr>Levels</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#n" class="tsd-kind-icon">N</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_adu" class="tsd-kind-icon">_ADU</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_auth_reg" class="tsd-kind-icon">_AUTH_<wbr>REG</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_uri_reg" class="tsd-kind-icon">_URI_<wbr>REG</a></li>
-								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#isready" class="tsd-kind-icon">is<wbr>Ready</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_ready" class="tsd-kind-icon">_ready</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-not-exported">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_beforesend" class="tsd-kind-icon">_before<wbr>Send</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_done" class="tsd-kind-icon">_done</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_head" class="tsd-kind-icon">_head</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_headers" class="tsd-kind-icon">_headers</a></li>
@@ -176,6 +178,7 @@
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_rejecterror" class="tsd-kind-icon">_reject<wbr>Error</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_response" class="tsd-kind-icon">_response</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_send" class="tsd-kind-icon">_send</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_sending" class="tsd-kind-icon">_sending</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_test" class="tsd-kind-icon">_test</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_uncacheurl" class="tsd-kind-icon">_uncacheURL</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.util.html#_uncached" class="tsd-kind-icon">_uncached</a></li>
@@ -194,27 +197,6 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
-					<a name="cycleoptions" class="tsd-anchor"></a>
-					<h3>Cycle<wbr>Options</h3>
-					<div class="tsd-signature tsd-kind-icon">Cycle<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>cycle<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>interval<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>wait<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
-					<aside class="tsd-sources">
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> cycle<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> interval<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> wait<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
-							</li>
-						</ul>
-					</div>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter">
 					<a name="eventhandler" class="tsd-anchor"></a>
 					<h3>Event<wbr>Handler</h3>
@@ -773,36 +755,76 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
-					<a name="timerstate" class="tsd-anchor"></a>
-					<h3>Timer<wbr>State</h3>
-					<div class="tsd-signature tsd-kind-icon">Timer<wbr>State<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"NEW"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"WAITING"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"RUNNING"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"BLOCKED"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"TERMINATED"</span></div>
+					<a name="timerconfig" class="tsd-anchor"></a>
+					<h3>Timer<wbr>Config</h3>
+					<div class="tsd-signature tsd-kind-icon">Timer<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>delay<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>interval<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>intervalMode<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"OF"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"BF"</span><span class="tsd-signature-symbol">; </span>loop<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> delay<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Delays (ms) the start of Timer.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> interval<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>millisecond.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> interval<wbr>Mode<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"OF"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"BF"</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>BF means the interval time which is between every task.<br>
+											OF means the interval time which is occupied by every task. <br>
+											If you want to keep in a constant task rate, you should select OF.<br>
+											<br>
+										The default is OF.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> loop<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Defines max loop of task.<br>
+											True means is Infinity.<br>
+											False means is 0.<br>
+											<br>
+										The default value is 1.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
+					<a name="timerevents" class="tsd-anchor"></a>
+					<h3>Timer<wbr>Events</h3>
+					<div class="tsd-signature tsd-kind-icon">Timer<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"starting"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"finished"</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
-					<a name="timerticker" class="tsd-anchor"></a>
-					<h3>Timer<wbr>Ticker</h3>
-					<div class="tsd-signature tsd-kind-icon">Timer<wbr>Ticker<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/js.util.timer.html" class="tsd-signature-type">Timer</a>, counter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></div>
+					<a name="timertask" class="tsd-anchor"></a>
+					<h3>Timer<wbr>Task</h3>
+					<div class="tsd-signature tsd-kind-icon">Timer<wbr>Task<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/js.util.timer.html" class="tsd-signature-type">Timer</a>, elapsedTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The interval execution strategy of TimerTicker is as follows: <br>
-								If the function returns void, it indicate that the interval time will not be changed.<br>
-								If the function returns positive number, it indicate that the interval time will be replaced with a new value temporarily before next execution.<br>
-							If the function returns negative number, it indicate that the next execution will be ignored, but the subsequent execution continues normally. <br></p>
-						</div>
-						<p>TimerTicker的间隔执行策略如下：<br>
-							函数返回值为void，表示下次执行间隔时间保持不变。<br>
-							函数返回值为正数，表示下次执行间隔临时性的改为新值（以后仍不变）。<br>
-						函数返回值为负数，标志下次忽略不执行但以后仍正常执行。</p>
-					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/js.util.timer.html" class="tsd-signature-type">Timer</a>, counter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/js.util.timer.html" class="tsd-signature-type">Timer</a>, elapsedTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
@@ -812,10 +834,10 @@
 												<h5>this: <a href="../classes/js.util.timer.html" class="tsd-signature-type">Timer</a></h5>
 											</li>
 											<li>
-												<h5>counter: <span class="tsd-signature-type">number</span></h5>
+												<h5>elapsedTime: <span class="tsd-signature-type">number</span></h5>
 											</li>
 										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></h4>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 									</li>
 								</ul>
 							</li>
@@ -888,6 +910,13 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+					<a name="d" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagLet">Let</span> D</h3>
+					<div class="tsd-signature tsd-kind-icon">D<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Document</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
 					<a name="euid" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagLet">Let</span> EUID</h3>
 					<div class="tsd-signature tsd-kind-icon">EUID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
@@ -907,6 +936,26 @@
 					<div class="tsd-signature tsd-kind-icon">Log<wbr>Levels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = [&#x27;OFF&#x27;,&#x27;ERROR&#x27;,&#x27;WARN&#x27;,&#x27;INFO&#x27;,&#x27;DEBUG&#x27;,&#x27;TRACE&#x27;,&#x27;ALL&#x27;]</span></div>
 					<aside class="tsd-sources">
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+					<a name="n" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagLet">Let</span> N</h3>
+					<div class="tsd-signature tsd-kind-icon">N<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">NumberConstructor</span><span class="tsd-signature-symbol"> = Number</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>使用&quot;+-*&quot;操作符，作两数运算</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>param</dt>
+							<dd></dd>
+							<dt>param</dt>
+							<dd></dd>
+							<dt>param</dt>
+							<dd></dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
 					<a name="_adu" class="tsd-anchor"></a>
@@ -930,38 +979,15 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
-					<a name="isready" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagLet">Let</span> is<wbr>Ready</h3>
-					<div class="tsd-signature tsd-kind-icon">is<wbr>Ready<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<a name="_ready" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagLet">Let</span> _ready</h3>
+					<div class="tsd-signature tsd-kind-icon">_ready<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
 				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
-					<a name="_beforesend" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagLet">Let</span> _before<wbr>Send</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">_before<wbr>Send<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, req<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>fn: <span class="tsd-signature-type">any</span></h5>
-								</li>
-								<li>
-									<h5>req: <span class="tsd-signature-type">any</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
 					<a name="_done" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagLet">Let</span> _done</h3>
@@ -1301,6 +1327,29 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
+					<a name="_sending" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagLet">Let</span> _sending</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">_sending<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, req<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>fn: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>req: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
 					<a name="_test" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagLet">Let</span> _test</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
@@ -1548,7 +1597,10 @@
 						<a href="js.html">JS</a>
 						<ul>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-								<a href="js.data.html">data</a>
+								<a href="js.an.html">an</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.ds.html">ds</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.fx.html">fx</a>
@@ -1577,6 +1629,9 @@
 							<li class="current tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.util.html">util</a>
 							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.view.html">view</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -1588,6 +1643,9 @@
 					</li>
 					<li class=" tsd-kind-enum tsd-parent-kind-namespace">
 						<a href="../enums/js.util.loglevel.html" class="tsd-kind-icon">Log<wbr>Level</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-parent-kind-namespace">
+						<a href="../enums/js.util.timerstate.html" class="tsd-kind-icon">Timer<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
 						<a href="../classes/js.util.ajax.html" class="tsd-kind-icon">Ajax</a>
@@ -1682,9 +1740,6 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
 						<a href="../interfaces/js.util.templatehelper.html" class="tsd-kind-icon">Template<wbr>Helper</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="js.util.html#cycleoptions" class="tsd-kind-icon">Cycle<wbr>Options</a>
-					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter">
 						<a href="js.util.html#eventhandler" class="tsd-kind-icon">Event<wbr>Handler</a>
 					</li>
@@ -1728,10 +1783,13 @@
 						<a href="js.util.html#resource" class="tsd-kind-icon">Resource</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="js.util.html#timerstate" class="tsd-kind-icon">Timer<wbr>State</a>
+						<a href="js.util.html#timerconfig" class="tsd-kind-icon">Timer<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="js.util.html#timerticker" class="tsd-kind-icon">Timer<wbr>Ticker</a>
+						<a href="js.util.html#timerevents" class="tsd-kind-icon">Timer<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="js.util.html#timertask" class="tsd-kind-icon">Timer<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="js.util.html#uridata" class="tsd-kind-icon">URIData</a>
@@ -1743,6 +1801,9 @@
 						<a href="js.util.html#chars" class="tsd-kind-icon">CHARS</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="js.util.html#d" class="tsd-kind-icon">D</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
 						<a href="js.util.html#euid" class="tsd-kind-icon">EUID</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
@@ -1750,6 +1811,9 @@
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
 						<a href="js.util.html#loglevels" class="tsd-kind-icon">Log<wbr>Levels</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="js.util.html#n" class="tsd-kind-icon">N</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
 						<a href="js.util.html#_adu" class="tsd-kind-icon">_ADU</a>
@@ -1761,10 +1825,7 @@
 						<a href="js.util.html#_uri_reg" class="tsd-kind-icon">_URI_<wbr>REG</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
-						<a href="js.util.html#isready" class="tsd-kind-icon">is<wbr>Ready</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
-						<a href="js.util.html#_beforesend" class="tsd-kind-icon">_before<wbr>Send</a>
+						<a href="js.util.html#_ready" class="tsd-kind-icon">_ready</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
 						<a href="js.util.html#_done" class="tsd-kind-icon">_done</a>
@@ -1807,6 +1868,9 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
 						<a href="js.util.html#_send" class="tsd-kind-icon">_send</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="js.util.html#_sending" class="tsd-kind-icon">_sending</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
 						<a href="js.util.html#_test" class="tsd-kind-icon">_test</a>

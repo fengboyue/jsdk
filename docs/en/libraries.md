@@ -101,37 +101,38 @@ In real development, you don't have to load the entire <code>jsdk.js</code>, but
 ### JSDK Modules List
 Module Name|Remarks|Includes|Depends|Min Sizes
 ---|---|---|---|---
-system|core module|JS.util.* <br>JS.lang.* <br>JS.reflect.* <br>JS.ioc.* <br>JS.store.* <br>JS.data.* ||114kb
-jsui|Model package & UI interfaces|JS.model.* <br>JS.ui.* |system |32kb
-jsfx|JS FaceX: JSDK widgets |JS.fx.* |system<br>jsui|js: 112kb<br>css: 104kb
-jsvp|JSDK App Framework|JS.app.* |system<br>jsui|4kb
-jsunit|Unit Test Framework|JS.unit.* |system|js: 9kb<br>css: 669b
-jsdk|includes all modules|JS.* |system<br>jsui<br>jsfx<br>jsvp<br>jsunit|253kb
+system|core module|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||104kb
+jsds|data structures|JS.ds.* |system |6kb
+jsui|ui module|JS.ui.* |system |6kb
+jsmv|models&views&ioc|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
+jsan|animations|JS.an.* |jsui |16kb
+jsfx|widgets |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
+jsvp|app framework|JS.store.*<br>JS.app.* |jsmv|8kb
+jsunit|unit test framework|JS.unit.* |system|js: 9kb<br>css: 669b
+jsdk|includes all modules|JS.* ||js: 270kb
 
 ### Custom JSDK Module 
 When you need smaller module files, you can modify the build scripts in <code>build/</code> directory. 
 Remove classes or packages you dont need, and rebuild new module files.
 
-For example, you don't need to use Stack, Queue, LinkedList and other data structure classes of JSDK, you can remove the JS.data.* package in system module.
+For example, you don't need Button of JSFX, you can remove the JS.fx.Button class in building script of jsfx module.
 
 The detailed steps are as follows:
-1. Open the file <code>build/system.json</code>, and remove this line:
+1. Open the file <code>build/jsfx.json</code>, and remove this line:
 
 ```
-../source/data/*.ts
+../source/fx/Button.ts
 ```
 
 2. Execute command line after saving: 
 
 ```
-./build.sh
+./build-module.sh jsfx
 ```
-After execution, new generated files such as <code>system.js</code> and <code>jsdk.js</code> in the <code>dist</code> directory no longer include data structure classes.
+After execution, new generated files such as <code>jsfx.js</code> and <code>jsfx.min.js</code> in the <code>dist</code> directory no longer include Button class.
 
 <p class='tip'>
 Warn:<br>
-Some classes may be referenced by upper classes, so make sure those upper classes are not used before removing them.<br>
-For example, JS.data.BiMap is used by JS.fx.Uploader, so remove the JS.data.* package will make the Uploader widget unavailable.
-If you need to use the Uploader widget, you can adjust it slightly: add the BiMap class in <code>system.json</code>.
+Some classes may be referenced by other classes, so make sure those other classes are not used before removing them.
 </p>
 

@@ -6,7 +6,7 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
-/// <reference path="Events.ts"/>
+/// <reference path="../ui/Events.ts"/>
 
 module JS {
     export namespace ui {

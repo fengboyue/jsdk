@@ -18,8 +18,359 @@
 /// <reference path="../libs/summernote/0.8.12/summernote.d.ts" />
 /// <reference path="../libs/toastr/2.1.4/toastr.d.ts" />
 /// <reference path="../libs/webuploader/0.1.5/webuploader.d.ts" />
-/// <reference path="../libs/handlebars/4.1.2/handlebars.d.ts" />
 /// <reference path="../libs/clipboard/2.0.0/clipboard.d.ts" />
+/// <reference path="../libs/handlebars/4.1.2/handlebars.d.ts" />
+declare module JS {
+    namespace an {
+        enum AnimState {
+            STOPPED = 0,
+            RUNNING = 1,
+            PAUSED = 2
+        }
+        class AnimConfig {
+            autoReverse?: boolean;
+            autoReset?: boolean;
+            duration?: number;
+            loop?: boolean | number;
+            delay?: number;
+            direction?: 'forward' | 'backward';
+            easing?: EasingFunction;
+            onStarting?: EventHandler<Anim>;
+            onFinished?: EventHandler<Anim>;
+        }
+        abstract class Anim {
+            protected _cfg: AnimConfig;
+            protected _timer: AnimTimer;
+            protected _dir: 'forward' | 'backward';
+            protected _loop: number;
+            constructor(cfg: AnimConfig);
+            protected _init(): void;
+            protected _convertFrame(f: KeyFrame): number | JsonObject<number> | JsonObject<JsonObject<number>>;
+            config(): AnimConfig;
+            config(cfg: AnimConfig): this;
+            direction(): 'forward' | 'backward';
+            direction(d: 'forward' | 'backward'): this;
+            getState(): AnimState;
+            getLooped(): number;
+            abstract play(t?: number): this;
+            protected _reset(): void;
+            pause(): this;
+            stop(): this;
+        }
+    }
+}
+import AnimState = JS.an.AnimState;
+import AnimConfig = JS.an.AnimConfig;
+import Anim = JS.an.Anim;
+declare module JS {
+    namespace an {
+        type AnimTimerEvents = TimerEvents | 'looping' | 'looped';
+        type AnimTimerConfig = {
+            delay?: number;
+            duration?: number;
+            loop?: boolean | number;
+        };
+        class AnimTimer extends Timer {
+            protected _cfg: AnimTimerConfig;
+            constructor(tick: TimerTask, cfg?: AnimTimerConfig);
+            protected _loop(begin?: boolean): void;
+            protected _cycle(): void;
+            protected _cancelTimer(): void;
+        }
+    }
+}
+import AnimTimer = JS.an.AnimTimer;
+declare module JS {
+    namespace an {
+        type EasingFunction = (t: number, b: number, c: number, d: number, ...args: any[]) => number;
+        class Easings {
+            static LINEAR: EasingFunction;
+            static QUAD_IN: EasingFunction;
+            static QUAD_OUT: EasingFunction;
+            static QUAD_IN_OUT: EasingFunction;
+            static CUBIC_IN: EasingFunction;
+            static CUBIC_OUT: EasingFunction;
+            static CUBIC_IN_OUT: EasingFunction;
+            static QUART_IN: EasingFunction;
+            static QUART_OUT: EasingFunction;
+            static QUART_IN_OUT: EasingFunction;
+            static QUINT_IN: EasingFunction;
+            static QUINT_OUT: EasingFunction;
+            static QUINT_IN_OUT: EasingFunction;
+            static SINE_IN: EasingFunction;
+            static SINE_OUT: EasingFunction;
+            static SINE_IN_OUT: EasingFunction;
+            static EXPO_IN: EasingFunction;
+            static EXPO_OUT: EasingFunction;
+            static EXPO_IN_OUT: EasingFunction;
+            static CIRC_IN: EasingFunction;
+            static CIRC_OUT: EasingFunction;
+            static CIRC_IN_OUT: EasingFunction;
+            static ELASTIC_IN: EasingFunction;
+            static ELASTIC_OUT: EasingFunction;
+            static ELASTIC_IN_OUT: EasingFunction;
+            static BACK_IN: EasingFunction;
+            static BACK_OUT: EasingFunction;
+            static BACK_IN_OUT: EasingFunction;
+            static BOUNCE_IN: EasingFunction;
+            static BOUNCE_OUT: EasingFunction;
+            static BOUNCE_IN_OUT: EasingFunction;
+        }
+    }
+}
+import EasingFunction = JS.an.EasingFunction;
+import Easings = JS.an.Easings;
+declare module JS {
+    namespace an {
+        class ElementAnimConfig extends AnimConfig {
+            el: HTMLElement | string;
+            frames: KeyFrames;
+        }
+        abstract class ElementAnim extends Anim {
+            protected _cfg: ElementAnimConfig;
+            protected _el: HTMLElement;
+            protected _frame: KeyFrame;
+            private _from;
+            private _to;
+            private _frames;
+            constructor(cfg: ElementAnimConfig);
+            protected abstract _onUpdate(newFrame: KeyFrame): void;
+            private _parseFrames;
+            config<T extends ElementAnimConfig>(): T;
+            config<T extends ElementAnimConfig>(cfg: T): this;
+            private _num;
+            protected _newFrame(from: KeyFrame, to: KeyFrame, t: number, d: number, e: EasingFunction): number | JsonObject<number> | JsonObject<JsonObject<number>>;
+            protected _newVal(t: number, d: number, from: number, to: number, e: EasingFunction, base: number): number;
+            private _calc;
+            private _reset4loop;
+            protected _reset(): void;
+            private _resetFrame;
+            protected _resetInitial(): void;
+            play(): this;
+            stop(): this;
+        }
+    }
+}
+import ElementAnimConfig = JS.an.ElementAnimConfig;
+import ElementAnim = JS.an.ElementAnim;
+declare module JS {
+    namespace an {
+        type FadeKeyFrame = number;
+        type FadeKeyFrames = JsonObject<FadeKeyFrame>;
+        class FadeAnimConfig extends ElementAnimConfig {
+            frames: FadeKeyFrames;
+        }
+        class FadeAnim extends ElementAnim {
+            private _o;
+            constructor(cfg: FadeAnimConfig);
+            config<T extends ElementAnimConfig>(): T;
+            config<T extends ElementAnimConfig>(cfg: T): this;
+            protected _onUpdate(f: FadeKeyFrame): void;
+            protected _resetInitial(): void;
+        }
+    }
+}
+import FadeKeyFrame = JS.an.FadeKeyFrame;
+import FadeKeyFrames = JS.an.FadeKeyFrames;
+import FadeAnimConfig = JS.an.FadeAnimConfig;
+import FadeAnim = JS.an.FadeAnim;
+declare module JS {
+    namespace an {
+        type GradientKeyFrame = {
+            color?: HEX;
+            backgroundColor?: HEX;
+            borderColor?: HEX;
+            borderTopColor?: HEX;
+            borderRightColor?: HEX;
+            borderBottomColor?: HEX;
+            borderLeftColor?: HEX;
+        };
+        type GradientKeyFrames = JsonObject<GradientKeyFrame>;
+        class GradientAnimConfig extends ElementAnimConfig {
+            frames: GradientKeyFrames;
+        }
+        class GradientAnim extends ElementAnim {
+            private _cls;
+            constructor(cfg: GradientAnimConfig);
+            config<T extends ElementAnimConfig>(): T;
+            config<T extends ElementAnimConfig>(cfg: T): this;
+            private _newColor;
+            protected _convertFrame(f: GradientKeyFrame): JsonObject<RGBA>;
+            protected _newFrame(from: JsonObject<RGBA>, to: JsonObject<RGBA>, t: number, d: number, e: EasingFunction): JsonObject<RGBA>;
+            protected _onUpdate(j: JsonObject<RGBA>): void;
+            protected _resetInitial(): void;
+        }
+    }
+}
+import GradientKeyFrame = JS.an.GradientKeyFrame;
+import GradientKeyFrames = JS.an.GradientKeyFrames;
+import GradientAnimConfig = JS.an.GradientAnimConfig;
+import GradientAnim = JS.an.GradientAnim;
+declare module JS {
+    namespace an {
+        type KeyFrame = number | JsonObject<number> | JsonObject<JsonObject<number>> | any;
+        type KeyFrames = JsonObject<KeyFrame>;
+    }
+}
+import KeyFrame = JS.an.KeyFrame;
+import KeyFrames = JS.an.KeyFrames;
+declare module JS {
+    namespace an {
+        type MoveKeyFrame = {
+            x?: number;
+            y?: number;
+        };
+        type MoveKeyFrames = JsonObject<MoveKeyFrame>;
+        class MoveAnimConfig extends ElementAnimConfig {
+            frames: MoveKeyFrames;
+        }
+        class MoveAnim extends ElementAnim {
+            private _xy;
+            constructor(cfg: MoveAnimConfig);
+            config<T extends ElementAnimConfig>(): T;
+            config<T extends ElementAnimConfig>(cfg: T): this;
+            protected _onUpdate(f: MoveKeyFrame): void;
+            protected _resetInitial(): void;
+        }
+    }
+}
+import MoveKeyFrame = JS.an.MoveKeyFrame;
+import MoveKeyFrames = JS.an.MoveKeyFrames;
+import MoveAnimConfig = JS.an.MoveAnimConfig;
+import MoveAnim = JS.an.MoveAnim;
+declare module JS {
+    namespace an {
+        class ParallelAnimConfig extends AnimConfig {
+            anims: Anim[];
+            el?: HTMLElement | string;
+        }
+        class ParallelAnim extends Anim {
+            protected _cfg: ParallelAnimConfig;
+            private _plans;
+            private _sta;
+            constructor(cfg: ParallelAnimConfig);
+            getState(): AnimState;
+            config(): ParallelAnimConfig;
+            config(cfg: ParallelAnimConfig): this;
+            play(): this;
+            pause(): this;
+            stop(): this;
+        }
+    }
+}
+import ParallelAnimConfig = JS.an.ParallelAnimConfig;
+import ParallelAnim = JS.an.ParallelAnim;
+declare module JS {
+    namespace an {
+        type RotateKeyFrame = number | {
+            aX?: number;
+            aY?: number;
+            aZ?: number;
+        };
+        type RotateKeyFrames = JsonObject<RotateKeyFrame>;
+        class RotateAnimConfig extends ElementAnimConfig {
+            frames: RotateKeyFrames;
+        }
+        class RotateAnim extends ElementAnim {
+            constructor(cfg: RotateAnimConfig);
+            protected _newVal(t: number, d: number, from: number, to: number, e: EasingFunction, base: number): number;
+            protected _onUpdate(v: RotateKeyFrame): void;
+            protected _resetInitial(): void;
+        }
+    }
+}
+import RotateKeyFrame = JS.an.RotateKeyFrame;
+import RotateKeyFrames = JS.an.RotateKeyFrames;
+import RotateAnimConfig = JS.an.RotateAnimConfig;
+import RotateAnim = JS.an.RotateAnim;
+declare module JS {
+    namespace an {
+        type ScaleKeyFrame = number | {
+            sX?: number;
+            sY?: number;
+            sZ?: number;
+        };
+        type ScaleKeyFrames = JsonObject<ScaleKeyFrame>;
+        class ScaleAnimConfig extends ElementAnimConfig {
+            frames: ScaleKeyFrames;
+        }
+        class ScaleAnim extends ElementAnim {
+            constructor(cfg: ScaleAnimConfig);
+            protected _resetInitial(): void;
+            protected _onUpdate(v: ScaleKeyFrame): void;
+        }
+    }
+}
+import ScaleKeyFrame = JS.an.ScaleKeyFrame;
+import ScaleKeyFrames = JS.an.ScaleKeyFrames;
+import ScaleAnimConfig = JS.an.ScaleAnimConfig;
+import ScaleAnim = JS.an.ScaleAnim;
+declare module JS {
+    namespace an {
+        class SequentialAnimConfig extends AnimConfig {
+            anims: Anim[];
+            el?: HTMLElement | string;
+        }
+        class SequentialAnim extends Anim {
+            protected _cfg: SequentialAnimConfig;
+            private _i;
+            private _sta;
+            constructor(cfg: SequentialAnimConfig);
+            config(): SequentialAnimConfig;
+            config(cfg: SequentialAnimConfig): this;
+            play(): this;
+            pause(): this;
+            stop(): this;
+        }
+    }
+}
+import SequentialAnimConfig = JS.an.SequentialAnimConfig;
+import SequentialAnim = JS.an.SequentialAnim;
+declare module JS {
+    namespace an {
+        type SkewKeyFrame = {
+            aX?: number;
+            aY?: number;
+        };
+        type SkewKeyFrames = JsonObject<SkewKeyFrame>;
+        class SkewAnimConfig extends ElementAnimConfig {
+            frames: SkewKeyFrames;
+            firstMode?: 'both' | 'x' | 'y';
+        }
+        class SkewAnim extends ElementAnim {
+            constructor(cfg: SkewAnimConfig);
+            protected _init(): void;
+            protected _resetInitial(): void;
+            protected _onUpdate(f: SkewKeyFrame): void;
+        }
+    }
+}
+import SkewKeyFrame = JS.an.SkewKeyFrame;
+import SkewKeyFrames = JS.an.SkewKeyFrames;
+import SkewAnimConfig = JS.an.SkewAnimConfig;
+import SkewAnim = JS.an.SkewAnim;
+declare module JS {
+    namespace an {
+        type TranslateKeyFrame = {
+            oX?: number;
+            oY?: number;
+            oZ?: number;
+        };
+        type TranslateKeyFrames = JsonObject<TranslateKeyFrame>;
+        class TranslateAnimConfig extends ElementAnimConfig {
+            frames: TranslateKeyFrames;
+        }
+        class TranslateAnim extends ElementAnim {
+            constructor(cfg: TranslateAnimConfig);
+            protected _resetInitial(): void;
+            protected _onUpdate(f: TranslateKeyFrame): void;
+        }
+    }
+}
+import TranslateKeyFrame = JS.an.TranslateKeyFrame;
+import TranslateKeyFrames = JS.an.TranslateKeyFrames;
+import TranslateAnimConfig = JS.an.TranslateAnimConfig;
+import TranslateAnim = JS.an.TranslateAnim;
 declare module JS {
     namespace model {
         interface Api<T> extends AjaxRequest {
@@ -31,7 +382,7 @@ import Api = JS.model.Api;
 interface Array<T> {
     add(a: T | T[], from?: number): this;
     remove(index: number): this;
-    remove(equal: (item: T, i: number, array: Array<T>) => boolean): this;
+    remove(find: (item: T, i: number, array: Array<T>) => boolean): boolean;
 }
 declare module JS {
     namespace util {
@@ -98,9 +449,9 @@ declare module JS {
             password?: string;
             timeout?: number;
             crossCookie?: boolean;
-            beforeSend?: ((req: AjaxRequest) => boolean | void);
-            complete?: ((res: AjaxResponse) => void);
-            error?: ((res: AjaxResponse) => void);
+            onSending?: ((req: AjaxRequest) => boolean | void);
+            onCompleted?: ((res: AjaxResponse) => void);
+            onError?: ((res: AjaxResponse) => void);
         }
         interface AjaxResponse {
             request: AjaxRequest;
@@ -117,15 +468,15 @@ declare module JS {
             private static _toQuery;
             static toRequest(quy: string | AjaxRequest, data?: JsonObject | QueryString): AjaxRequest;
             static send(req: AjaxRequest | URLString): Promise<AjaxResponse>;
-            private static sendInMain;
+            private static _inMain;
             static get(req: AjaxRequest | URLString): Promise<AjaxResponse>;
             static post(req: AjaxRequest | URLString): Promise<AjaxResponse>;
             static _ON: {};
-            static on(ev: 'beforeSend', fn: (req: AjaxRequest) => boolean | void): any;
-            static on(ev: 'complete', fn: (res: AjaxResponse) => void): any;
+            static on(ev: 'sending', fn: (req: AjaxRequest) => boolean | void): any;
+            static on(ev: 'completed', fn: (res: AjaxResponse) => void): any;
             static on(ev: 'error', fn: (res: AjaxResponse) => void): any;
             static sendBeacon(e: 'beforeunload' | 'unload', fn: (evt: Event) => void, scope?: any): void;
-            private static sendInThread;
+            private static _inThread;
         }
     }
 }
@@ -134,7 +485,7 @@ import AjaxRequest = JS.util.AjaxRequest;
 import AjaxResponse = JS.util.AjaxResponse;
 declare module JS {
     namespace lang {
-        type PrimitiveType = null | undefined | string | number | boolean;
+        type PrimitiveType = null | undefined | string | number | boolean | String | Number | Boolean;
         type JsonObject<T = any> = {
             [key: string]: T;
         };
@@ -157,6 +508,7 @@ declare module JS {
             number = "number",
             date = "date",
             array = "array",
+            json = "json",
             object = "object",
             function = "function",
             class = "class",
@@ -239,7 +591,7 @@ declare module JS {
             static isFullwidthChars(str: any): boolean;
             static isEnglishOnly(str: string): boolean;
             static isChineseOnly(str: string): boolean;
-            static isFormatNumber(n: number | string, integerLength: number, fractionLength?: number): boolean;
+            static isFormatNumber(n: number | string, iLength: number, fLength?: number): boolean;
             static greater(n1: number | string, n2: number | string): boolean;
             static greaterEqual(n1: number | string, n2: number | string): boolean;
             static less(n1: number | string, n2: number | string): boolean;
@@ -293,6 +645,12 @@ import EventHandler2 = JS.util.EventHandler2;
 import EventHandler3 = JS.util.EventHandler3;
 import EventBus = JS.util.EventBus;
 interface HTMLElement {
+    box(): {
+        x: number;
+        y: number;
+        w: number;
+        h: number;
+    };
     attr(key: string): string;
     attr(key: string, val: string): this;
     html(): string;
@@ -305,10 +663,11 @@ interface HTMLElement {
     off(type?: string, fn?: (this: HTMLElement, e: Event) => boolean | void): this;
     find(selector: string): HTMLElement;
     findAll(selector: string): NodeListOf<HTMLElement>;
+    computedStyle(pseudo?: string): CSSStyleDeclaration;
 }
 interface Window {
-    on(type: string, fn: (this: HTMLElement, e: Event) => boolean | void, once?: boolean): this;
-    off(type?: string, fn?: (this: HTMLElement, e: Event) => boolean | void): this;
+    on(type: string, fn: (this: Window, e: Event) => boolean | void, once?: boolean): this;
+    off(type?: string, fn?: (this: Window, e: Event) => boolean | void): this;
 }
 declare module JS {
     namespace util {
@@ -367,7 +726,7 @@ declare module JS {
             static minus(json1: JsonObject, json2: JsonObject): JsonObject<any>;
             static intersect(json1: JsonObject, json2: JsonObject): JsonObject<any>;
             static filter(json: JsonObject, fn: (this: JsonObject, value: object, key: string) => boolean): JsonObject;
-            static getValueByPath(data: JsonObject, path: string): any;
+            static find(data: JsonObject, path: string): any;
         }
     }
 }
@@ -586,7 +945,6 @@ interface Object {
     className: string;
     getClass(): Class<any>;
 }
-declare let $F: Function;
 declare var __decorate: (decorators: any, target: any, key: any, desc: any) => any;
 declare module JS {
     namespace lang {
@@ -717,16 +1075,16 @@ declare module JS {
         type JsonResource = JsonObject<PrimitiveType | Array<any> | RegExp | JsonObject>;
         type Resource = URLString | JsonResource;
         class Bundle {
-            private _locale;
-            private _data;
+            private _lc;
+            private _d;
             private _load;
             constructor(res: Resource, locale?: Locale);
             get(): JsonObject;
             get(key: string): any;
             getKeys(): (string | number | symbol)[];
-            hasKey(key: string): boolean;
+            hasKey(k: string): boolean;
             getLocale(): Locale;
-            set(data: JsonObject): this;
+            set(d: JsonObject): this;
         }
     }
 }
@@ -740,13 +1098,10 @@ interface Date {
     setZeroTime(): Date;
     setLastTime(): Date;
     setNowTime(): Date;
-    compareTo(date: Date): number;
-    equals(date: Date): boolean;
+    equals(date: Date, type?: 'ms' | 's' | 'm' | 'h' | 'd' | 'w' | 'M' | 'y'): boolean;
     between(start: Date, end: Date): boolean;
     isAfter(date: Date): boolean;
     isBefore(date: Date): boolean;
-    isSameDay(date: Date): boolean;
-    isSameTime(date: Date, equalsMS?: boolean): boolean;
     isToday(date: Date): boolean;
     add(v: number, type: 'ms' | 's' | 'm' | 'h' | 'd' | 'w' | 'M' | 'y'): Date;
     setTimezoneOffset(offset: number): Date;
@@ -762,25 +1117,19 @@ interface Date {
         year?: number;
         timezoneOffset?: number;
     }): Date;
-    getFirstDayOfMonth(): Date;
-    getLastDayOfMonth(): Date;
-    getDayOfWeek(dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6): Date;
     diff(date?: Date): number;
-    format(format?: string, locale?: string): string;
+    format(format?: string, locale?: Locale): string;
 }
 declare module JS {
     namespace util {
         class Dates {
             static I18N_RESOURCE: Resource;
             static isValidDate(d: Date | string | number): boolean;
-            static equals(date1: Date, date2: Date): boolean;
-            static compare(date1: Date, date2: Date): number;
-            static isSameDay(day1: Date, day2: Date): boolean;
-            static isSameTime(day1: Date, day2: Date, equalsMS?: boolean): boolean;
-            static today(): Date;
-            static isLeapYear(year: number): boolean;
-            static getDaysInMonth(year: number, month: number): number;
-            static format(date: string | Date, format: string, locale?: string): string;
+            static isLeapYear(y: number): boolean;
+            static getDaysOfMonth(m: number, y?: number): number;
+            static getFirstDayOfMonth(d: Date): Date;
+            static getLastDayOfMonth(d: Date): Date;
+            static getDayOfWeek(d: Date, dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6): Date;
         }
     }
 }
@@ -807,6 +1156,8 @@ interface Number {
     abs(): number;
     fractionLength(): number;
     integerLength(): number;
+    fractionalPart(): string;
+    integralPart(): string;
 }
 declare module JS {
     namespace util {
@@ -829,18 +1180,22 @@ declare module JS {
             static failNotEqual(expected: any, actual: any, msg?: string): void;
             static failEqual(expected: any, actual: any, msg?: string): void;
             static _equal(expected: any, actual: any): boolean;
-            static equal(expected: any, actual: any, msg?: string): void;
-            static notEqual(expected: any, actual: any, msg?: string): void;
+            static equal(expected: Date, actual: Date, msg?: string): any;
+            static equal(expected: any[], actual: any[], msg?: string): any;
+            static equal(expected: JsonObject, actual: JsonObject, msg?: string): any;
+            static equal(expected: PrimitiveType, actual: PrimitiveType, msg?: string): any;
+            static notEqual(expected: Date, actual: Date, msg?: string): any;
+            static notEqual(expected: any[], actual: any[], msg?: string): any;
+            static notEqual(expected: JsonObject, actual: JsonObject, msg?: string): any;
+            static notEqual(expected: PrimitiveType, actual: PrimitiveType, msg?: string): any;
             static sameType(expected: any, actual: any, msg?: string): void;
             static notSameType(expected: any, actual: any, msg?: string): void;
             static true(condition: boolean, msg?: string): void;
             static false(condition: boolean, msg?: string): void;
-            static defined(object: object, msg?: string): void;
-            static notDefined(object: object, msg?: string): void;
-            static equalArray(expected: any[], actual: any[], msg?: string): void;
-            static equalDate(expected: Date, actual: Date, msg?: string): void;
-            static error(cab: Fallback<any>, msg?: string): void;
-            static equalError(error: Klass<Error>, cab: Fallback<any>, msg?: string): void;
+            static defined(obj: object, msg?: string): void;
+            static notDefined(obj: object, msg?: string): void;
+            static error(fn: Fallback<any>, msg?: string): void;
+            static equalError(error: Klass<Error>, fn: Fallback<any>, msg?: string): void;
         }
     }
 }
@@ -880,13 +1235,13 @@ declare module JS {
             QQ = "QQ",
             UC = "UC"
         }
-        type BrowserWindow = {
-            screenX: number;
-            screenY: number;
-            width: number;
-            height: number;
-            viewWidth: number;
-            viewHeight: number;
+        type BrowserDisplay = {
+            screenWidth: number;
+            screenHeight: number;
+            screenViewWidth: number;
+            screenViewHeight: number;
+            windowX: number;
+            windowY: number;
             docX: number;
             docY: number;
             docScrollX: number;
@@ -904,7 +1259,7 @@ declare module JS {
         };
         type SystemInfo = {
             ua: string;
-            window: BrowserWindow;
+            display: BrowserDisplay;
             browser: {
                 name: string;
                 version?: string;
@@ -932,7 +1287,8 @@ declare module JS {
         };
         class System {
             private static _info;
-            static info(isRefresh?: boolean): SystemInfo;
+            static info(refresh?: boolean): SystemInfo;
+            static display(refresh?: boolean): BrowserDisplay;
             static isDevice(device: DeviceType): boolean;
             static isBrowser(b: Browser | string): boolean;
             static isOS(os: OS | string, version?: string): boolean;
@@ -949,7 +1305,19 @@ import OS = JS.lang.OS;
 import Browser = JS.lang.Browser;
 import DeviceType = JS.lang.DeviceType;
 import SystemInfo = JS.lang.SystemInfo;
-import BrowserWindow = JS.lang.BrowserWindow;
+import BrowserWindow = JS.lang.BrowserDisplay;
+declare module JS {
+    namespace util {
+        class Bom {
+            static ready(fn: Function): void;
+            static iframeWindow(el: string | Element): Window;
+            static iframeDocument(el: string | Element): Document;
+            static fullscreen(): void;
+            static normalscreen(): void;
+        }
+    }
+}
+import Bom = JS.util.Bom;
 declare module JS {
     namespace ui {
         type MouseEvents = 'click' | 'dblclick' | 'mouseleave' | 'mouseenter' | 'mouseout' | 'mouseover' | 'mousedown' | 'mouseup' | 'mousemove' | 'mousewheel' | 'drag' | 'drop' | 'dragend' | 'dragstart' | 'dragenter' | 'dragleave' | 'dragover';
@@ -1009,19 +1377,7 @@ import IDataWidget = JS.ui.IDataWidget;
 import ICRUDWidget = JS.ui.ICRUDWidget;
 import WidgetEvents = JS.ui.WidgetEvents;
 declare module JS {
-    namespace util {
-        class Bom {
-            static ready(fn: Function): void;
-            static iframeWindow(el: string | Element): Window;
-            static iframeDocument(el: string | Element): Document;
-            static fullscreen(): void;
-            static normalscreen(): void;
-        }
-    }
-}
-import Bom = JS.util.Bom;
-declare module JS {
-    namespace ui {
+    namespace view {
         interface ViewWidgetConfig extends IWidgetConfig {
             id?: string;
             klass?: string | Klass<IWidget>;
@@ -1058,10 +1414,10 @@ declare module JS {
         }
     }
 }
-import ViewEvents = JS.ui.ViewEvents;
-import ViewWidgetConfig = JS.ui.ViewWidgetConfig;
-import ViewConfig = JS.ui.ViewConfig;
-import View = JS.ui.View;
+import ViewEvents = JS.view.ViewEvents;
+import ViewWidgetConfig = JS.view.ViewWidgetConfig;
+import ViewConfig = JS.view.ViewConfig;
+import View = JS.view.View;
 declare module JS {
     namespace model {
         type PageEvents = 'fullscreening' | 'fullscreened' | 'normalscreening' | 'normalscreened' | 'loading' | 'loaded' | 'unloading' | 'close';
@@ -1216,13 +1572,13 @@ declare module JS {
 }
 import Service = JS.model.Service;
 declare module JS {
-    namespace data {
+    namespace ds {
         class BiMap<K, V> {
-            private _map;
-            constructor(kvs?: Array<[K, V]>);
+            private _m;
+            constructor(k?: Array<[K, V]>);
             inverse(): BiMap<V, K>;
-            delete(key: K): boolean;
-            forEach(fn: (value: V, key: K, map: Map<K, V>) => void, thisArg?: any): void;
+            delete(k: K): boolean;
+            forEach(fn: (value: V, key: K, map: Map<K, V>) => void, ctx?: any): void;
             clear(): void;
             size(): number;
             has(k: K): boolean;
@@ -1232,13 +1588,13 @@ declare module JS {
         }
     }
 }
-import BiMap = JS.data.BiMap;
+import BiMap = JS.ds.BiMap;
 declare module JS {
-    namespace data {
+    namespace ds {
         class LinkedList<T> implements Iterware<T> {
-            private _size;
-            private _head;
-            private _tail;
+            private _s;
+            private _hd;
+            private _tl;
             constructor();
             each(fn: (item: T, index: number, iter: LinkedList<T>) => boolean, thisArg?: any): boolean;
             size(): number;
@@ -1274,9 +1630,9 @@ declare module JS {
         }
     }
 }
-import LinkedList = JS.data.LinkedList;
+import LinkedList = JS.ds.LinkedList;
 declare module JS {
-    namespace data {
+    namespace ds {
         class Queue<T> implements Iterware<T> {
             protected list: LinkedList<T>;
             constructor(a?: T | T[]);
@@ -1297,9 +1653,9 @@ declare module JS {
         }
     }
 }
-import Queue = JS.data.Queue;
+import Queue = JS.ds.Queue;
 declare module JS {
-    namespace data {
+    namespace ds {
         class Stack<T> implements Iterware<T> {
             protected list: LinkedList<T>;
             constructor(a?: T | T[]);
@@ -1316,7 +1672,7 @@ declare module JS {
         }
     }
 }
-import Stack = JS.data.Stack;
+import Stack = JS.ds.Stack;
 declare module JS {
     namespace model {
         namespace validator {
@@ -1475,25 +1831,16 @@ declare module JS {
             isDestroyed(): boolean;
         }
         type ModelEvents = 'dataupdating' | 'dataupdated' | 'fieldchanged' | 'validated' | 'fieldvalidated' | 'loading' | 'loadsuccess' | 'loadfailure' | 'loaderror';
-        type ModelEventHandler_Dataupdating<M> = EventHandler2<M, JsonObject, JsonObject>;
-        type ModelEventHandler_Dataupdated<M> = EventHandler2<M, JsonObject, JsonObject>;
-        type ModelEventHandler_Fieldchanged<M> = EventHandler3<M, any, any, string>;
-        type ModelEventHandler_Validated<M> = EventHandler2<M, ValidateResult, JsonObject>;
-        type ModelEventHandler_Fieldvalidated<M> = EventHandler3<M, ValidateResult, any, string>;
-        type ModelEventHandler_Loading<M> = EventHandler1<M, AjaxRequest>;
-        type ModelEventHandler_Loadsuccess<M> = EventHandler1<M, ResultSet<any>>;
-        type ModelEventHandler_Loadfailure<M> = EventHandler1<M, ResultSet<any>>;
-        type ModelEventHandler_Loaderror<M> = EventHandler1<M, AjaxResponse | Error>;
         type ModelListeners<M> = {
-            dataupdating: ModelEventHandler_Dataupdating<M>;
-            dataupdated: ModelEventHandler_Dataupdated<M>;
-            fieldchanged: ModelEventHandler_Fieldchanged<M>;
-            validated: ModelEventHandler_Validated<M>;
-            fieldvalidated: ModelEventHandler_Fieldvalidated<M>;
-            loading: ModelEventHandler_Loading<M>;
-            loadsuccess: ModelEventHandler_Loadsuccess<M>;
-            loadfailure: ModelEventHandler_Loadfailure<M>;
-            loaderror: ModelEventHandler_Loaderror<M>;
+            dataupdating: EventHandler2<M, JsonObject, JsonObject>;
+            dataupdated: EventHandler2<M, JsonObject, JsonObject>;
+            fieldchanged: EventHandler3<M, any, any, string>;
+            validated: EventHandler2<M, ValidateResult, JsonObject>;
+            fieldvalidated: EventHandler3<M, ValidateResult, any, string>;
+            loading: EventHandler1<M, AjaxRequest>;
+            loadsuccess: EventHandler1<M, ResultSet<any>>;
+            loadfailure: EventHandler1<M, ResultSet<any>>;
+            loaderror: EventHandler1<M, AjaxResponse | Error>;
         };
         class ModelConfig {
             readonly listeners?: ModelListeners<this>;
@@ -1555,27 +1902,17 @@ import Modelable = JS.model.Modelable;
 declare module JS {
     namespace model {
         type ListModelEvents = 'dataupdating' | 'dataupdated' | 'rowadded' | 'rowremoved' | 'validated' | 'rowvalidated' | 'loading' | 'loadsuccess' | 'loadfailure' | 'loaderror';
-        type ListModelEventHandler_Dataupdating<M> = EventHandler2<M, JsonObject[], JsonObject[]>;
-        type ListModelEventHandler_Dataupdated<M> = EventHandler2<M, JsonObject[], JsonObject[]>;
-        type ListModelEventHandler_Rowadded<M> = EventHandler2<M, JsonObject[], number>;
-        type ListModelEventHandler_Rowremoved<M> = EventHandler2<M, JsonObject, number>;
-        type ListModelEventHandler_Validated<M> = EventHandler2<M, ValidateResult, JsonObject[]>;
-        type ListModelEventHandler_RowValidated<M> = EventHandler3<M, ValidateResult, JsonObject[], number>;
-        type ListModelEventHandler_Loading<M> = EventHandler1<M, AjaxRequest>;
-        type ListModelEventHandler_Loadsuccess<M> = EventHandler1<M, ResultSet<any>>;
-        type ListModelEventHandler_Loadfailure<M> = EventHandler1<M, ResultSet<any>>;
-        type ListModelEventHandler_Loaderror<M> = EventHandler1<M, AjaxResponse | Error>;
         interface ListModelListeners<M> {
-            dataupdating: ListModelEventHandler_Dataupdating<M>;
-            dataupdated: ListModelEventHandler_Dataupdated<M>;
-            rowadded: ListModelEventHandler_Rowadded<M>;
-            rowremoved: ListModelEventHandler_Rowremoved<M>;
-            validated: ListModelEventHandler_Validated<M>;
-            rowvalidated: ListModelEventHandler_RowValidated<M>;
-            loading: ListModelEventHandler_Loading<M>;
-            loadsuccess: ListModelEventHandler_Loadsuccess<M>;
-            loadfailure: ListModelEventHandler_Loadfailure<M>;
-            loaderror: ListModelEventHandler_Loaderror<M>;
+            dataupdating: EventHandler2<M, JsonObject[], JsonObject[]>;
+            dataupdated: EventHandler2<M, JsonObject[], JsonObject[]>;
+            rowadded: EventHandler2<M, JsonObject[], number>;
+            rowremoved: EventHandler2<M, JsonObject, number>;
+            validated: EventHandler2<M, ValidateResult, JsonObject[]>;
+            rowvalidated: EventHandler3<M, ValidateResult, JsonObject[], number>;
+            loading: EventHandler1<M, AjaxRequest>;
+            loadsuccess: EventHandler1<M, ResultSet<any>>;
+            loadfailure: EventHandler1<M, ResultSet<any>>;
+            loaderror: EventHandler1<M, AjaxResponse | Error>;
         }
         type Sorter = {
             field: string;
@@ -1654,32 +1991,46 @@ declare module JS {
             REM = "rem"
         }
         class Lengths {
-            static toPxNumber(len: string | number): number;
-            static toCssString(len: string | number, defaultVal: string, unit?: LengthUnit): string;
+            static toNumber(len: string | number, unit?: LengthUnit): number;
+            static toCSS(len: string | number, defaultVal: string, unit?: LengthUnit): string;
         }
     }
 }
 import Lengths = JS.ui.Lengths;
 declare module JS {
     namespace ui {
-        type GradientColor = {
-            from: string;
-            to: string;
+        type HEX = string;
+        type RGBAString = string;
+        type RGBA = {
+            r: number;
+            g: number;
+            b: number;
+            a?: number;
         };
-        class Color {
-            private r;
-            private g;
-            private b;
-            private a;
-            constructor(r: number | string, g?: number, b?: number, a?: number);
-            toHex(): string;
-            toRGB(): string;
-            toRGBA(): string;
+        type HSLAString = string;
+        type HSLA = {
+            h: number;
+            s: number;
+            l: number;
+            a?: number;
+        };
+        class Colors {
+            static hex2rgba(hex: HEX): RGBA;
+            static rgba2hex(r: number, g: number, b: number, a?: number): HEX;
+            static rgba2css(c: RGBA): RGBAString;
+            static hsla2string(c: HSLA): HSLAString;
+            static hsl2rgb(hsl: HSLA): RGBA;
+            static rgbTohsl(rgb: RGBA): HSLA;
+            static css2rgba(css: string): RGBA;
         }
     }
 }
-import Color = JS.ui.Color;
-import GradientColor = JS.ui.GradientColor;
+import HEX = JS.ui.HEX;
+import RGBAString = JS.ui.RGBAString;
+import RGBA = JS.ui.RGBA;
+import HSLAString = JS.ui.HSLAString;
+import HSLA = JS.ui.HSLA;
+import Colors = JS.ui.Colors;
 declare module JS {
     namespace ui {
         type LR = 'left' | 'right';
@@ -1695,7 +2046,7 @@ import LOC9 = JS.ui.LOC9;
 declare module JS {
     namespace ui {
         class KeyCode {
-            static BACK: number;
+            static Back: number;
             static Tab: number;
             static Clear: number;
             static Enter: number;
@@ -2226,7 +2577,10 @@ declare module JS {
             colorMode?: ColorMode;
             outline?: boolean;
             text: string;
-            gradient?: GradientColor;
+            gradient?: {
+                from: HEX;
+                to: HEX;
+            };
             iconCls?: string;
             dropMenu?: DropMenuOptions;
         }
@@ -2437,9 +2791,8 @@ import EmailInputConfig = JS.fx.EmailInputConfig;
 declare module JS {
     namespace model {
         type PageModelEvents = ListModelEvents | 'pagechanged';
-        type PageModelEventHandler_Pagechanged<M> = EventHandler2<M, number, number>;
         interface PageModelListeners<M = PageModel> extends ListModelListeners<M> {
-            pagechanged: PageModelEventHandler_Pagechanged<M>;
+            pagechanged: EventHandler2<M, number, number>;
         }
         interface PageQuery extends AjaxRequest {
             pageSize?: number;
@@ -3441,7 +3794,6 @@ declare module JS {
             exceedMaxTotalSize: string;
         };
         class Uploader extends FormWidget implements ICRUDWidget<MimeFile[]> {
-            private static _EVENTS_MAP;
             static I18N: UploaderResource;
             private _uploader;
             constructor(cfg: UploaderConfig);
@@ -3541,7 +3893,7 @@ declare module JS {
         type ThreadPreload = string | string[];
         class Thread implements Runnable {
             readonly id: string;
-            private _worker;
+            private _wk;
             private _bus;
             private _state;
             private _url;
@@ -3577,11 +3929,13 @@ import ThreadState = JS.lang.ThreadState;
 import ThreadPreload = JS.lang.ThreadPreload;
 declare module JS {
     namespace store {
-        type StoreDataType = PrimitiveType | Date | JsonObject<any> | Array<any>;
-        class StoreHelper {
+        type StorePrimitiveType = PrimitiveType | Date | JsonObject<PrimitiveType> | Array<PrimitiveType>;
+        export type StoreDataType = StorePrimitiveType | JsonObject<StorePrimitiveType> | Array<StorePrimitiveType>;
+        export class StoreHelper {
             static toString(value: StoreDataType): string;
             static parse<T = StoreDataType>(data: string): T;
         }
+        export {};
     }
 }
 import StoreDataType = JS.store.StoreDataType;
@@ -3650,101 +4004,6 @@ declare module JS {
 }
 import CustomElementConfig = JS.ui.CustomElementConfig;
 import CustomElement = JS.ui.CustomElement;
-declare module JS {
-    namespace ui {
-        interface FormViewConfig extends ViewConfig {
-            valueModel?: Klass<Model>;
-            defaultConfig?: IWidgetConfig;
-            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
-        }
-        abstract class FormView extends View {
-            protected _config: FormViewConfig;
-            protected _model: Model;
-            reset(): this;
-            clear(): this;
-            iniValues(): JsonObject<any>;
-            iniValues(values: JsonObject<any>, render?: boolean): this;
-            validate(id?: string): boolean;
-            private _validateWidget;
-            getModel(): Model;
-            values(): JsonObject;
-            values(values: any): this;
-            protected _render(): void;
-        }
-    }
-}
-import FormView = JS.ui.FormView;
-import FormViewConfig = JS.ui.FormViewConfig;
-declare module JS {
-    namespace ui {
-        interface PageViewConfig extends ViewConfig, ViewWidgetConfig {
-        }
-        abstract class PageView extends View {
-            protected _config: PageViewConfig;
-            protected _model: PageModel;
-            load(api: PageQuery): Promise<ResultSet<unknown>>;
-            reload(): this;
-            protected _render(): void;
-        }
-    }
-}
-import PageViewConfig = JS.ui.PageViewConfig;
-import PageView = JS.ui.PageView;
-declare module JS {
-    namespace ui {
-        interface SimpleViewConfig extends ViewConfig {
-            defaultConfig?: IWidgetConfig;
-            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
-        }
-        abstract class SimpleView extends View {
-            protected _config: SimpleViewConfig;
-            protected _render(): void;
-        }
-    }
-}
-import SimpleViewConfig = JS.ui.SimpleViewConfig;
-import SimpleView = JS.ui.SimpleView;
-declare module JS {
-    namespace util {
-        interface TemplateCompileOptions extends CompileOptions {
-        }
-        interface CompiledTemplate extends HandlebarsTemplateDelegate {
-        }
-        interface TemplateHelper extends Handlebars.HelperDelegate {
-        }
-        class Templator {
-            private _hb;
-            constructor();
-            compile(tpl: string, options?: TemplateCompileOptions): CompiledTemplate;
-            registerHelper(name: string, fn: TemplateHelper): void;
-            unregisterHelper(name: string): void;
-            static safeString(s: string): any;
-        }
-    }
-}
-import Templator = JS.util.Templator;
-declare module JS {
-    namespace ui {
-        interface TemplateViewConfig extends ViewConfig {
-            container: string | HTMLElement;
-            tpl: string;
-            data?: any;
-            defaultConfig?: IWidgetConfig;
-            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
-        }
-        abstract class TemplateView extends View {
-            protected _config: TemplateViewConfig;
-            protected _engine: Templator;
-            protected _model: ListModel;
-            initialize(): void;
-            data(data: any): void;
-            load(api: string | AjaxRequest): Promise<ResultSet<JsonObject<any>[]>>;
-            protected _render(): void;
-        }
-    }
-}
-import TemplateViewConfig = JS.ui.TemplateViewConfig;
-import TemplateView = JS.ui.TemplateView;
 declare module JS {
     namespace unit {
         class TestCase {
@@ -3911,38 +4170,146 @@ declare module JS {
 import Random = JS.util.Random;
 declare module JS {
     namespace util {
-        type TimerTicker = (this: Timer, counter: number) => number | void;
-        type CycleOptions = {
-            cycle?: false | number;
-            wait?: number;
-            interval?: number;
-        };
-        type TimerState = 'NEW' | 'WAITING' | 'RUNNING' | 'BLOCKED' | 'TERMINATED';
-        class Timer {
-            private _opts;
-            private _ticker;
-            private _timerId;
-            private _counter;
-            private _state;
+        interface TemplateCompileOptions extends CompileOptions {
+        }
+        interface CompiledTemplate extends HandlebarsTemplateDelegate {
+        }
+        interface TemplateHelper extends Handlebars.HelperDelegate {
+        }
+        class Templator {
+            private _hb;
             constructor();
-            restart(): void;
-            suspend(): boolean;
-            stop(): void;
+            compile(tpl: string, options?: TemplateCompileOptions): CompiledTemplate;
+            registerHelper(name: string, fn: TemplateHelper): void;
+            unregisterHelper(name: string): void;
+            static safeString(s: string): any;
+        }
+    }
+}
+import Templator = JS.util.Templator;
+declare module JS {
+    namespace util {
+        type TimerTask = (this: Timer, elapsedTime: number) => void;
+        type TimerConfig = {
+            delay?: number;
+            loop?: boolean | number;
+            interval?: number;
+            intervalMode?: 'OF' | 'BF';
+        };
+        type TimerEvents = 'starting' | 'finished';
+        enum TimerState {
+            STOPPED = 0,
+            RUNNING = 1,
+            PAUSED = 2
+        }
+        class Timer {
+            protected _bus: EventBus;
+            protected _cfg: TimerConfig;
+            protected _tick: TimerTask;
+            protected _timer: any;
+            protected _sta: TimerState;
+            protected _ts0: any;
+            protected _ts: number;
+            protected _et: number;
+            protected _pt: number;
+            protected _count: number;
+            constructor(tick: TimerTask, cfg?: TimerConfig);
+            on(type: string, fn: EventHandler<this>): this;
+            off(type: string, fn?: EventHandler<this>): this;
+            count(): number;
+            config(): TimerConfig;
+            config(cfg?: TimerConfig): this;
+            pause(): this;
+            protected _cancelTimer(): void;
+            protected _reset(): void;
+            stop(): this;
+            protected _finish(): void;
             getState(): TimerState;
-            private _cycle;
-            start(ticker?: TimerTicker, opts?: CycleOptions): void;
-            startOne(ticker: TimerTicker, wait?: number): void;
-            startForever(ticker: TimerTicker, opts?: {
-                wait?: number;
-                interval?: number;
-            }): void;
-            startAtDate(ticker: TimerTicker, date: Date, opts?: {
-                cycle?: number;
-                interval?: number;
-            }): void;
+            fps(): number;
+            maxFPS(): number;
+            protected _cycle(skip?: boolean): void;
+            start(): void;
         }
     }
 }
 import Timer = JS.util.Timer;
-import TimerTicker = JS.util.TimerTicker;
-import TimerTickerOptions = JS.util.CycleOptions;
+import TimerState = JS.util.TimerState;
+import TimerEvents = JS.util.TimerEvents;
+import TimerTask = JS.util.TimerTask;
+import TimerOptions = JS.util.TimerConfig;
+declare module JS {
+    namespace view {
+        interface FormViewConfig extends ViewConfig {
+            valueModel?: Klass<Model>;
+            defaultConfig?: IWidgetConfig;
+            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
+        }
+        abstract class FormView extends View {
+            protected _config: FormViewConfig;
+            protected _model: Model;
+            reset(): this;
+            clear(): this;
+            iniValues(): JsonObject<any>;
+            iniValues(values: JsonObject<any>, render?: boolean): this;
+            validate(id?: string): boolean;
+            private _validateWidget;
+            getModel(): Model;
+            values(): JsonObject;
+            values(values: any): this;
+            protected _render(): void;
+        }
+    }
+}
+import FormView = JS.view.FormView;
+import FormViewConfig = JS.view.FormViewConfig;
+declare module JS {
+    namespace view {
+        interface PageViewConfig extends ViewConfig, ViewWidgetConfig {
+        }
+        abstract class PageView extends View {
+            protected _config: PageViewConfig;
+            protected _model: PageModel;
+            load(api: PageQuery): Promise<ResultSet<unknown>>;
+            reload(): this;
+            protected _render(): void;
+        }
+    }
+}
+import PageViewConfig = JS.view.PageViewConfig;
+import PageView = JS.view.PageView;
+declare module JS {
+    namespace view {
+        interface SimpleViewConfig extends ViewConfig {
+            defaultConfig?: IWidgetConfig;
+            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
+        }
+        abstract class SimpleView extends View {
+            protected _config: SimpleViewConfig;
+            protected _render(): void;
+        }
+    }
+}
+import SimpleViewConfig = JS.view.SimpleViewConfig;
+import SimpleView = JS.view.SimpleView;
+declare module JS {
+    namespace view {
+        interface TemplateViewConfig extends ViewConfig {
+            container: string | HTMLElement;
+            tpl: string;
+            data?: any;
+            defaultConfig?: IWidgetConfig;
+            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
+        }
+        abstract class TemplateView extends View {
+            protected _config: TemplateViewConfig;
+            protected _engine: Templator;
+            protected _model: ListModel;
+            initialize(): void;
+            data(data: any): void;
+            load(api: string | AjaxRequest): Promise<ResultSet<JsonObject<any>[]>>;
+            protected _render(): void;
+        }
+    }
+}
+import TemplateViewConfig = JS.view.TemplateViewConfig;
+import TemplateView = JS.view.TemplateView;

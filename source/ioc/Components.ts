@@ -77,7 +77,7 @@ module JS {
                 let fields = clazz.fieldsMap(cmp, inject);//inject all autowaired fields
                 Jsons.forEach(fields, (v: Field, k: string) => {
                     let f = <Klass<any>>Annotations.getPropertyType(cmp, k);
-                    if (!f || !Types.equalKlass(f)) throw new Errors.TypeError('The type of Field[' + k + '] is invalid!');
+                    if (!f || !Types.equalKlass(f)) throw new TypeError('The type of Field[' + k + '] is invalid!');
 
                     let cls:Class<any> = (<any>f).class;
                     cmp[k] = this.get(cls.name);

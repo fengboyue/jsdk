@@ -43,8 +43,8 @@ export interface Klass<T> extends Function {
 }
 ```
 
-## Predefined classes of data structure
-JSDK provids ollowing data structure classes in the "JS.data.*" package:
+## Classes of data structure
+JSDK provids following data structure classes in the "JS.ds.*" package:
 * BiMap: Bidirectional mapping table
 * LinkedList: Bidirectional linked list for high frequency insert and delete operations
 * Queue: FIFO Queue
@@ -67,6 +67,7 @@ enum Type {
     number = "number",
     date = "date",
     array = "array",
+    json = "json",
     object = "object",
     function = "function",
     class = "class",
@@ -74,7 +75,7 @@ enum Type {
 }
 ```
 
-### Determine the specified type
+### Determine by specified type
 ```javascript
 Assert.true(Types.isKlass(new Error(), Error));
 Assert.true(Types.ofKlass(new JSError(), Error));

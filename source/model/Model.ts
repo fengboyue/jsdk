@@ -34,53 +34,43 @@ module JS {
 
         export type ModelEvents = 'dataupdating' | 'dataupdated' | 'fieldchanged' | 'validated' | 'fieldvalidated' | 'loading' | 'loadsuccess' | 'loadfailure' | 'loaderror';
 
-        /**
-         * [newData, oldData]
-         */
-        export type ModelEventHandler_Dataupdating<M> = EventHandler2<M, JsonObject, JsonObject>;
-        /**
-         * [newData, oldData]
-         */
-        export type ModelEventHandler_Dataupdated<M> = EventHandler2<M, JsonObject, JsonObject>;
-        /**
-         * [newVal, oldVal, fieldName]
-         */
-        export type ModelEventHandler_Fieldchanged<M> = EventHandler3<M, any, any, string>;
-        /**
-         * [result, data]
-         */
-        export type ModelEventHandler_Validated<M> = EventHandler2<M, ValidateResult, JsonObject>;
-        /**
-         * [result, val, fieldName]
-         */
-        export type ModelEventHandler_Fieldvalidated<M> = EventHandler3<M, ValidateResult, any, string>;
-        /**
-         * [req]
-         */
-        export type ModelEventHandler_Loading<M> = EventHandler1<M, AjaxRequest>;
-        /**
-         * [result]
-         */
-        export type ModelEventHandler_Loadsuccess<M> = EventHandler1<M, ResultSet<any>>;
-        /**
-         * [result]
-         */
-        export type ModelEventHandler_Loadfailure<M> = EventHandler1<M, ResultSet<any>>;
-        /**
-         * [err]
-         */
-        export type ModelEventHandler_Loaderror<M> = EventHandler1<M, AjaxResponse|Error>;
-
         export type ModelListeners<M> = {
-            dataupdating: ModelEventHandler_Dataupdating<M>
-            dataupdated: ModelEventHandler_Dataupdated<M>
-            fieldchanged: ModelEventHandler_Fieldchanged<M>
-            validated: ModelEventHandler_Validated<M>
-            fieldvalidated: ModelEventHandler_Fieldvalidated<M>
-            loading: ModelEventHandler_Loading<M>
-            loadsuccess: ModelEventHandler_Loadsuccess<M>
-            loadfailure: ModelEventHandler_Loadfailure<M>
-            loaderror: ModelEventHandler_Loaderror<M>
+            /**
+             * @event (e, newData, oldData)
+             */
+            dataupdating: EventHandler2<M, JsonObject, JsonObject>
+            /**
+             * @event (e, newData, oldData)
+             */
+            dataupdated: EventHandler2<M, JsonObject, JsonObject>
+            /**
+             * @event (e, newVal, oldVal, fieldName)
+             */
+            fieldchanged: EventHandler3<M, any, any, string>
+            /**
+             * @event (e, result, data)
+             */
+            validated: EventHandler2<M, ValidateResult, JsonObject>
+            /**
+             * @event (e, result, val, fieldName)
+             */
+            fieldvalidated: EventHandler3<M, ValidateResult, any, string>
+            /**
+             * @event (e, request)
+             */
+            loading: EventHandler1<M, AjaxRequest>
+            /**
+             * @event (e, result)
+             */
+            loadsuccess: EventHandler1<M, ResultSet<any>>
+            /**
+             * @event (e, result)
+             */
+            loadfailure: EventHandler1<M, ResultSet<any>>
+            /**
+             * @event (e, response|error)
+             */
+            loaderror: EventHandler1<M, AjaxResponse|Error>
         };
         export class ModelConfig {
             readonly listeners?: ModelListeners<this>;
@@ -119,7 +109,7 @@ module JS {
             }
 
             private _check() {
-                if (this.isDestroyed()) throw new Errors.NotHandledError('The model was destroyed!');
+                if (this.isDestroyed()) throw new NotHandledError('The model was destroyed!');
             }
 
             private _newField(cfg: FieldConfig) {

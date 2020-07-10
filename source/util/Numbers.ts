@@ -135,7 +135,7 @@ interface Number {
     abs(): number
 
     /**
-     * Returns the length of fraction.<br>
+     * Returns the length of fractional part.<br>
      * 返回小数位长度<br>
      * 
      * <pre>
@@ -145,7 +145,7 @@ interface Number {
      */
     fractionLength(): number;
     /**
-     * Returns the length of interger.<br>
+     * Returns the length of intergral part.<br>
      * 返回整数位长度<br>
      * 
      * <pre>
@@ -154,10 +154,19 @@ interface Number {
      * </pre>
      */
     integerLength(): number;
+
+    /**
+     * Returns the fractional part.
+     */
+    fractionalPart(): string;
+    /**
+     * Returns the integral part.
+     */
+    integralPart(): string;
 }
 
 (function () {
-    var $N = <any>Number.prototype;
+    var N = Number, $N = <any>N.prototype;
 
     $N.stringfy = function (): string {
         if (this.isNaN()) return null;
@@ -166,7 +175,7 @@ interface Number {
         let t = this.toString(), m = t.match(/^(\+|\-)?(\d+)\.?(\d*)[Ee](\+|\-)(\d+)$/);
         if (!m) return t;
 
-        let zhe = m[2], xiao = m[3], zhi = Number(m[5]), fu = m[1] == '-' ? '-' : '', zfu = m[4],
+        let zhe = m[2], xiao = m[3], zhi = N(m[5]), fu = m[1] == '-' ? '-' : '', zfu = m[4],
             ws = (zfu == '-' ? -1 : 1) * zhi - xiao.length, n = zhe + xiao;
 
         if (ws == 0) return fu + n;
@@ -179,7 +188,7 @@ interface Number {
     }
 
     $N.round = function (digit?: number): number {
-        if (this.isNaN() || this.isInt() || !Number.isFinite(digit)) return this;
+        if (this.isNaN() || this.isInt() || !N.isFinite(digit)) return N(this);
 
         let d = digit || 0, pow = Math.pow(10, d);
         return Math.round(this * pow) / pow;
@@ -197,29 +206,29 @@ interface Number {
      * @param digit 
      */
     $N.format = function (dLen?: number): string {
-        let d = dLen == void 0 || !Number.isFinite(dLen)?this.fractionLength():dLen,
+        let d = dLen == void 0 || !Number.isFinite(dLen) ? this.fractionLength() : dLen,
             s = this.round(d).abs().stringfy(),
             sign = this.isNegative() ? '-' : '';
 
-        let sn = Number(s);
+        let sn = N(s);
         if (sn.isInt()) return sign + sn.toLocaleString() + (d < 1 ? '' : '.' + Strings.padEnd('', d, '0'));
 
         let p = s.indexOf('.'),
             ints = s.slice(0, p),
             digs = s.slice(p + 1);
-        return sign + Number(ints).toLocaleString() + '.' + Strings.padEnd(digs, d, '0');
+        return sign + N(ints).toLocaleString() + '.' + Strings.padEnd(digs, d, '0');
     }
 
     $N.equals = function (n: number | string | Number, dLen?: number): boolean {
-        if (this.isNaN()) throw new Errors.TypeError('This number is NaN!');
-        let num = Number(n);
-        if (num.isNaN()) throw new Errors.TypeError('The compared number is NaN!');
+        if (this.isNaN()) throw new TypeError('This number is NaN!');
+        let num = N(n);
+        if (num.isNaN()) throw new TypeError('The compared number is NaN!');
 
         return this.round(dLen).valueOf() == num.round(dLen).valueOf();
     }
 
     $N.add = function (n: number | string | Number): number {
-        const v = Number(n);
+        const v = N(n);
         if (this.valueOf() == 0) return v;
         if (v.valueOf() == 0) return this;
         if (this.isInt() && v.isInt()) return this.valueOf() + v.valueOf();
@@ -232,7 +241,7 @@ interface Number {
     }
 
     $N.sub = function (n: number | string | Number): number {
-        const v = Number(n);
+        const v = N(n);
         if (v.valueOf() == 0) return this;
         if (this.isInt() && v.isInt()) return this.valueOf() - v.valueOf();
 
@@ -245,7 +254,7 @@ interface Number {
 
     $N.mul = function (n: number | string | Number): number {
         if (this.valueOf() == 0) return 0;
-        const v = Number(n);
+        const v = N(n);
         if (v.valueOf() == 0) return 0;
         if (this.isInt() && v.isInt()) return v.valueOf() * this.valueOf();
 
@@ -253,22 +262,22 @@ interface Number {
             s2 = v.stringfy(),
             m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0,
             m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0,
-            n1 = Number(s1.replace('.', '')), n2 = Number(s2.replace('.', ''));
+            n1 = N(s1.replace('.', '')), n2 = N(s2.replace('.', ''));
         return n1 * n2 / Math.pow(10, m1 + m2); //WARN:原生的大整数（大于16位的整数）乘法还是有轻微精度问题
     }
 
     $N.div = function (n: number | string | Number): number {
         if (this.valueOf() == 0) return 0;
 
-        const v = Number(n);
-        if (v.valueOf() == 0) throw new Errors.ArithmeticError('Can not divide an Zero.');
+        const v = N(n);
+        if (v.valueOf() == 0) throw new ArithmeticError('Can not divide an Zero.');
 
         let s1 = this.stringfy(),
             s2 = v.stringfy(),
             m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0,
             m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0,
-            n1 = Number(s1.replace('.', '')),
-            n2 = Number(s2.replace('.', ''));
+            n1 = N(s1.replace('.', '')),
+            n2 = N(s2.replace('.', ''));
         return (n1 / n2) * Math.pow(10, m2 - m1);
     }
 
@@ -318,19 +327,32 @@ interface Number {
 
         return this.abs().toFixed(0).length;
     }
+    $N.fractionalPart = function(): string{
+        if (this.isInt() || this.isNaN()) return '';
+
+        let s = this.stringfy();
+        return s.slice(s.indexOf('.') + 1);
+    }
+    $N.integralPart = function (): string {
+        if (this.isNaN()) return '';
+
+        let s:string = this.stringfy(), i = s.indexOf('.');
+        if(i<0) return s;
+        return s.slice(0,i);
+    }
 }())
 
 module JS {
 
     export namespace util {
         /**
-             * 使用"+-*\"操作符，作两数运算
-             * @param v1 
-             * @param opt 
-             * @param v2 
-             */
-        let _opt = function (v1: number | string | Number, opt: '+' | '-' | '*' | '/', v2: number | string | Number): Number {
-            var rst = null, v = Number(v1);
+         * 使用"+-*\"操作符，作两数运算
+         * @param v1 
+         * @param opt 
+         * @param v2 
+         */
+        let N = Number, _opt = function (v1: number | string | Number, opt: '+' | '-' | '*' | '/', v2: number | string | Number): Number {
+            var rst = null, v = N(v1);
             switch (opt) {
                 case '+':
                     rst = v.add(v2);
@@ -386,7 +408,7 @@ module JS {
              */
             public static termwise(...args: Array<number | '+' | '-' | '*' | '/'>): number {
                 if (arguments.length <= 0) return 0;
-                if (arguments.length == 1) return Number(args[0]).valueOf();
+                if (arguments.length == 1) return N(args[0]).valueOf();
 
                 var rst = null;
                 for (var i = 1; i < args.length; i = i + 2) {
@@ -413,7 +435,7 @@ module JS {
                 let exp = expression.replace(/\s+/g, '');//去掉多余空格
                 if (values) {
                     Jsons.forEach(values, (n: number, k: string) => {
-                        exp = exp.replace(new RegExp(k, 'g'), Number(n) + '');
+                        exp = exp.replace(new RegExp(k, 'g'), N(n) + '');
                     })
                 }
 

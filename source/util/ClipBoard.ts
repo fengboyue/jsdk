@@ -46,7 +46,7 @@ module JS {
             private static _do(action:'copy'|'cut', clicker: string|HTMLElement, target: string|HTMLElement){
                 Bom.ready(()=>{
                     let cli = Dom.$1(clicker), tar = Dom.$1(target);
-                    if (!cli || !tar) throw new Errors.NotFoundError('The clicker or target not found!');
+                    if (!cli || !tar) throw new NotFoundError('The clicker or target not found!');
     
                     cli.attr('data-clipboard-action', action);
                     cli.attr('data-clipboard-target', '#'+tar.attr('id'));
@@ -62,7 +62,7 @@ module JS {
             public static copyText(clicker: string|HTMLElement, text: string) {
                 Bom.ready(()=>{
                     let cli = Dom.$1(clicker);
-                    if (cli) throw new Errors.NotFoundError('The clicker not found!');
+                    if (cli) throw new NotFoundError('The clicker not found!');
     
                     cli.attr('data-clipboard-text', text);
                     new ClipboardJS('#'+cli.attr('id'));

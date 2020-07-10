@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>KeyCode | JSDK 2.0.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.0.0 API">
+	<title>KeyCode | JSDK 2.1.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.1.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.0.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.1.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -105,7 +105,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="js.ui.keycode.html#_-5" class="tsd-kind-icon">;</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="js.ui.keycode.html#_-6" class="tsd-kind-icon">&#61;</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="js.ui.keycode.html#alt" class="tsd-kind-icon">Alt</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="js.ui.keycode.html#back" class="tsd-kind-icon">BACK</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="js.ui.keycode.html#back" class="tsd-kind-icon">Back</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="js.ui.keycode.html#capslock" class="tsd-kind-icon">Caps<wbr>Lock</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="js.ui.keycode.html#clear" class="tsd-kind-icon">Clear</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="js.ui.keycode.html#control" class="tsd-kind-icon">Control</a></li>
@@ -323,8 +323,8 @@
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
 					<a name="back" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> BACK</h3>
-					<div class="tsd-signature tsd-kind-icon">BACK<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 8</span></div>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> Back</h3>
+					<div class="tsd-signature tsd-kind-icon">Back<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 8</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
@@ -914,7 +914,10 @@
 						<a href="../modules/js.html">JS</a>
 						<ul>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-								<a href="../modules/js.data.html">data</a>
+								<a href="../modules/js.an.html">an</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.ds.html">ds</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.fx.html">fx</a>
@@ -943,6 +946,9 @@
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.util.html">util</a>
 							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.view.html">view</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -953,13 +959,10 @@
 						<a href="../enums/js.ui.lengthunit.html" class="tsd-kind-icon">Length<wbr>Unit</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.ui.color.html" class="tsd-kind-icon">Color</a>
+						<a href="js.ui.colors.html" class="tsd-kind-icon">Colors</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
 						<a href="js.ui.customelement.html" class="tsd-kind-icon">Custom<wbr>Element</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.ui.formview.html" class="tsd-kind-icon">Form<wbr>View</a>
 					</li>
 				</ul>
 				<ul class="current">
@@ -1021,7 +1024,7 @@
 								<a href="js.ui.keycode.html#alt" class="tsd-kind-icon">Alt</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="js.ui.keycode.html#back" class="tsd-kind-icon">BACK</a>
+								<a href="js.ui.keycode.html#back" class="tsd-kind-icon">Back</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
 								<a href="js.ui.keycode.html#capslock" class="tsd-kind-icon">Caps<wbr>Lock</a>
@@ -1276,23 +1279,8 @@
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
 						<a href="js.ui.lengths.html" class="tsd-kind-icon">Lengths</a>
 					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.ui.pageview.html" class="tsd-kind-icon">Page<wbr>View</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.ui.simpleview.html" class="tsd-kind-icon">Simple<wbr>View</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.ui.templateview.html" class="tsd-kind-icon">Template<wbr>View</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.ui.view.html" class="tsd-kind-icon">View</a>
-					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
 						<a href="../interfaces/js.ui.customelementconfig.html" class="tsd-kind-icon">Custom<wbr>Element<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.ui.formviewconfig.html" class="tsd-kind-icon">Form<wbr>View<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
 						<a href="../interfaces/js.ui.icrudwidget.html" class="tsd-kind-icon">ICRUDWidget</a>
@@ -1309,23 +1297,14 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
 						<a href="../interfaces/js.ui.iwidgetconfig.html" class="tsd-kind-icon">IWidget<wbr>Config</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.ui.pageviewconfig.html" class="tsd-kind-icon">Page<wbr>View<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.ui.simpleviewconfig.html" class="tsd-kind-icon">Simple<wbr>View<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.ui.templateviewconfig.html" class="tsd-kind-icon">Template<wbr>View<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.ui.viewconfig.html" class="tsd-kind-icon">View<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.ui.viewwidgetconfig.html" class="tsd-kind-icon">View<wbr>Widget<wbr>Config</a>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.ui.html#hex" class="tsd-kind-icon">HEX</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.ui.html#gradientcolor" class="tsd-kind-icon">Gradient<wbr>Color</a>
+						<a href="../modules/js.ui.html#hsla" class="tsd-kind-icon">HSLA</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.ui.html#hslastring" class="tsd-kind-icon">HSLAString</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="../modules/js.ui.html#keyboardevents" class="tsd-kind-icon">Keyboard<wbr>Events</a>
@@ -1346,10 +1325,13 @@
 						<a href="../modules/js.ui.html#mouseevents" class="tsd-kind-icon">Mouse<wbr>Events</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.ui.html#touchevents" class="tsd-kind-icon">Touch<wbr>Events</a>
+						<a href="../modules/js.ui.html#rgba" class="tsd-kind-icon">RGBA</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.ui.html#viewevents" class="tsd-kind-icon">View<wbr>Events</a>
+						<a href="../modules/js.ui.html#rgbastring" class="tsd-kind-icon">RGBAString</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.ui.html#touchevents" class="tsd-kind-icon">Touch<wbr>Events</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="../modules/js.ui.html#widgetevents" class="tsd-kind-icon">Widget<wbr>Events</a>

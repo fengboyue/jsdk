@@ -16,13 +16,11 @@ module JS {
 
         export type PageModelEvents = ListModelEvents | 'pagechanged';
 
-        /**
-         * [newPage, oldPage]
-         */
-        export type PageModelEventHandler_Pagechanged<M> = EventHandler2<M, number, number>;
-        
         export interface PageModelListeners<M = PageModel> extends ListModelListeners<M> {
-            pagechanged: PageModelEventHandler_Pagechanged<M>
+            /**
+             * @event (e, newPage, oldPage)
+             */
+            pagechanged: EventHandler2<M, number, number>
         };
 
         export interface PageQuery extends AjaxRequest {

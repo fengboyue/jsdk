@@ -38,7 +38,7 @@ module JS {
              * When sending data to the server, use this content type. Default is
              * "application/x-www-form-urlencoded; charset=UTF-8", which is fine for most cases. If you explicitly
              * pass in a content-type to $.ajax(), then it is always sent to the server (even if no data is sent).
-             * As of jQuery 1.6 you can pass false to tell jQuery to not set any content type header. Note: The W3C
+             * You can pass false to tell Ajax to not set any content type header. Note: The W3C
              * XMLHttpRequest specification dictates that the charset is always UTF-8; specifying another charset
              * will not force the browser to change the encoding. Note: For cross-domain requests, setting the
              * content type to anything other than application/x-www-form-urlencoded, multipart/form-data, or
@@ -68,62 +68,23 @@ module JS {
              */
             responseFilter?(data: string, type: 'xml' | 'html' | 'json' | 'text'): string;
             /**
-             * The type of data that you're expecting back from the server. If none is specified, jQuery will try
-             * to infer it based on the MIME type of the response (an XML MIME type will yield XML, in 1.4 JSON
-             * will yield a JavaScript object, in 1.4 script will execute the script, and anything else will be
-             * returned as a string). The available types (and the result passed as the first argument to your
-             * success callback) are:
-             *
-             * "xml": Returns a XML document that can be processed via jQuery.
-             *
-             * "html": Returns HTML as plain text; included script tags are evaluated when inserted in the DOM.
-             *
-             * "script": Evaluates the response as JavaScript and returns it as plain text. Disables caching by
-             * appending a query string parameter, _=[TIMESTAMP], to the URL unless the cache option is set to
-             * true. Note: This will turn POSTs into GETs for remote-domain requests.
-             *
-             * "json": Evaluates the response as JSON and returns a JavaScript object. Cross-domain "json" requests
-             * are converted to "jsonp" unless the request includes jsonp: false in its request options. The JSON
-             * data is parsed in a strict manner; any malformed JSON is rejected and a parse error is thrown. As of
-             * jQuery 1.9, an empty response is also rejected; the server should return a response of null or {}
-             * instead. (See json.org for more information on proper JSON formatting.)
-             *
-             * "jsonp": Loads in a JSON block using JSONP. Adds an extra "?callback=?" to the end of your URL to
-             * specify the callback. Disables caching by appending a query string parameter, "_=[TIMESTAMP]", to
-             * the URL unless the cache option is set to true.
-             *
+             * "xml": Returns a XML document that can be processed.<br>
+             * "html": Returns HTML as plain text; included script tags are evaluated when inserted in the DOM.<br>
+             * "json": Evaluates the response as JSON and returns a JavaScript object.<br>
              * "text": A plain text string.
-             *
-             * multiple, space-separated values: As of jQuery 1.5, jQuery can convert a dataType from what it
-             * received in the Content-Type header to what you require. For example, if you want a text response to
-             * be treated as XML, use "text xml" for the dataType. You can also make a JSONP request, have it
-             * received as text, and interpreted by jQuery as XML: "jsonp text xml". Similarly, a shorthand string
-             * such as "jsonp xml" will first attempt to convert from jsonp to xml, and, failing that, convert from
-             * jsonp to text, and then from text to xml.
              */
             type?: 'xml' | 'html' | 'json' | 'text';
-            /**
-             * A function to be called if the request fails. The function receives three arguments: The jqXHR (in
-             * jQuery 1.4.x, XMLHttpRequest) object, a string describing the type of error that occurred and an
-             * optional exception object, if one occurred. Possible values for the second argument (besides null)
-             * are "timeout", "error", "abort", and "parsererror". When an HTTP error occurs, errorThrown receives
-             * the textual portion of the HTTP status, such as "Not Found" or "Internal Server Error." As of jQuery
-             * 1.5, the error setting can accept an array of functions. Each function will be called in turn. Note:
-             * This handler is not called for cross-domain script and cross-domain JSONP requests. This is an Ajax Event.
-             */
-            // error?: TypeOrArray<Ajax.ErrorCallback<TContext>>;
 
             /**
              * An object of additional header key/value pairs to send along with requests using the XMLHttpRequest
              * transport. The header X-Requested-With: XMLHttpRequest is always added, but its default
-             * XMLHttpRequest value can be changed here. Values in the headers setting can also be overwritten from
-             * within the beforeSend function.
+             * XMLHttpRequest value can be changed here. 
              */
             headers?: JsonObject<string | null | undefined>;
             /**
              * Allow the request to be successful only if the response has changed since the last request. This is
-             * done by checking the Last-Modified header. Default value is false, ignoring the header. In jQuery
-             * 1.4 this technique also checks the 'etag' specified by the server to catch unmodified data.
+             * done by checking the Last-Modified header. Default value is false, ignoring the header. This technique 
+             * also checks the 'etag' specified by the server to catch unmodified data.
              */
             ifModified?: boolean;
 
@@ -156,15 +117,15 @@ module JS {
             /**
              * Call back before this send.
              */
-            beforeSend?: ((req: AjaxRequest) => boolean | void);
+            onSending?: ((req: AjaxRequest) => boolean | void);
             /**
              * Call back after this send when it would be successful.
              */
-            complete?: ((res: AjaxResponse) => void);
+            onCompleted?: ((res: AjaxResponse) => void);
             /**
              * Call back after this send when it would be failed.
              */
-            error?: ((res: AjaxResponse) => void);
+            onError?: ((res: AjaxResponse) => void);
         }
 
         export interface AjaxResponse {
@@ -180,41 +141,41 @@ module JS {
         }
 
         let ACCEPTS = {
-            '*': '*/*',
-            text: 'text/plain',
-            html: 'text/html',
-            xml: 'application/xml, text/xml',
-            json: 'application/json, text/javascript',
-            script: 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript'
-        }
-
-        let _judgeType = (cType: string): string => {
-            if (!cType) return 'json';//缺省为json
-
-            if (cType == ACCEPTS['text']) return 'text';
-            if (cType == ACCEPTS['html']) return 'html';
-            if (cType.indexOf('/xml') > 0) return 'xml';
-            return 'json';
-        }
-
-        let PARSERS = {
-            html: (str): Document => {
-                if (!str) return null;
-                return new DOMParser().parseFromString(str, 'text/html')
+                '*': '*/*',
+                text: 'text/plain',
+                html: 'text/html',
+                xml: 'application/xml, text/xml',
+                json: 'application/json, text/javascript',
+                script: 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript'
             },
-            xml: (str): XMLDocument => {
-                if (!str) return null;
-                let xml = new DOMParser().parseFromString(str, 'text/xml');
-                if (!xml || xml.getElementsByTagName("parsererror").length) throw new Error();
-                return xml
+
+            _judgeType = (cType: string): string => {
+                if (!cType) return 'json';//缺省为json
+
+                if (cType == ACCEPTS['text']) return 'text';
+                if (cType == ACCEPTS['html']) return 'html';
+                if (cType.indexOf('/xml') > 0) return 'xml';
+                return 'json';
             },
-            json: (str): JsonObject => {
-                return Jsons.parse(str)
+
+            PARSERS = {
+                html: (str): Document => {
+                    if (!str) return null;
+                    return new DOMParser().parseFromString(str, 'text/html')
+                },
+                xml: (str): XMLDocument => {
+                    if (!str) return null;
+                    let xml = new DOMParser().parseFromString(str, 'text/xml');
+                    if (!xml || xml.getElementsByTagName("parsererror").length) throw new NotHandledError();
+                    return xml
+                },
+                json: (str): JsonObject => {
+                    return Jsons.parse(str)
+                },
+                text: (str): string => {
+                    return str
+                }
             },
-            text: (str): string => {
-                return str
-            }
-        },
             _headers = function (xhr: XMLHttpRequest) {
                 let headers = {}, hString = xhr.getAllResponseHeaders(),
                     hRegexp = /([^\s]*?):[ \t]*([^\r\n]*)/mg,
@@ -247,19 +208,19 @@ module JS {
                     res.data = parser(raw)
                 } catch (e) {
                     res.statusText = 'parseerror';
-                    if (req.error) req.error(res);
+                    if (req.onError) req.onError(res);
                     if (Ajax._ON['error']) Ajax._ON['error'](res);
                     this.reject(res);
                 }
             },
             _rejectError = function (this: PromiseContext<any>, req: AjaxRequest, xhr: XMLHttpRequest, error: 'cancel' | 'timeout' | 'abort' | 'error') {
                 let res = _response(req, xhr, error);
-                if (req.error) req.error(res);
+                if (req.onError) req.onError(res);
                 if (Ajax._ON['error']) Ajax._ON['error'](res);
                 this.reject(res)
-            }
+            },
 
-        let CACHE = {
+            CACHE = {
                 lastModified: {},
                 etag: {}
             },
@@ -267,8 +228,8 @@ module JS {
                 if (xhr['_isTimeout']) return;//已超时不处理
 
                 let status = xhr.status, res: AjaxResponse = _response(req, xhr);
-                if (req.complete) req.complete(res);
-                if (Ajax._ON['complete']) Ajax._ON['complete'](res);
+                if (req.onCompleted) req.onCompleted(res);
+                if (Ajax._ON['completed']) Ajax._ON['completed'](res);
 
                 if (status >= 200 && status < 300 || status === 304) {
                     //cache modified
@@ -293,9 +254,9 @@ module JS {
                 } else {
                     this.reject(res)
                 }
-            }
+            },
 
-        let _queryString = function (data: string|JsonObject) {
+            _queryString = function (data: string|JsonObject) {
                 if (Types.isString(data)) return encodeURI(<string>data);
 
                 let str = '';
@@ -314,14 +275,14 @@ module JS {
                 url = url.replace(/([?&])_=[^&]*/, '$1');
                 if (!cache) url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
                 return url
-            }
+            },
 
-        let _beforeSend = function (fn, req) {
-            if (fn) {
-                if (fn(req) === false) return false//cancel send
-            }
-            return true
-        },
+            _sending = function (fn, req) {
+                if (fn) {
+                    if (fn(req) === false) return false//cancel send
+                }
+                return true
+            },
             /**
              * 注意：从Gecko 30.0 (Firefox 30.0 / Thunderbird 30.0 / SeaMonkey 2.27)，Blink 39.0和Edge 13开始，
              * 主线程上的同步请求由于对用户体验的负面影响而被弃用。
@@ -384,12 +345,12 @@ module JS {
                 }
 
                 //sending
-                let rst = _beforeSend(Ajax._ON['beforeSend'], req);
+                let rst = _sending(Ajax._ON['sending'], req);
                 if (rst === false) {
                     _rejectError.call(this, req, xhr, 'cancel');
                     return//cancel send
                 }
-                rst = _beforeSend(req.beforeSend, req);
+                rst = _sending(req.onSending, req);
                 if (rst === false) {
                     _rejectError.call(this, req, xhr, 'cancel');
                     return//cancel send
@@ -435,13 +396,13 @@ module JS {
              */
             public static send(req: AjaxRequest | URLString) {
                 let q = this.toRequest(req);
-                return q.thread?this.sendInThread(req):this.sendInMain(req)
+                return q.thread?this._inThread(req):this._inMain(req)
             }
 
             /**
              * Send an ajax request in main thread.
              */
-            private static sendInMain(req: AjaxRequest | URLString) {
+            private static _inMain(req: AjaxRequest | URLString) {
                 return Promises.create<AjaxResponse>(function () {
                     _send.call(this, req)
                 })
@@ -467,16 +428,16 @@ module JS {
             /**
              * Call back before every request sending.
              */
-            public static on(ev: 'beforeSend', fn: (req: AjaxRequest) => boolean | void)
+            public static on(ev: 'sending', fn: (req: AjaxRequest) => boolean | void)
             /**
              * Call back after every request sending when it would be successful.
              */
-            public static on(ev: 'complete', fn: (res: AjaxResponse) => void)
+            public static on(ev: 'completed', fn: (res: AjaxResponse) => void)
             /**
              * Call back after this request sending when it would be failed.
              */
             public static on(ev: 'error', fn: (res: AjaxResponse) => void)
-            public static on(ev: 'beforeSend' | 'complete' | 'error', fn: Function) {
+            public static on(ev: string, fn: Function) {
                 this._ON[ev] = fn
             }
 
@@ -491,7 +452,7 @@ module JS {
             /**
              * Send an ajax request in a new webwork.
              */
-            private static sendInThread(req: AjaxRequest | URLString) {
+            private static _inThread(req: AjaxRequest | URLString) {
                 let r:AjaxRequest = this.toRequest(req);
                 r.url = URI.toAbsoluteURL(r.url);
                 return Promises.create<AjaxResponse>(function(){
@@ -499,7 +460,7 @@ module JS {
                     new Thread({
                         run:function(){
                             this.onposted((request)=>{
-                                (<any>self).Ajax.sendInMain(request).then((res)=>{
+                                (<any>self).Ajax._inMain(request).then((res)=>{
                                     delete res.xhr;
                                     this.postMain(res);
                                 })

@@ -1,0 +1,14 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../dist/jsmv.js",
+        "noResolve": true,
+        "noLib": true
+    },
+    "include": [
+        "../source/ioc/*.ts",
+        "../source/model/*.ts",
+        "../source/view/View.ts",
+        "../source/view/*.ts"
+    ]
+} 

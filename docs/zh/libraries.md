@@ -38,7 +38,7 @@ JS.imports('$xyz').then(()=>{ //$xyz is JLU format
 ```
 ### JSDK全局配置
 <code>jsdk-config.js</code>是全局配置文件。<br>
-你可以直接修改此文件，你可以在代码中动态覆写其配置项：
+你可以直接修改此文件，也可以在代码中动态覆写其配置项：
 
 ```javascript
 JS.config({
@@ -94,33 +94,35 @@ JSDK被划分成多个模块（类库）。最底层的核心模块是<b>system<
 ### 模块清单
 模块名|备注|所含包|依赖模块|最小尺寸
 ---|---|---|---|---
-system|核心模块|JS.util.* <br>JS.lang.* <br>JS.reflect.* <br>JS.ioc.* <br>JS.store.* <br>JS.data.* ||114kb
-jsui|Model包及UI接口|JS.model.* <br>JS.ui.* |system |32kb
-jsfx|JS FaceX：一组widget组件包 |JS.fx.* |system<br>jsui|js: 112kb<br>css: 104kb
-jsvp|JSDK应用层框架|JS.app.* |system<br>jsui|4kb
+system|核心库|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||104kb
+jsds|数据结构库|JS.ds.* |system |6kb
+jsui|UI相关库|JS.ui.* |system |6kb
+jsmv|模型、视图及IOC库|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
+jsan|动画库|JS.an.* |jsui |16kb
+jsfx|widget组件库 |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
+jsvp|应用层框架|JS.store.*<br>JS.app.* |jsmv|8kb
 jsunit|单元测试框架|JS.unit.* |system|js: 9kb<br>css: 669b
-jsdk|包含全部模块|JS.* |system<br>jsui<br>jsfx<br>jsvp<br>jsunit|253kb
+jsdk|包含上述全部模块|JS.* ||js: 270kb
 
 ### 自定义模块
 当你需要更小尺寸的模块文件，你可以修改build/目录下的构建脚本，去掉不需要用到的类或包，重新构建出自定义的模块文件。
 
-比如，你不需要用到JSDK自带的堆栈、队列、链表等数据结构类，你可以去掉JS.data.*。具体操作如下：
-1. 打开build/system.json文件，删除此行：
+比如，你不需要用到JSFX中的Button类，你可以从jsfx库的构建脚本中去掉JS.fx.Button。具体操作如下：
+1. 打开build/jsfx.json文件，删除此行：
 
 ```
-../source/data/*.ts
+"../source/fx/Button.ts",
 ```
 
-2. 保存后重新执行命令行：
+2. 保存后执行构建命令：
 
 ```
-./build.sh
+./build-module.sh jsfx
 ```
-执行后，dist/目录下的system.js及jsdk.js里不再包含data包。
+执行后，dist/目录下的jsfx.js及jsfx.min.js里不再包含Button类。
 
 <p class='tip'>
 警告：<br>
-某些类可能被上层类所引用，所以去掉这些类前请确认那些上层类不会被用到。<br>
-比如，JS.data.BiMap(双向映射表)被JS.fx.Uploader组件所用到，去掉JS.data包将导致Uploader组件不可用。如果你需要用到Uploader组件，可以稍作调整：在system.json文件中添加上BiMap.ts。
+某些类可能被其他类所引用，所以去掉这些类前请确认那些其他类不会被用到。
 </p>
 

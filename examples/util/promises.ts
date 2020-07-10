@@ -22,16 +22,16 @@ let c = Promises.createPlan<string>(function (s) {
 
 $1('#order').on('click',() => {    
     Promises.order([a, b, c]).then((s) => {
-        Konsole.print('The result of order mode = ' + s);
+        Konsole.print('The result of "order" mode = ' + s);
     });
 })
 $1('#all').on('click',() => {
     Promises.all([a, b, c]).then((s) => {
-        Konsole.print('The result of all mode = ' + s);
+        Konsole.print('The result of "all" mode = ' + s);
     });
 })
 $1('#race').on('click',() => {
     Promises.race([a, b, c]).then((s) => {
-        Konsole.print('The result of race mode = ' + s);
+        Konsole.print('The result of "race" mode = ' + s);
     });
 })

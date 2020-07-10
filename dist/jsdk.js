@@ -5,20 +5,904 @@
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        let AnimState;
+        (function (AnimState) {
+            AnimState[AnimState["STOPPED"] = 0] = "STOPPED";
+            AnimState[AnimState["RUNNING"] = 1] = "RUNNING";
+            AnimState[AnimState["PAUSED"] = 2] = "PAUSED";
+        })(AnimState = an.AnimState || (an.AnimState = {}));
+        class AnimConfig {
+            constructor() {
+                this.autoReverse = false;
+                this.autoReset = false;
+                this.duration = 3000;
+                this.loop = 1;
+                this.delay = 0;
+                this.direction = 'forward';
+                this.easing = an.Easings.LINEAR;
+            }
+        }
+        an.AnimConfig = AnimConfig;
+        class Anim {
+            constructor(cfg) {
+                this._timer = null;
+                this._dir = 'forward';
+                this._loop = 0;
+                this._init();
+                this.config(cfg);
+            }
+            _init() {
+                this.config(new AnimConfig());
+            }
+            _convertFrame(f) {
+                return f;
+            }
+            config(cfg) {
+                if (!cfg)
+                    return this._cfg;
+                this._cfg = Jsons.union(this._cfg, cfg);
+                this.direction(this._cfg.direction);
+                return this;
+            }
+            direction(d) {
+                if (!d)
+                    return this._dir;
+                this._dir = d;
+                return this;
+            }
+            getState() {
+                return this._timer ? this._timer.getState() : AnimState.STOPPED;
+            }
+            getLooped() {
+                return this._loop;
+            }
+            _reset() {
+                let m = this;
+                m._loop = 0;
+                m._dir = m._cfg.direction;
+                if (m._timer)
+                    m._timer.stop();
+            }
+            pause() {
+                if (this._timer)
+                    this._timer.pause();
+                return this;
+            }
+            stop() {
+                this._reset();
+                return this;
+            }
+        }
+        an.Anim = Anim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var AnimState = JS.an.AnimState;
+var AnimConfig = JS.an.AnimConfig;
+var Anim = JS.an.Anim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class AnimTimer extends Timer {
+            constructor(tick, cfg) {
+                super(tick, cfg);
+                let c = this._cfg;
+                c.duration = c.duration || 1;
+            }
+            _loop(begin) {
+                if (this._sta != TimerState.RUNNING)
+                    return;
+                let p = this._cfg.loop, d = this._cfg.duration, t0 = System.highResTime(), t = t0 - this._ts0;
+                if (this._count < p) {
+                    this._et = t0 - this._ts;
+                    if (begin)
+                        this._bus.fire('looping', [this._count + 1]);
+                    let lp = false;
+                    if (t > d) {
+                        this._bus.fire('looped', [++this._count]);
+                        this._ts0 = t0;
+                        lp = true;
+                    }
+                    else {
+                        this._tick.call(this, t);
+                    }
+                    this._ts = t0;
+                    this._timer = requestAnimationFrame(() => {
+                        this._loop(lp);
+                    });
+                }
+                else {
+                    this._finish();
+                }
+            }
+            _cycle() {
+                this._timer = requestAnimationFrame(() => {
+                    this._loop(true);
+                });
+            }
+            _cancelTimer() {
+                if (this._timer)
+                    cancelAnimationFrame(this._timer);
+                this._timer = null;
+            }
+        }
+        an.AnimTimer = AnimTimer;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var AnimTimer = JS.an.AnimTimer;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        const PI = Math.PI, pow = Math.pow, sqrt = Math.sqrt, abs = Math.abs, sin = Math.sin, cos = Math.cos, asin = Math.asin;
+        class Easings {
+        }
+        Easings.LINEAR = function (t, b, c, d) {
+            return c * t / d + b;
+        };
+        Easings.QUAD_IN = function (t, b, c, d) {
+            return c * (t /= d) * t + b;
+        };
+        Easings.QUAD_OUT = function (t, b, c, d) {
+            return -c * (t /= d) * (t - 2) + b;
+        };
+        Easings.QUAD_IN_OUT = function (t, b, c, d) {
+            if ((t /= d / 2) < 1)
+                return c / 2 * t * t + b;
+            return -c / 2 * ((--t) * (t - 2) - 1) + b;
+        };
+        Easings.CUBIC_IN = function (t, b, c, d) {
+            return c * (t /= d) * t * t + b;
+        };
+        Easings.CUBIC_OUT = function (t, b, c, d) {
+            return c * ((t = t / d - 1) * t * t + 1) + b;
+        };
+        Easings.CUBIC_IN_OUT = function (t, b, c, d) {
+            if ((t /= d / 2) < 1)
+                return c / 2 * t * t * t + b;
+            return c / 2 * ((t -= 2) * t * t + 2) + b;
+        };
+        Easings.QUART_IN = function (t, b, c, d) {
+            return c * (t /= d) * t * t * t + b;
+        };
+        Easings.QUART_OUT = function (t, b, c, d) {
+            return -c * ((t = t / d - 1) * t * t * t - 1) + b;
+        };
+        Easings.QUART_IN_OUT = function (t, b, c, d) {
+            if ((t /= d / 2) < 1)
+                return c / 2 * t * t * t * t + b;
+            return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
+        };
+        Easings.QUINT_IN = function (t, b, c, d) {
+            return c * (t /= d) * t * t * t * t + b;
+        };
+        Easings.QUINT_OUT = function (t, b, c, d) {
+            return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
+        };
+        Easings.QUINT_IN_OUT = function (t, b, c, d) {
+            if ((t /= d / 2) < 1)
+                return c / 2 * t * t * t * t * t + b;
+            return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
+        };
+        Easings.SINE_IN = function (t, b, c, d) {
+            return -c * cos(t / d * (PI / 2)) + c + b;
+        };
+        Easings.SINE_OUT = function (t, b, c, d) {
+            return c * sin(t / d * (PI / 2)) + b;
+        };
+        Easings.SINE_IN_OUT = function (t, b, c, d) {
+            return -c / 2 * (cos(PI * t / d) - 1) + b;
+        };
+        Easings.EXPO_IN = function (t, b, c, d) {
+            return (t == 0) ? b : c * pow(2, 10 * (t / d - 1)) + b;
+        };
+        Easings.EXPO_OUT = function (t, b, c, d) {
+            return (t == d) ? b + c : c * (-pow(2, -10 * t / d) + 1) + b;
+        };
+        Easings.EXPO_IN_OUT = function (t, b, c, d) {
+            if (t == 0)
+                return b;
+            if (t == d)
+                return b + c;
+            if ((t /= d / 2) < 1)
+                return c / 2 * pow(2, 10 * (t - 1)) + b;
+            return c / 2 * (-pow(2, -10 * --t) + 2) + b;
+        };
+        Easings.CIRC_IN = function (t, b, c, d) {
+            return -c * (sqrt(1 - (t /= d) * t) - 1) + b;
+        };
+        Easings.CIRC_OUT = function (t, b, c, d) {
+            return c * sqrt(1 - (t = t / d - 1) * t) + b;
+        };
+        Easings.CIRC_IN_OUT = function (t, b, c, d) {
+            if ((t /= d / 2) < 1)
+                return -c / 2 * (sqrt(1 - t * t) - 1) + b;
+            return c / 2 * (sqrt(1 - (t -= 2) * t) + 1) + b;
+        };
+        Easings.ELASTIC_IN = function (t, b, c, d) {
+            var s = 1.70158;
+            var p = 0;
+            var a = c;
+            if (t == 0)
+                return b;
+            if ((t /= d) == 1)
+                return b + c;
+            if (!p)
+                p = d * .3;
+            if (a < abs(c)) {
+                a = c;
+                var s = p / 4;
+            }
+            else
+                var s = p / (2 * PI) * asin(c / a);
+            return -(a * pow(2, 10 * (t -= 1)) * sin((t * d - s) * (2 * PI) / p)) + b;
+        };
+        Easings.ELASTIC_OUT = function (t, b, c, d) {
+            var s = 1.70158;
+            var p = 0;
+            var a = c;
+            if (t == 0)
+                return b;
+            if ((t /= d) == 1)
+                return b + c;
+            if (!p)
+                p = d * .3;
+            if (a < abs(c)) {
+                a = c;
+                var s = p / 4;
+            }
+            else
+                var s = p / (2 * PI) * asin(c / a);
+            return a * pow(2, -10 * t) * sin((t * d - s) * (2 * PI) / p) + c + b;
+        };
+        Easings.ELASTIC_IN_OUT = function (t, b, c, d) {
+            var s = 1.70158;
+            var p = 0;
+            var a = c;
+            if (t == 0)
+                return b;
+            if ((t /= d / 2) == 2)
+                return b + c;
+            if (!p)
+                p = d * (.3 * 1.5);
+            if (a < abs(c)) {
+                a = c;
+                var s = p / 4;
+            }
+            else
+                var s = p / (2 * PI) * asin(c / a);
+            if (t < 1)
+                return -.5 * (a * pow(2, 10 * (t -= 1)) * sin((t * d - s) * (2 * PI) / p)) + b;
+            return a * pow(2, -10 * (t -= 1)) * sin((t * d - s) * (2 * PI) / p) * .5 + c + b;
+        };
+        Easings.BACK_IN = function (t, b, c, d, s) {
+            if (s == undefined)
+                s = 1.70158;
+            return c * (t /= d) * t * ((s + 1) * t - s) + b;
+        };
+        Easings.BACK_OUT = function (t, b, c, d, s) {
+            if (s == undefined)
+                s = 1.70158;
+            return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
+        };
+        Easings.BACK_IN_OUT = function (t, b, c, d, s) {
+            if (s == undefined)
+                s = 1.70158;
+            if ((t /= d / 2) < 1)
+                return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
+            return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
+        };
+        Easings.BOUNCE_IN = function (t, b, c, d) {
+            return c - Easings.BOUNCE_OUT(d - t, 0, c, d) + b;
+        };
+        Easings.BOUNCE_OUT = function (t, b, c, d) {
+            const n1 = 2.75, n2 = 7.5625;
+            if ((t /= d) < (1 / n1)) {
+                return c * (n2 * t * t) + b;
+            }
+            else if (t < (2 / n1)) {
+                return c * (n2 * (t -= (1.5 / n1)) * t + .75) + b;
+            }
+            else if (t < (2.5 / 2.75)) {
+                return c * (n2 * (t -= (2.25 / n1)) * t + .9375) + b;
+            }
+            else {
+                return c * (n2 * (t -= (2.625 / n1)) * t + .984375) + b;
+            }
+        };
+        Easings.BOUNCE_IN_OUT = function (t, b, c, d) {
+            if (t < d / 2)
+                return Easings.BOUNCE_IN(t * 2, 0, c, d) * .5 + b;
+            return Easings.BOUNCE_OUT(t * 2 - d, 0, c, d) * .5 + c * .5 + b;
+        };
+        an.Easings = Easings;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var Easings = JS.an.Easings;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class ElementAnimConfig extends an.AnimConfig {
+        }
+        an.ElementAnimConfig = ElementAnimConfig;
+        class ElementAnim extends an.Anim {
+            constructor(cfg) {
+                super(cfg);
+            }
+            _parseFrames(frames) {
+                let m = this;
+                Jsons.some(frames, (v, k) => {
+                    if (k == 'from' || k == '0%') {
+                        m._from = this._convertFrame(v);
+                    }
+                    else if (k == 'to' || k == '100%') {
+                        m._to = this._convertFrame(v);
+                    }
+                    return m._from != void 0 && m._to != void 0;
+                });
+            }
+            config(cfg) {
+                if (!cfg)
+                    return this._cfg;
+                if (cfg.el)
+                    this._el = $1(cfg.el);
+                if (cfg.frames)
+                    this._parseFrames(cfg.frames);
+                return super.config(cfg);
+            }
+            _num(k) {
+                return k ? Number(k.substr(0, k.length - 1)) : 0;
+            }
+            _newFrame(from, to, t, d, e) {
+                if (Types.isNumber(from)) {
+                    return this._newVal(t, d, from, to, e, this._frame);
+                }
+                else {
+                    let json = {};
+                    Jsons.forEach(from, (v, k) => {
+                        json[k] = this._newVal(t, d, from[k], to[k], e, this._frame == void 0 ? null : this._frame[k]);
+                    });
+                    return json;
+                }
+            }
+            _newVal(t, d, from, to, e, base) {
+                let n = e.call(null, t, from, to - from, d);
+                if (base == void 0)
+                    return n;
+                let tx = from >= to ? 'min' : 'max';
+                return Math[tx](n, base);
+            }
+            _calc(d, t, e) {
+                let m = this, fwd = m._dir == 'forward';
+                if (!Check.isEmpty(this._frames)) {
+                    let n = Number(t * 100 / d).round(2), key, delKeys = [];
+                    Jsons.forEach(this._frames, (v, k) => {
+                        let nk = this._num(k);
+                        if (!nk.isNaN() && nk.round(2) <= n) {
+                            delKeys.push(k);
+                            if (nk > this._num(key))
+                                key = k;
+                        }
+                    });
+                    if (key) {
+                        m._frame = this._convertFrame(this._frames[key]);
+                        delKeys.forEach((v) => { delete this._frames[v]; });
+                        return m._frame;
+                    }
+                }
+                let from = fwd ? m._from : m._to, to = fwd ? m._to : m._from;
+                return this._newFrame(from, to, t, d, e);
+            }
+            _reset4loop() {
+                let m = this;
+                m._frame = null;
+                m._frames = Jsons.clone(m._cfg.frames);
+                delete m._frames.from;
+                delete m._frames.to;
+                delete m._frames['0%'];
+                delete m._frames['100%'];
+            }
+            _reset() {
+                let m = this;
+                m._frame = null;
+                m._frames = null;
+                super._reset();
+            }
+            _resetFrame() {
+                this._onUpdate(this._dir == 'forward' ? this._from : this._to);
+            }
+            _resetInitial() { }
+            play() {
+                let m = this, r = m._timer, c = m._cfg;
+                if (!r) {
+                    m._reset();
+                    r = new an.AnimTimer((et) => {
+                        m._onUpdate.call(m, m._calc(c.duration, et, c.easing));
+                    }, {
+                        delay: c.delay,
+                        duration: c.duration,
+                        loop: c.loop
+                    });
+                    if (c.onStarting)
+                        r.on('starting', () => {
+                            c.onStarting.call(m);
+                            m._resetFrame();
+                        });
+                    r.on('looping', (e, ct) => {
+                        m._loop = ct;
+                        m._reset4loop();
+                        if (ct > 1 && c.autoReverse)
+                            m.direction(m._dir == 'backward' ? 'forward' : 'backward');
+                        if (!c.autoReverse)
+                            m._resetFrame();
+                    });
+                    r.on('finished', () => {
+                        if (c.autoReset)
+                            m._resetInitial();
+                        if (c.onFinished)
+                            c.onFinished.call(m);
+                        m._reset();
+                    });
+                    m._timer = r;
+                }
+                if (m.getState() == an.AnimState.RUNNING)
+                    return m;
+                if (m._from == void 0 || m._to == void 0)
+                    throw new NotFoundError('Not found "from" or "to"!');
+                r.start();
+                return m;
+            }
+            stop() {
+                super.stop();
+                let m = this, c = m._cfg;
+                if (c.autoReset)
+                    m._resetInitial();
+                return m;
+            }
+        }
+        an.ElementAnim = ElementAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var ElementAnimConfig = JS.an.ElementAnimConfig;
+var ElementAnim = JS.an.ElementAnim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class FadeAnimConfig extends an.ElementAnimConfig {
+        }
+        an.FadeAnimConfig = FadeAnimConfig;
+        class FadeAnim extends an.ElementAnim {
+            constructor(cfg) {
+                super(cfg);
+            }
+            config(cfg) {
+                if (!cfg)
+                    return this._cfg;
+                let m = super.config(cfg);
+                if (this._el)
+                    this._o = this._el.computedStyle().opacity || '1';
+                return m;
+            }
+            _onUpdate(f) {
+                this._el.style.opacity = f + '';
+            }
+            _resetInitial() {
+                this._el.style.opacity = this._o;
+            }
+        }
+        an.FadeAnim = FadeAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var FadeAnimConfig = JS.an.FadeAnimConfig;
+var FadeAnim = JS.an.FadeAnim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class GradientAnimConfig extends an.ElementAnimConfig {
+        }
+        an.GradientAnimConfig = GradientAnimConfig;
+        class GradientAnim extends an.ElementAnim {
+            constructor(cfg) {
+                super(cfg);
+            }
+            config(cfg) {
+                if (!cfg)
+                    return this._cfg;
+                let m = super.config(cfg);
+                if (this._el) {
+                    let s = this._el.computedStyle();
+                    this._cls = {
+                        color: s.color,
+                        backgroundColor: s.backgroundColor,
+                        borderColor: s.borderColor,
+                        borderTopColor: s.borderTopColor,
+                        borderRightColor: s.borderRightColor,
+                        borderBottomColor: s.borderBottomColor,
+                        borderLeftColor: s.borderLeftColor
+                    };
+                }
+                return m;
+            }
+            _newColor(t, d, from, to, k, e, base) {
+                return this._newVal(t, d, from[k], to[k], e, base == null ? null : base[k]);
+            }
+            _convertFrame(f) {
+                let json = {};
+                Jsons.forEach(f, (v, k) => {
+                    json[k] = Colors.hex2rgba(v);
+                });
+                return json;
+            }
+            _newFrame(from, to, t, d, e) {
+                let json = {};
+                Jsons.forEach(from, (v, k) => {
+                    json[k] = {};
+                    Jsons.forEach(from[k], (vv, kk) => {
+                        json[k][kk] = this._newColor(t, d, from[k], to[k], kk, e, this._frame == void 0 ? null : this._frame[k]);
+                    });
+                });
+                return json;
+            }
+            _onUpdate(j) {
+                let el = this._el;
+                Jsons.forEach(j, (v, k) => {
+                    el.style[k] = Colors.rgba2css(v);
+                });
+            }
+            _resetInitial() {
+                let el = this._el, c = this._cls;
+                Jsons.forEach(c, (v, k) => {
+                    el.style[k] = v;
+                });
+            }
+        }
+        an.GradientAnim = GradientAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var GradientAnimConfig = JS.an.GradientAnimConfig;
+var GradientAnim = JS.an.GradientAnim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class MoveAnimConfig extends an.ElementAnimConfig {
+        }
+        an.MoveAnimConfig = MoveAnimConfig;
+        class MoveAnim extends an.ElementAnim {
+            constructor(cfg) {
+                super(cfg);
+            }
+            config(cfg) {
+                if (!cfg)
+                    return this._cfg;
+                let m = super.config(cfg);
+                if (this._el) {
+                    let s = this._el.computedStyle();
+                    this._xy = {
+                        x: Lengths.toNumber(s.left),
+                        y: Lengths.toNumber(s.top)
+                    };
+                }
+                return m;
+            }
+            _onUpdate(f) {
+                let el = this._el;
+                if (f.x != void 0)
+                    el.style.left = f.x + 'px';
+                if (f.y != void 0)
+                    el.style.top = f.y + 'px';
+            }
+            _resetInitial() {
+                let el = this._el, xy = this._xy;
+                el.style.left = xy.x + 'px';
+                el.style.top = xy.y + 'px';
+            }
+        }
+        an.MoveAnim = MoveAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var MoveAnimConfig = JS.an.MoveAnimConfig;
+var MoveAnim = JS.an.MoveAnim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class ParallelAnimConfig extends an.AnimConfig {
+        }
+        an.ParallelAnimConfig = ParallelAnimConfig;
+        class ParallelAnim extends an.Anim {
+            constructor(cfg) {
+                super(cfg);
+                this._sta = an.AnimState.STOPPED;
+            }
+            getState() {
+                return this._sta;
+            }
+            config(cfg) {
+                if (!cfg)
+                    return this._cfg;
+                super.config(cfg);
+                let c = this._cfg, as = c.anims;
+                if (!Check.isEmpty(as)) {
+                    this._plans = [];
+                    as.forEach((a, i) => {
+                        a.config(Jsons.union(c, a.config()));
+                        this._plans.push(Promises.createPlan(function () {
+                            a.config({
+                                onFinished: () => { this.resolve(); }
+                            });
+                            a.play();
+                        }));
+                    });
+                }
+                return this;
+            }
+            play() {
+                let m = this, c = m._cfg;
+                if (Check.isEmpty(c.anims) || m.getState() == an.AnimState.RUNNING)
+                    return m;
+                m._sta = an.AnimState.RUNNING;
+                Promises.all(m._plans).always(() => {
+                    if (c.onFinished)
+                        c.onFinished.call(this);
+                });
+                return m;
+            }
+            pause() {
+                let m = this, c = m._cfg;
+                if (m._sta != an.AnimState.RUNNING)
+                    return m;
+                m._sta = an.AnimState.PAUSED;
+                if (!Check.isEmpty(c.anims)) {
+                    c.anims.forEach(a => {
+                        a.pause();
+                    });
+                }
+                return m;
+            }
+            stop() {
+                let m = this, c = m._cfg;
+                m._sta = an.AnimState.STOPPED;
+                if (!Check.isEmpty(c.anims)) {
+                    c.anims.forEach(a => {
+                        a.stop();
+                    });
+                }
+                return m;
+            }
+        }
+        an.ParallelAnim = ParallelAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var ParallelAnimConfig = JS.an.ParallelAnimConfig;
+var ParallelAnim = JS.an.ParallelAnim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class RotateAnimConfig extends an.ElementAnimConfig {
+        }
+        an.RotateAnimConfig = RotateAnimConfig;
+        class RotateAnim extends an.ElementAnim {
+            constructor(cfg) {
+                super(cfg);
+            }
+            _newVal(t, d, from, to, e, base) {
+                let v = super._newVal(t, d, from, to, e, base);
+                return v < 0 ? 0 : (v > 360 ? 360 : v);
+            }
+            _onUpdate(v) {
+                let el = this._el;
+                if (!Types.isNumber(v)) {
+                    let x = v.x, y = v.y, z = v.z;
+                    if (x != void 0)
+                        el.style.transform = ` rotateX(${x}deg)`;
+                    if (y != void 0)
+                        el.style.transform += ` rotateY(${y}deg)`;
+                    if (z != void 0)
+                        el.style.transform += ` rotateZ(${z}deg)`;
+                }
+                else {
+                    el.style.transform = `rotate(${v}deg)`;
+                }
+            }
+            _resetInitial() {
+                this._el.style.transform = `rotate(0deg)`;
+            }
+        }
+        an.RotateAnim = RotateAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var RotateAnimConfig = JS.an.RotateAnimConfig;
+var RotateAnim = JS.an.RotateAnim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class ScaleAnimConfig extends an.ElementAnimConfig {
+        }
+        an.ScaleAnimConfig = ScaleAnimConfig;
+        class ScaleAnim extends an.ElementAnim {
+            constructor(cfg) {
+                super(cfg);
+            }
+            _resetInitial() {
+                this._el.style.transform = `scaleX(1) scaleY(1) scaleZ(1)`;
+            }
+            _onUpdate(v) {
+                let x, y, z;
+                if (!Types.isNumber(v)) {
+                    x = v.x;
+                    y = v.y;
+                    z = v.z;
+                }
+                else {
+                    x = v;
+                    y = y;
+                }
+                this._el.style.transform = `scaleX(${x == void 0 ? 1 : x}) scaleY(${y == void 0 ? 1 : y}) scaleZ(${z == void 0 ? 1 : z})`;
+            }
+        }
+        an.ScaleAnim = ScaleAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var ScaleAnimConfig = JS.an.ScaleAnimConfig;
+var ScaleAnim = JS.an.ScaleAnim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class SequentialAnimConfig extends an.AnimConfig {
+        }
+        an.SequentialAnimConfig = SequentialAnimConfig;
+        class SequentialAnim extends an.Anim {
+            constructor(cfg) {
+                super(cfg);
+                this._i = 0;
+                this._sta = an.AnimState.STOPPED;
+            }
+            config(cfg) {
+                if (!cfg)
+                    return this._cfg;
+                super.config(cfg);
+                let c = this._cfg, as = c.anims;
+                if (!Check.isEmpty(as)) {
+                    as.forEach((a, i) => {
+                        a.config(Jsons.union(c, a.config()));
+                        if (i < as.length - 1) {
+                            a.config({
+                                onFinished: () => {
+                                    as[i + 1].play();
+                                }
+                            });
+                        }
+                        else {
+                            a.config({
+                                onFinished: () => {
+                                    if (c.onFinished)
+                                        c.onFinished.call(this);
+                                }
+                            });
+                        }
+                        a.config({
+                            onStarting: () => { this._i = i; }
+                        });
+                    });
+                }
+                return this;
+            }
+            play() {
+                let m = this, c = m._cfg;
+                if (Check.isEmpty(c.anims) || m.getState() == an.AnimState.RUNNING)
+                    return m;
+                c.anims[m._i].play();
+                return m;
+            }
+            pause() {
+                let m = this, c = m._cfg;
+                if (m._sta != an.AnimState.RUNNING)
+                    return m;
+                m._sta = an.AnimState.PAUSED;
+                if (!Check.isEmpty(c.anims))
+                    c.anims[m._i].pause();
+                return m;
+            }
+            stop() {
+                let m = this, c = m._cfg;
+                m._sta = an.AnimState.STOPPED;
+                if (!Check.isEmpty(c.anims))
+                    c.anims[m._i].stop();
+                m._i = 0;
+                return m;
+            }
+        }
+        an.SequentialAnim = SequentialAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var SequentialAnimConfig = JS.an.SequentialAnimConfig;
+var SequentialAnim = JS.an.SequentialAnim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class SkewAnimConfig extends an.ElementAnimConfig {
+            constructor() {
+                super(...arguments);
+                this.firstMode = 'both';
+            }
+        }
+        an.SkewAnimConfig = SkewAnimConfig;
+        class SkewAnim extends an.ElementAnim {
+            constructor(cfg) {
+                super(cfg);
+            }
+            _init() {
+                this.config(new SkewAnimConfig());
+            }
+            _resetInitial() {
+                this._el.style.transform = `skew(0deg,0deg)`;
+            }
+            _onUpdate(f) {
+                let m = this._cfg.firstMode, el = this._el;
+                if (m == 'both') {
+                    el.style.transform = `skew(${f.aX || 0}deg,${f.aY || 0}deg)`;
+                }
+                else {
+                    let sx = `skewX(${f.aX || 0}deg)`, sy = `skewY(${f.aY || 0}deg)`;
+                    el.style.transform = m == 'x' ? `${sx} ${sy}` : `${sy} ${sx}`;
+                }
+            }
+        }
+        an.SkewAnim = SkewAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var SkewAnimConfig = JS.an.SkewAnimConfig;
+var SkewAnim = JS.an.SkewAnim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        class TranslateAnimConfig extends an.ElementAnimConfig {
+        }
+        an.TranslateAnimConfig = TranslateAnimConfig;
+        class TranslateAnim extends an.ElementAnim {
+            constructor(cfg) {
+                super(cfg);
+            }
+            _resetInitial() {
+                this._el.style.transform = `translateX(0px) translateY(0px) translateZ(0px)`;
+            }
+            _onUpdate(f) {
+                this._el.style.transform = `translateX(${f.oX || 0}px) translateY(${f.oY || 0}px) translateZ(${f.oZ || 0}px)`;
+            }
+        }
+        an.TranslateAnim = TranslateAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var TranslateAnimConfig = JS.an.TranslateAnimConfig;
+var TranslateAnim = JS.an.TranslateAnim;
 (function () {
     var $A = Array.prototype;
     $A.add = function (obj, from) {
         if (obj == void 0)
             return this;
-        let arr = obj instanceof Array ? obj : [obj], i = from == void 0 ? this.length : (from < 0 ? 0 : from);
-        Array.prototype.splice.apply(this, [i, 0].concat(arr));
+        let a = obj instanceof Array ? obj : [obj], i = from == void 0 ? this.length : (from < 0 ? 0 : from);
+        Array.prototype.splice.apply(this, [i, 0].concat(a));
         return this;
     };
-    $A.remove = function (obj) {
-        let index = typeof obj === 'number' ? obj : this.findIndex(obj);
-        if (index > -1)
-            this.splice(index, 1);
-        return this;
+    $A.remove = function (f) {
+        let i = typeof f === 'number' ? f : this.findIndex(f);
+        if (i < 0 || i >= this.length)
+            return false;
+        this.splice(i, 1);
+        return true;
     };
 }());
 var JS;
@@ -35,10 +919,10 @@ var JS;
             static equal(a1, a2, equal) {
                 if (a1 === a2)
                     return true;
-                let empty1 = util.Check.isEmpty(a1), empty2 = util.Check.isEmpty(a2);
-                if (empty1 && empty2)
+                let y1 = util.Check.isEmpty(a1), y2 = util.Check.isEmpty(a2);
+                if (y1 && y2)
                     return true;
-                if (empty1 !== empty2)
+                if (y1 !== y2)
                     return false;
                 if (a1.length != a2.length)
                     return false;
@@ -62,13 +946,13 @@ var JS;
                     return true;
                 if (a1.length != a2.length)
                     return false;
-                let arr2 = this.newArray(a2);
+                let na = this.newArray(a2);
                 a1.forEach(item1 => {
-                    arr2.remove((v) => {
+                    na.remove((v) => {
                         return v == item1;
                     });
                 });
-                return arr2.length == 0;
+                return na.length == 0;
             }
             static slice(args, fromIndex, endIndex) {
                 return Array.prototype.slice.apply(args, [fromIndex || 0, endIndex || args.length]);
@@ -149,8 +1033,7 @@ var JS;
             xml: 'application/xml, text/xml',
             json: 'application/json, text/javascript',
             script: 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript'
-        };
-        let _judgeType = (cType) => {
+        }, _judgeType = (cType) => {
             if (!cType)
                 return 'json';
             if (cType == ACCEPTS['text'])
@@ -160,8 +1043,7 @@ var JS;
             if (cType.indexOf('/xml') > 0)
                 return 'xml';
             return 'json';
-        };
-        let PARSERS = {
+        }, PARSERS = {
             html: (str) => {
                 if (!str)
                     return null;
@@ -172,7 +1054,7 @@ var JS;
                     return null;
                 let xml = new DOMParser().parseFromString(str, 'text/xml');
                 if (!xml || xml.getElementsByTagName("parsererror").length)
-                    throw new Error();
+                    throw new NotHandledError();
                 return xml;
             },
             json: (str) => {
@@ -211,31 +1093,30 @@ var JS;
             }
             catch (e) {
                 res.statusText = 'parseerror';
-                if (req.error)
-                    req.error(res);
+                if (req.onError)
+                    req.onError(res);
                 if (Ajax._ON['error'])
                     Ajax._ON['error'](res);
                 this.reject(res);
             }
         }, _rejectError = function (req, xhr, error) {
             let res = _response(req, xhr, error);
-            if (req.error)
-                req.error(res);
+            if (req.onError)
+                req.onError(res);
             if (Ajax._ON['error'])
                 Ajax._ON['error'](res);
             this.reject(res);
-        };
-        let CACHE = {
+        }, CACHE = {
             lastModified: {},
             etag: {}
         }, _done = function (uncacheURL, req, xhr) {
             if (xhr['_isTimeout'])
                 return;
             let status = xhr.status, res = _response(req, xhr);
-            if (req.complete)
-                req.complete(res);
-            if (Ajax._ON['complete'])
-                Ajax._ON['complete'](res);
+            if (req.onCompleted)
+                req.onCompleted(res);
+            if (Ajax._ON['completed'])
+                Ajax._ON['completed'](res);
             if (status >= 200 && status < 300 || status === 304) {
                 let modified = null;
                 if (req.ifModified) {
@@ -258,8 +1139,7 @@ var JS;
             else {
                 this.reject(res);
             }
-        };
-        let _queryString = function (data) {
+        }, _queryString = function (data) {
             if (util.Types.isString(data))
                 return encodeURI(data);
             let str = '';
@@ -277,8 +1157,7 @@ var JS;
             if (!cache)
                 url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
             return url;
-        };
-        let _beforeSend = function (fn, req) {
+        }, _sending = function (fn, req) {
             if (fn) {
                 if (fn(req) === false)
                     return false;
@@ -328,12 +1207,12 @@ var JS;
                         _done.call(this, queryURL, req, xhr);
                 };
             }
-            let rst = _beforeSend(Ajax._ON['beforeSend'], req);
+            let rst = _sending(Ajax._ON['sending'], req);
             if (rst === false) {
                 _rejectError.call(this, req, xhr, 'cancel');
                 return;
             }
-            rst = _beforeSend(req.beforeSend, req);
+            rst = _sending(req.onSending, req);
             if (rst === false) {
                 _rejectError.call(this, req, xhr, 'cancel');
                 return;
@@ -371,9 +1250,9 @@ var JS;
             }
             static send(req) {
                 let q = this.toRequest(req);
-                return q.thread ? this.sendInThread(req) : this.sendInMain(req);
+                return q.thread ? this._inThread(req) : this._inMain(req);
             }
-            static sendInMain(req) {
+            static _inMain(req) {
                 return util.Promises.create(function () {
                     _send.call(this, req);
                 });
@@ -394,7 +1273,7 @@ var JS;
             static sendBeacon(e, fn, scope) {
                 window.addEventListener('unload', scope ? fn : function (e) { fn.call(scope, e); }, false);
             }
-            static sendInThread(req) {
+            static _inThread(req) {
                 let r = this.toRequest(req);
                 r.url = util.URI.toAbsoluteURL(r.url);
                 return util.Promises.create(function () {
@@ -402,7 +1281,7 @@ var JS;
                     new Thread({
                         run: function () {
                             this.onposted((request) => {
-                                self.Ajax.sendInMain(request).then((res) => {
+                                self.Ajax._inMain(request).then((res) => {
                                     delete res.xhr;
                                     this.postMain(res);
                                 });
@@ -433,6 +1312,7 @@ var JS;
             Type["number"] = "number";
             Type["date"] = "date";
             Type["array"] = "array";
+            Type["json"] = "json";
             Type["object"] = "object";
             Type["function"] = "function";
             Type["class"] = "class";
@@ -596,6 +1476,8 @@ var JS;
                 if (type == 'number' || type == 'bigint')
                     return Type.number;
                 if (type == 'object') {
+                    if (this.isJsonObject(obj))
+                        return Type.json;
                     if (this.isArray(obj))
                         return Type.array;
                     if (this.isDate(obj))
@@ -614,7 +1496,7 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let _test = function (str, pattern) {
+        let N = Number, _test = function (str, pattern) {
             return str && pattern.test(str.trim());
         };
         class Check {
@@ -659,10 +1541,10 @@ var JS;
                 return _test(str, this.NUMBERS_ONLY);
             }
             static isPositive(n) {
-                return Number(n).isPositive();
+                return N(n).isPositive();
             }
             static isNegative(n) {
-                return Number(n).isNegative();
+                return N(n).isNegative();
             }
             static isHalfwidthChars(str) {
                 return _test(str, this.HALFWIDTH_CHARS);
@@ -676,33 +1558,31 @@ var JS;
             static isChineseOnly(str) {
                 return _test(str, this.CHINESE_ONLY);
             }
-            static isFormatNumber(n, integerLength, fractionLength) {
+            static isFormatNumber(n, iLength, fLength) {
                 if (!util.Types.isNumeric(n))
                     return false;
-                let num = Number(n);
-                let iLen = num.integerLength();
-                let dLen = num.fractionLength();
-                if (iLen > integerLength)
+                let num = N(n), iLen = num.integerLength(), dLen = num.fractionLength();
+                if (iLen > iLength)
                     return false;
-                if (util.Types.isDefined(fractionLength) && dLen > fractionLength)
+                if (util.Types.isDefined(fLength) && dLen > fLength)
                     return false;
                 return true;
             }
             static greater(n1, n2) {
-                return Number(n1) > Number(n2);
+                return N(n1) > N(n2);
             }
             static greaterEqual(n1, n2) {
-                return Number(n1) >= Number(n2);
+                return N(n1) >= N(n2);
             }
             static less(n1, n2) {
-                return Number(n1) < Number(n2);
+                return N(n1) < N(n2);
             }
             static lessEqual(n1, n2) {
-                return Number(n1) <= Number(n2);
+                return N(n1) <= N(n2);
             }
             static isBetween(n, min, max) {
-                let num = Number(n);
-                return num > Number(min) && num < Number(max);
+                let num = N(n);
+                return num > N(min) && num < N(max);
             }
             static shorter(str, len) {
                 return str && str.length < len;
@@ -734,7 +1614,7 @@ var JS;
             static byServer(settings, judge) {
                 return new Promise(function (resolve, reject) {
                     util.Ajax.send(settings).then(res => {
-                        resolve(judge.apply(null, [res]));
+                        judge.apply(null, [res]) ? resolve(true) : reject(false);
                     });
                 });
             }
@@ -877,10 +1757,10 @@ var JS;
 var EventBus = JS.util.EventBus;
 if (self['HTMLElement'])
     (function () {
-        const HP = HTMLElement.prototype, oAppend = HP['append'], oPrepend = HP['prepend'], _append = function (html) {
+        const D = document, HP = HTMLElement.prototype, oa = HP.append, op = HP.prepend, _ad = function (html) {
             if (!html)
                 return;
-            let div = document.createElement('div'), nodes = null, fg = document.createDocumentFragment();
+            let div = D.createElement('div'), nodes = null, fg = D.createDocumentFragment();
             div.innerHTML = html;
             nodes = div.childNodes;
             for (let i = 0, len = nodes.length; i < len; i++) {
@@ -889,10 +1769,10 @@ if (self['HTMLElement'])
             this.appendChild(fg);
             nodes = null;
             fg = null;
-        }, _prepend = function (html) {
+        }, _pd = function (html) {
             if (!html)
                 return;
-            let div = document.createElement('div'), nodes = null, fg = document.createDocumentFragment();
+            let div = D.createElement('div'), nodes = null, fg = D.createDocumentFragment();
             div.innerHTML = html;
             nodes = div.childNodes;
             for (let i = 0, len = nodes.length; i < len; i++) {
@@ -902,35 +1782,44 @@ if (self['HTMLElement'])
             nodes = null;
             fg = null;
         };
-        HP['append'] = function (...nodes) {
+        HP.append = function (...nodes) {
             nodes.forEach(n => {
-                typeof n == 'string' ? _append.call(this, n) : oAppend.call(this, n.cloneNode(true));
+                typeof n == 'string' ? _ad.call(this, n) : oa.call(this, n.cloneNode(true));
             });
         };
-        HP['prepend'] = function (...nodes) {
+        HP.prepend = function (...nodes) {
             nodes.forEach(n => {
-                typeof n == 'string' ? _prepend.call(this, n) : oPrepend.call(this, n.cloneNode(true));
+                typeof n == 'string' ? _pd.call(this, n) : op.call(this, n.cloneNode(true));
             });
         };
-        HP['attr'] = function (key, val) {
+        HP.box = function () {
+            let box = this.getBoundingClientRect();
+            return {
+                x: box.x + System.display().docScrollX,
+                y: box.x + System.display().docScrollY,
+                w: box.width,
+                h: box.height
+            };
+        };
+        HP.attr = function (key, val) {
             if (arguments.length == 1)
                 return this.getAttribute(key);
             this.setAttribute(key, val);
             return this;
         };
-        HP['html'] = function (html) {
+        HP.html = function (html) {
             if (arguments.length == 0)
                 return this.innerHTML;
             this.innerHTML = html;
             return this;
         };
-        HP['addClass'] = function (cls) {
+        HP.addClass = function (cls) {
             if (!cls)
                 return this;
             let cs = this.attr('class');
             return this.attr('class', cs + ' ' + cls);
         };
-        HP['removeClass'] = function (cls) {
+        HP.removeClass = function (cls) {
             if (!cls)
                 return this;
             let cs = this.attr('class').trim();
@@ -943,7 +1832,7 @@ if (self['HTMLElement'])
             });
             return this.attr('class', cs);
         };
-        HP['hasClass'] = function (cls) {
+        HP.hasClass = function (cls) {
             if (!cls)
                 return this;
             let cs = this.attr('class').trim();
@@ -951,7 +1840,7 @@ if (self['HTMLElement'])
                 return this;
             return (cs + ' ').indexOf(cls + ' ') >= 0;
         };
-        HP['toggleClass'] = function (cls, isAdd) {
+        HP.toggleClass = function (cls, isAdd) {
             if (!cls)
                 return this;
             if (isAdd === true)
@@ -975,14 +1864,14 @@ if (self['HTMLElement'])
                 this['attachEvent']('on' + type, cb);
             }
         };
-        HP['on'] = function (type, fn, once) {
+        HP.on = function (type, fn, once) {
             let types = type.split(' ');
             types.forEach(t => {
                 _on.call(this, t, fn, once);
             });
             return this;
         };
-        let _remove = function (type, fn) {
+        let _rm = function (type, fn) {
             if (!fn)
                 return;
             if (this.removeEventListener) {
@@ -991,28 +1880,28 @@ if (self['HTMLElement'])
             else if (this['detachEvent']) {
                 this['detachEvent']('on' + type, fn);
             }
-        }, _removes = function (type, fns) {
+        }, _rms = function (type, fns) {
             if (fns)
-                fns.forEach(f => { _remove.call(this, type, f); });
+                fns.forEach(f => { _rm.call(this, type, f); });
         }, _off = function (type, fn) {
             let bus = this['_bus'];
             if (bus) {
                 let obj = fn ? bus.find(type, fn['euid']) : undefined;
                 bus.off(type, obj);
-                _remove.call(this, type, obj);
+                _rm.call(this, type, obj);
             }
             else {
-                _remove.call(this, type, fn);
+                _rm.call(this, type, fn);
             }
         };
-        HP['off'] = function (type, fn) {
+        HP.off = function (type, fn) {
             if (!type) {
                 let bus = this['_bus'];
                 if (bus) {
                     let types = bus.types();
                     for (let i = 0, len = types.length; i < len; i++) {
                         let ty = types[i];
-                        _removes.call(this, ty, bus.find(ty));
+                        _rms.call(this, ty, bus.find(ty));
                     }
                     bus.off();
                 }
@@ -1025,28 +1914,33 @@ if (self['HTMLElement'])
             }
             return this;
         };
-        HP['find'] = HP.querySelector;
-        HP['findAll'] = HP.querySelectorAll;
+        HP.find = HP.querySelector;
+        HP.findAll = HP.querySelectorAll;
+        HP.computedStyle = function (p) {
+            return document.defaultView.getComputedStyle(this, p || null);
+        };
         let WP = Window.prototype;
-        WP['on'] = HP['on'];
-        WP['off'] = HP['off'];
+        WP.on = HP.on;
+        WP.off = HP.off;
     })();
 var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let _head = () => { return document.querySelector('head'); }, _uncached = (url) => {
+        let D, _head = () => { return D.querySelector('head'); }, _uncached = (url) => {
             return `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
         };
+        if (self['HTMLElement'])
+            D = document;
         class Dom {
             static $1(selector) {
-                return typeof selector == 'string' ? document.querySelector(selector) : selector;
+                return typeof selector == 'string' ? D.querySelector(selector) : selector;
             }
             static $L(selector) {
-                return document.querySelectorAll(selector);
+                return D.querySelectorAll(selector);
             }
             static rename(node, newTagName) {
-                let newNode = document.createElement(newTagName), aNames = node['getAttributeNames']();
+                let newNode = D.createElement(newTagName), aNames = node['getAttributeNames']();
                 if (aNames)
                     aNames.forEach(name => {
                         newNode.setAttribute(name, node.getAttribute(name));
@@ -1063,7 +1957,7 @@ var JS;
                 if (!html)
                     return Promise.reject(null);
                 return util.Promises.create(function () {
-                    let doc = typeof html == 'string' ? new DOMParser().parseFromString(html, 'text/html') : html, url = doc.URL, el = Dom.$1(appendTo || document.body);
+                    let doc = typeof html == 'string' ? new DOMParser().parseFromString(html, 'text/html') : html, url = doc.URL, el = Dom.$1(appendTo || D.body);
                     el.append.apply(el, doc.body.childNodes);
                     el = null;
                     let ignoreCss = ignore === true || (ignore && ignore.css) ? true : false;
@@ -1119,7 +2013,7 @@ var JS;
                 if (!url)
                     return Promise.reject(null);
                 return util.Promises.create(function () {
-                    let k = document.createElement('link'), back = () => {
+                    let k = D.createElement('link'), back = () => {
                         k.onload = k.onerror = k['onreadystatechange'] = null;
                         k = null;
                         this.resolve(url);
@@ -1143,7 +2037,7 @@ var JS;
                 if (!url)
                     return Promise.reject(null);
                 return util.Promises.create(function () {
-                    let s = document.createElement('script'), back = () => {
+                    let s = D.createElement('script'), back = () => {
                         s.onload = s.onerror = s['onreadystatechange'] = null;
                         s = null;
                         this.resolve(url);
@@ -1188,31 +2082,31 @@ const $1 = Dom.$1;
 const $L = Dom.$L;
 var JS;
 (function (JS) {
-    JS.version = '2.0.0';
+    JS.version = '2.1.0';
     function config(d, v) {
-        let len = arguments.length;
-        if (len == 0)
-            return _props;
+        let l = arguments.length;
+        if (l == 0)
+            return _cfg;
         if (!d)
             return;
         if (typeof d === 'string') {
-            if (len == 1) {
-                return _props[d];
+            if (l == 1) {
+                return _cfg[d];
             }
             else {
-                _props[d] = v;
+                _cfg[d] = v;
                 return;
             }
         }
         else {
             for (let k in d) {
                 if (d.hasOwnProperty(k))
-                    _props[k] = d[k];
+                    _cfg[k] = d[k];
             }
         }
     }
     JS.config = config;
-    let _props = {}, _loaded = {}, _min = (uri, type) => {
+    let _cfg = {}, _ldd = {}, _min = (uri, type) => {
         if (JS.config('minimize')) {
             if (uri.endsWith('.min.' + type))
                 return uri;
@@ -1250,9 +2144,9 @@ var JS;
             u = JS.config('libRoot') + url.slice(1);
         }
         let us = u.split('#'), len = us.length, u0 = us[0], ayc = len > 1 && us[1] == 'async';
-        if (_loaded[u0])
+        if (_ldd[u0])
             return Promises.resolvePlan(null);
-        _loaded[u0] = 1;
+        _ldd[u0] = 1;
         if (u0.endsWith('.js')) {
             return Promises.newPlan(Dom.loadJS, [_min(u0, 'js'), ayc]);
         }
@@ -1458,7 +2352,7 @@ var JS;
                 });
                 return newJson;
             }
-            static getValueByPath(data, path) {
+            static find(data, path) {
                 if (!path)
                     return data;
                 const array = path.split('.');
@@ -1727,7 +2621,7 @@ var JS;
 var LogLevel = JS.util.LogLevel;
 var Log = JS.util.Log;
 let JSLogger = new Log(`JSDK ${JS.version}`, LogLevel.INFO);
-Konsole.text(`Welcome to JSDK ${JS.version}`, `font-weight:bold;color:blue;text-shadow:1px 1px 1px #D2E9FF;`);
+Konsole.text(`Powered by JSDK ${JS.version}`, 'font-weight:bold;');
 var JS;
 (function (JS) {
     let lang;
@@ -1973,13 +2867,13 @@ var JS;
             static newInstance(ctor, ...args) {
                 let tar = Types.isString(ctor) ? Class.byName(ctor) : ctor;
                 if (!tar)
-                    throw new Errors.NotFoundError(`The class<${ctor}> is not found!`);
+                    throw new NotFoundError(`The class<${ctor}> is not found!`);
                 return Reflect.construct(tar, Jsons.clone(args));
             }
             static aliasInstance(alias, ...args) {
                 let cls = Class.forName(alias, true);
                 if (!cls)
-                    throw new Errors.NotFoundError(`The class<${alias}> is not found!`);
+                    throw new NotFoundError(`The class<${alias}> is not found!`);
                 return cls.newInstance.apply(cls, args);
             }
             static aop(klass, method, advisor) {
@@ -2208,42 +3102,44 @@ Class.register(String);
 Class.register(Boolean);
 Class.register(Number);
 Class.register(Array);
-let $F = Function.prototype;
-$F.aop = function (advisor, that) {
-    let old = this, fn = function () {
-        let args = Arrays.newArray(arguments), ctx = that || this, rst = undefined;
-        if (advisor.before)
-            advisor.before.apply(ctx, args);
-        try {
-            rst = advisor.around ? advisor.around.apply(ctx, [old].concat(args)) : old.apply(ctx, args);
-        }
-        catch (e) {
-            if (advisor.throws)
-                advisor.throws.apply(ctx, [e]);
-        }
-        if (advisor.after)
-            advisor.after.apply(ctx, [rst]);
-        return rst;
+(function () {
+    let $F = Function.prototype;
+    $F.aop = function (advisor, that) {
+        let old = this, fn = function () {
+            let args = Arrays.newArray(arguments), ctx = that || this, rst = undefined;
+            if (advisor.before)
+                advisor.before.apply(ctx, args);
+            try {
+                rst = advisor.around ? advisor.around.apply(ctx, [old].concat(args)) : old.apply(ctx, args);
+            }
+            catch (e) {
+                if (advisor.throws)
+                    advisor.throws.apply(ctx, [e]);
+            }
+            if (advisor.after)
+                advisor.after.apply(ctx, [rst]);
+            return rst;
+        };
+        return fn;
     };
-    return fn;
-};
-$F.mixin = function (kls, methodNames) {
-    if (!kls)
-        return;
-    let kp = kls.prototype, tp = this.prototype, ms = Reflect.ownKeys(kp);
-    for (let i = 0, len = ms.length; i < len; i++) {
-        let m = ms[i];
-        if ('constructor' != m && !tp[m]) {
-            if (methodNames) {
-                if (methodNames.findIndex(v => { return v == m; }) > -1)
+    $F.mixin = function (kls, methodNames) {
+        if (!kls)
+            return;
+        let kp = kls.prototype, tp = this.prototype, ms = Reflect.ownKeys(kp);
+        for (let i = 0, len = ms.length; i < len; i++) {
+            let m = ms[i];
+            if ('constructor' != m && !tp[m]) {
+                if (methodNames) {
+                    if (methodNames.findIndex(v => { return v == m; }) > -1)
+                        tp[m] = kp[m];
+                }
+                else {
                     tp[m] = kp[m];
-            }
-            else {
-                tp[m] = kp[m];
+                }
             }
         }
-    }
-};
+    };
+})();
 var __decorate = function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
@@ -2366,14 +3262,14 @@ var JS;
             _parseStr(uri) {
                 let array = _URI_REG.exec(uri);
                 if (!array)
-                    throw new Errors.URIError('URI maybe an invalid format: ' + uri);
+                    throw new URIError('An invalid URI: ' + uri);
                 this._scheme = array[2];
                 this._frag = array[9];
                 let auth = array[4];
                 if (auth) {
                     let authArr = _AUTH_REG.exec(auth);
                     if (!authArr)
-                        throw new Errors.TypeError('Auth part of URI maybe an invalid format: ' + uri);
+                        throw new URIError('An invalid auth part of URI: ' + uri);
                     if (authArr[2])
                         this._user = authArr[2];
                     if (authArr[4])
@@ -2563,7 +3459,7 @@ var JS;
         class Bundle {
             constructor(res, locale) {
                 let lc = (locale == void 0 ? System.info().locale : locale);
-                this._data = {};
+                this._d = {};
                 if (res) {
                     if (util.Types.isString(res)) {
                         let pos = res.lastIndexOf('.'), suffix = pos < 0 ? '' : res.slice(pos + 1), prefix = pos < 0 ? res : res.slice(0, pos);
@@ -2572,15 +3468,15 @@ var JS;
                     }
                     else {
                         if (res.hasOwnProperty(lc)) {
-                            this._data = res[lc];
+                            this._d = res[lc];
                         }
                         else {
                             let lang = util.Locales.lang(lc);
-                            this._data = res.hasOwnProperty(lang) ? res[lang] : res;
+                            this._d = res.hasOwnProperty(lang) ? res[lang] : res;
                         }
                     }
                 }
-                this._locale = lc;
+                this._lc = lc;
             }
             _load(lc, prefix, suffix) {
                 let paths = [];
@@ -2600,27 +3496,27 @@ var JS;
                     xhr.send();
                     if (xhr.status != 200)
                         return false;
-                    this._data = util.Jsons.parse(xhr.response) || {};
+                    this._d = util.Jsons.parse(xhr.response) || {};
                     return true;
                 });
             }
-            get(key) {
+            get(k) {
                 if (arguments.length == 0)
-                    return this._data;
-                return key && this._data ? this._data[key] : undefined;
+                    return this._d;
+                return k && this._d ? this._d[k] : undefined;
             }
             getKeys() {
-                return Reflect.ownKeys(this._data);
+                return Reflect.ownKeys(this._d);
             }
-            hasKey(key) {
-                return this._data && this._data.hasOwnProperty(key);
+            hasKey(k) {
+                return this._d && this._d.hasOwnProperty(k);
             }
             getLocale() {
-                return this._locale;
+                return this._lc;
             }
-            set(data) {
-                if (data)
-                    this._data = data;
+            set(d) {
+                if (d)
+                    this._d = d;
                 return this;
             }
         }
@@ -2638,29 +3534,24 @@ var JS;
                     return false;
                 return !isNaN(new Date(d).getTime());
             }
-            static equals(date1, date2) { return this.compare(date1, date2) === 0; }
-            static compare(date1, date2) {
-                if (!util.Types.isDefined(date1) || !util.Types.isDefined(date1))
-                    throw new Errors.ArgumentError();
-                return (date1 < date2) ? -1 : (date1 > date2) ? 1 : 0;
+            static isLeapYear(y) {
+                return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
             }
-            static isSameDay(day1, day2) {
-                return day1.getFullYear() == day2.getFullYear() && day1.getMonth() == day2.getMonth() && day1.getDate() == day2.getDate();
+            static getDaysOfMonth(m, y) {
+                y = y || new Date().getFullYear();
+                return [31, (this.isLeapYear(y) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m];
             }
-            static isSameTime(day1, day2, equalsMS) {
-                if (equalsMS && day1.getMilliseconds() != day2.getMilliseconds())
-                    return false;
-                return day1.getHours() == day2.getHours() && day1.getMinutes() == day2.getMinutes() && day1.getSeconds() == day2.getSeconds();
+            static getFirstDayOfMonth(d) { return d.clone().set({ day: 1 }); }
+            static getLastDayOfMonth(d) {
+                return d.clone().set({ day: Dates.getDaysOfMonth(d.getMonth(), d.getFullYear()) });
             }
-            static today() { return new Date().setZeroTime(); }
-            static isLeapYear(year) {
-                return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-            }
-            static getDaysInMonth(year, month) {
-                return [31, (this.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
-            }
-            static format(date, format, locale) {
-                return new Date(date).format(format, locale);
+            static getDayOfWeek(d, dayOfWeek) {
+                let d2 = dayOfWeek != void 0 ? dayOfWeek : 1, d1 = d.getDay();
+                if (d2 == 0)
+                    d2 = 7;
+                if (d1 == 0)
+                    d1 = 7;
+                return d.clone().add((d2 - d1) % 7, 'd');
             }
         }
         Dates.I18N_RESOURCE = {
@@ -2677,21 +3568,21 @@ var JS;
 var Dates = JS.util.Dates;
 (function () {
     var $D = Date, $P = $D.prototype, pad = function (s, l) {
-        new Date();
+        new $D();
         if (!l) {
             l = 2;
         }
         return ("000" + s).slice(l * -1);
     };
     $P.getWeek = function () {
-        let date0 = new Date(this.getFullYear(), 0, 1), diff = Math.round((this.valueOf() - date0.valueOf()) / 86400000);
+        let date0 = new $D(this.getFullYear(), 0, 1), diff = Math.round((this.valueOf() - date0.valueOf()) / 86400000);
         return Math.ceil((diff + ((date0.getDay() + 1) - 1)) / 7);
     };
     $P.setWeek = function (week, dayOfWeek) {
         let dw = Types.isDefined(dayOfWeek) ? dayOfWeek : 1;
-        return this.setTime(this.getDayOfWeek(dw).add(week - this.getWeek(), 'w').getTime());
+        return this.setTime(Dates.getDayOfWeek(this, dw).add(week - this.getWeek(), 'w').getTime());
     };
-    $P.clone = function () { return new Date(this.getTime()); };
+    $P.clone = function () { return new $D(this.getTime()); };
     $P.setZeroTime = function () {
         this.setHours(0);
         this.setMinutes(0);
@@ -2707,21 +3598,37 @@ var Dates = JS.util.Dates;
         return this;
     };
     $P.setNowTime = function () {
-        var n = new Date();
+        var n = new $D();
         this.setHours(n.getHours());
         this.setMinutes(n.getMinutes());
         this.setSeconds(n.getSeconds());
         this.setMilliseconds(n.getMilliseconds());
         return this;
     };
-    $P.compareTo = function (date) { return Dates.compare(this, date); };
-    $P.equals = function (date) { return Dates.equals(this, date || new Date()); };
-    $P.between = function (start, end) { return this.getTime() >= start.getTime() && this.getTime() <= end.getTime(); };
-    $P.isAfter = function (date) { return this.compareTo(date || new Date()) === 1; };
-    $P.isBefore = function (date) { return (this.compareTo(date || new Date()) === -1); };
-    $P.isSameDay = function (date) { return Dates.isSameDay(this, date); };
-    $P.isSameTime = function (date, equalsMS) { return Dates.isSameTime(this, date, equalsMS); };
-    $P.isToday = function () { return this.isSameDay(new Date()); };
+    $P.equals = function (d, p = 'ms') {
+        let m = this;
+        if (p == 'ms')
+            return m.diff(d) == 0;
+        if (p == 's')
+            return m.getSeconds() == d.getSeconds();
+        if (p == 'm')
+            return m.getMinutes() == d.getMinutes();
+        if (p == 'h')
+            return m.getHours() == d.getHours();
+        if (p == 'y')
+            return m.getFullYear() == d.getFullYear();
+        if (p == 'M')
+            return m.getMonth() == d.getMonth();
+        if (p == 'd')
+            return m.getFullYear() == d.getFullYear() && m.getMonth() == d.getMonth() && m.getDate() == d.getDate();
+        if (p == 'w')
+            return m.getWeek() == d.getWeek();
+        return false;
+    };
+    $P.between = function (start, end) { return this.diff(start) >= 0 && this.diff(end) <= 0; };
+    $P.isAfter = function (d) { return this.diff(d) > 0; };
+    $P.isBefore = function (d) { return this.diff(d) < 0; };
+    $P.isToday = function () { return this.equals(new $D(), 'd'); };
     $P.add = function (v, type) {
         if (v == 0)
             return this;
@@ -2750,7 +3657,7 @@ var Dates = JS.util.Dates;
                 var n = this.getDate();
                 this.setDate(1);
                 this.setMonth(this.getMonth() + v);
-                this.setDate(Math.min(n, Dates.getDaysInMonth(this.getFullYear(), this.getMonth())));
+                this.setDate(Math.min(n, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear())));
                 return this;
             }
             case 'y': {
@@ -2774,7 +3681,7 @@ var Dates = JS.util.Dates;
             return "+" + r.substr(1);
         }
     };
-    let validate = function (n, min, max) {
+    let vt = function (n, min, max) {
         if (!Types.isDefined(n)) {
             return false;
         }
@@ -2784,28 +3691,28 @@ var Dates = JS.util.Dates;
         return true;
     };
     $P.set = function (config) {
-        if (validate(config.millisecond, 0, 999)) {
+        if (vt(config.millisecond, 0, 999)) {
             this.add(config.millisecond - this.getMilliseconds(), 'ms');
         }
-        if (validate(config.second, 0, 59)) {
+        if (vt(config.second, 0, 59)) {
             this.add(config.second - this.getSeconds(), 's');
         }
-        if (validate(config.minute, 0, 59)) {
+        if (vt(config.minute, 0, 59)) {
             this.add(config.minute - this.getMinutes(), 'm');
         }
-        if (validate(config.hour, 0, 23)) {
+        if (vt(config.hour, 0, 23)) {
             this.add(config.hour - this.getHours(), 'h');
         }
-        if (validate(config.day, 1, Dates.getDaysInMonth(this.getFullYear(), this.getMonth()))) {
+        if (vt(config.day, 1, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear()))) {
             this.add(config.day - this.getDate(), 'd');
         }
-        if (validate(config.week, 0, 53)) {
+        if (vt(config.week, 0, 53)) {
             this.setWeek(config.week);
         }
-        if (validate(config.month, 0, 11)) {
+        if (vt(config.month, 0, 11)) {
             this.add(config.month - this.getMonth(), 'M');
         }
-        if (validate(config.year, 0, 9999)) {
+        if (vt(config.year, 0, 9999)) {
             this.add(config.year - this.getFullYear(), 'y');
         }
         if (config.timezoneOffset) {
@@ -2813,18 +3720,8 @@ var Dates = JS.util.Dates;
         }
         return this;
     };
-    $P.getFirstDayOfMonth = function () { return this.clone().set({ day: 1 }); };
-    $P.getLastDayOfMonth = function () { return this.clone().set({ day: Dates.getDaysInMonth(this.getFullYear(), this.getMonth()) }); };
-    $P.getDayOfWeek = function (dayOfWeek) {
-        let d2 = Types.isDefined(dayOfWeek) ? dayOfWeek : 1, d1 = this.getDay();
-        if (d2 == 0)
-            d2 = 7;
-        if (d1 == 0)
-            d1 = 7;
-        return this.clone().add((d2 - d1) % 7, 'd');
-    };
     $P.diff = function (date) {
-        return (date || new Date()) - this;
+        return this - (date || new $D());
     };
     $P.format = function (format, locale) {
         let x = this, fmt = format || 'YYYY-MM-DD HH:mm:ss', bundle = new Bundle(Dates.I18N_RESOURCE, locale);
@@ -2882,7 +3779,7 @@ var Dates = JS.util.Dates;
 }());
 Class.register(Date);
 (function () {
-    var $N = Number.prototype;
+    var N = Number, $N = N.prototype;
     $N.stringfy = function () {
         if (this.isNaN())
             return null;
@@ -2891,7 +3788,7 @@ Class.register(Date);
         let t = this.toString(), m = t.match(/^(\+|\-)?(\d+)\.?(\d*)[Ee](\+|\-)(\d+)$/);
         if (!m)
             return t;
-        let zhe = m[2], xiao = m[3], zhi = Number(m[5]), fu = m[1] == '-' ? '-' : '', zfu = m[4], ws = (zfu == '-' ? -1 : 1) * zhi - xiao.length, n = zhe + xiao;
+        let zhe = m[2], xiao = m[3], zhi = N(m[5]), fu = m[1] == '-' ? '-' : '', zfu = m[4], ws = (zfu == '-' ? -1 : 1) * zhi - xiao.length, n = zhe + xiao;
         if (ws == 0)
             return fu + n;
         if (ws > 0)
@@ -2902,8 +3799,8 @@ Class.register(Date);
         return n.slice(0, dws - 1) + '.' + n.slice(dws);
     };
     $N.round = function (digit) {
-        if (this.isNaN() || this.isInt() || !Number.isFinite(digit))
-            return this;
+        if (this.isNaN() || this.isInt() || !N.isFinite(digit))
+            return N(this);
         let d = digit || 0, pow = Math.pow(10, d);
         return Math.round(this * pow) / pow;
     };
@@ -2912,22 +3809,22 @@ Class.register(Date);
     };
     $N.format = function (dLen) {
         let d = dLen == void 0 || !Number.isFinite(dLen) ? this.fractionLength() : dLen, s = this.round(d).abs().stringfy(), sign = this.isNegative() ? '-' : '';
-        let sn = Number(s);
+        let sn = N(s);
         if (sn.isInt())
             return sign + sn.toLocaleString() + (d < 1 ? '' : '.' + Strings.padEnd('', d, '0'));
         let p = s.indexOf('.'), ints = s.slice(0, p), digs = s.slice(p + 1);
-        return sign + Number(ints).toLocaleString() + '.' + Strings.padEnd(digs, d, '0');
+        return sign + N(ints).toLocaleString() + '.' + Strings.padEnd(digs, d, '0');
     };
     $N.equals = function (n, dLen) {
         if (this.isNaN())
-            throw new Errors.TypeError('This number is NaN!');
-        let num = Number(n);
+            throw new TypeError('This number is NaN!');
+        let num = N(n);
         if (num.isNaN())
-            throw new Errors.TypeError('The compared number is NaN!');
+            throw new TypeError('The compared number is NaN!');
         return this.round(dLen).valueOf() == num.round(dLen).valueOf();
     };
     $N.add = function (n) {
-        const v = Number(n);
+        const v = N(n);
         if (this.valueOf() == 0)
             return v;
         if (v.valueOf() == 0)
@@ -2938,7 +3835,7 @@ Class.register(Date);
         return (n1 + n2) / m;
     };
     $N.sub = function (n) {
-        const v = Number(n);
+        const v = N(n);
         if (v.valueOf() == 0)
             return this;
         if (this.isInt() && v.isInt())
@@ -2949,21 +3846,21 @@ Class.register(Date);
     $N.mul = function (n) {
         if (this.valueOf() == 0)
             return 0;
-        const v = Number(n);
+        const v = N(n);
         if (v.valueOf() == 0)
             return 0;
         if (this.isInt() && v.isInt())
             return v.valueOf() * this.valueOf();
-        let s1 = this.stringfy(this), s2 = v.stringfy(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = Number(s1.replace('.', '')), n2 = Number(s2.replace('.', ''));
+        let s1 = this.stringfy(this), s2 = v.stringfy(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = N(s1.replace('.', '')), n2 = N(s2.replace('.', ''));
         return n1 * n2 / Math.pow(10, m1 + m2);
     };
     $N.div = function (n) {
         if (this.valueOf() == 0)
             return 0;
-        const v = Number(n);
+        const v = N(n);
         if (v.valueOf() == 0)
-            throw new Errors.ArithmeticError('Can not divide an Zero.');
-        let s1 = this.stringfy(), s2 = v.stringfy(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = Number(s1.replace('.', '')), n2 = Number(s2.replace('.', ''));
+            throw new ArithmeticError('Can not divide an Zero.');
+        let s1 = this.stringfy(), s2 = v.stringfy(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = N(s1.replace('.', '')), n2 = N(s2.replace('.', ''));
         return (n1 / n2) * Math.pow(10, m2 - m1);
     };
     $N.isNaN = function () {
@@ -3017,13 +3914,27 @@ Class.register(Date);
             return 0;
         return this.abs().toFixed(0).length;
     };
+    $N.fractionalPart = function () {
+        if (this.isInt() || this.isNaN())
+            return '';
+        let s = this.stringfy();
+        return s.slice(s.indexOf('.') + 1);
+    };
+    $N.integralPart = function () {
+        if (this.isNaN())
+            return '';
+        let s = this.stringfy(), i = s.indexOf('.');
+        if (i < 0)
+            return s;
+        return s.slice(0, i);
+    };
 }());
 var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let _opt = function (v1, opt, v2) {
-            var rst = null, v = Number(v1);
+        let N = Number, _opt = function (v1, opt, v2) {
+            var rst = null, v = N(v1);
             switch (opt) {
                 case '+':
                     rst = v.add(v2);
@@ -3061,7 +3972,7 @@ var JS;
                 if (arguments.length <= 0)
                     return 0;
                 if (arguments.length == 1)
-                    return Number(args[0]).valueOf();
+                    return N(args[0]).valueOf();
                 var rst = null;
                 for (var i = 1; i < args.length; i = i + 2) {
                     if (i == 1) {
@@ -3077,7 +3988,7 @@ var JS;
                 let exp = expression.replace(/\s+/g, '');
                 if (values) {
                     util.Jsons.forEach(values, (n, k) => {
-                        exp = exp.replace(new RegExp(k, 'g'), Number(n) + '');
+                        exp = exp.replace(new RegExp(k, 'g'), N(n) + '');
                     });
                 }
                 exp = exp.replace(/\-{2}(\d+\.*\d*)/g, '+$1');
@@ -3154,6 +4065,8 @@ var JS;
                     return true;
                 if (Types.isJsonObject(expected) && Types.isJsonObject(actual) && Jsons.equal(expected, actual))
                     return true;
+                if (Types.isDate(expected) && Types.isDate(actual) && expected.getTime() === actual.getTime())
+                    return true;
                 return false;
             }
             static equal(expected, actual, msg) {
@@ -3185,32 +4098,16 @@ var JS;
                 if (condition)
                     this.fail((msg ? msg + ' ' : '') + 'expected:<FALSE> but was:<TRUE>');
             }
-            static defined(object, msg) {
-                this.true(Types.isDefined(object), msg);
+            static defined(obj, msg) {
+                this.true(obj != void 0, msg);
             }
-            static notDefined(object, msg) {
-                this.true(!Types.isDefined(object), msg);
+            static notDefined(obj, msg) {
+                this.true(obj == void 0, msg);
             }
-            static equalArray(expected, actual, msg) {
-                if (expected.length == actual.length) {
-                    if (expected.every((item, index) => {
-                        return item === actual[index];
-                    }))
-                        return;
-                }
-                this.failNotEqual('[' + expected.toString() + ']', '[' + actual.toString() + ']', msg);
-            }
-            static equalDate(expected, actual, msg) {
-                if (!expected && !actual)
-                    return;
-                if (expected.getTime() === actual.getTime())
-                    return;
-                this.failNotEqual(expected, actual, msg);
-            }
-            static error(cab, msg) {
+            static error(fn, msg) {
                 let has = false;
                 try {
-                    Functions.call(cab);
+                    Functions.call(fn);
                 }
                 catch (e) {
                     has = true;
@@ -3218,10 +4115,10 @@ var JS;
                 if (!has)
                     this.fail((msg ? msg + ' ' : '') + 'expected throw an error');
             }
-            static equalError(error, cab, msg) {
+            static equalError(error, fn, msg) {
                 let has = false;
                 try {
-                    Functions.call(cab);
+                    Functions.call(fn);
                 }
                 catch (e) {
                     if (Types.ofKlass(e, error))
@@ -3276,8 +4173,8 @@ var JS;
             Browser["UC"] = "UC";
         })(Browser = lang_1.Browser || (lang_1.Browser = {}));
         class System {
-            static info(isRefresh) {
-                if (!isRefresh && System._info)
+            static info(refresh) {
+                if (!refresh && System._info)
                     return System._info;
                 var parser = window['UAParser'] && new UAParser(), dev = parser ? parser.getDevice() : {};
                 if (!dev.type)
@@ -3295,25 +4192,25 @@ var JS;
                         cpuName: parser && parser.getCPU().architecture,
                         cpuCores: navigator.hardwareConcurrency
                     },
-                    window: null
+                    display: null
                 };
                 if (self.window) {
-                    let winscreen = window.screen, docbody = document.body;
-                    info.window = {
-                        screenX: window.screenLeft || window.screenX,
-                        screenY: window.screenTop || window.screenY,
-                        width: winscreen.width,
-                        height: winscreen.height,
-                        viewWidth: winscreen.availWidth,
-                        viewHeight: winscreen.availHeight,
-                        docX: docbody ? docbody.clientLeft : 0,
-                        docY: docbody ? docbody.clientTop : 0,
-                        docScrollX: docbody ? docbody.scrollLeft : 0,
-                        docScrollY: docbody ? docbody.scrollTop : 0,
-                        docWidth: docbody ? docbody.scrollWidth : 0,
-                        docHeight: docbody ? docbody.scrollHeight : 0,
-                        docViewWidth: docbody ? docbody.clientWidth : 0,
-                        docViewHeight: docbody ? docbody.clientHeight : 0,
+                    let winscreen = window.screen, doc = (a) => { return Math.max(document.documentElement[a], document.body[a]); };
+                    info.display = {
+                        screenWidth: winscreen.width,
+                        screenHeight: winscreen.height,
+                        screenViewWidth: winscreen.availWidth,
+                        screenViewHeight: winscreen.availHeight,
+                        windowX: window.screenLeft || window.screenX,
+                        windowY: window.screenTop || window.screenY,
+                        docX: doc('clientLeft') || 0,
+                        docY: doc('clientTop') || 0,
+                        docScrollX: doc('scrollLeft') || 0,
+                        docScrollY: doc('scrollTop') || 0,
+                        docWidth: doc('scrollWidth') || 0,
+                        docHeight: doc('scrollHeight') || 0,
+                        docViewWidth: doc('clientWidth') || 0,
+                        docViewHeight: doc('clientHeight') || 0,
                         colorDepth: winscreen.colorDepth,
                         pixelDepth: winscreen.pixelDepth,
                         devicePixelRatio: window.devicePixelRatio
@@ -3321,6 +4218,9 @@ var JS;
                 }
                 System._info = info;
                 return info;
+            }
+            static display(refresh) {
+                return this.info(refresh).display;
             }
             static isDevice(device) {
                 return System.info().device.type == device;
@@ -3359,33 +4259,15 @@ var Browser = JS.lang.Browser;
 var DeviceType = JS.lang.DeviceType;
 var JS;
 (function (JS) {
-    let ui;
-    (function (ui) {
-        function widget(fullName, alias) {
-            return Annotations.define({
-                name: 'widget',
-                handler: (anno, values, obj) => {
-                    let ctor = obj, name = values[0];
-                    Class.register(ctor, name, alias ? alias : (name.slice(name.lastIndexOf('.') + 1)).toLowerCase());
-                },
-                target: AnnotationTarget.CLASS
-            }, [fullName]);
-        }
-        ui.widget = widget;
-    })(ui = JS.ui || (JS.ui = {}));
-})(JS || (JS = {}));
-var widget = JS.ui.widget;
-var JS;
-(function (JS) {
     let util;
     (function (util) {
-        let isReady = false;
+        let _ready = false;
         class Bom {
             static ready(fn) {
-                if (isReady)
+                if (_ready)
                     fn();
                 let callback = function () {
-                    isReady = true;
+                    _ready = true;
                     fn();
                     callback = null;
                 };
@@ -3409,7 +4291,7 @@ var JS;
                     catch (e) { }
                     if (top && top['doScroll']) {
                         (function doScrollCheck() {
-                            if (!isReady) {
+                            if (!_ready) {
                                 try {
                                     top['doScroll']('left');
                                 }
@@ -3454,6 +4336,24 @@ var JS;
 (function (JS) {
     let ui;
     (function (ui) {
+        function widget(fullName, alias) {
+            return Annotations.define({
+                name: 'widget',
+                handler: (anno, values, obj) => {
+                    let ctor = obj, name = values[0];
+                    Class.register(ctor, name, alias ? alias : (name.slice(name.lastIndexOf('.') + 1)).toLowerCase());
+                },
+                target: AnnotationTarget.CLASS
+            }, [fullName]);
+        }
+        ui.widget = widget;
+    })(ui = JS.ui || (JS.ui = {}));
+})(JS || (JS = {}));
+var widget = JS.ui.widget;
+var JS;
+(function (JS) {
+    let view;
+    (function (view) {
         class View {
             constructor() {
                 this._widgets = {};
@@ -3533,10 +4433,10 @@ var JS;
                 return wgt;
             }
         }
-        ui.View = View;
-    })(ui = JS.ui || (JS.ui = {}));
+        view.View = View;
+    })(view = JS.view || (JS.view = {}));
 })(JS || (JS = {}));
-var View = JS.ui.View;
+var View = JS.view.View;
 var JS;
 (function (JS) {
     let model;
@@ -3766,17 +4666,17 @@ var JS;
             static parseJSON(raw, format) {
                 if (!raw)
                     return null;
-                const fmt = format || this.DEFAULT_FORMAT, root = Jsons.getValueByPath(raw, fmt.rootProperty);
+                const fmt = format || this.DEFAULT_FORMAT, root = Jsons.find(raw, fmt.rootProperty);
                 let result = new ResultSet();
-                result.lang(Jsons.getValueByPath(root, fmt.langProperty));
-                result.message(Jsons.getValueByPath(root, fmt.messageProperty));
-                result.version(Jsons.getValueByPath(root, fmt.versionProperty));
+                result.lang(Jsons.find(root, fmt.langProperty));
+                result.message(Jsons.find(root, fmt.messageProperty));
+                result.version(Jsons.find(root, fmt.versionProperty));
                 result.success(fmt.isSuccess ? fmt.isSuccess(root) : (root[fmt.successProperty] === (fmt.successCode || true)));
-                result.data(Jsons.getValueByPath(root, fmt.recordsProperty));
+                result.data(Jsons.find(root, fmt.recordsProperty));
                 result.rawObject(root);
-                result.page(Jsons.getValueByPath(root, fmt.pageProperty));
-                result.pageSize(Jsons.getValueByPath(root, fmt.pageSizeProperty));
-                result.total(Jsons.getValueByPath(root, fmt.totalProperty));
+                result.page(Jsons.find(root, fmt.pageProperty));
+                result.pageSize(Jsons.find(root, fmt.pageSizeProperty));
+                result.total(Jsons.find(root, fmt.totalProperty));
                 return result;
             }
         }
@@ -3884,71 +4784,66 @@ var JS;
 var Service = JS.model.Service;
 var JS;
 (function (JS) {
-    let data;
-    (function (data) {
+    let ds;
+    (function (ds) {
         class BiMap {
-            constructor(kvs) {
-                this._map = new Map();
-                if (kvs)
-                    kvs.forEach(kv => {
-                        this._map.set(kv["0"], kv["1"]);
+            constructor(k) {
+                this._m = new Map();
+                if (k)
+                    k.forEach(kv => {
+                        this._m.set(kv["0"], kv["1"]);
                     });
             }
             inverse() {
-                let map = new BiMap();
-                if (this.size() >= 0) {
-                    this._map.forEach((v, k) => {
-                        map.put(v, k);
-                    });
-                }
-                return map;
+                let m = new BiMap();
+                if (this.size() >= 0)
+                    this._m.forEach((v, k) => { m.put(v, k); });
+                return m;
             }
-            delete(key) {
-                return this._map.delete(key);
+            delete(k) {
+                return this._m.delete(k);
             }
-            forEach(fn, thisArg) {
-                this._map.forEach(fn);
+            forEach(fn, ctx) {
+                this._m.forEach(fn, ctx);
             }
             clear() {
-                this._map.clear();
+                this._m.clear();
             }
             size() {
-                return this._map.size;
+                return this._m.size;
             }
             has(k) {
-                return this._map.has(k);
+                return this._m.has(k);
             }
             get(k) {
-                return this._map.get(k);
+                return this._m.get(k);
             }
             put(k, v) {
-                this._map.set(k, v);
+                this._m.set(k, v);
             }
             putAll(map) {
                 if (map)
-                    map.forEach((v, k) => {
-                        this.put(k, v);
-                    });
+                    map.forEach((v, k) => { this.put(k, v); });
             }
         }
-        data.BiMap = BiMap;
-    })(data = JS.data || (JS.data = {}));
+        ds.BiMap = BiMap;
+    })(ds = JS.ds || (JS.ds = {}));
 })(JS || (JS = {}));
-var BiMap = JS.data.BiMap;
+var BiMap = JS.ds.BiMap;
 var JS;
 (function (JS) {
-    let data;
-    (function (data_1) {
+    let ds;
+    (function (ds) {
         class LinkedList {
             constructor() {
-                this._size = 0;
-                this._head = null;
-                this._tail = null;
+                this._s = 0;
+                this._hd = null;
+                this._tl = null;
             }
             each(fn, thisArg) {
-                if (this._size == 0)
+                if (this._s == 0)
                     return true;
-                let rst = true, i = 0, node = this._head;
+                let rst = true, i = 0, node = this._hd;
                 while (node) {
                     if (!fn.call(thisArg || this, node.data, i, this)) {
                         rst = false;
@@ -3960,20 +4855,20 @@ var JS;
                 return rst;
             }
             size() {
-                return this._size;
+                return this._s;
             }
             isEmpty() {
-                return this._size == 0;
+                return this._s == 0;
             }
             clear() {
-                this._head = null;
-                this._tail = null;
-                this._size = 0;
+                this._hd = null;
+                this._tl = null;
+                this._s = 0;
             }
             clone() {
                 let list = new LinkedList();
-                if (this._size > 0) {
-                    let node = this._head;
+                if (this._s > 0) {
+                    let node = this._hd;
                     while (node) {
                         list.add(Jsons.clone(node.data));
                         node = node.next;
@@ -3990,31 +4885,31 @@ var JS;
                 return arr;
             }
             getFirst() {
-                return this._head ? this._head.data : null;
+                return this._hd ? this._hd.data : null;
             }
             getLast() {
-                return this._tail ? this._tail.data : null;
+                return this._tl ? this._tl.data : null;
             }
             _check(i) {
-                if (i > this._size || i < 0)
-                    throw new Errors.RangeError();
+                if (i > this._s || i < 0)
+                    throw new RangeError();
             }
             get(i) {
                 this._check(i);
                 if (i == 0)
-                    return this._head ? this._head.data : null;
-                if (i == this._size - 1)
-                    return this._tail ? this._tail.data : null;
+                    return this._hd ? this._hd.data : null;
+                if (i == this._s - 1)
+                    return this._tl ? this._tl.data : null;
                 let node = this._findAt(i);
                 return node ? node.data : null;
             }
             _findAt(i) {
-                return i < this._size / 2 ? this._fromFirst(i) : this._fromLast(i);
+                return i < this._s / 2 ? this._fromFirst(i) : this._fromLast(i);
             }
             _fromFirst(i) {
                 if (i <= 0)
-                    return this._head;
-                let node = this._head, count = 1;
+                    return this._hd;
+                let node = this._hd, count = 1;
                 while (count <= i) {
                     node = node.next;
                     count++;
@@ -4023,8 +4918,8 @@ var JS;
             }
             _fromLast(i) {
                 if (i >= (this.size() - 1))
-                    return this._tail;
-                let node = this._tail, count = this._size - 1;
+                    return this._tl;
+                let node = this._tl, count = this._s - 1;
                 while (count > i) {
                     node = node.prev;
                     count--;
@@ -4046,7 +4941,7 @@ var JS;
             lastIndexOf(data) {
                 if (this.isEmpty())
                     return -1;
-                let rst = -1, node = this._tail, i = this._size - 1;
+                let rst = -1, node = this._tl, i = this._s - 1;
                 while (node) {
                     if (data === node.data) {
                         rst = i;
@@ -4062,25 +4957,25 @@ var JS;
             }
             _addLast(d) {
                 let node = { data: Jsons.clone(d), prev: null, next: null };
-                if (this._tail) {
-                    node.prev = this._tail;
-                    this._tail.next = node;
+                if (this._tl) {
+                    node.prev = this._tl;
+                    this._tl.next = node;
                 }
-                this._tail = node;
-                if (!this._head)
-                    this._head = this._tail;
-                this._size += 1;
+                this._tl = node;
+                if (!this._hd)
+                    this._hd = this._tl;
+                this._s += 1;
             }
             _addFirst(d) {
                 let node = { data: Jsons.clone(d), prev: null, next: null };
-                if (this._head) {
-                    node.next = this._head;
-                    this._head.prev = node;
+                if (this._hd) {
+                    node.next = this._hd;
+                    this._hd.prev = node;
                 }
-                this._head = node;
-                if (!this._tail)
-                    this._tail = this._head;
-                this._size += 1;
+                this._hd = node;
+                if (!this._tl)
+                    this._tl = this._hd;
+                this._s += 1;
             }
             add(a) {
                 if (Types.isArray(a)) {
@@ -4107,7 +5002,7 @@ var JS;
                 let prevNode = nextNode.prev, newNode = { data: Jsons.clone(a), next: nextNode, prev: prevNode };
                 prevNode.next = newNode;
                 nextNode.prev = newNode;
-                this._size += 1;
+                this._s += 1;
             }
             addAt(i, a) {
                 if (i <= 0) {
@@ -4141,33 +5036,33 @@ var JS;
                 }
             }
             removeFirst() {
-                if (this._size == 0)
+                if (this._s == 0)
                     return null;
-                let data = this._head.data;
-                if (this._size > 1) {
-                    this._head = this._head.next;
-                    this._head.prev = null;
+                let data = this._hd.data;
+                if (this._s > 1) {
+                    this._hd = this._hd.next;
+                    this._hd.prev = null;
                 }
                 else {
-                    this._head = null;
-                    this._tail = null;
+                    this._hd = null;
+                    this._tl = null;
                 }
-                this._size--;
+                this._s--;
                 return data;
             }
             removeLast() {
-                if (this._size == 0)
+                if (this._s == 0)
                     return null;
-                let data = this._tail.data;
-                if (this._size > 1) {
-                    this._tail = this._tail.prev;
-                    this._tail.next = null;
+                let data = this._tl.data;
+                if (this._s > 1) {
+                    this._tl = this._tl.prev;
+                    this._tl.next = null;
                 }
                 else {
-                    this._head = null;
-                    this._tail = null;
+                    this._hd = null;
+                    this._tl = null;
                 }
-                this._size--;
+                this._s--;
                 return data;
             }
             removeAt(i) {
@@ -4190,33 +5085,33 @@ var JS;
                     next.prev = prev;
                 if (prev)
                     prev.next = next;
-                this._size--;
+                this._s--;
                 return node.data;
             }
             peek() {
-                return this._head ? this._head.data : null;
+                return this._hd ? this._hd.data : null;
             }
             peekFirst() {
                 return this.peek();
             }
             peekLast() {
-                return this._tail ? this._tail.data : null;
+                return this._tl ? this._tl.data : null;
             }
             toString() {
                 return '[' + this.toArray().toString() + ']';
             }
         }
-        data_1.LinkedList = LinkedList;
-    })(data = JS.data || (JS.data = {}));
+        ds.LinkedList = LinkedList;
+    })(ds = JS.ds || (JS.ds = {}));
 })(JS || (JS = {}));
-var LinkedList = JS.data.LinkedList;
+var LinkedList = JS.ds.LinkedList;
 var JS;
 (function (JS) {
-    let data;
-    (function (data_2) {
+    let ds;
+    (function (ds) {
         class Queue {
             constructor(a) {
-                this.list = new data_2.LinkedList();
+                this.list = new ds.LinkedList();
                 this.list.add(a);
             }
             each(fn, thisArg) {
@@ -4266,17 +5161,17 @@ var JS;
                 return '[' + this.list.toArray().toString() + ']';
             }
         }
-        data_2.Queue = Queue;
-    })(data = JS.data || (JS.data = {}));
+        ds.Queue = Queue;
+    })(ds = JS.ds || (JS.ds = {}));
 })(JS || (JS = {}));
-var Queue = JS.data.Queue;
+var Queue = JS.ds.Queue;
 var JS;
 (function (JS) {
-    let data;
-    (function (data) {
+    let ds;
+    (function (ds) {
         class Stack {
             constructor(a) {
-                this.list = new data.LinkedList();
+                this.list = new ds.LinkedList();
                 this.list.add(a);
             }
             each(fn, thisArg) {
@@ -4314,10 +5209,10 @@ var JS;
                 return '[' + this.list.toArray().toString() + ']';
             }
         }
-        data.Stack = Stack;
-    })(data = JS.data || (JS.data = {}));
+        ds.Stack = Stack;
+    })(ds = JS.ds || (JS.ds = {}));
 })(JS || (JS = {}));
-var Stack = JS.data.Stack;
+var Stack = JS.ds.Stack;
 var JS;
 (function (JS) {
     let model;
@@ -4526,7 +5421,7 @@ var JS;
             }
             set(val) {
                 if (!this.nullable() && val == void 0)
-                    throw new Errors.TypeError(`This Field<${this.name()}> must be not null`);
+                    throw new TypeError(`This Field<${this.name()}> must be not null`);
                 let fn = this._config.setter, v = fn ? fn.apply(this, [val]) : val;
                 return v === undefined ? this._config.defaultValue : v;
             }
@@ -4592,7 +5487,7 @@ var JS;
             }
             _check() {
                 if (this.isDestroyed())
-                    throw new Errors.NotHandledError('The model was destroyed!');
+                    throw new NotHandledError('The model was destroyed!');
             }
             _newField(cfg) {
                 let tField = null;
@@ -4874,7 +5769,7 @@ var JS;
             }
             _check() {
                 if (this.isDestroyed())
-                    throw new Errors.NotHandledError('The model was destroyed!');
+                    throw new NotHandledError('The model was destroyed!');
             }
             addSorter(field, dir) {
                 this._check();
@@ -5015,7 +5910,7 @@ var JS;
                     return null;
                 let k = klass || this._modelKlass;
                 if (!k)
-                    throw new Errors.NotFoundError('The model klass not found!');
+                    throw new NotFoundError('The model klass not found!');
                 return Class.newInstance(k).setData(d, true);
             }
             getModels(klass) {
@@ -5023,7 +5918,7 @@ var JS;
                     return null;
                 let k = klass || this._modelKlass;
                 if (!k)
-                    throw new Errors.NotFoundError('The model klass not found!');
+                    throw new NotFoundError('The model klass not found!');
                 let mds = [];
                 this._data.forEach((d, i) => {
                     mds[i] = Class.newInstance(k).setData(d, true);
@@ -5154,17 +6049,17 @@ var JS;
             LengthUnit["REM"] = "rem";
         })(LengthUnit = ui.LengthUnit || (ui.LengthUnit = {}));
         class Lengths {
-            static toPxNumber(len) {
+            static toNumber(len, unit = LengthUnit.PX) {
                 if (len == void 0)
                     return 0;
                 if (Types.isNumeric(len))
-                    return len;
+                    return Number(len);
                 let le = String(len);
                 if (le.endsWith('%'))
                     return 0;
-                return parseFloat(le.replace(/^.+[px]$/, ''));
+                return Number(le.replace(new RegExp(`${unit}$`), ''));
             }
-            static toCssString(len, defaultVal, unit) {
+            static toCSS(len, defaultVal, unit) {
                 if (len == void 0)
                     return defaultVal || 'auto';
                 if (Types.isNumeric(len))
@@ -5180,44 +6075,148 @@ var JS;
 (function (JS) {
     let ui;
     (function (ui) {
-        class Color {
-            constructor(r, g, b, a) {
-                if (Types.isString(r)) {
-                    let hex = r;
-                    this.r = parseInt('0x' + hex.slice(1, 3));
-                    this.g = parseInt('0x' + hex.slice(3, 5));
-                    this.b = parseInt('0x' + hex.slice(5, 7));
-                    this.a = g || 0;
+        class Colors {
+            static hex2rgba(hex) {
+                if (!hex)
+                    return null;
+                let a = false, h = hex.slice(hex.startsWith('#') ? 1 : 0), l = h.length;
+                if (l == 4 || l == 8)
+                    a = true;
+                if (l == 3 || l == 4)
+                    h = [...h].map(x => x + x).join('');
+                let n = parseInt(h, 16);
+                return {
+                    r: (n >>> (a ? 24 : 16)),
+                    g: ((n & (a ? 0x00ff0000 : 0x00ff00)) >>> (a ? 16 : 8)),
+                    b: ((n & (a ? 0x0000ff00 : 0x0000ff)) >>> (a ? 8 : 0)),
+                    a: a ? Number((n & 0x000000ff) / 255).round(2) : 1
+                };
+            }
+            static rgba2hex(r, g, b, a) {
+                let s = [r, g, b];
+                if (a != void 0)
+                    s.push(Number((a * 255).integralPart()));
+                return '#' + s.map(x => {
+                    let h = x.toString(16);
+                    return h.length === 1 ? '0' + h : h;
+                }).join('');
+            }
+            static rgba2css(c) {
+                if (!c)
+                    return '';
+                let has = c.a != void 0;
+                return `rgb${has ? 'a' : ''}(${c.r},${c.g},${c.b}${has ? `,${c.a}` : ''})`;
+            }
+            static hsla2string(c) {
+                if (!c)
+                    return '';
+                let has = c.a != void 0;
+                return `hsl(${c.h},${(c.s * 100).round(2)}%,${(c.l * 100).round(2)}%${has ? `,${c.a}` : ''})`;
+            }
+            static hsl2rgb(hsl) {
+                if (!hsl)
+                    return null;
+                let h = hsl.h, s = hsl.s, l = hsl.l, r, g, b;
+                if (s == 0) {
+                    r = g = b = l;
                 }
                 else {
-                    this.r = r;
-                    this.g = g;
-                    this.b = b;
-                    this.a = a;
+                    var hue2rgb = (p, q, t) => {
+                        if (t < 0)
+                            t += 1;
+                        if (t > 1)
+                            t -= 1;
+                        if (t < 1 / 6)
+                            return p + (q - p) * 6 * t;
+                        if (t < 1 / 2)
+                            return q;
+                        if (t < 2 / 3)
+                            return p + (q - p) * (2 / 3 - t) * 6;
+                        return p;
+                    };
+                    var q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+                    r = hue2rgb(p, q, h + 1 / 3);
+                    g = hue2rgb(p, q, h);
+                    b = hue2rgb(p, q, h - 1 / 3);
                 }
+                return {
+                    r: Math.round(r * 255),
+                    g: Math.round(g * 255),
+                    b: Math.round(b * 255),
+                    a: hsl.a
+                };
             }
-            toHex() {
-                let color = this.r << 16 | this.g << 8 | this.b;
-                return "#" + color.toString(16);
+            static rgbTohsl(rgb) {
+                if (!rgb)
+                    return null;
+                let r = rgb.r, g = rgb.g, b = rgb.b;
+                r /= 255, g /= 255, b /= 255;
+                var max = Math.max(r, g, b), min = Math.min(r, g, b), h, s, l = (max + min) / 2;
+                if (max == min) {
+                    h = s = 0;
+                }
+                else {
+                    var d = max - min;
+                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    switch (max) {
+                        case r:
+                            h = (g - b) / d + (g < b ? 6 : 0);
+                            break;
+                        case g:
+                            h = (b - r) / d + 2;
+                            break;
+                        case b:
+                            h = (r - g) / d + 4;
+                            break;
+                    }
+                    h /= 6;
+                }
+                return {
+                    h: h,
+                    s: s,
+                    l: l,
+                    a: rgb.a
+                };
             }
-            toRGB() {
-                return 'rgb(' + this.r + ',' + this.g + ',' + this.b + ')';
-            }
-            toRGBA() {
-                return 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + this.a + ')';
+            static css2rgba(css) {
+                if (!css)
+                    return null;
+                css = css.trim().toLowerCase();
+                if (css.startsWith('#'))
+                    return this.hex2rgba(css);
+                if (css.startsWith('rgba(')) {
+                    let r = /^rgba\((.+),(.+),(.+),(.+)\)$/.exec(css);
+                    if (r)
+                        return {
+                            r: Number(r[1]),
+                            g: Number(r[2]),
+                            b: Number(r[3]),
+                            a: Number(r[4])
+                        };
+                }
+                if (css.startsWith('rgb(')) {
+                    let r = /^rgb\((.+),(.+),(.+)\)$/.exec(css);
+                    if (r)
+                        return {
+                            r: Number(r[1]),
+                            g: Number(r[2]),
+                            b: Number(r[3])
+                        };
+                }
+                return null;
             }
         }
-        ui.Color = Color;
+        ui.Colors = Colors;
     })(ui = JS.ui || (JS.ui = {}));
 })(JS || (JS = {}));
-var Color = JS.ui.Color;
+var Colors = JS.ui.Colors;
 var JS;
 (function (JS) {
     let ui;
     (function (ui) {
         class KeyCode {
         }
-        KeyCode.BACK = 8;
+        KeyCode.Back = 8;
         KeyCode.Tab = 9;
         KeyCode.Clear = 12;
         KeyCode.Enter = 13;
@@ -5637,7 +6636,7 @@ var JS;
                 let cfg = this._config, titleAttrs = cfg.tip ? ` title=${cfg.tip}` : '';
                 if (cfg.title) {
                     let tValign = this._vAlign(), tHalign = this._hAlign(), p0 = tHalign == 'right' && cfg.titlePlace == 'top' ? 'p-0' : '', cls = `${p0} font-${cfg.sizeMode || 'md'} items-${tValign} items-${tHalign} ${cfg.colorMode ? 'text-' + cfg.colorMode : ''} ${cfg.titleCls || ''}"`;
-                    let style = Types.isDefined(cfg.titleWidth) ? `width:${Lengths.toCssString(cfg.titleWidth, '100%')};` : '';
+                    let style = Types.isDefined(cfg.titleWidth) ? `width:${Lengths.toCSS(cfg.titleWidth, '100%')};` : '';
                     if (cfg.titleStyle)
                         style += cfg.titleStyle;
                     titleAttrs += ` class="${cls}"`;
@@ -5652,7 +6651,7 @@ var JS;
                 this._mainEl = this.widgetEl.find('[jsfx-role=main]');
             }
             _onBeforeRender() {
-                let cfg = this._config, w = Lengths.toCssString(cfg.width, '100%'), d = cfg.titlePlace == 'left' ? 'flex' : 'grid', css = {
+                let cfg = this._config, w = Lengths.toCSS(cfg.width, '100%'), d = cfg.titlePlace == 'left' ? 'flex' : 'grid', css = {
                     'display': (w == 'auto' ? 'inline-' : '') + d,
                     'width': w
                 };
@@ -6068,7 +7067,7 @@ var JS;
                 }
                 return `
                 <div class="carousel-item ${is ? 'active' : ''}" jsfx-index="${i}">
-                    <img class="d-block w-100" src="${item.src}" style="height:${Lengths.toCssString(this._config.height, '100%')};" alt="${item.imgAlt || ''}">
+                    <img class="d-block w-100" src="${item.src}" style="height:${Lengths.toCSS(this._config.height, '100%')};" alt="${item.imgAlt || ''}">
                     ${capHtml}
                 </div>
                 `;
@@ -6101,7 +7100,7 @@ var JS;
                 <ol class="carousel-indicators">
                     ${indsHtml}
                 </ol>
-                <div class="carousel-inner" style="height:${Lengths.toCssString(cfg.height, '100%')}">
+                <div class="carousel-inner" style="height:${Lengths.toCSS(cfg.height, '100%')}">
                     ${itemsHtml}
                 </div>
                 <a class="carousel-control-prev" href="#${this.id}" role="button" data-slide="prev">
@@ -6113,7 +7112,7 @@ var JS;
                 `;
                 this.widgetEl.attr('data-ride', 'carousel');
                 this.widgetEl.addClass('carousel slide bg-light');
-                this.widgetEl.css({ 'width': Lengths.toCssString(cfg.width, '100%') });
+                this.widgetEl.css({ 'width': Lengths.toCSS(cfg.width, '100%') });
                 this.widgetEl.html(html);
                 this.widgetEl.on('slide.bs.carousel', (e) => {
                     let from = e.from, to = e.to;
@@ -6683,7 +7682,7 @@ var JS;
                 return oldVal[0] == newVal[0] && oldVal[1] == newVal[1];
             }
             _errorType(val) {
-                throw new Errors.TypeError('An invalid date format for DateRangePicker:' + val.toString());
+                throw new TypeError('An invalid date format for DateRangePicker:' + val.toString());
             }
             value(val, silent) {
                 if (arguments.length == 0)
@@ -6872,10 +7871,10 @@ var JS;
                 `;
                 let html = `
                 <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="false" jsfx-role="main">
-                    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:${Lengths.toCssString(cfg.width, 'auto')}">
+                    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:${Lengths.toCSS(cfg.width, 'auto')}">
                     <div class="modal-content" style="border-radius:${this._hasFaceMode(DialogFaceMode.round) ? '0.3rem' : '0px'}">
                         ${titleHtml}
-                        <div class="modal-body jsfx-dialog-body" style="height:${Lengths.toCssString(cfg.height, '100%')}">
+                        <div class="modal-body jsfx-dialog-body" style="height:${Lengths.toCSS(cfg.height, '100%')}">
                         ${cHtml}
                         </div>
                         ${btnHtml}
@@ -7338,15 +8337,15 @@ var JS;
                     return option.field == name;
                 });
                 if (col < 0)
-                    throw new Errors.NotFoundError(`Not found the field:<${name}>`);
+                    throw new NotFoundError(`Not found the field:<${name}>`);
                 return col;
             }
             hideColumn(v) {
-                let i = Types.isNumeric(v) ? Number(v) - 1 : this._colIndexOf(v);
+                let i = Types.isNumeric(v) ? v - 1 : this._colIndexOf(v);
                 this.widgetEl.find(`tr th:eq(${i}),tr td:eq(${i})`).hide();
             }
             showColumn(v) {
-                let i = Types.isNumeric(v) ? Number(v) - 1 : this._colIndexOf(v);
+                let i = Types.isNumeric(v) ? v - 1 : this._colIndexOf(v);
                 this.widgetEl.find(`tr th:eq(${i}),tr td:eq(${i})`).show();
             }
             _bindSortFields() {
@@ -7382,7 +8381,7 @@ var JS;
                 }
             }
             _thHtml(col, colNumber) {
-                let cfg = this._config, html = col.text, title = col.tip ? col.tip : col.text, sortDir = col.sortable === true ? 'desc' : '' + col.sortable, sort = col.sortable ? `<i id="${this.id + '_sort_' + col.field}" style="cursor:pointer;vertical-align:middle;" class="la la-arrow-${sortDir == 'asc' ? 'up' : 'down'}"></i>` : '', hasCheckbox = colNumber == 1 && cfg.checkable, width = Lengths.toCssString(col.width, '100%'), cell = `<div class="cell items-${cfg.headStyle.textAlign} items-middle" jsfx-col="${colNumber}" title="${title}">
+                let cfg = this._config, html = col.text, title = col.tip ? col.tip : col.text, sortDir = col.sortable === true ? 'desc' : '' + col.sortable, sort = col.sortable ? `<i id="${this.id + '_sort_' + col.field}" style="cursor:pointer;vertical-align:middle;" class="la la-arrow-${sortDir == 'asc' ? 'up' : 'down'}"></i>` : '', hasCheckbox = colNumber == 1 && cfg.checkable, width = Lengths.toCSS(col.width, '100%'), cell = `<div class="cell items-${cfg.headStyle.textAlign} items-middle" jsfx-col="${colNumber}" title="${title}">
                     ${html}${sort ? sort : ''}</div>`;
                 if (col.sortable)
                     this._dataModel.addSorter(col.field, sortDir);
@@ -7391,7 +8390,7 @@ var JS;
                 </th>`;
             }
             _tdHtml(opt, html, title, col, row) {
-                let cfg = this._config, hasCheckbox = col == 0 && cfg.checkable, id = this.data()[row]['id'], width = Lengths.toCssString(opt.width, '100%'), cell = `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
+                let cfg = this._config, hasCheckbox = col == 0 && cfg.checkable, id = this.data()[row]['id'], width = Lengths.toCSS(opt.width, '100%'), cell = `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
                     ${html}</div>`;
                 return `<td width="${width}" nowrap>
                 ${hasCheckbox ? `<div class="items-left items-middle" jsfx-row="${row}" jsfx-col="${col}"><span jsfx-alias="checkbox" jsfx-id="${id}"/>${cell}</div>` : cell}
@@ -7546,7 +8545,7 @@ var JS;
                 }, bodyCls = 'table';
                 if (this._hasFaceMode(GridFaceMode.striped))
                     bodyCls += ' striped';
-                let hStyle = cfg.headStyle, bStyle = cfg.bodyStyle, bHeight = Types.isNumeric(cfg.height) ? (Number(cfg.height) - heights[cfg.sizeMode]) + 'px' : '100%', html = `<!-- 表头容器 -->
+                let hStyle = cfg.headStyle, bStyle = cfg.bodyStyle, bHeight = Types.isNumeric(cfg.height) ? (cfg.height - heights[cfg.sizeMode]) + 'px' : '100%', html = `<!-- 表头容器 -->
                     <div class="head">
                         <table id="${this.id}_htable" class="table ${hStyle.cls || ''}">
                             <tr>
@@ -7856,7 +8855,7 @@ var JS;
                 if (!Number.isFinite(min))
                     return;
                 if (min > this.max())
-                    throw new Errors.RangeError('The min value greater than max value!');
+                    throw new RangeError('The min value greater than max value!');
                 cfg.min = min;
                 this._mainEl.prop('min', cfg.min);
                 return cfg.min;
@@ -7868,7 +8867,7 @@ var JS;
                 if (!Number.isFinite(max))
                     return;
                 if (max < this.min())
-                    throw new Errors.RangeError('The max value less than min value!');
+                    throw new RangeError('The max value less than min value!');
                 cfg.max = max;
                 this._mainEl.prop('max', cfg.max);
                 return cfg.max;
@@ -7885,7 +8884,7 @@ var JS;
                 let cfg = this._config;
                 if (arguments.length == 0)
                     return super.value();
-                let v = val == void 0 ? null : Math.min(Math.max(Number(val), cfg.min), cfg.max);
+                let v = val == void 0 ? null : Math.min(Math.max(val, cfg.min), cfg.max);
                 return super.value(v == null ? null : v.round(cfg.fractionDigits), silent);
             }
             _renderValue() {
@@ -8091,7 +9090,7 @@ var JS;
                     return super.value();
                 val = val || 0;
                 if (val > 1 || val < 0)
-                    throw new Errors.RangeError('Progress value must in [0,1]!');
+                    throw new RangeError('Progress value must in [0,1]!');
                 let newVal = val ? val.round(2) : 0;
                 this._setValue(newVal, silent);
                 this._mainEl.css('width', newVal * 100 + '%');
@@ -8481,7 +9480,7 @@ var JS;
             }
             load(api) {
                 if (this._config.autoSearch)
-                    throw new Errors.NotHandledError('The method be not supported when autoSearch is true!');
+                    throw new NotHandledError('The method be not supported when autoSearch is true!');
                 return super.load(api);
             }
             iniValue(v, render) {
@@ -8582,7 +9581,7 @@ var JS;
                         delay: 500,
                         data: function () { return jsonParams ? jsonParams : {}; },
                         processResults: (res, params) => {
-                            let data = Jsons.getValueByPath(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
+                            let data = Jsons.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
                             this.data(data);
                             return {
                                 results: data
@@ -8718,7 +9717,7 @@ var JS;
                     return super.value();
                 let cfg = this._config;
                 if ((cfg.multiple && Types.isString(val)) || (!cfg.multiple && Types.isArray(val)))
-                    throw new Errors.TypeError(`Wrong value type for select<${this.id}>!`);
+                    throw new TypeError(`Wrong value type for select<${this.id}>!`);
                 return super.value(val, silent);
             }
             _showError(msg) {
@@ -9128,7 +10127,7 @@ var JS;
                 let isVtl = this._hasFaceMode(TabFaceMode.vertical);
                 if (isVtl)
                     cls += ' flex-column';
-                let hHtml = `<ul id="${this.id}_headers" role="tablist" class="nav${cls} ${cfg.headCls || ''}" style="${cfg.headStyle || ''}">${heads}</ul>`, cHtml = `<div class="${isVtl ? 'vertical' : ''} tab-content" style="height:${Lengths.toCssString(cfg.height, '100%')};">${contents}</div>`, leftWidth = Lengths.toCssString(cfg.headLeftWidth, '100%');
+                let hHtml = `<ul id="${this.id}_headers" role="tablist" class="nav${cls} ${cfg.headCls || ''}" style="${cfg.headStyle || ''}">${heads}</ul>`, cHtml = `<div class="${isVtl ? 'vertical' : ''} tab-content" style="height:${Lengths.toCSS(cfg.height, '100%')};">${contents}</div>`, leftWidth = Lengths.toCSS(cfg.headLeftWidth, '100%');
                 return isVtl ?
                     `
                 <div class="w-100">
@@ -9711,7 +10710,6 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
-        var Uploader_1;
         let UploaderFaceMode;
         (function (UploaderFaceMode) {
             UploaderFaceMode["list"] = "list";
@@ -9736,7 +10734,7 @@ var JS;
             }
         }
         fx.UploaderConfig = UploaderConfig;
-        let Uploader = Uploader_1 = class Uploader extends fx.FormWidget {
+        let Uploader = class Uploader extends fx.FormWidget {
             constructor(cfg) {
                 super(cfg);
             }
@@ -9785,38 +10783,49 @@ var JS;
                     } : false
                 };
                 this._uploader = WebUploader.Uploader.create(cf);
-                let eMap = Uploader_1._EVENTS_MAP;
-                this._uploader.on(eMap.get('adding'), function (file) {
+                let eMap = {
+                    'adding': 'beforeFileQueued',
+                    'added': 'filesQueued',
+                    'removed': 'fileDequeued',
+                    'uploading': 'uploadStart',
+                    'uploadprogress': 'uploadProgress',
+                    'uploadsuccess': 'uploadSuccess',
+                    'uploaderror': 'uploadError',
+                    'uploaded': 'uploadComplete',
+                    'beginupload': 'startUpload',
+                    'endupload': 'uploadFinished'
+                };
+                this._uploader.on(eMap['adding'], function (file) {
                     return me._fire('adding', [me._toMimeFile(file)]);
                 });
-                this._uploader.on(eMap.get('added'), function (files) {
+                this._uploader.on(eMap['added'], function (files) {
                     files.forEach((file) => {
                         me._onFileQueued(file);
                     });
                     me._fire('added', [me._toMimeFiles(files)]);
                 });
-                this._uploader.on(eMap.get('removed'), function (file) {
+                this._uploader.on(eMap['removed'], function (file) {
                     me._onFileDequeued(file);
                     me._fire('removed', [me._toMimeFile(file)]);
                 });
-                this._uploader.on(eMap.get('uploading'), function (file, percentage) {
+                this._uploader.on(eMap['uploading'], function (file, percentage) {
                     me._fire('uploading', [me._toMimeFile(file), percentage]);
                 });
-                this._uploader.on(eMap.get('uploaderror'), function (file, reason) {
+                this._uploader.on(eMap['uploaderror'], function (file, reason) {
                     me._onUploadFail(file);
                     me._fire('uploaderror', [me._toMimeFile(file), reason]);
                 });
-                this._uploader.on(eMap.get('uploadsuccess'), function (file, response) {
+                this._uploader.on(eMap['uploadsuccess'], function (file, response) {
                     me._onUploadSuccess(file, response);
                     me._fire('uploadsuccess', [me._toMimeFile(file), response]);
                 });
-                this._uploader.on(eMap.get('uploaded'), function (file) {
+                this._uploader.on(eMap['uploaded'], function (file) {
                     me._fire('uploaded', [me._toMimeFile(file)]);
                 });
-                this._uploader.on(eMap.get('beginupload'), function () {
+                this._uploader.on(eMap['beginupload'], function () {
                     me._fire('beginupload');
                 });
-                this._uploader.on(eMap.get('endupload'), function () {
+                this._uploader.on(eMap['endupload'], function () {
                     me._fire('endupload');
                 });
                 let errors = {
@@ -10134,7 +11143,7 @@ var JS;
                 if (!cf)
                     return null;
                 if (!cf.uri)
-                    throw new Errors.URIError(`The file<${cf.name}> has not URI.`);
+                    throw new URIError(`The file<${cf.name}> has not URI.`);
                 let file = {
                     id: cf.id,
                     type: cf.mime,
@@ -10175,18 +11184,6 @@ var JS;
                 return this._uploader.isInProgress();
             }
         };
-        Uploader._EVENTS_MAP = new BiMap([
-            ['adding', 'beforeFileQueued'],
-            ['added', 'filesQueued'],
-            ['removed', 'fileDequeued'],
-            ['uploading', 'uploadStart'],
-            ['uploadprogress', 'uploadProgress'],
-            ['uploadsuccess', 'uploadSuccess'],
-            ['uploaderror', 'uploadError'],
-            ['uploaded', 'uploadComplete'],
-            ['beginupload', 'startUpload'],
-            ['endupload', 'uploadFinished']
-        ]);
         Uploader.I18N = {
             pickTitle: 'Select your local files please',
             pickTip: '<Accepts>\nFileExts={fileExts}\nMaxTotalSize={maxTotalSize}\nMaxNumbers={maxNumbers}\nMaxSingleSize={maxSingleSize}',
@@ -10199,7 +11196,7 @@ var JS;
             exceedNumbers: 'Exceed the max numbers of file',
             exceedMaxTotalSize: 'Exceed the max size of total files'
         };
-        Uploader = Uploader_1 = __decorate([
+        Uploader = __decorate([
             widget('JS.fx.Uploader'),
             __metadata("design:paramtypes", [UploaderConfig])
         ], Uploader);
@@ -10262,7 +11259,7 @@ var JS;
                 Jsons.forEach(fields, (v, k) => {
                     let f = Annotations.getPropertyType(cmp, k);
                     if (!f || !Types.equalKlass(f))
-                        throw new Errors.TypeError('The type of Field[' + k + '] is invalid!');
+                        throw new TypeError('The type of Field[' + k + '] is invalid!');
                     let cls = f.class;
                     cmp[k] = this.get(cls.name);
                 });
@@ -10412,8 +11409,8 @@ var JS;
                     let fnString = this._stringify(this.run);
                     this._url = self.URL.createObjectURL(new Blob([fnString], { type: 'text/javascript' }));
                 }
-                this._worker = new Worker(this._url);
-                this._worker.onmessage = e => {
+                this._wk = new Worker(this._url);
+                this._wk.onmessage = e => {
                     let d = e.data;
                     if (d.cmd == 'CLOSE') {
                         this.terminate();
@@ -10426,7 +11423,7 @@ var JS;
                         this._bus.fire('message', [d.data]);
                     }
                 };
-                this._worker.onerror = e => {
+                this._wk.onerror = e => {
                     JSLogger.error(e, `Thread<${this.id}> run error!`);
                     this._bus.fire('error', [e.message]);
                     this.terminate();
@@ -10436,12 +11433,12 @@ var JS;
             terminate() {
                 if (this.isDestroyed())
                     return this;
-                if (this._worker)
-                    this._worker.terminate();
+                if (this._wk)
+                    this._wk.terminate();
                 if (this._url)
                     window.URL.revokeObjectURL(this._url);
                 this._state = ThreadState.TERMINATED;
-                this._worker = null;
+                this._wk = null;
                 this._url = null;
                 return this;
             }
@@ -10470,8 +11467,8 @@ var JS;
             postThread(data, transfer) {
                 if (this._state != 'RUNNING')
                     return this._warn('post data');
-                if (this._worker)
-                    this._worker.postMessage.apply(this._worker, Check.isEmpty(transfer) ? [data] : [data].concat(transfer));
+                if (this._wk)
+                    this._wk.postMessage.apply(this._wk, Check.isEmpty(transfer) ? [data] : [data].concat(transfer));
                 return this;
             }
             static initContext() {
@@ -10527,16 +11524,14 @@ var JS;
                     return 'null';
                 if (Types.isString(value))
                     return JSON.stringify(['string', value]);
-                if (Types.isArray(value))
-                    return JSON.stringify(['array', JSON.stringify(value)]);
                 if (Types.isBoolean(value))
                     return JSON.stringify(['boolean', value]);
                 if (Types.isNumber(value))
                     return JSON.stringify(['number', value]);
                 if (Types.isDate(value))
                     return JSON.stringify(['date', '' + value.valueOf()]);
-                if (Types.isJsonObject(value))
-                    return JSON.stringify(['json', JSON.stringify(value)]);
+                if (Types.isArray(value) || Types.isJsonObject(value))
+                    return JSON.stringify(['object', JSON.stringify(value)]);
             }
             static parse(data) {
                 if (Type.null == data)
@@ -10545,20 +11540,20 @@ var JS;
                     return undefined;
                 let [type, val] = JSON.parse(data), v = val;
                 switch (type) {
-                    case Type.object:
-                        v = JSON.parse(val);
-                        break;
-                    case Type.array:
-                        v = JSON.parse(val);
+                    case Type.boolean:
+                        v = Boolean(val);
                         break;
                     case Type.number:
                         v = Number(val);
                         break;
-                    case Type.boolean:
-                        v = Boolean(val);
-                        break;
                     case Type.date:
                         v = new Date(val);
+                        break;
+                    case Type.array:
+                        v = JSON.parse(val);
+                        break;
+                    case Type.json:
+                        v = JSON.parse(val);
                         break;
                 }
                 return v;
@@ -10717,228 +11712,6 @@ var JS;
     })(ui = JS.ui || (JS.ui = {}));
 })(JS || (JS = {}));
 var CustomElement = JS.ui.CustomElement;
-var JS;
-(function (JS) {
-    let ui;
-    (function (ui) {
-        class FormView extends ui.View {
-            reset() {
-                this.eachWidget((w) => {
-                    if (w.reset)
-                        w.reset();
-                });
-                return this;
-            }
-            clear() {
-                this.eachWidget((w) => {
-                    if (w.clear)
-                        w.clear();
-                });
-                return this;
-            }
-            iniValues(values, render) {
-                if (arguments.length == 0) {
-                    let vals = {};
-                    this.eachWidget((w) => {
-                        if (w.iniValue)
-                            vals[w.id] = w.iniValue();
-                    });
-                    return vals;
-                }
-                else {
-                    if (values) {
-                        Jsons.forEach(values, (val, id) => {
-                            let w = this._widgets[id];
-                            if (w && w.iniValue)
-                                w.iniValue(val, render);
-                        });
-                    }
-                    else {
-                        this.eachWidget((w) => {
-                            if (w.iniValue)
-                                w.iniValue(null, render);
-                        });
-                    }
-                }
-                return this;
-            }
-            validate(id) {
-                let wgts = this._widgets;
-                if (Check.isEmpty(wgts))
-                    return true;
-                if (!id) {
-                    let ok = true;
-                    Jsons.forEach(wgts, (wgt) => {
-                        if (this._validateWidget(wgt) !== true)
-                            ok = false;
-                    });
-                    return ok;
-                }
-                return this._validateWidget(this._widgets[id]);
-            }
-            _validateWidget(wgt) {
-                if (!wgt || !wgt.validate)
-                    return true;
-                return wgt.validate() === true;
-            }
-            getModel() {
-                return this._model;
-            }
-            values(values) {
-                if (arguments.length == 1) {
-                    this._model.setData(values);
-                    return this;
-                }
-                else {
-                    let d = {};
-                    this.eachWidget(w => {
-                        if (w.value && w.isEnabled()) {
-                            d[w.name()] =
-                                w.isCrud && w.isCrud() ? w.crudValue() : w.value();
-                        }
-                    });
-                    return d;
-                }
-            }
-            _render() {
-                if (this._config) {
-                    let cfg = this._config;
-                    Jsons.forEach(cfg.widgetConfigs, (config, id) => {
-                        config['valueModel'] = this._model || this._config.valueModel;
-                        let wgt = this._newWidget(id, config, cfg.defaultConfig);
-                        if (wgt && wgt.valueModel && !this._model)
-                            this._model = wgt.valueModel();
-                        this.addWidget(wgt);
-                    });
-                    if (this._model) {
-                        this._model.on('validated', (e, result, data) => {
-                            this._fire('validated', [result, data]);
-                        });
-                        this._model.on('dataupdated', (e, newData, oldData) => {
-                            this._fire('dataupdated', [newData, oldData]);
-                        });
-                    }
-                }
-            }
-        }
-        ui.FormView = FormView;
-    })(ui = JS.ui || (JS.ui = {}));
-})(JS || (JS = {}));
-var FormView = JS.ui.FormView;
-var JS;
-(function (JS) {
-    let ui;
-    (function (ui) {
-        class PageView extends ui.View {
-            load(api) {
-                return this.getWidget(this._config.id).load(api);
-            }
-            reload() {
-                this.getWidget(this._config.id).reload();
-                return this;
-            }
-            _render() {
-                if (this._config) {
-                    this._fire('widgetiniting', [this._config.klass, this._config]);
-                    let wgt = Class.aliasInstance(this._config.klass, this._config);
-                    this._fire('widgetinited', [wgt]);
-                    this._model = wgt.dataModel();
-                    this._model.on('dataupdated', (e, data) => {
-                        this._fire('dataupdated', [data]);
-                    });
-                    this.addWidget(wgt);
-                }
-            }
-        }
-        ui.PageView = PageView;
-    })(ui = JS.ui || (JS.ui = {}));
-})(JS || (JS = {}));
-var PageView = JS.ui.PageView;
-var JS;
-(function (JS) {
-    let ui;
-    (function (ui) {
-        class SimpleView extends ui.View {
-            _render() {
-                if (this._config) {
-                    let cfg = this._config;
-                    Jsons.forEach(cfg.widgetConfigs, (config, id) => {
-                        this.addWidget(this._newWidget(id, config, cfg.defaultConfig));
-                    });
-                }
-            }
-        }
-        ui.SimpleView = SimpleView;
-    })(ui = JS.ui || (JS.ui = {}));
-})(JS || (JS = {}));
-var SimpleView = JS.ui.SimpleView;
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        class Templator {
-            constructor() {
-                this._hb = Handlebars.create();
-            }
-            compile(tpl, options) {
-                return this._hb.compile(tpl, options);
-            }
-            registerHelper(name, fn) {
-                this._hb.registerHelper(name, fn);
-            }
-            unregisterHelper(name) {
-                this._hb.unregisterHelper(name);
-            }
-            static safeString(s) {
-                return new Handlebars.SafeString(s);
-            }
-        }
-        util.Templator = Templator;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Templator = JS.util.Templator;
-var JS;
-(function (JS) {
-    let ui;
-    (function (ui) {
-        class TemplateView extends ui.View {
-            constructor() {
-                super(...arguments);
-                this._model = new ListModel();
-            }
-            initialize() {
-                this._engine = new Templator();
-                let me = this;
-                this._model.on('dataupdated', function (e, newData, oldData) {
-                    me._config.data = this.getData();
-                    me.render();
-                    me._fire('dataupdated', [newData, oldData]);
-                });
-            }
-            data(data) {
-                this._model.setData(data);
-            }
-            load(api) {
-                return this._model.load(api);
-            }
-            _render() {
-                let cfg = this._config;
-                if (cfg && cfg.data && cfg.container && cfg.tpl) {
-                    let html = this._engine.compile(cfg.tpl)(cfg.data), ctr = $1(cfg.container);
-                    ctr.off().html('').html(html);
-                    let wConfigs = cfg.widgetConfigs;
-                    if (!Check.isEmpty(wConfigs))
-                        ctr.findAll('[jsfx-alias]').forEach((el) => {
-                            let realId = $1(el).attr('id'), prefixId = realId.replace(/(\d)*/g, '');
-                            this.addWidget(this._newWidget(realId, wConfigs[prefixId], cfg.defaultConfig));
-                        });
-                }
-            }
-        }
-        ui.TemplateView = TemplateView;
-    })(ui = JS.ui || (JS.ui = {}));
-})(JS || (JS = {}));
-var TemplateView = JS.ui.TemplateView;
 var JS;
 (function (JS) {
     let unit;
@@ -11306,7 +12079,7 @@ var JS;
             }
             _init(suite) {
                 let sys = System.info();
-                $1('#env').html(`${sys.device.type} / ${sys.os.name} ${sys.os.version || ''} / ${sys.browser.name} ${sys.browser.version || ''}`);
+                $1('#env').html(`${sys.browser.name} ${sys.browser.version || ''} / ${sys.os.name} ${sys.os.version || ''} / ${sys.device.type}`);
                 $1('#info').html('');
                 let pro = $1('#progress'), sty = pro.style;
                 sty.width = '0%';
@@ -11392,7 +12165,7 @@ var JS;
                 util.Bom.ready(() => {
                     let cli = util.Dom.$1(clicker), tar = util.Dom.$1(target);
                     if (!cli || !tar)
-                        throw new Errors.NotFoundError('The clicker or target not found!');
+                        throw new NotFoundError('The clicker or target not found!');
                     cli.attr('data-clipboard-action', action);
                     cli.attr('data-clipboard-target', '#' + tar.attr('id'));
                     new ClipboardJS('#' + cli.attr('id'));
@@ -11402,7 +12175,7 @@ var JS;
                 util.Bom.ready(() => {
                     let cli = util.Dom.$1(clicker);
                     if (cli)
-                        throw new Errors.NotFoundError('The clicker not found!');
+                        throw new NotFoundError('The clicker not found!');
                     cli.attr('data-clipboard-text', text);
                     new ClipboardJS('#' + cli.attr('id'));
                 });
@@ -11465,87 +12238,363 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        class Timer {
+        class Templator {
             constructor() {
-                this._timerId = null;
-                this._counter = 0;
-                this._state = 'NEW';
-                this._opts = {
-                    cycle: false,
-                    wait: 0,
+                this._hb = Handlebars.create();
+            }
+            compile(tpl, options) {
+                return this._hb.compile(tpl, options);
+            }
+            registerHelper(name, fn) {
+                this._hb.registerHelper(name, fn);
+            }
+            unregisterHelper(name) {
+                this._hb.unregisterHelper(name);
+            }
+            static safeString(s) {
+                return new Handlebars.SafeString(s);
+            }
+        }
+        util.Templator = Templator;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Templator = JS.util.Templator;
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        let TimerState;
+        (function (TimerState) {
+            TimerState[TimerState["STOPPED"] = 0] = "STOPPED";
+            TimerState[TimerState["RUNNING"] = 1] = "RUNNING";
+            TimerState[TimerState["PAUSED"] = 2] = "PAUSED";
+        })(TimerState = util.TimerState || (util.TimerState = {}));
+        class Timer {
+            constructor(tick, cfg) {
+                this._bus = new util.EventBus(this);
+                this._sta = TimerState.STOPPED;
+                this._ts = 0;
+                this._et = 0;
+                this._pt = 0;
+                this._count = 0;
+                this._tick = tick;
+                this.config(cfg);
+            }
+            on(type, fn) {
+                this._bus.on(type, fn);
+                return this;
+            }
+            off(type, fn) {
+                this._bus.off(type, fn);
+                return this;
+            }
+            count() {
+                return this._count;
+            }
+            config(cfg) {
+                if (!cfg)
+                    return this._cfg;
+                this._cfg = util.Jsons.union({
+                    delay: 0,
+                    loop: 1,
                     interval: 0,
-                };
+                    intervalMode: 'OF'
+                }, this._cfg, cfg);
+                let c = this._cfg;
+                if (c.interval != void 0 && c.interval < 0)
+                    c.interval = 0;
+                let l = c.loop;
+                l = l == false || l < 0 ? 0 : (l === true ? Infinity : l);
+                c.loop = l;
+                return this;
             }
-            restart() {
-                this.stop();
-                if (this._ticker)
-                    this.start(this._ticker);
+            pause() {
+                let m = this;
+                if (m._sta != TimerState.RUNNING)
+                    return m;
+                m._sta = TimerState.PAUSED;
+                m._pt = System.highResTime();
+                return m;
             }
-            suspend() {
-                if (this._state == 'WAITING' || this._state == 'RUNNING') {
-                    this._state = 'BLOCKED';
-                    return true;
-                }
-                return false;
+            _cancelTimer() {
+                if (this._timer)
+                    window.clearTimeout(this._timer);
+                this._timer = null;
+            }
+            _reset() {
+                let m = this;
+                m._cancelTimer();
+                m._sta = TimerState.STOPPED;
+                m._count = 0;
+                m._ts0 = 0;
+                m._ts = 0;
+                m._et = 0;
+                m._pt = 0;
             }
             stop() {
-                this._state = 'TERMINATED';
-                this._counter = 0;
-                if (this._timerId)
-                    window.clearTimeout(this._timerId);
-                this._timerId = null;
+                this._reset();
+                return this;
+            }
+            _finish() {
+                this._reset();
+                this._bus.fire('finished');
             }
             getState() {
-                return this._state;
+                return this._sta;
+            }
+            fps() {
+                return this._et == 0 ? 0 : 1000 / this._et;
+            }
+            maxFPS() {
+                let t = this._cfg.interval;
+                return t == 0 ? Infinity : 1000 / t;
             }
             _cycle(skip) {
-                if (this._state != 'RUNNING')
+                if (this._sta != TimerState.RUNNING)
                     return;
-                this._counter++;
-                let time = skip ? undefined : this._ticker.call(this, this._counter), max = this._opts.cycle;
-                if (this._counter < max) {
-                    this._timerId = setTimeout(() => { this._cycle(time < 0); }, util.Types.isNumber(time) ? (time < 0 ? 0 : time) : this._opts.interval);
+                if (this._count < this._cfg.loop) {
+                    let t = 0, opts = this._cfg, t0 = System.highResTime();
+                    this._et = t0 - this._ts;
+                    if (!skip) {
+                        this._count++;
+                        this._tick.call(this, this._et);
+                        let t1 = System.highResTime();
+                        t = t1 - t0;
+                    }
+                    this._ts = t0;
+                    let d = opts.interval - t, needSkip = opts.intervalMode == 'OF' && d < 0;
+                    this._timer = setTimeout(() => { this._cycle(needSkip); }, opts.intervalMode == 'BF' ? opts.interval : (needSkip ? 0 : d));
                 }
                 else {
-                    this.stop();
+                    this._finish();
                 }
             }
-            start(ticker, opts) {
-                if (ticker)
-                    this._ticker = ticker;
-                if (opts)
-                    this._opts = util.Jsons.union(this._opts, opts);
-                this._state = 'WAITING';
-                if (this._opts.cycle === false) {
-                    this._timerId = window.setTimeout(() => {
-                        this._state = 'RUNNING';
-                        this._ticker.call(this, ++this._counter);
-                        this.stop();
-                    }, this._opts.wait);
+            start() {
+                let m = this;
+                if (m._sta == TimerState.RUNNING)
+                    return;
+                let first = false, wait = m._cfg.delay;
+                if (m._sta == TimerState.PAUSED) {
+                    wait = 0;
+                    let t = System.highResTime() - m._pt;
+                    m._pt = 0;
+                    m._ts0 += t;
+                    m._ts += t;
                 }
                 else {
-                    this._timerId = window.setTimeout(() => {
-                        this._state = 'RUNNING';
-                        this._cycle();
-                    }, this._opts.wait);
+                    first = true;
+                    m._reset();
                 }
-            }
-            startOne(ticker, wait) {
-                this.start(ticker, { cycle: false, wait: wait });
-            }
-            startForever(ticker, opts) {
-                this.start(ticker, util.Jsons.union({ cycle: Infinity }, opts));
-            }
-            startAtDate(ticker, date, opts) {
-                let now = new Date(), diff = date.getTime() - now.getTime();
-                if (diff < 0)
-                    return;
-                opts = opts || {};
-                opts.wait = diff;
-                this.start(ticker, opts);
+                m._sta = TimerState.RUNNING;
+                m._timer = setTimeout(() => {
+                    if (first) {
+                        this._ts0 = System.highResTime();
+                        this._ts = this._ts0;
+                        m._bus.fire('starting');
+                    }
+                    m._cycle();
+                }, wait);
             }
         }
         util.Timer = Timer;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
 var Timer = JS.util.Timer;
+var TimerState = JS.util.TimerState;
+var JS;
+(function (JS) {
+    let view;
+    (function (view) {
+        class FormView extends view.View {
+            reset() {
+                this.eachWidget((w) => {
+                    if (w.reset)
+                        w.reset();
+                });
+                return this;
+            }
+            clear() {
+                this.eachWidget((w) => {
+                    if (w.clear)
+                        w.clear();
+                });
+                return this;
+            }
+            iniValues(values, render) {
+                if (arguments.length == 0) {
+                    let vals = {};
+                    this.eachWidget((w) => {
+                        if (w.iniValue)
+                            vals[w.id] = w.iniValue();
+                    });
+                    return vals;
+                }
+                else {
+                    if (values) {
+                        Jsons.forEach(values, (val, id) => {
+                            let w = this._widgets[id];
+                            if (w && w.iniValue)
+                                w.iniValue(val, render);
+                        });
+                    }
+                    else {
+                        this.eachWidget((w) => {
+                            if (w.iniValue)
+                                w.iniValue(null, render);
+                        });
+                    }
+                }
+                return this;
+            }
+            validate(id) {
+                let wgts = this._widgets;
+                if (Check.isEmpty(wgts))
+                    return true;
+                if (!id) {
+                    let ok = true;
+                    Jsons.forEach(wgts, (wgt) => {
+                        if (this._validateWidget(wgt) !== true)
+                            ok = false;
+                    });
+                    return ok;
+                }
+                return this._validateWidget(this._widgets[id]);
+            }
+            _validateWidget(wgt) {
+                if (!wgt || !wgt.validate)
+                    return true;
+                return wgt.validate() === true;
+            }
+            getModel() {
+                return this._model;
+            }
+            values(values) {
+                if (arguments.length == 1) {
+                    this._model.setData(values);
+                    return this;
+                }
+                else {
+                    let d = {};
+                    this.eachWidget(w => {
+                        if (w.value && w.isEnabled()) {
+                            d[w.name()] =
+                                w.isCrud && w.isCrud() ? w.crudValue() : w.value();
+                        }
+                    });
+                    return d;
+                }
+            }
+            _render() {
+                if (this._config) {
+                    let cfg = this._config;
+                    Jsons.forEach(cfg.widgetConfigs, (config, id) => {
+                        config['valueModel'] = this._model || this._config.valueModel;
+                        let wgt = this._newWidget(id, config, cfg.defaultConfig);
+                        if (wgt && wgt.valueModel && !this._model)
+                            this._model = wgt.valueModel();
+                        this.addWidget(wgt);
+                    });
+                    if (this._model) {
+                        this._model.on('validated', (e, result, data) => {
+                            this._fire('validated', [result, data]);
+                        });
+                        this._model.on('dataupdated', (e, newData, oldData) => {
+                            this._fire('dataupdated', [newData, oldData]);
+                        });
+                    }
+                }
+            }
+        }
+        view.FormView = FormView;
+    })(view = JS.view || (JS.view = {}));
+})(JS || (JS = {}));
+var FormView = JS.view.FormView;
+var JS;
+(function (JS) {
+    let view;
+    (function (view) {
+        class PageView extends view.View {
+            load(api) {
+                return this.getWidget(this._config.id).load(api);
+            }
+            reload() {
+                this.getWidget(this._config.id).reload();
+                return this;
+            }
+            _render() {
+                if (this._config) {
+                    this._fire('widgetiniting', [this._config.klass, this._config]);
+                    let wgt = Class.aliasInstance(this._config.klass, this._config);
+                    this._fire('widgetinited', [wgt]);
+                    this._model = wgt.dataModel();
+                    this._model.on('dataupdated', (e, data) => {
+                        this._fire('dataupdated', [data]);
+                    });
+                    this.addWidget(wgt);
+                }
+            }
+        }
+        view.PageView = PageView;
+    })(view = JS.view || (JS.view = {}));
+})(JS || (JS = {}));
+var PageView = JS.view.PageView;
+var JS;
+(function (JS) {
+    let view;
+    (function (view) {
+        class SimpleView extends view.View {
+            _render() {
+                if (this._config) {
+                    let cfg = this._config;
+                    Jsons.forEach(cfg.widgetConfigs, (config, id) => {
+                        this.addWidget(this._newWidget(id, config, cfg.defaultConfig));
+                    });
+                }
+            }
+        }
+        view.SimpleView = SimpleView;
+    })(view = JS.view || (JS.view = {}));
+})(JS || (JS = {}));
+var SimpleView = JS.view.SimpleView;
+var JS;
+(function (JS) {
+    let view;
+    (function (view) {
+        class TemplateView extends view.View {
+            constructor() {
+                super(...arguments);
+                this._model = new ListModel();
+            }
+            initialize() {
+                this._engine = new Templator();
+                let me = this;
+                this._model.on('dataupdated', function (e, newData, oldData) {
+                    me._config.data = this.getData();
+                    me.render();
+                    me._fire('dataupdated', [newData, oldData]);
+                });
+            }
+            data(data) {
+                this._model.setData(data);
+            }
+            load(api) {
+                return this._model.load(api);
+            }
+            _render() {
+                let cfg = this._config;
+                if (cfg && cfg.data && cfg.container && cfg.tpl) {
+                    let html = this._engine.compile(cfg.tpl)(cfg.data), ctr = $1(cfg.container);
+                    ctr.off().html('').html(html);
+                    let wConfigs = cfg.widgetConfigs;
+                    if (!Check.isEmpty(wConfigs))
+                        ctr.findAll('[jsfx-alias]').forEach((el) => {
+                            let realId = $1(el).attr('id'), prefixId = realId.replace(/(\d)*/g, '');
+                            this.addWidget(this._newWidget(realId, wConfigs[prefixId], cfg.defaultConfig));
+                        });
+                }
+            }
+        }
+        view.TemplateView = TemplateView;
+    })(view = JS.view || (JS.view = {}));
+})(JS || (JS = {}));
+var TemplateView = JS.view.TemplateView;

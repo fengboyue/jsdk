@@ -43,8 +43,8 @@ export interface Klass<T> extends Function {
 }
 ```
 
-## 预定义数据结构
-JSDK在"JS.data.*"包下提供了以下数据结构类：
+## 数据结构类
+JSDK在"JS.ds.*"包下提供了以下数据结构类：
 * BiMap: 双向映射表
 * LinkedList: 双向链表，适合高频插入／删除操作
 * Queue: 队列，即先进先出队列
@@ -67,6 +67,7 @@ enum Type {
     number = "number",
     date = "date",
     array = "array",
+    json = "json",
     object = "object",
     function = "function",
     class = "class",

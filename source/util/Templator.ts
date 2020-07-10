@@ -31,10 +31,12 @@ module JS {
          * 
          * <pre>
          * //Note: Need load the 'handlebars' library.
-         * JS.imports('$handlebars').then();
+         * JS.imports('$handlebars').then({
+         * });
          * 
          * //Note: Need load the 'handlebars' runtime before using compiled files.
-         * JS.imports('$handlebars-runtime').then();
+         * JS.imports('$handlebars-runtime').then({
+         * });
          * </pre>
          */
         export class Templator {

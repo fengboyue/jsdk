@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>JSDK 2.0.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.0.0 API">
+	<title>JSDK 2.1.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.1.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">JSDK 2.0.0 API</a>
+					<a href="index.html" class="title">JSDK 2.1.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -56,7 +56,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1>JSDK 2.0.0 API</h1>
+			<h1>JSDK 2.1.0 API</h1>
 		</div>
 	</div>
 </header>
@@ -74,13 +74,13 @@
 					alt="License: MIT"></a>
 					<a href="#">
 						<img
-						src="https://img.shields.io/badge/version-v2.0.0-brightgreen"
-					alt="Version: 2.0.0"></a>
+						src="https://img.shields.io/badge/version-v2.1.0-brightgreen"
+					alt="Version: 2.1.0"></a>
 				</p>
-				<p>JSDK 2.0 is one of the most comprehensive JS/TS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.</p>
+				<p>JSDK 2.0+ is one of the most comprehensive JS/TS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.</p>
 				<p>It supports the following features:</p>
 				<p class="warn">
-					Annotation, Reflection, AOP, IOC & Component, Dependency Injection, Thread, Timer, Unit Test, Event Bus, Application Framework. A group of advanced widgets and more powerful toolboxes are also provided.
+					Annotation, Reflection, AOP, IOC & Component, Dependency Injection, Thread, Timer, Unit Test, Event Bus, Animations, Application Framework. A group of advanced widgets and more powerful toolboxes are also provided.
 				</p>
 				<p>JSDK will greatly help you to develop libraries, components, widgets, applications and even games.</p>
 				<a href="#download" id="download" style="color: inherit; text-decoration: none;">
@@ -92,7 +92,7 @@
 				<a href="#basic-knowledge" id="basic-knowledge" style="color: inherit; text-decoration: none;">
 					<h2>Basic knowledge</h2>
 				</a>
-				<p>JSDK 2.0 was written in <code>ES6</code> and <code>TypeScript 2.0+</code>.</p>
+				<p>JSDK 2.0+ was written in <code>ES6</code> and <code>TypeScript 2.0+</code>.</p>
 				<p>If you touch JSDK for the first time, you need to have these following basic knowledge:</p>
 				<blockquote>
 					<p>ES6 core features : class definition / multiline string / arrow function / new native APIs / Promise etc.</p>
@@ -124,7 +124,7 @@
 				<p>You can launch a http server on your PC to visit these resources quickly.</p>
 				<ol>
 					<li>Suppose your local installation directory of JSDK is <code>{JSDK-INSTALL}</code>.</li>
-					<li>Run a http server and set your server path <code><a href="http://localhost/jsdk/">http://localhost/jsdk/</a></code> to pointer to your <code>{JSDK-INSTALL}</code>.</li>
+					<li>Run a http server and set your server path <code><a href="http://localhost/jsdk/">http://localhost/jsdk/</a></code> to refer to your <code>{JSDK-INSTALL}</code>.</li>
 					<li>Open your browser and visit the URL.</li>
 				</ol>
 				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
@@ -134,11 +134,37 @@
 				<ul>
 					<li><em>Other open source libraries include in JSDK release package are licensed under their stated licenses</em></li>
 				</ul>
+				<a href="#changelogs" id="changelogs" style="color: inherit; text-decoration: none;">
+					<h2>Changelogs</h2>
+				</a>
+				<a href="#v210" id="v210" style="color: inherit; text-decoration: none;">
+					<h3>v2.1.0</h3>
+				</a>
+				<p>[Added] </p>
+				<ul>
+					<li>create new animation module named jsan.</li>
+					<li>add computedStyle method on HTMLElement.prototype.</li>
+					<li>add some useful methods to Colors class.</li>
+					<li>add Type.json from Type.object which only presents class instance now.</li>
+				</ul>
+				<p>[Removed] </p>
+				<ul>
+					<li>remove and modified some unused methods of Dates class and Date.prototye.</li>
+					<li>remove some unused type definitions on Model classes.</li>
+					<li>remove some unused jsdocs.</li>
+				</ul>
+				<p>[Changed] </p>
+				<ul>
+					<li>redesign new stronger Timer class for constant interval time and calculation of FPS.</li>
+					<li>move all Model and View classes to new &quot;jsmv&quot; module from old &quot;jsui&quot; module.</li>
+					<li>rename the package of &quot;JS.data.*&quot; to &quot;JS.ds.*&quot; and create new &quot;jsds&quot; module for keeping system module size smaller.</li>
+					<li>move the package of &quot;JS.store.*&quot; to &quot;jsvp&quot; module for keeping system module size smaller.</li>
+				</ul>
 				<a href="#old-versions" id="old-versions" style="color: inherit; text-decoration: none;">
 					<h2>Old Versions</h2>
 				</a>
 				<p>The <a href="https://sourceforge.net/projects/jsdk2/" target="_blank">
-				old versions</a> of JSDK was no longer upgraded and maintained. Please use the latest version 2.0.</p>
+				0.x versions</a> of JSDK was no longer upgraded and maintained. Please use the latest version 2.1.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -182,9 +208,6 @@
 						<a href="globals.html#_1" class="tsd-kind-icon">$1</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#_f" class="tsd-kind-icon">$F</a>
-					</li>
-					<li class=" tsd-kind-variable">
 						<a href="globals.html#_l" class="tsd-kind-icon">$L</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -198,6 +221,18 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#ajaxresponse" class="tsd-kind-icon">Ajax<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#anim" class="tsd-kind-icon">Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#animconfig" class="tsd-kind-icon">Anim<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#animstate" class="tsd-kind-icon">Anim<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#animtimer" class="tsd-kind-icon">Anim<wbr>Timer</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#annotation" class="tsd-kind-icon">Annotation</a>
@@ -308,10 +343,10 @@
 						<a href="globals.html#clipboard" class="tsd-kind-icon">Clip<wbr>Board</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#color" class="tsd-kind-icon">Color</a>
+						<a href="globals.html#colormode" class="tsd-kind-icon">Color<wbr>Mode</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#colormode" class="tsd-kind-icon">Color<wbr>Mode</a>
+						<a href="globals.html#colors" class="tsd-kind-icon">Colors</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#components" class="tsd-kind-icon">Components</a>
@@ -386,6 +421,18 @@
 						<a href="globals.html#dropdownoptions" class="tsd-kind-icon">Drop<wbr>Down<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#easingfunction" class="tsd-kind-icon">Easing<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#easings" class="tsd-kind-icon">Easings</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#elementanim" class="tsd-kind-icon">Element<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#elementanimconfig" class="tsd-kind-icon">Element<wbr>Anim<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#emailinput" class="tsd-kind-icon">Email<wbr>Input</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -408,6 +455,18 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#eventhandler3" class="tsd-kind-icon">Event<wbr>Handler3</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fadeanim" class="tsd-kind-icon">Fade<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fadeanimconfig" class="tsd-kind-icon">Fade<wbr>Anim<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fadekeyframe" class="tsd-kind-icon">Fade<wbr>Key<wbr>Frame</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fadekeyframes" class="tsd-kind-icon">Fade<wbr>Key<wbr>Frames</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#fallback" class="tsd-kind-icon">Fallback</a>
@@ -452,7 +511,16 @@
 						<a href="globals.html#functions" class="tsd-kind-icon">Functions</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#gradientcolor" class="tsd-kind-icon">Gradient<wbr>Color</a>
+						<a href="globals.html#gradientanim" class="tsd-kind-icon">Gradient<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#gradientanimconfig" class="tsd-kind-icon">Gradient<wbr>Anim<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#gradientkeyframe" class="tsd-kind-icon">Gradient<wbr>Key<wbr>Frame</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#gradientkeyframes" class="tsd-kind-icon">Gradient<wbr>Key<wbr>Frames</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#grid" class="tsd-kind-icon">Grid</a>
@@ -480,6 +548,15 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#gridresource" class="tsd-kind-icon">Grid<wbr>Resource</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#hex" class="tsd-kind-icon">HEX</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#hsla" class="tsd-kind-icon">HSLA</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#hslastring" class="tsd-kind-icon">HSLAString</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#icrudwidget" class="tsd-kind-icon">ICRUDWidget</a>
@@ -537,6 +614,12 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#keycode" class="tsd-kind-icon">Key<wbr>Code</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#keyframe" class="tsd-kind-icon">Key<wbr>Frame</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#keyframes" class="tsd-kind-icon">Key<wbr>Frames</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#keyboardevents" class="tsd-kind-icon">Keyboard<wbr>Events</a>
@@ -659,6 +742,18 @@
 						<a href="globals.html#mouseevents" class="tsd-kind-icon">Mouse<wbr>Events</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#moveanim" class="tsd-kind-icon">Move<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#moveanimconfig" class="tsd-kind-icon">Move<wbr>Anim<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#movekeyframe" class="tsd-kind-icon">Move<wbr>Key<wbr>Frame</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#movekeyframes" class="tsd-kind-icon">Move<wbr>Key<wbr>Frames</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#networkerror" class="tsd-kind-icon">Network<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -704,6 +799,12 @@
 						<a href="globals.html#pageviewconfig" class="tsd-kind-icon">Page<wbr>View<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#parallelanim" class="tsd-kind-icon">Parallel<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#parallelanimconfig" class="tsd-kind-icon">Parallel<wbr>Anim<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#password" class="tsd-kind-icon">Password</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -747,6 +848,12 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#queue" class="tsd-kind-icon">Queue</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rgba" class="tsd-kind-icon">RGBA</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rgbastring" class="tsd-kind-icon">RGBAString</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#radio" class="tsd-kind-icon">Radio</a>
@@ -797,6 +904,18 @@
 						<a href="globals.html#resultsetformat" class="tsd-kind-icon">Result<wbr>Set<wbr>Format</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#rotateanim" class="tsd-kind-icon">Rotate<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rotateanimconfig" class="tsd-kind-icon">Rotate<wbr>Anim<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rotatekeyframe" class="tsd-kind-icon">Rotate<wbr>Key<wbr>Frame</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rotatekeyframes" class="tsd-kind-icon">Rotate<wbr>Key<wbr>Frames</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#rowsinput" class="tsd-kind-icon">Rows<wbr>Input</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -807,6 +926,18 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#runnable" class="tsd-kind-icon">Runnable</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#scaleanim" class="tsd-kind-icon">Scale<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#scaleanimconfig" class="tsd-kind-icon">Scale<wbr>Anim<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#scalekeyframe" class="tsd-kind-icon">Scale<wbr>Key<wbr>Frame</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#scalekeyframes" class="tsd-kind-icon">Scale<wbr>Key<wbr>Frames</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#select" class="tsd-kind-icon">Select</a>
@@ -822,6 +953,12 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#selectoption" class="tsd-kind-icon">Select<wbr>Option</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#sequentialanim" class="tsd-kind-icon">Sequential<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#sequentialanimconfig" class="tsd-kind-icon">Sequential<wbr>Anim<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#service" class="tsd-kind-icon">Service</a>
@@ -852,6 +989,18 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#sizemode" class="tsd-kind-icon">Size<wbr>Mode</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#skewanim" class="tsd-kind-icon">Skew<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#skewanimconfig" class="tsd-kind-icon">Skew<wbr>Anim<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#skewkeyframe" class="tsd-kind-icon">Skew<wbr>Key<wbr>Frame</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#skewkeyframes" class="tsd-kind-icon">Skew<wbr>Key<wbr>Frames</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#stack" class="tsd-kind-icon">Stack</a>
@@ -980,10 +1129,16 @@
 						<a href="globals.html#timer" class="tsd-kind-icon">Timer</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#timerticker" class="tsd-kind-icon">Timer<wbr>Ticker</a>
+						<a href="globals.html#timerevents" class="tsd-kind-icon">Timer<wbr>Events</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#timertickeroptions" class="tsd-kind-icon">Timer<wbr>Ticker<wbr>Options</a>
+						<a href="globals.html#timeroptions" class="tsd-kind-icon">Timer<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#timerstate" class="tsd-kind-icon">Timer<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#timertask" class="tsd-kind-icon">Timer<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#toast" class="tsd-kind-icon">Toast</a>
@@ -996,6 +1151,18 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#touchevents" class="tsd-kind-icon">Touch<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#translateanim" class="tsd-kind-icon">Translate<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#translateanimconfig" class="tsd-kind-icon">Translate<wbr>Anim<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#translatekeyframe" class="tsd-kind-icon">Translate<wbr>Key<wbr>Frame</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#translatekeyframes" class="tsd-kind-icon">Translate<wbr>Key<wbr>Frames</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#type" class="tsd-kind-icon">Type</a>

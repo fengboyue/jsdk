@@ -3,6 +3,11 @@
  * @license MIT
  * @website https://github.com/fengboyue/jsdk
  * 
+ * @version 2.1.0
+ * @date 2020/7/1
+ * @author Frank.Feng
+ * @update Realized constant interval time for constant FPS, which be named as "OF" mode. 
+ * 
  * @version 2.0.0
  * @author Frank.Feng
  */
@@ -10,142 +15,206 @@ module JS {
 
     export namespace util {
 
-        /**
-         * The interval execution strategy of TimerTicker is as follows: <br>
-         * If the function returns void, it indicate that the interval time will not be changed.<br>
-         * If the function returns positive number, it indicate that the interval time will be replaced with a new value temporarily before next execution.<br>
-         * If the function returns negative number, it indicate that the next execution will be ignored, but the subsequent execution continues normally. <br>
-         * 
-         * TimerTicker的间隔执行策略如下：<br>
-         * 函数返回值为void，表示下次执行间隔时间保持不变。<br>
-         * 函数返回值为正数，表示下次执行间隔临时性的改为新值（以后仍不变）。<br>
-         * 函数返回值为负数，标志下次忽略不执行但以后仍正常执行。
-         */
-        export type TimerTicker = (this:Timer, counter:number)=>number|void;
+        export type TimerTask = (this: Timer, elapsedTime:number) => void;
 
-        export type CycleOptions = {
-            cycle?: false | number,
-            wait?: number,
-            interval?: number
+        export type TimerConfig = {
+            /**
+             * Delays (ms) the start of Timer.
+             */
+            delay?: number;
+            /**
+             * Defines max loop of task.<br>
+             * True means is Infinity.<br>
+             * False means is 0.<br>
+             * <br>
+             * The default value is 1.
+             */
+            loop?: boolean | number,
+            /**
+             * millisecond.
+             */
+            interval?: number,
+            /**
+             * BF means the interval time which is between every task.<br>
+             * OF means the interval time which is occupied by every task. <br>
+             * If you want to keep in a constant task rate, you should select OF.<br>
+             * <br>
+             * The default is OF.
+             */
+            intervalMode?: 'OF'|'BF'
         }
 
-        export type TimerState = 'NEW'|'WAITING'|'RUNNING'|'BLOCKED'|'TERMINATED'
 
-        
+        export type TimerEvents = 'starting' | 'finished'
+
+        export enum TimerState {STOPPED, RUNNING, PAUSED}
+
         export class Timer {
-            private _opts:CycleOptions;
-            private _ticker: TimerTicker;
-            private _timerId = null;
-            private _counter = 0;
-            private _state: TimerState='NEW';
+            protected _bus = new EventBus(this);
+            protected _cfg: TimerConfig;
+            protected _tick: TimerTask;
+            protected _timer;
+            protected _sta: TimerState = TimerState.STOPPED;
 
-            constructor(){
-                this._opts = {
-                    cycle: false,
-                    wait: 0,
+            protected _ts0;  //save timestamp at starting
+            protected _ts: number = 0; //timestamp of prev task
+            protected _et: number = 0; //elapsed time of prev task
+            protected _pt: number = 0; //pause time 
+            protected _count = 0;
+            
+            constructor(tick: TimerTask, cfg?: TimerConfig) {
+                this._tick = tick;  
+                this.config(cfg);            
+            }
+
+            public on(type: string, fn:EventHandler<this>){
+                this._bus.on(type, fn);
+                return this
+            }
+            public off(type: string, fn?:EventHandler<this>){
+                this._bus.off(type, fn);
+                return this
+            }
+
+            public count() {
+                return this._count
+            }
+
+            public config(): TimerConfig
+            public config(cfg?: TimerConfig): this
+            public config(cfg?: TimerConfig): any{
+                if(!cfg) return this._cfg;
+                
+                this._cfg = Jsons.union({
+                    delay: 0,
+                    loop: 1,
                     interval: 0,
-                }
+                    intervalMode: 'OF'
+                }, this._cfg, cfg);
+                
+                let c = this._cfg;
+                if (c.interval!=void 0 && c.interval < 0) c.interval = 0;
+                let l = c.loop;
+                l = l == false || l < 0?0:(l===true?Infinity:l);
+                c.loop = l;
+                return this
             }
 
-            public restart(){
-                this.stop();
-                if(this._ticker) this.start(this._ticker)
+            public pause() {
+                let m =this;
+                if (m._sta != TimerState.RUNNING) return m;
+                m._sta = TimerState.PAUSED;
+
+                m._pt = System.highResTime();//record pause time
+                return m
             }
-            /**
-             * Return false if the timer has not be started or be stopped.
-             */
-            public suspend(){
-                if(this._state == 'WAITING' || this._state=='RUNNING') {
-                    this._state = 'BLOCKED';
-                    return true
-                }
-                return false
+
+            protected _cancelTimer(){
+                if (this._timer) window.clearTimeout(this._timer);
+                this._timer = null;
             }
-            public stop(){
-                this._state = 'TERMINATED';
-                this._counter = 0;
-                if(this._timerId) window.clearTimeout(this._timerId);
-                this._timerId = null;
+
+            protected _reset() {
+                let m =this;
+                m._cancelTimer();
+                m._sta = TimerState.STOPPED;
+                m._count = 0;
+                m._ts0 = 0;
+                m._ts = 0; 
+                m._et = 0; 
+                m._pt = 0;
+            }
+            public stop() {
+                this._reset();
+                return this
+            }
+            protected _finish() {
+                this._reset();
+                this._bus.fire(<TimerEvents>'finished');
             }
             /**
              * Returns state of the timer
              */
-            public getState(): TimerState{
-                return this._state
+            public getState(): TimerState {
+                return this._sta
             }
 
-            private _cycle(skip?:boolean){
-                if(this._state!='RUNNING') return;
+            /**
+             * Returns current frame rate.
+             */
+            public fps() {
+                return this._et == 0 ? 0 : 1000 / this._et
+            }
+            public maxFPS() {
+                let t = this._cfg.interval;
+                return t == 0 ? Infinity : 1000 / t
+            }
 
-                this._counter++;
-                let time = skip?undefined:this._ticker.call(this, this._counter), max = <number>this._opts.cycle;
-                if(this._counter < max) {
-                    this._timerId = setTimeout(()=>{this._cycle(time<0)}, Types.isNumber(time)?(time<0?0:time):this._opts.interval);
-                }else{
-                    this.stop()
+            protected _cycle(skip?: boolean) {
+                if (this._sta != TimerState.RUNNING) return;//暂停时停止执行此函数
+
+                if (this._count < this._cfg.loop) {
+                    let t = 0, opts = this._cfg, t0 = System.highResTime();
+                    this._et = t0 - this._ts;//update frame time
+                    
+                    if (!skip) {
+                        this._count++;
+                        this._tick.call(this, this._et);
+                        let t1 = System.highResTime();
+                        t = t1 - t0;
+                    } 
+                    //update timestamp
+                    this._ts = t0;
+                    
+                    let d = opts.interval - t,
+                        needSkip = opts.intervalMode=='OF' && d < 0;
+                    this._timer = setTimeout(
+                        () => { this._cycle(needSkip) },
+                        opts.intervalMode=='BF' ? opts.interval : (needSkip ? 0 : d)
+                    );
+                } else {
+                    this._finish()
                 }
-            } 
+            }
 
             /**
              * Execute a ticker periodly.
              * 周期性执行任务
              */
-            public start(ticker?: TimerTicker, opts?: CycleOptions) {
-                if(ticker) this._ticker = ticker;
-                if(opts) this._opts = Jsons.union(this._opts, opts);
+            public start() {
+                let m = this;
+                if (m._sta == TimerState.RUNNING) return;
 
-                this._state = 'WAITING';
-                if(this._opts.cycle===false) {
-                    this._timerId = window.setTimeout(()=>{
-                        this._state = 'RUNNING';
-                        this._ticker.call(this, ++this._counter);
-                        this.stop();
-                    }, this._opts.wait);
-                }else{
-                    this._timerId = window.setTimeout(()=>{
-                        this._state = 'RUNNING';
-                        this._cycle()
-                    }, this._opts.wait);
+                let first = false, wait = m._cfg.delay;
+                if (m._sta == TimerState.PAUSED) {
+                    wait = 0;
+                    //补上从暂停到现在的时间差
+                    let t = System.highResTime()-m._pt;
+                    m._pt = 0;
+                    m._ts0+= t;
+                    m._ts += t;
+                } else {
+                    first = true;
+                    m._reset();
                 }
+                m._sta = TimerState.RUNNING;
+
+                m._timer = setTimeout(() => {
+                    if (first) {
+                        this._ts0 = System.highResTime();
+                        this._ts = this._ts0;
+                        m._bus.fire(<TimerEvents>'starting');
+                    }
+                    m._cycle();
+                }, wait);
             }
 
-            /**
-             * Execute a ticker one times.<br>
-             * 执行一次任务
-             */
-            public startOne(ticker: TimerTicker, wait?: number){
-                this.start(ticker, {cycle: false, wait: wait})
-            }
-
-            /**
-             * Execute a cycle ticker forever.<br>
-             * 执行永久循环任务
-             */
-            public startForever(ticker: TimerTicker, opts?: {
-                wait?: number,
-                interval?: number
-            }){
-                this.start(ticker, Jsons.union({cycle: Infinity}, opts))
-            }
-            /**
-             * Execute a cycle ticker at datetime.<br>
-             * 定时执行循环任务
-             */
-            public startAtDate(ticker: TimerTicker, date:Date, opts?: {
-                cycle?: number,
-                interval?: number
-            }){
-                let now = new Date(), diff = date.getTime()-now.getTime();
-                if(diff<0) return
-                opts = opts||{};
-                (<CycleOptions>opts).wait = diff;
-                this.start(ticker, opts)
-            }
-            
         }
     }
 }
 
 import Timer = JS.util.Timer;
-import TimerTicker = JS.util.TimerTicker;
-import TimerTickerOptions = JS.util.CycleOptions;
+import TimerState = JS.util.TimerState;
+import TimerEvents = JS.util.TimerEvents;
+import TimerTask = JS.util.TimerTask;
+import TimerOptions = JS.util.TimerConfig;

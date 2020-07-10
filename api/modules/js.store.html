@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>store | JSDK 2.0.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.0.0 API">
+	<title>store | JSDK 2.1.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.1.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.0.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.1.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -86,6 +86,7 @@
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.store.html#storedatatype" class="tsd-kind-icon">Store<wbr>Data<wbr>Type</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.store.html#storeprimitivetype" class="tsd-kind-icon">Store<wbr>Primitive<wbr>Type</a></li>
 							</ul>
 						</section>
 					</div>
@@ -96,7 +97,14 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
 					<a name="storedatatype" class="tsd-anchor"></a>
 					<h3>Store<wbr>Data<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">Store<wbr>Data<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="js.lang.html#primitivetype" class="tsd-signature-type">PrimitiveType</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/date.html" class="tsd-signature-type">Date</a><span class="tsd-signature-symbol"> | </span><a href="js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/array.html" class="tsd-signature-type">Array</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">Store<wbr>Data<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="js.store.html#storeprimitivetype" class="tsd-signature-type">StorePrimitiveType</a><span class="tsd-signature-symbol"> | </span><a href="js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><a href="js.store.html#storeprimitivetype" class="tsd-signature-type">StorePrimitiveType</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/array.html" class="tsd-signature-type">Array</a><span class="tsd-signature-symbol">&lt;</span><a href="js.store.html#storeprimitivetype" class="tsd-signature-type">StorePrimitiveType</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported">
+					<a name="storeprimitivetype" class="tsd-anchor"></a>
+					<h3>Store<wbr>Primitive<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Store<wbr>Primitive<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="js.lang.html#primitivetype" class="tsd-signature-type">PrimitiveType</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/date.html" class="tsd-signature-type">Date</a><span class="tsd-signature-symbol"> | </span><a href="js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><a href="js.lang.html#primitivetype" class="tsd-signature-type">PrimitiveType</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/array.html" class="tsd-signature-type">Array</a><span class="tsd-signature-symbol">&lt;</span><a href="js.lang.html#primitivetype" class="tsd-signature-type">PrimitiveType</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
@@ -112,7 +120,10 @@
 						<a href="js.html">JS</a>
 						<ul>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-								<a href="js.data.html">data</a>
+								<a href="js.an.html">an</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.ds.html">ds</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.fx.html">fx</a>
@@ -141,6 +152,9 @@
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.util.html">util</a>
 							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.view.html">view</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -161,6 +175,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="js.store.html#storedatatype" class="tsd-kind-icon">Store<wbr>Data<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="js.store.html#storeprimitivetype" class="tsd-kind-icon">Store<wbr>Primitive<wbr>Type</a>
 					</li>
 				</ul>
 			</nav>

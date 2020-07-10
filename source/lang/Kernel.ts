@@ -6,6 +6,10 @@
  * @author Frank.Feng
  * @email boyue.feng@foxmail.com
  * 
+ * @version 2.1.0
+ * @date 2020/7/1
+ * @update create a new module "jsan" for anmimation
+ * 
  * @version 2.0.0
  * @date 2018/01/08 - 2020/06/12
  * 
@@ -23,7 +27,7 @@
 
 module JS {
 
-    export let version = '2.0.0';
+    export let version = '2.1.0';
 
     export type GlobalConfig = {
         importMode?: 'js' | 'html';
@@ -53,26 +57,26 @@ module JS {
      */
     export function config(key: keyof GlobalConfig, val: any): void
     export function config(d?: GlobalConfig | keyof GlobalConfig, v?: any): GlobalConfig | void {
-        let len = arguments.length;
-        if (len == 0) return _props;
+        let l = arguments.length;
+        if (l == 0) return _cfg;
         if (!d) return;
 
         if (typeof d === 'string') {
-            if (len == 1) {
-                return _props[<string>d];
+            if (l == 1) {
+                return _cfg[<string>d];
             } else {
-                _props[<string>d] = v;
+                _cfg[<string>d] = v;
                 return
             }
         } else {
             for (let k in d) {
-                if (d.hasOwnProperty(k)) _props[k] = d[k]
+                if (d.hasOwnProperty(k)) _cfg[k] = d[k]
             }
         }
     }
 
-    let _props: GlobalConfig = {},
-        _loaded = {},//loaded URLs
+    let _cfg: GlobalConfig = {},
+        _ldd = {},//loaded URLs
 
         _min = (uri: string, type: 'js' | 'css') => {
             if (JS.config<boolean>('minimize')) {
@@ -113,8 +117,8 @@ module JS {
                 len = us.length,
                 u0 = us[0],
                 ayc = len > 1 && us[1] == 'async';
-            if (_loaded[u0]) return Promises.resolvePlan(null);
-            _loaded[u0] = 1;
+            if (_ldd[u0]) return Promises.resolvePlan(null);
+            _ldd[u0] = 1;
 
             if (u0.endsWith('.js')) {
                 return Promises.newPlan(Dom.loadJS, [_min(u0, 'js'), ayc])
@@ -126,12 +130,12 @@ module JS {
         }
 
     /**
-     * Import JLU(JSDK Library Uri) before using.
+     * Import JLU(JSDK Library Uri).
      * <pre>
      * JLU Format 1:
      * http(s)://domain/path/xxx.[js|css|html](#async)
      * JLU Format 2:
-     * $moduleName/path/xxx.[js|css|html](#async)
+     * $moduleName
      * JLU Format 3:
      * ~/libName/x.y.z/xxx.[js|css|html](#async)
      * </pre>

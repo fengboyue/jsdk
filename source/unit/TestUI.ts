@@ -126,7 +126,7 @@ module JS {
             }
             private _init(suite: TestSuite) {
                 let sys = System.info();
-                $1('#env').html(`${sys.device.type} / ${sys.os.name} ${sys.os.version||''} / ${sys.browser.name} ${sys.browser.version||''}`);
+                $1('#env').html(`${sys.browser.name} ${sys.browser.version||''} / ${sys.os.name} ${sys.os.version||''} / ${sys.device.type}`);
                 //init info
                 $1('#info').html('');
                 //init progress

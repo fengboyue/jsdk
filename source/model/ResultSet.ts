@@ -125,18 +125,18 @@ module JS {
             public static parseJSON<T>(raw: JsonObject, format?: ResultSetFormat): ResultSet<T> {
                 if (!raw) return null;
 
-                const fmt = format||this.DEFAULT_FORMAT, root = Jsons.getValueByPath(raw, fmt.rootProperty);
+                const fmt = format||this.DEFAULT_FORMAT, root = Jsons.find(raw, fmt.rootProperty);
                 let result = new ResultSet<T>();
-                result.lang(Jsons.getValueByPath(root, fmt.langProperty));
-                result.message(Jsons.getValueByPath(root, fmt.messageProperty));
-                result.version(Jsons.getValueByPath(root, fmt.versionProperty));
+                result.lang(Jsons.find(root, fmt.langProperty));
+                result.message(Jsons.find(root, fmt.messageProperty));
+                result.version(Jsons.find(root, fmt.versionProperty));
                 result.success(fmt.isSuccess ? fmt.isSuccess(root) : (root[fmt.successProperty] === (fmt.successCode || true)));
 
-                result.data(Jsons.getValueByPath(root, fmt.recordsProperty));
+                result.data(Jsons.find(root, fmt.recordsProperty));
                 result.rawObject(root);
-                result.page(Jsons.getValueByPath(root, fmt.pageProperty));
-                result.pageSize(Jsons.getValueByPath(root, fmt.pageSizeProperty));
-                result.total(Jsons.getValueByPath(root, fmt.totalProperty));
+                result.page(Jsons.find(root, fmt.pageProperty));
+                result.pageSize(Jsons.find(root, fmt.pageSizeProperty));
+                result.total(Jsons.find(root, fmt.totalProperty));
 
                 return result;
             }

@@ -173,7 +173,7 @@ module JS {
                 if (cfg.title) {
                     let tValign = this._vAlign(), tHalign = this._hAlign(), p0 = tHalign == 'right' && cfg.titlePlace == 'top' ? 'p-0' : '',
                         cls = `${p0} font-${cfg.sizeMode || 'md'} items-${tValign} items-${tHalign} ${cfg.colorMode ? 'text-' + cfg.colorMode : ''} ${cfg.titleCls || ''}"`;
-                    let style = Types.isDefined(cfg.titleWidth) ? `width:${Lengths.toCssString(cfg.titleWidth, '100%')};` : '';
+                    let style = Types.isDefined(cfg.titleWidth) ? `width:${Lengths.toCSS(cfg.titleWidth, '100%')};` : '';
                     if (cfg.titleStyle) style += cfg.titleStyle;
 
                     titleAttrs += ` class="${cls}"`;
@@ -191,7 +191,7 @@ module JS {
 
             protected _onBeforeRender() {
                 let cfg = (<FormWidgetConfig<any>>this._config),
-                    w = Lengths.toCssString(cfg.width, '100%'),
+                    w = Lengths.toCSS(cfg.width, '100%'),
                     d = cfg.titlePlace == 'left' ? 'flex' : 'grid',
                     css = {
                         'display': (w == 'auto' ? 'inline-' : '') + d,

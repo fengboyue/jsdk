@@ -308,21 +308,21 @@ module JS {
                 let col = (<GridConfig>this._config).columns.findIndex((option: GridColumnOption) => {
                     return option.field == name;
                 });
-                if (col < 0) throw new Errors.NotFoundError(`Not found the field:<${name}>`);
+                if (col < 0) throw new NotFoundError(`Not found the field:<${name}>`);
                 return col;
             }
 
             public hideColumn(col: number)
             public hideColumn(field: string)
             public hideColumn(v: number | string) {
-                let i = Types.isNumeric(v) ? Number(v)-1 : this._colIndexOf(<string>v);
+                let i = Types.isNumeric(v) ? <any>v-1 : this._colIndexOf(<string>v);
                 this.widgetEl.find(`tr th:eq(${i}),tr td:eq(${i})`).hide();
             }
 
             public showColumn(col: number)
             public showColumn(field: string)
             public showColumn(v: number | string) {
-                let i = Types.isNumeric(v) ? Number(v)-1 : this._colIndexOf(<string>v);
+                let i = Types.isNumeric(v) ? <any>v-1 : this._colIndexOf(<string>v);
                 this.widgetEl.find(`tr th:eq(${i}),tr td:eq(${i})`).show();
             }
 
@@ -368,7 +368,7 @@ module JS {
                     sortDir = col.sortable === true ? 'desc' : '' + col.sortable,
                     sort = col.sortable ? `<i id="${this.id + '_sort_' + col.field}" style="cursor:pointer;vertical-align:middle;" class="la la-arrow-${sortDir == 'asc' ? 'up' : 'down'}"></i>` : '',
                     hasCheckbox = colNumber == 1 && cfg.checkable,
-                    width = Lengths.toCssString(col.width,'100%'),
+                    width = Lengths.toCSS(col.width,'100%'),
                     cell =
                         `<div class="cell items-${cfg.headStyle.textAlign} items-middle" jsfx-col="${colNumber}" title="${title}">
                     ${html}${sort ? sort : ''}</div>`;
@@ -382,7 +382,7 @@ module JS {
                 let cfg = <GridConfig>this._config,
                     hasCheckbox = col == 0 && cfg.checkable,
                     id = this.data()[row]['id'],
-                    width = Lengths.toCssString(opt.width,'100%'),
+                    width = Lengths.toCSS(opt.width,'100%'),
                     cell =
                         `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
                     ${html}</div>`;
@@ -580,7 +580,7 @@ module JS {
 
                 let hStyle = cfg.headStyle,
                     bStyle = cfg.bodyStyle,
-                    bHeight = Types.isNumeric(cfg.height) ? (Number(cfg.height) - heights[cfg.sizeMode]) + 'px' : '100%',
+                    bHeight = Types.isNumeric(cfg.height) ? (<any>cfg.height - heights[cfg.sizeMode]) + 'px' : '100%',
                     html =
                         `<!-- 表头容器 -->
                     <div class="head">

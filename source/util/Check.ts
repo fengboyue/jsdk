@@ -12,7 +12,7 @@ module JS {
 
     export namespace util {
 
-        let _test = function (str: string, pattern: RegExp) {
+        let N = Number, _test = function (str: string, pattern: RegExp) {
             return str && pattern.test(str.trim());
         }
 
@@ -112,14 +112,14 @@ module JS {
              * 是否是正数。例如，'＋4.15','＋1,977'都是正数。
              */
             public static isPositive(n: number | string): boolean {
-                return Number(n).isPositive();
+                return N(n).isPositive();
             }
             /**
              * Is a negative number.<br>
              * 是否是负数。例如，'-4.15','-1,977'都是负数。
              */
             public static isNegative(n: number | string): boolean {
-                return Number(n).isNegative();
+                return N(n).isNegative();
             }
             /**
              * Each character is a half-width character.<br>
@@ -150,19 +150,22 @@ module JS {
                 return _test(str, this.CHINESE_ONLY);
             }
             /**
-             * Is a valid number with valid length.<br>
+             * Is a valid number with valid lengths.<br>
              * 检查数字及格式："{整数位长度}.{小数位长度}"
+             * @param n 
+             * @param iLength integral part's length
+             * @param fLength fractional part's length
              */
-            public static isFormatNumber(n: number | string, integerLength: number, fractionLength?: number): boolean {
+            public static isFormatNumber(n: number | string, iLength: number, fLength?: number): boolean {
                 if (!Types.isNumeric(n)) return false;
 
-                let num = Number(n);
-                let iLen = num.integerLength();
-                let dLen = num.fractionLength();
+                let num = N(n),
+                    iLen = num.integerLength(),
+                    dLen = num.fractionLength();
                 //检查整数位
-                if (iLen > integerLength) return false;
+                if (iLen > iLength) return false;
                 //检查小数位
-                if (Types.isDefined(fractionLength) && dLen > fractionLength) return false;
+                if (Types.isDefined(fLength) && dLen > fLength) return false;
                 return true;
             }
             /**
@@ -170,36 +173,36 @@ module JS {
              * 大于某值
              */
             public static greater(n1: number | string, n2: number | string): boolean {
-                return Number(n1) > Number(n2);
+                return N(n1) > N(n2);
             }
             /**
              * True if n1 >= n2.<br>
              * 大于等于某值
              */
             public static greaterEqual(n1: number | string, n2: number | string): boolean {
-                return Number(n1) >= Number(n2);
+                return N(n1) >= N(n2);
             }
             /**
              * True if n1 < n2.<br>
              * 小于某值
              */
             public static less(n1: number | string, n2: number | string): boolean {
-                return Number(n1) < Number(n2);
+                return N(n1) < N(n2);
             }
             /**
              * True if n1 <= n2.<br>
              * 小于等于某值
              */
             public static lessEqual(n1: number | string, n2: number | string): boolean {
-                return Number(n1) <= Number(n2);
+                return N(n1) <= N(n2);
             }
             /**
              * True if n > min and n < max.<br>
              * 是否在两数字之间
              */
             public static isBetween(n: number | string, min: number | string, max: number | string): boolean {
-                let num = Number(n);
-                return num > Number(min) && num < Number(max);
+                let num = N(n);
+                return num > N(min) && num < N(max);
             }
             /**
              * True if a string's length < len.<br>
@@ -267,7 +270,7 @@ module JS {
             public static byServer(settings: string | AjaxRequest, judge: (res: AjaxResponse) => boolean): Promise<boolean> {
                 return new Promise(function(resolve, reject){
                     Ajax.send(settings).then(res => {
-                        resolve(judge.apply(null, [res]))
+                        judge.apply(null, [res])?resolve(true):reject(false)
                     })
                 })
             }

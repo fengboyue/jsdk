@@ -683,15 +683,16 @@ var Reflect;
     $A.add = function (obj, from) {
         if (obj == void 0)
             return this;
-        let arr = obj instanceof Array ? obj : [obj], i = from == void 0 ? this.length : (from < 0 ? 0 : from);
-        Array.prototype.splice.apply(this, [i, 0].concat(arr));
+        let a = obj instanceof Array ? obj : [obj], i = from == void 0 ? this.length : (from < 0 ? 0 : from);
+        Array.prototype.splice.apply(this, [i, 0].concat(a));
         return this;
     };
-    $A.remove = function (obj) {
-        let index = typeof obj === 'number' ? obj : this.findIndex(obj);
-        if (index > -1)
-            this.splice(index, 1);
-        return this;
+    $A.remove = function (f) {
+        let i = typeof f === 'number' ? f : this.findIndex(f);
+        if (i < 0 || i >= this.length)
+            return false;
+        this.splice(i, 1);
+        return true;
     };
 }());
 var JS;
@@ -708,10 +709,10 @@ var JS;
             static equal(a1, a2, equal) {
                 if (a1 === a2)
                     return true;
-                let empty1 = util.Check.isEmpty(a1), empty2 = util.Check.isEmpty(a2);
-                if (empty1 && empty2)
+                let y1 = util.Check.isEmpty(a1), y2 = util.Check.isEmpty(a2);
+                if (y1 && y2)
                     return true;
-                if (empty1 !== empty2)
+                if (y1 !== y2)
                     return false;
                 if (a1.length != a2.length)
                     return false;
@@ -735,13 +736,13 @@ var JS;
                     return true;
                 if (a1.length != a2.length)
                     return false;
-                let arr2 = this.newArray(a2);
+                let na = this.newArray(a2);
                 a1.forEach(item1 => {
-                    arr2.remove((v) => {
+                    na.remove((v) => {
                         return v == item1;
                     });
                 });
-                return arr2.length == 0;
+                return na.length == 0;
             }
             static slice(args, fromIndex, endIndex) {
                 return Array.prototype.slice.apply(args, [fromIndex || 0, endIndex || args.length]);
@@ -822,8 +823,7 @@ var JS;
             xml: 'application/xml, text/xml',
             json: 'application/json, text/javascript',
             script: 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript'
-        };
-        let _judgeType = (cType) => {
+        }, _judgeType = (cType) => {
             if (!cType)
                 return 'json';
             if (cType == ACCEPTS['text'])
@@ -833,8 +833,7 @@ var JS;
             if (cType.indexOf('/xml') > 0)
                 return 'xml';
             return 'json';
-        };
-        let PARSERS = {
+        }, PARSERS = {
             html: (str) => {
                 if (!str)
                     return null;
@@ -845,7 +844,7 @@ var JS;
                     return null;
                 let xml = new DOMParser().parseFromString(str, 'text/xml');
                 if (!xml || xml.getElementsByTagName("parsererror").length)
-                    throw new Error();
+                    throw new NotHandledError();
                 return xml;
             },
             json: (str) => {
@@ -884,31 +883,30 @@ var JS;
             }
             catch (e) {
                 res.statusText = 'parseerror';
-                if (req.error)
-                    req.error(res);
+                if (req.onError)
+                    req.onError(res);
                 if (Ajax._ON['error'])
                     Ajax._ON['error'](res);
                 this.reject(res);
             }
         }, _rejectError = function (req, xhr, error) {
             let res = _response(req, xhr, error);
-            if (req.error)
-                req.error(res);
+            if (req.onError)
+                req.onError(res);
             if (Ajax._ON['error'])
                 Ajax._ON['error'](res);
             this.reject(res);
-        };
-        let CACHE = {
+        }, CACHE = {
             lastModified: {},
             etag: {}
         }, _done = function (uncacheURL, req, xhr) {
             if (xhr['_isTimeout'])
                 return;
             let status = xhr.status, res = _response(req, xhr);
-            if (req.complete)
-                req.complete(res);
-            if (Ajax._ON['complete'])
-                Ajax._ON['complete'](res);
+            if (req.onCompleted)
+                req.onCompleted(res);
+            if (Ajax._ON['completed'])
+                Ajax._ON['completed'](res);
             if (status >= 200 && status < 300 || status === 304) {
                 let modified = null;
                 if (req.ifModified) {
@@ -931,8 +929,7 @@ var JS;
             else {
                 this.reject(res);
             }
-        };
-        let _queryString = function (data) {
+        }, _queryString = function (data) {
             if (util.Types.isString(data))
                 return encodeURI(data);
             let str = '';
@@ -950,8 +947,7 @@ var JS;
             if (!cache)
                 url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
             return url;
-        };
-        let _beforeSend = function (fn, req) {
+        }, _sending = function (fn, req) {
             if (fn) {
                 if (fn(req) === false)
                     return false;
@@ -1001,12 +997,12 @@ var JS;
                         _done.call(this, queryURL, req, xhr);
                 };
             }
-            let rst = _beforeSend(Ajax._ON['beforeSend'], req);
+            let rst = _sending(Ajax._ON['sending'], req);
             if (rst === false) {
                 _rejectError.call(this, req, xhr, 'cancel');
                 return;
             }
-            rst = _beforeSend(req.beforeSend, req);
+            rst = _sending(req.onSending, req);
             if (rst === false) {
                 _rejectError.call(this, req, xhr, 'cancel');
                 return;
@@ -1044,9 +1040,9 @@ var JS;
             }
             static send(req) {
                 let q = this.toRequest(req);
-                return q.thread ? this.sendInThread(req) : this.sendInMain(req);
+                return q.thread ? this._inThread(req) : this._inMain(req);
             }
-            static sendInMain(req) {
+            static _inMain(req) {
                 return util.Promises.create(function () {
                     _send.call(this, req);
                 });
@@ -1067,7 +1063,7 @@ var JS;
             static sendBeacon(e, fn, scope) {
                 window.addEventListener('unload', scope ? fn : function (e) { fn.call(scope, e); }, false);
             }
-            static sendInThread(req) {
+            static _inThread(req) {
                 let r = this.toRequest(req);
                 r.url = util.URI.toAbsoluteURL(r.url);
                 return util.Promises.create(function () {
@@ -1075,7 +1071,7 @@ var JS;
                     new Thread({
                         run: function () {
                             this.onposted((request) => {
-                                self.Ajax.sendInMain(request).then((res) => {
+                                self.Ajax._inMain(request).then((res) => {
                                     delete res.xhr;
                                     this.postMain(res);
                                 });
@@ -1097,13 +1093,13 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let isReady = false;
+        let _ready = false;
         class Bom {
             static ready(fn) {
-                if (isReady)
+                if (_ready)
                     fn();
                 let callback = function () {
-                    isReady = true;
+                    _ready = true;
                     fn();
                     callback = null;
                 };
@@ -1127,7 +1123,7 @@ var JS;
                     catch (e) { }
                     if (top && top['doScroll']) {
                         (function doScrollCheck() {
-                            if (!isReady) {
+                            if (!_ready) {
                                 try {
                                     top['doScroll']('left');
                                 }
@@ -1181,6 +1177,7 @@ var JS;
             Type["number"] = "number";
             Type["date"] = "date";
             Type["array"] = "array";
+            Type["json"] = "json";
             Type["object"] = "object";
             Type["function"] = "function";
             Type["class"] = "class";
@@ -1344,6 +1341,8 @@ var JS;
                 if (type == 'number' || type == 'bigint')
                     return Type.number;
                 if (type == 'object') {
+                    if (this.isJsonObject(obj))
+                        return Type.json;
                     if (this.isArray(obj))
                         return Type.array;
                     if (this.isDate(obj))
@@ -1362,7 +1361,7 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let _test = function (str, pattern) {
+        let N = Number, _test = function (str, pattern) {
             return str && pattern.test(str.trim());
         };
         class Check {
@@ -1407,10 +1406,10 @@ var JS;
                 return _test(str, this.NUMBERS_ONLY);
             }
             static isPositive(n) {
-                return Number(n).isPositive();
+                return N(n).isPositive();
             }
             static isNegative(n) {
-                return Number(n).isNegative();
+                return N(n).isNegative();
             }
             static isHalfwidthChars(str) {
                 return _test(str, this.HALFWIDTH_CHARS);
@@ -1424,33 +1423,31 @@ var JS;
             static isChineseOnly(str) {
                 return _test(str, this.CHINESE_ONLY);
             }
-            static isFormatNumber(n, integerLength, fractionLength) {
+            static isFormatNumber(n, iLength, fLength) {
                 if (!util.Types.isNumeric(n))
                     return false;
-                let num = Number(n);
-                let iLen = num.integerLength();
-                let dLen = num.fractionLength();
-                if (iLen > integerLength)
+                let num = N(n), iLen = num.integerLength(), dLen = num.fractionLength();
+                if (iLen > iLength)
                     return false;
-                if (util.Types.isDefined(fractionLength) && dLen > fractionLength)
+                if (util.Types.isDefined(fLength) && dLen > fLength)
                     return false;
                 return true;
             }
             static greater(n1, n2) {
-                return Number(n1) > Number(n2);
+                return N(n1) > N(n2);
             }
             static greaterEqual(n1, n2) {
-                return Number(n1) >= Number(n2);
+                return N(n1) >= N(n2);
             }
             static less(n1, n2) {
-                return Number(n1) < Number(n2);
+                return N(n1) < N(n2);
             }
             static lessEqual(n1, n2) {
-                return Number(n1) <= Number(n2);
+                return N(n1) <= N(n2);
             }
             static isBetween(n, min, max) {
-                let num = Number(n);
-                return num > Number(min) && num < Number(max);
+                let num = N(n);
+                return num > N(min) && num < N(max);
             }
             static shorter(str, len) {
                 return str && str.length < len;
@@ -1482,7 +1479,7 @@ var JS;
             static byServer(settings, judge) {
                 return new Promise(function (resolve, reject) {
                     util.Ajax.send(settings).then(res => {
-                        resolve(judge.apply(null, [res]));
+                        judge.apply(null, [res]) ? resolve(true) : reject(false);
                     });
                 });
             }
@@ -1686,7 +1683,7 @@ var JS;
                 });
                 return newJson;
             }
-            static getValueByPath(data, path) {
+            static find(data, path) {
                 if (!path)
                     return data;
                 const array = path.split('.');
@@ -1745,14 +1742,14 @@ var JS;
             _parseStr(uri) {
                 let array = _URI_REG.exec(uri);
                 if (!array)
-                    throw new Errors.URIError('URI maybe an invalid format: ' + uri);
+                    throw new URIError('An invalid URI: ' + uri);
                 this._scheme = array[2];
                 this._frag = array[9];
                 let auth = array[4];
                 if (auth) {
                     let authArr = _AUTH_REG.exec(auth);
                     if (!authArr)
-                        throw new Errors.TypeError('Auth part of URI maybe an invalid format: ' + uri);
+                        throw new URIError('An invalid auth part of URI: ' + uri);
                     if (authArr[2])
                         this._user = authArr[2];
                     if (authArr[4])
@@ -1942,7 +1939,7 @@ var JS;
         class Bundle {
             constructor(res, locale) {
                 let lc = (locale == void 0 ? System.info().locale : locale);
-                this._data = {};
+                this._d = {};
                 if (res) {
                     if (util.Types.isString(res)) {
                         let pos = res.lastIndexOf('.'), suffix = pos < 0 ? '' : res.slice(pos + 1), prefix = pos < 0 ? res : res.slice(0, pos);
@@ -1951,15 +1948,15 @@ var JS;
                     }
                     else {
                         if (res.hasOwnProperty(lc)) {
-                            this._data = res[lc];
+                            this._d = res[lc];
                         }
                         else {
                             let lang = util.Locales.lang(lc);
-                            this._data = res.hasOwnProperty(lang) ? res[lang] : res;
+                            this._d = res.hasOwnProperty(lang) ? res[lang] : res;
                         }
                     }
                 }
-                this._locale = lc;
+                this._lc = lc;
             }
             _load(lc, prefix, suffix) {
                 let paths = [];
@@ -1979,27 +1976,27 @@ var JS;
                     xhr.send();
                     if (xhr.status != 200)
                         return false;
-                    this._data = util.Jsons.parse(xhr.response) || {};
+                    this._d = util.Jsons.parse(xhr.response) || {};
                     return true;
                 });
             }
-            get(key) {
+            get(k) {
                 if (arguments.length == 0)
-                    return this._data;
-                return key && this._data ? this._data[key] : undefined;
+                    return this._d;
+                return k && this._d ? this._d[k] : undefined;
             }
             getKeys() {
-                return Reflect.ownKeys(this._data);
+                return Reflect.ownKeys(this._d);
             }
-            hasKey(key) {
-                return this._data && this._data.hasOwnProperty(key);
+            hasKey(k) {
+                return this._d && this._d.hasOwnProperty(k);
             }
             getLocale() {
-                return this._locale;
+                return this._lc;
             }
-            set(data) {
-                if (data)
-                    this._data = data;
+            set(d) {
+                if (d)
+                    this._d = d;
                 return this;
             }
         }
@@ -2130,10 +2127,10 @@ var JS;
 var EventBus = JS.util.EventBus;
 if (self['HTMLElement'])
     (function () {
-        const HP = HTMLElement.prototype, oAppend = HP['append'], oPrepend = HP['prepend'], _append = function (html) {
+        const D = document, HP = HTMLElement.prototype, oa = HP.append, op = HP.prepend, _ad = function (html) {
             if (!html)
                 return;
-            let div = document.createElement('div'), nodes = null, fg = document.createDocumentFragment();
+            let div = D.createElement('div'), nodes = null, fg = D.createDocumentFragment();
             div.innerHTML = html;
             nodes = div.childNodes;
             for (let i = 0, len = nodes.length; i < len; i++) {
@@ -2142,10 +2139,10 @@ if (self['HTMLElement'])
             this.appendChild(fg);
             nodes = null;
             fg = null;
-        }, _prepend = function (html) {
+        }, _pd = function (html) {
             if (!html)
                 return;
-            let div = document.createElement('div'), nodes = null, fg = document.createDocumentFragment();
+            let div = D.createElement('div'), nodes = null, fg = D.createDocumentFragment();
             div.innerHTML = html;
             nodes = div.childNodes;
             for (let i = 0, len = nodes.length; i < len; i++) {
@@ -2155,35 +2152,44 @@ if (self['HTMLElement'])
             nodes = null;
             fg = null;
         };
-        HP['append'] = function (...nodes) {
+        HP.append = function (...nodes) {
             nodes.forEach(n => {
-                typeof n == 'string' ? _append.call(this, n) : oAppend.call(this, n.cloneNode(true));
+                typeof n == 'string' ? _ad.call(this, n) : oa.call(this, n.cloneNode(true));
             });
         };
-        HP['prepend'] = function (...nodes) {
+        HP.prepend = function (...nodes) {
             nodes.forEach(n => {
-                typeof n == 'string' ? _prepend.call(this, n) : oPrepend.call(this, n.cloneNode(true));
+                typeof n == 'string' ? _pd.call(this, n) : op.call(this, n.cloneNode(true));
             });
         };
-        HP['attr'] = function (key, val) {
+        HP.box = function () {
+            let box = this.getBoundingClientRect();
+            return {
+                x: box.x + System.display().docScrollX,
+                y: box.x + System.display().docScrollY,
+                w: box.width,
+                h: box.height
+            };
+        };
+        HP.attr = function (key, val) {
             if (arguments.length == 1)
                 return this.getAttribute(key);
             this.setAttribute(key, val);
             return this;
         };
-        HP['html'] = function (html) {
+        HP.html = function (html) {
             if (arguments.length == 0)
                 return this.innerHTML;
             this.innerHTML = html;
             return this;
         };
-        HP['addClass'] = function (cls) {
+        HP.addClass = function (cls) {
             if (!cls)
                 return this;
             let cs = this.attr('class');
             return this.attr('class', cs + ' ' + cls);
         };
-        HP['removeClass'] = function (cls) {
+        HP.removeClass = function (cls) {
             if (!cls)
                 return this;
             let cs = this.attr('class').trim();
@@ -2196,7 +2202,7 @@ if (self['HTMLElement'])
             });
             return this.attr('class', cs);
         };
-        HP['hasClass'] = function (cls) {
+        HP.hasClass = function (cls) {
             if (!cls)
                 return this;
             let cs = this.attr('class').trim();
@@ -2204,7 +2210,7 @@ if (self['HTMLElement'])
                 return this;
             return (cs + ' ').indexOf(cls + ' ') >= 0;
         };
-        HP['toggleClass'] = function (cls, isAdd) {
+        HP.toggleClass = function (cls, isAdd) {
             if (!cls)
                 return this;
             if (isAdd === true)
@@ -2228,14 +2234,14 @@ if (self['HTMLElement'])
                 this['attachEvent']('on' + type, cb);
             }
         };
-        HP['on'] = function (type, fn, once) {
+        HP.on = function (type, fn, once) {
             let types = type.split(' ');
             types.forEach(t => {
                 _on.call(this, t, fn, once);
             });
             return this;
         };
-        let _remove = function (type, fn) {
+        let _rm = function (type, fn) {
             if (!fn)
                 return;
             if (this.removeEventListener) {
@@ -2244,28 +2250,28 @@ if (self['HTMLElement'])
             else if (this['detachEvent']) {
                 this['detachEvent']('on' + type, fn);
             }
-        }, _removes = function (type, fns) {
+        }, _rms = function (type, fns) {
             if (fns)
-                fns.forEach(f => { _remove.call(this, type, f); });
+                fns.forEach(f => { _rm.call(this, type, f); });
         }, _off = function (type, fn) {
             let bus = this['_bus'];
             if (bus) {
                 let obj = fn ? bus.find(type, fn['euid']) : undefined;
                 bus.off(type, obj);
-                _remove.call(this, type, obj);
+                _rm.call(this, type, obj);
             }
             else {
-                _remove.call(this, type, fn);
+                _rm.call(this, type, fn);
             }
         };
-        HP['off'] = function (type, fn) {
+        HP.off = function (type, fn) {
             if (!type) {
                 let bus = this['_bus'];
                 if (bus) {
                     let types = bus.types();
                     for (let i = 0, len = types.length; i < len; i++) {
                         let ty = types[i];
-                        _removes.call(this, ty, bus.find(ty));
+                        _rms.call(this, ty, bus.find(ty));
                     }
                     bus.off();
                 }
@@ -2278,28 +2284,33 @@ if (self['HTMLElement'])
             }
             return this;
         };
-        HP['find'] = HP.querySelector;
-        HP['findAll'] = HP.querySelectorAll;
+        HP.find = HP.querySelector;
+        HP.findAll = HP.querySelectorAll;
+        HP.computedStyle = function (p) {
+            return document.defaultView.getComputedStyle(this, p || null);
+        };
         let WP = Window.prototype;
-        WP['on'] = HP['on'];
-        WP['off'] = HP['off'];
+        WP.on = HP.on;
+        WP.off = HP.off;
     })();
 var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let _head = () => { return document.querySelector('head'); }, _uncached = (url) => {
+        let D, _head = () => { return D.querySelector('head'); }, _uncached = (url) => {
             return `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
         };
+        if (self['HTMLElement'])
+            D = document;
         class Dom {
             static $1(selector) {
-                return typeof selector == 'string' ? document.querySelector(selector) : selector;
+                return typeof selector == 'string' ? D.querySelector(selector) : selector;
             }
             static $L(selector) {
-                return document.querySelectorAll(selector);
+                return D.querySelectorAll(selector);
             }
             static rename(node, newTagName) {
-                let newNode = document.createElement(newTagName), aNames = node['getAttributeNames']();
+                let newNode = D.createElement(newTagName), aNames = node['getAttributeNames']();
                 if (aNames)
                     aNames.forEach(name => {
                         newNode.setAttribute(name, node.getAttribute(name));
@@ -2316,7 +2327,7 @@ var JS;
                 if (!html)
                     return Promise.reject(null);
                 return util.Promises.create(function () {
-                    let doc = typeof html == 'string' ? new DOMParser().parseFromString(html, 'text/html') : html, url = doc.URL, el = Dom.$1(appendTo || document.body);
+                    let doc = typeof html == 'string' ? new DOMParser().parseFromString(html, 'text/html') : html, url = doc.URL, el = Dom.$1(appendTo || D.body);
                     el.append.apply(el, doc.body.childNodes);
                     el = null;
                     let ignoreCss = ignore === true || (ignore && ignore.css) ? true : false;
@@ -2372,7 +2383,7 @@ var JS;
                 if (!url)
                     return Promise.reject(null);
                 return util.Promises.create(function () {
-                    let k = document.createElement('link'), back = () => {
+                    let k = D.createElement('link'), back = () => {
                         k.onload = k.onerror = k['onreadystatechange'] = null;
                         k = null;
                         this.resolve(url);
@@ -2396,7 +2407,7 @@ var JS;
                 if (!url)
                     return Promise.reject(null);
                 return util.Promises.create(function () {
-                    let s = document.createElement('script'), back = () => {
+                    let s = D.createElement('script'), back = () => {
                         s.onload = s.onerror = s['onreadystatechange'] = null;
                         s = null;
                         this.resolve(url);
@@ -2441,31 +2452,31 @@ const $1 = Dom.$1;
 const $L = Dom.$L;
 var JS;
 (function (JS) {
-    JS.version = '2.0.0';
+    JS.version = '2.1.0';
     function config(d, v) {
-        let len = arguments.length;
-        if (len == 0)
-            return _props;
+        let l = arguments.length;
+        if (l == 0)
+            return _cfg;
         if (!d)
             return;
         if (typeof d === 'string') {
-            if (len == 1) {
-                return _props[d];
+            if (l == 1) {
+                return _cfg[d];
             }
             else {
-                _props[d] = v;
+                _cfg[d] = v;
                 return;
             }
         }
         else {
             for (let k in d) {
                 if (d.hasOwnProperty(k))
-                    _props[k] = d[k];
+                    _cfg[k] = d[k];
             }
         }
     }
     JS.config = config;
-    let _props = {}, _loaded = {}, _min = (uri, type) => {
+    let _cfg = {}, _ldd = {}, _min = (uri, type) => {
         if (JS.config('minimize')) {
             if (uri.endsWith('.min.' + type))
                 return uri;
@@ -2503,9 +2514,9 @@ var JS;
             u = JS.config('libRoot') + url.slice(1);
         }
         let us = u.split('#'), len = us.length, u0 = us[0], ayc = len > 1 && us[1] == 'async';
-        if (_loaded[u0])
+        if (_ldd[u0])
             return Promises.resolvePlan(null);
-        _loaded[u0] = 1;
+        _ldd[u0] = 1;
         if (u0.endsWith('.js')) {
             return Promises.newPlan(Dom.loadJS, [_min(u0, 'js'), ayc]);
         }
@@ -2778,7 +2789,7 @@ var JS;
 var LogLevel = JS.util.LogLevel;
 var Log = JS.util.Log;
 let JSLogger = new Log(`JSDK ${JS.version}`, LogLevel.INFO);
-Konsole.text(`Welcome to JSDK ${JS.version}`, `font-weight:bold;color:blue;text-shadow:1px 1px 1px #D2E9FF;`);
+Konsole.text(`Powered by JSDK ${JS.version}`, 'font-weight:bold;');
 var JS;
 (function (JS) {
     let lang;
@@ -3024,13 +3035,13 @@ var JS;
             static newInstance(ctor, ...args) {
                 let tar = Types.isString(ctor) ? Class.byName(ctor) : ctor;
                 if (!tar)
-                    throw new Errors.NotFoundError(`The class<${ctor}> is not found!`);
+                    throw new NotFoundError(`The class<${ctor}> is not found!`);
                 return Reflect.construct(tar, Jsons.clone(args));
             }
             static aliasInstance(alias, ...args) {
                 let cls = Class.forName(alias, true);
                 if (!cls)
-                    throw new Errors.NotFoundError(`The class<${alias}> is not found!`);
+                    throw new NotFoundError(`The class<${alias}> is not found!`);
                 return cls.newInstance.apply(cls, args);
             }
             static aop(klass, method, advisor) {
@@ -3259,42 +3270,44 @@ Class.register(String);
 Class.register(Boolean);
 Class.register(Number);
 Class.register(Array);
-let $F = Function.prototype;
-$F.aop = function (advisor, that) {
-    let old = this, fn = function () {
-        let args = Arrays.newArray(arguments), ctx = that || this, rst = undefined;
-        if (advisor.before)
-            advisor.before.apply(ctx, args);
-        try {
-            rst = advisor.around ? advisor.around.apply(ctx, [old].concat(args)) : old.apply(ctx, args);
-        }
-        catch (e) {
-            if (advisor.throws)
-                advisor.throws.apply(ctx, [e]);
-        }
-        if (advisor.after)
-            advisor.after.apply(ctx, [rst]);
-        return rst;
+(function () {
+    let $F = Function.prototype;
+    $F.aop = function (advisor, that) {
+        let old = this, fn = function () {
+            let args = Arrays.newArray(arguments), ctx = that || this, rst = undefined;
+            if (advisor.before)
+                advisor.before.apply(ctx, args);
+            try {
+                rst = advisor.around ? advisor.around.apply(ctx, [old].concat(args)) : old.apply(ctx, args);
+            }
+            catch (e) {
+                if (advisor.throws)
+                    advisor.throws.apply(ctx, [e]);
+            }
+            if (advisor.after)
+                advisor.after.apply(ctx, [rst]);
+            return rst;
+        };
+        return fn;
     };
-    return fn;
-};
-$F.mixin = function (kls, methodNames) {
-    if (!kls)
-        return;
-    let kp = kls.prototype, tp = this.prototype, ms = Reflect.ownKeys(kp);
-    for (let i = 0, len = ms.length; i < len; i++) {
-        let m = ms[i];
-        if ('constructor' != m && !tp[m]) {
-            if (methodNames) {
-                if (methodNames.findIndex(v => { return v == m; }) > -1)
+    $F.mixin = function (kls, methodNames) {
+        if (!kls)
+            return;
+        let kp = kls.prototype, tp = this.prototype, ms = Reflect.ownKeys(kp);
+        for (let i = 0, len = ms.length; i < len; i++) {
+            let m = ms[i];
+            if ('constructor' != m && !tp[m]) {
+                if (methodNames) {
+                    if (methodNames.findIndex(v => { return v == m; }) > -1)
+                        tp[m] = kp[m];
+                }
+                else {
                     tp[m] = kp[m];
-            }
-            else {
-                tp[m] = kp[m];
+                }
             }
         }
-    }
-};
+    };
+})();
 var __decorate = function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
@@ -3386,29 +3399,24 @@ var JS;
                     return false;
                 return !isNaN(new Date(d).getTime());
             }
-            static equals(date1, date2) { return this.compare(date1, date2) === 0; }
-            static compare(date1, date2) {
-                if (!util.Types.isDefined(date1) || !util.Types.isDefined(date1))
-                    throw new Errors.ArgumentError();
-                return (date1 < date2) ? -1 : (date1 > date2) ? 1 : 0;
+            static isLeapYear(y) {
+                return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
             }
-            static isSameDay(day1, day2) {
-                return day1.getFullYear() == day2.getFullYear() && day1.getMonth() == day2.getMonth() && day1.getDate() == day2.getDate();
+            static getDaysOfMonth(m, y) {
+                y = y || new Date().getFullYear();
+                return [31, (this.isLeapYear(y) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m];
             }
-            static isSameTime(day1, day2, equalsMS) {
-                if (equalsMS && day1.getMilliseconds() != day2.getMilliseconds())
-                    return false;
-                return day1.getHours() == day2.getHours() && day1.getMinutes() == day2.getMinutes() && day1.getSeconds() == day2.getSeconds();
+            static getFirstDayOfMonth(d) { return d.clone().set({ day: 1 }); }
+            static getLastDayOfMonth(d) {
+                return d.clone().set({ day: Dates.getDaysOfMonth(d.getMonth(), d.getFullYear()) });
             }
-            static today() { return new Date().setZeroTime(); }
-            static isLeapYear(year) {
-                return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-            }
-            static getDaysInMonth(year, month) {
-                return [31, (this.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
-            }
-            static format(date, format, locale) {
-                return new Date(date).format(format, locale);
+            static getDayOfWeek(d, dayOfWeek) {
+                let d2 = dayOfWeek != void 0 ? dayOfWeek : 1, d1 = d.getDay();
+                if (d2 == 0)
+                    d2 = 7;
+                if (d1 == 0)
+                    d1 = 7;
+                return d.clone().add((d2 - d1) % 7, 'd');
             }
         }
         Dates.I18N_RESOURCE = {
@@ -3425,21 +3433,21 @@ var JS;
 var Dates = JS.util.Dates;
 (function () {
     var $D = Date, $P = $D.prototype, pad = function (s, l) {
-        new Date();
+        new $D();
         if (!l) {
             l = 2;
         }
         return ("000" + s).slice(l * -1);
     };
     $P.getWeek = function () {
-        let date0 = new Date(this.getFullYear(), 0, 1), diff = Math.round((this.valueOf() - date0.valueOf()) / 86400000);
+        let date0 = new $D(this.getFullYear(), 0, 1), diff = Math.round((this.valueOf() - date0.valueOf()) / 86400000);
         return Math.ceil((diff + ((date0.getDay() + 1) - 1)) / 7);
     };
     $P.setWeek = function (week, dayOfWeek) {
         let dw = Types.isDefined(dayOfWeek) ? dayOfWeek : 1;
-        return this.setTime(this.getDayOfWeek(dw).add(week - this.getWeek(), 'w').getTime());
+        return this.setTime(Dates.getDayOfWeek(this, dw).add(week - this.getWeek(), 'w').getTime());
     };
-    $P.clone = function () { return new Date(this.getTime()); };
+    $P.clone = function () { return new $D(this.getTime()); };
     $P.setZeroTime = function () {
         this.setHours(0);
         this.setMinutes(0);
@@ -3455,21 +3463,37 @@ var Dates = JS.util.Dates;
         return this;
     };
     $P.setNowTime = function () {
-        var n = new Date();
+        var n = new $D();
         this.setHours(n.getHours());
         this.setMinutes(n.getMinutes());
         this.setSeconds(n.getSeconds());
         this.setMilliseconds(n.getMilliseconds());
         return this;
     };
-    $P.compareTo = function (date) { return Dates.compare(this, date); };
-    $P.equals = function (date) { return Dates.equals(this, date || new Date()); };
-    $P.between = function (start, end) { return this.getTime() >= start.getTime() && this.getTime() <= end.getTime(); };
-    $P.isAfter = function (date) { return this.compareTo(date || new Date()) === 1; };
-    $P.isBefore = function (date) { return (this.compareTo(date || new Date()) === -1); };
-    $P.isSameDay = function (date) { return Dates.isSameDay(this, date); };
-    $P.isSameTime = function (date, equalsMS) { return Dates.isSameTime(this, date, equalsMS); };
-    $P.isToday = function () { return this.isSameDay(new Date()); };
+    $P.equals = function (d, p = 'ms') {
+        let m = this;
+        if (p == 'ms')
+            return m.diff(d) == 0;
+        if (p == 's')
+            return m.getSeconds() == d.getSeconds();
+        if (p == 'm')
+            return m.getMinutes() == d.getMinutes();
+        if (p == 'h')
+            return m.getHours() == d.getHours();
+        if (p == 'y')
+            return m.getFullYear() == d.getFullYear();
+        if (p == 'M')
+            return m.getMonth() == d.getMonth();
+        if (p == 'd')
+            return m.getFullYear() == d.getFullYear() && m.getMonth() == d.getMonth() && m.getDate() == d.getDate();
+        if (p == 'w')
+            return m.getWeek() == d.getWeek();
+        return false;
+    };
+    $P.between = function (start, end) { return this.diff(start) >= 0 && this.diff(end) <= 0; };
+    $P.isAfter = function (d) { return this.diff(d) > 0; };
+    $P.isBefore = function (d) { return this.diff(d) < 0; };
+    $P.isToday = function () { return this.equals(new $D(), 'd'); };
     $P.add = function (v, type) {
         if (v == 0)
             return this;
@@ -3498,7 +3522,7 @@ var Dates = JS.util.Dates;
                 var n = this.getDate();
                 this.setDate(1);
                 this.setMonth(this.getMonth() + v);
-                this.setDate(Math.min(n, Dates.getDaysInMonth(this.getFullYear(), this.getMonth())));
+                this.setDate(Math.min(n, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear())));
                 return this;
             }
             case 'y': {
@@ -3522,7 +3546,7 @@ var Dates = JS.util.Dates;
             return "+" + r.substr(1);
         }
     };
-    let validate = function (n, min, max) {
+    let vt = function (n, min, max) {
         if (!Types.isDefined(n)) {
             return false;
         }
@@ -3532,28 +3556,28 @@ var Dates = JS.util.Dates;
         return true;
     };
     $P.set = function (config) {
-        if (validate(config.millisecond, 0, 999)) {
+        if (vt(config.millisecond, 0, 999)) {
             this.add(config.millisecond - this.getMilliseconds(), 'ms');
         }
-        if (validate(config.second, 0, 59)) {
+        if (vt(config.second, 0, 59)) {
             this.add(config.second - this.getSeconds(), 's');
         }
-        if (validate(config.minute, 0, 59)) {
+        if (vt(config.minute, 0, 59)) {
             this.add(config.minute - this.getMinutes(), 'm');
         }
-        if (validate(config.hour, 0, 23)) {
+        if (vt(config.hour, 0, 23)) {
             this.add(config.hour - this.getHours(), 'h');
         }
-        if (validate(config.day, 1, Dates.getDaysInMonth(this.getFullYear(), this.getMonth()))) {
+        if (vt(config.day, 1, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear()))) {
             this.add(config.day - this.getDate(), 'd');
         }
-        if (validate(config.week, 0, 53)) {
+        if (vt(config.week, 0, 53)) {
             this.setWeek(config.week);
         }
-        if (validate(config.month, 0, 11)) {
+        if (vt(config.month, 0, 11)) {
             this.add(config.month - this.getMonth(), 'M');
         }
-        if (validate(config.year, 0, 9999)) {
+        if (vt(config.year, 0, 9999)) {
             this.add(config.year - this.getFullYear(), 'y');
         }
         if (config.timezoneOffset) {
@@ -3561,18 +3585,8 @@ var Dates = JS.util.Dates;
         }
         return this;
     };
-    $P.getFirstDayOfMonth = function () { return this.clone().set({ day: 1 }); };
-    $P.getLastDayOfMonth = function () { return this.clone().set({ day: Dates.getDaysInMonth(this.getFullYear(), this.getMonth()) }); };
-    $P.getDayOfWeek = function (dayOfWeek) {
-        let d2 = Types.isDefined(dayOfWeek) ? dayOfWeek : 1, d1 = this.getDay();
-        if (d2 == 0)
-            d2 = 7;
-        if (d1 == 0)
-            d1 = 7;
-        return this.clone().add((d2 - d1) % 7, 'd');
-    };
     $P.diff = function (date) {
-        return (date || new Date()) - this;
+        return this - (date || new $D());
     };
     $P.format = function (format, locale) {
         let x = this, fmt = format || 'YYYY-MM-DD HH:mm:ss', bundle = new Bundle(Dates.I18N_RESOURCE, locale);
@@ -3630,7 +3644,7 @@ var Dates = JS.util.Dates;
 }());
 Class.register(Date);
 (function () {
-    var $N = Number.prototype;
+    var N = Number, $N = N.prototype;
     $N.stringfy = function () {
         if (this.isNaN())
             return null;
@@ -3639,7 +3653,7 @@ Class.register(Date);
         let t = this.toString(), m = t.match(/^(\+|\-)?(\d+)\.?(\d*)[Ee](\+|\-)(\d+)$/);
         if (!m)
             return t;
-        let zhe = m[2], xiao = m[3], zhi = Number(m[5]), fu = m[1] == '-' ? '-' : '', zfu = m[4], ws = (zfu == '-' ? -1 : 1) * zhi - xiao.length, n = zhe + xiao;
+        let zhe = m[2], xiao = m[3], zhi = N(m[5]), fu = m[1] == '-' ? '-' : '', zfu = m[4], ws = (zfu == '-' ? -1 : 1) * zhi - xiao.length, n = zhe + xiao;
         if (ws == 0)
             return fu + n;
         if (ws > 0)
@@ -3650,8 +3664,8 @@ Class.register(Date);
         return n.slice(0, dws - 1) + '.' + n.slice(dws);
     };
     $N.round = function (digit) {
-        if (this.isNaN() || this.isInt() || !Number.isFinite(digit))
-            return this;
+        if (this.isNaN() || this.isInt() || !N.isFinite(digit))
+            return N(this);
         let d = digit || 0, pow = Math.pow(10, d);
         return Math.round(this * pow) / pow;
     };
@@ -3660,22 +3674,22 @@ Class.register(Date);
     };
     $N.format = function (dLen) {
         let d = dLen == void 0 || !Number.isFinite(dLen) ? this.fractionLength() : dLen, s = this.round(d).abs().stringfy(), sign = this.isNegative() ? '-' : '';
-        let sn = Number(s);
+        let sn = N(s);
         if (sn.isInt())
             return sign + sn.toLocaleString() + (d < 1 ? '' : '.' + Strings.padEnd('', d, '0'));
         let p = s.indexOf('.'), ints = s.slice(0, p), digs = s.slice(p + 1);
-        return sign + Number(ints).toLocaleString() + '.' + Strings.padEnd(digs, d, '0');
+        return sign + N(ints).toLocaleString() + '.' + Strings.padEnd(digs, d, '0');
     };
     $N.equals = function (n, dLen) {
         if (this.isNaN())
-            throw new Errors.TypeError('This number is NaN!');
-        let num = Number(n);
+            throw new TypeError('This number is NaN!');
+        let num = N(n);
         if (num.isNaN())
-            throw new Errors.TypeError('The compared number is NaN!');
+            throw new TypeError('The compared number is NaN!');
         return this.round(dLen).valueOf() == num.round(dLen).valueOf();
     };
     $N.add = function (n) {
-        const v = Number(n);
+        const v = N(n);
         if (this.valueOf() == 0)
             return v;
         if (v.valueOf() == 0)
@@ -3686,7 +3700,7 @@ Class.register(Date);
         return (n1 + n2) / m;
     };
     $N.sub = function (n) {
-        const v = Number(n);
+        const v = N(n);
         if (v.valueOf() == 0)
             return this;
         if (this.isInt() && v.isInt())
@@ -3697,21 +3711,21 @@ Class.register(Date);
     $N.mul = function (n) {
         if (this.valueOf() == 0)
             return 0;
-        const v = Number(n);
+        const v = N(n);
         if (v.valueOf() == 0)
             return 0;
         if (this.isInt() && v.isInt())
             return v.valueOf() * this.valueOf();
-        let s1 = this.stringfy(this), s2 = v.stringfy(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = Number(s1.replace('.', '')), n2 = Number(s2.replace('.', ''));
+        let s1 = this.stringfy(this), s2 = v.stringfy(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = N(s1.replace('.', '')), n2 = N(s2.replace('.', ''));
         return n1 * n2 / Math.pow(10, m1 + m2);
     };
     $N.div = function (n) {
         if (this.valueOf() == 0)
             return 0;
-        const v = Number(n);
+        const v = N(n);
         if (v.valueOf() == 0)
-            throw new Errors.ArithmeticError('Can not divide an Zero.');
-        let s1 = this.stringfy(), s2 = v.stringfy(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = Number(s1.replace('.', '')), n2 = Number(s2.replace('.', ''));
+            throw new ArithmeticError('Can not divide an Zero.');
+        let s1 = this.stringfy(), s2 = v.stringfy(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = N(s1.replace('.', '')), n2 = N(s2.replace('.', ''));
         return (n1 / n2) * Math.pow(10, m2 - m1);
     };
     $N.isNaN = function () {
@@ -3765,13 +3779,27 @@ Class.register(Date);
             return 0;
         return this.abs().toFixed(0).length;
     };
+    $N.fractionalPart = function () {
+        if (this.isInt() || this.isNaN())
+            return '';
+        let s = this.stringfy();
+        return s.slice(s.indexOf('.') + 1);
+    };
+    $N.integralPart = function () {
+        if (this.isNaN())
+            return '';
+        let s = this.stringfy(), i = s.indexOf('.');
+        if (i < 0)
+            return s;
+        return s.slice(0, i);
+    };
 }());
 var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let _opt = function (v1, opt, v2) {
-            var rst = null, v = Number(v1);
+        let N = Number, _opt = function (v1, opt, v2) {
+            var rst = null, v = N(v1);
             switch (opt) {
                 case '+':
                     rst = v.add(v2);
@@ -3809,7 +3837,7 @@ var JS;
                 if (arguments.length <= 0)
                     return 0;
                 if (arguments.length == 1)
-                    return Number(args[0]).valueOf();
+                    return N(args[0]).valueOf();
                 var rst = null;
                 for (var i = 1; i < args.length; i = i + 2) {
                     if (i == 1) {
@@ -3825,7 +3853,7 @@ var JS;
                 let exp = expression.replace(/\s+/g, '');
                 if (values) {
                     util.Jsons.forEach(values, (n, k) => {
-                        exp = exp.replace(new RegExp(k, 'g'), Number(n) + '');
+                        exp = exp.replace(new RegExp(k, 'g'), N(n) + '');
                     });
                 }
                 exp = exp.replace(/\-{2}(\d+\.*\d*)/g, '+$1');
@@ -3902,6 +3930,8 @@ var JS;
                     return true;
                 if (Types.isJsonObject(expected) && Types.isJsonObject(actual) && Jsons.equal(expected, actual))
                     return true;
+                if (Types.isDate(expected) && Types.isDate(actual) && expected.getTime() === actual.getTime())
+                    return true;
                 return false;
             }
             static equal(expected, actual, msg) {
@@ -3933,32 +3963,16 @@ var JS;
                 if (condition)
                     this.fail((msg ? msg + ' ' : '') + 'expected:<FALSE> but was:<TRUE>');
             }
-            static defined(object, msg) {
-                this.true(Types.isDefined(object), msg);
+            static defined(obj, msg) {
+                this.true(obj != void 0, msg);
             }
-            static notDefined(object, msg) {
-                this.true(!Types.isDefined(object), msg);
+            static notDefined(obj, msg) {
+                this.true(obj == void 0, msg);
             }
-            static equalArray(expected, actual, msg) {
-                if (expected.length == actual.length) {
-                    if (expected.every((item, index) => {
-                        return item === actual[index];
-                    }))
-                        return;
-                }
-                this.failNotEqual('[' + expected.toString() + ']', '[' + actual.toString() + ']', msg);
-            }
-            static equalDate(expected, actual, msg) {
-                if (!expected && !actual)
-                    return;
-                if (expected.getTime() === actual.getTime())
-                    return;
-                this.failNotEqual(expected, actual, msg);
-            }
-            static error(cab, msg) {
+            static error(fn, msg) {
                 let has = false;
                 try {
-                    Functions.call(cab);
+                    Functions.call(fn);
                 }
                 catch (e) {
                     has = true;
@@ -3966,10 +3980,10 @@ var JS;
                 if (!has)
                     this.fail((msg ? msg + ' ' : '') + 'expected throw an error');
             }
-            static equalError(error, cab, msg) {
+            static equalError(error, fn, msg) {
                 let has = false;
                 try {
-                    Functions.call(cab);
+                    Functions.call(fn);
                 }
                 catch (e) {
                     if (Types.ofKlass(e, error))
@@ -4024,8 +4038,8 @@ var JS;
             Browser["UC"] = "UC";
         })(Browser = lang_1.Browser || (lang_1.Browser = {}));
         class System {
-            static info(isRefresh) {
-                if (!isRefresh && System._info)
+            static info(refresh) {
+                if (!refresh && System._info)
                     return System._info;
                 var parser = window['UAParser'] && new UAParser(), dev = parser ? parser.getDevice() : {};
                 if (!dev.type)
@@ -4043,25 +4057,25 @@ var JS;
                         cpuName: parser && parser.getCPU().architecture,
                         cpuCores: navigator.hardwareConcurrency
                     },
-                    window: null
+                    display: null
                 };
                 if (self.window) {
-                    let winscreen = window.screen, docbody = document.body;
-                    info.window = {
-                        screenX: window.screenLeft || window.screenX,
-                        screenY: window.screenTop || window.screenY,
-                        width: winscreen.width,
-                        height: winscreen.height,
-                        viewWidth: winscreen.availWidth,
-                        viewHeight: winscreen.availHeight,
-                        docX: docbody ? docbody.clientLeft : 0,
-                        docY: docbody ? docbody.clientTop : 0,
-                        docScrollX: docbody ? docbody.scrollLeft : 0,
-                        docScrollY: docbody ? docbody.scrollTop : 0,
-                        docWidth: docbody ? docbody.scrollWidth : 0,
-                        docHeight: docbody ? docbody.scrollHeight : 0,
-                        docViewWidth: docbody ? docbody.clientWidth : 0,
-                        docViewHeight: docbody ? docbody.clientHeight : 0,
+                    let winscreen = window.screen, doc = (a) => { return Math.max(document.documentElement[a], document.body[a]); };
+                    info.display = {
+                        screenWidth: winscreen.width,
+                        screenHeight: winscreen.height,
+                        screenViewWidth: winscreen.availWidth,
+                        screenViewHeight: winscreen.availHeight,
+                        windowX: window.screenLeft || window.screenX,
+                        windowY: window.screenTop || window.screenY,
+                        docX: doc('clientLeft') || 0,
+                        docY: doc('clientTop') || 0,
+                        docScrollX: doc('scrollLeft') || 0,
+                        docScrollY: doc('scrollTop') || 0,
+                        docWidth: doc('scrollWidth') || 0,
+                        docHeight: doc('scrollHeight') || 0,
+                        docViewWidth: doc('clientWidth') || 0,
+                        docViewHeight: doc('clientHeight') || 0,
                         colorDepth: winscreen.colorDepth,
                         pixelDepth: winscreen.pixelDepth,
                         devicePixelRatio: window.devicePixelRatio
@@ -4069,6 +4083,9 @@ var JS;
                 }
                 System._info = info;
                 return info;
+            }
+            static display(refresh) {
+                return this.info(refresh).display;
             }
             static isDevice(device) {
                 return System.info().device.type == device;
@@ -4120,7 +4137,7 @@ var JS;
                 util.Bom.ready(() => {
                     let cli = util.Dom.$1(clicker), tar = util.Dom.$1(target);
                     if (!cli || !tar)
-                        throw new Errors.NotFoundError('The clicker or target not found!');
+                        throw new NotFoundError('The clicker or target not found!');
                     cli.attr('data-clipboard-action', action);
                     cli.attr('data-clipboard-target', '#' + tar.attr('id'));
                     new ClipboardJS('#' + cli.attr('id'));
@@ -4130,7 +4147,7 @@ var JS;
                 util.Bom.ready(() => {
                     let cli = util.Dom.$1(clicker);
                     if (cli)
-                        throw new Errors.NotFoundError('The clicker not found!');
+                        throw new NotFoundError('The clicker not found!');
                     cli.attr('data-clipboard-text', text);
                     new ClipboardJS('#' + cli.attr('id'));
                 });
@@ -4384,616 +4401,144 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
+        let TimerState;
+        (function (TimerState) {
+            TimerState[TimerState["STOPPED"] = 0] = "STOPPED";
+            TimerState[TimerState["RUNNING"] = 1] = "RUNNING";
+            TimerState[TimerState["PAUSED"] = 2] = "PAUSED";
+        })(TimerState = util.TimerState || (util.TimerState = {}));
         class Timer {
-            constructor() {
-                this._timerId = null;
-                this._counter = 0;
-                this._state = 'NEW';
-                this._opts = {
-                    cycle: false,
-                    wait: 0,
+            constructor(tick, cfg) {
+                this._bus = new util.EventBus(this);
+                this._sta = TimerState.STOPPED;
+                this._ts = 0;
+                this._et = 0;
+                this._pt = 0;
+                this._count = 0;
+                this._tick = tick;
+                this.config(cfg);
+            }
+            on(type, fn) {
+                this._bus.on(type, fn);
+                return this;
+            }
+            off(type, fn) {
+                this._bus.off(type, fn);
+                return this;
+            }
+            count() {
+                return this._count;
+            }
+            config(cfg) {
+                if (!cfg)
+                    return this._cfg;
+                this._cfg = util.Jsons.union({
+                    delay: 0,
+                    loop: 1,
                     interval: 0,
-                };
+                    intervalMode: 'OF'
+                }, this._cfg, cfg);
+                let c = this._cfg;
+                if (c.interval != void 0 && c.interval < 0)
+                    c.interval = 0;
+                let l = c.loop;
+                l = l == false || l < 0 ? 0 : (l === true ? Infinity : l);
+                c.loop = l;
+                return this;
             }
-            restart() {
-                this.stop();
-                if (this._ticker)
-                    this.start(this._ticker);
+            pause() {
+                let m = this;
+                if (m._sta != TimerState.RUNNING)
+                    return m;
+                m._sta = TimerState.PAUSED;
+                m._pt = System.highResTime();
+                return m;
             }
-            suspend() {
-                if (this._state == 'WAITING' || this._state == 'RUNNING') {
-                    this._state = 'BLOCKED';
-                    return true;
-                }
-                return false;
+            _cancelTimer() {
+                if (this._timer)
+                    window.clearTimeout(this._timer);
+                this._timer = null;
+            }
+            _reset() {
+                let m = this;
+                m._cancelTimer();
+                m._sta = TimerState.STOPPED;
+                m._count = 0;
+                m._ts0 = 0;
+                m._ts = 0;
+                m._et = 0;
+                m._pt = 0;
             }
             stop() {
-                this._state = 'TERMINATED';
-                this._counter = 0;
-                if (this._timerId)
-                    window.clearTimeout(this._timerId);
-                this._timerId = null;
+                this._reset();
+                return this;
+            }
+            _finish() {
+                this._reset();
+                this._bus.fire('finished');
             }
             getState() {
-                return this._state;
+                return this._sta;
+            }
+            fps() {
+                return this._et == 0 ? 0 : 1000 / this._et;
+            }
+            maxFPS() {
+                let t = this._cfg.interval;
+                return t == 0 ? Infinity : 1000 / t;
             }
             _cycle(skip) {
-                if (this._state != 'RUNNING')
+                if (this._sta != TimerState.RUNNING)
                     return;
-                this._counter++;
-                let time = skip ? undefined : this._ticker.call(this, this._counter), max = this._opts.cycle;
-                if (this._counter < max) {
-                    this._timerId = setTimeout(() => { this._cycle(time < 0); }, util.Types.isNumber(time) ? (time < 0 ? 0 : time) : this._opts.interval);
+                if (this._count < this._cfg.loop) {
+                    let t = 0, opts = this._cfg, t0 = System.highResTime();
+                    this._et = t0 - this._ts;
+                    if (!skip) {
+                        this._count++;
+                        this._tick.call(this, this._et);
+                        let t1 = System.highResTime();
+                        t = t1 - t0;
+                    }
+                    this._ts = t0;
+                    let d = opts.interval - t, needSkip = opts.intervalMode == 'OF' && d < 0;
+                    this._timer = setTimeout(() => { this._cycle(needSkip); }, opts.intervalMode == 'BF' ? opts.interval : (needSkip ? 0 : d));
                 }
                 else {
-                    this.stop();
+                    this._finish();
                 }
             }
-            start(ticker, opts) {
-                if (ticker)
-                    this._ticker = ticker;
-                if (opts)
-                    this._opts = util.Jsons.union(this._opts, opts);
-                this._state = 'WAITING';
-                if (this._opts.cycle === false) {
-                    this._timerId = window.setTimeout(() => {
-                        this._state = 'RUNNING';
-                        this._ticker.call(this, ++this._counter);
-                        this.stop();
-                    }, this._opts.wait);
+            start() {
+                let m = this;
+                if (m._sta == TimerState.RUNNING)
+                    return;
+                let first = false, wait = m._cfg.delay;
+                if (m._sta == TimerState.PAUSED) {
+                    wait = 0;
+                    let t = System.highResTime() - m._pt;
+                    m._pt = 0;
+                    m._ts0 += t;
+                    m._ts += t;
                 }
                 else {
-                    this._timerId = window.setTimeout(() => {
-                        this._state = 'RUNNING';
-                        this._cycle();
-                    }, this._opts.wait);
+                    first = true;
+                    m._reset();
                 }
-            }
-            startOne(ticker, wait) {
-                this.start(ticker, { cycle: false, wait: wait });
-            }
-            startForever(ticker, opts) {
-                this.start(ticker, util.Jsons.union({ cycle: Infinity }, opts));
-            }
-            startAtDate(ticker, date, opts) {
-                let now = new Date(), diff = date.getTime() - now.getTime();
-                if (diff < 0)
-                    return;
-                opts = opts || {};
-                opts.wait = diff;
-                this.start(ticker, opts);
+                m._sta = TimerState.RUNNING;
+                m._timer = setTimeout(() => {
+                    if (first) {
+                        this._ts0 = System.highResTime();
+                        this._ts = this._ts0;
+                        m._bus.fire('starting');
+                    }
+                    m._cycle();
+                }, wait);
             }
         }
         util.Timer = Timer;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
 var Timer = JS.util.Timer;
-var JS;
-(function (JS) {
-    let data;
-    (function (data) {
-        class BiMap {
-            constructor(kvs) {
-                this._map = new Map();
-                if (kvs)
-                    kvs.forEach(kv => {
-                        this._map.set(kv["0"], kv["1"]);
-                    });
-            }
-            inverse() {
-                let map = new BiMap();
-                if (this.size() >= 0) {
-                    this._map.forEach((v, k) => {
-                        map.put(v, k);
-                    });
-                }
-                return map;
-            }
-            delete(key) {
-                return this._map.delete(key);
-            }
-            forEach(fn, thisArg) {
-                this._map.forEach(fn);
-            }
-            clear() {
-                this._map.clear();
-            }
-            size() {
-                return this._map.size;
-            }
-            has(k) {
-                return this._map.has(k);
-            }
-            get(k) {
-                return this._map.get(k);
-            }
-            put(k, v) {
-                this._map.set(k, v);
-            }
-            putAll(map) {
-                if (map)
-                    map.forEach((v, k) => {
-                        this.put(k, v);
-                    });
-            }
-        }
-        data.BiMap = BiMap;
-    })(data = JS.data || (JS.data = {}));
-})(JS || (JS = {}));
-var BiMap = JS.data.BiMap;
-var JS;
-(function (JS) {
-    let data;
-    (function (data_1) {
-        class LinkedList {
-            constructor() {
-                this._size = 0;
-                this._head = null;
-                this._tail = null;
-            }
-            each(fn, thisArg) {
-                if (this._size == 0)
-                    return true;
-                let rst = true, i = 0, node = this._head;
-                while (node) {
-                    if (!fn.call(thisArg || this, node.data, i, this)) {
-                        rst = false;
-                        break;
-                    }
-                    node = node.next;
-                    ++i;
-                }
-                return rst;
-            }
-            size() {
-                return this._size;
-            }
-            isEmpty() {
-                return this._size == 0;
-            }
-            clear() {
-                this._head = null;
-                this._tail = null;
-                this._size = 0;
-            }
-            clone() {
-                let list = new LinkedList();
-                if (this._size > 0) {
-                    let node = this._head;
-                    while (node) {
-                        list.add(Jsons.clone(node.data));
-                        node = node.next;
-                    }
-                }
-                return list;
-            }
-            toArray() {
-                let arr = [];
-                this.each(d => {
-                    arr[arr.length] = d;
-                    return true;
-                });
-                return arr;
-            }
-            getFirst() {
-                return this._head ? this._head.data : null;
-            }
-            getLast() {
-                return this._tail ? this._tail.data : null;
-            }
-            _check(i) {
-                if (i > this._size || i < 0)
-                    throw new Errors.RangeError();
-            }
-            get(i) {
-                this._check(i);
-                if (i == 0)
-                    return this._head ? this._head.data : null;
-                if (i == this._size - 1)
-                    return this._tail ? this._tail.data : null;
-                let node = this._findAt(i);
-                return node ? node.data : null;
-            }
-            _findAt(i) {
-                return i < this._size / 2 ? this._fromFirst(i) : this._fromLast(i);
-            }
-            _fromFirst(i) {
-                if (i <= 0)
-                    return this._head;
-                let node = this._head, count = 1;
-                while (count <= i) {
-                    node = node.next;
-                    count++;
-                }
-                return node;
-            }
-            _fromLast(i) {
-                if (i >= (this.size() - 1))
-                    return this._tail;
-                let node = this._tail, count = this._size - 1;
-                while (count > i) {
-                    node = node.prev;
-                    count--;
-                }
-                return node;
-            }
-            indexOf(data) {
-                if (this.isEmpty())
-                    return -1;
-                let rst = -1;
-                this.each((item, i) => {
-                    let is = (data === item);
-                    if (is)
-                        rst = i;
-                    return !is;
-                });
-                return rst;
-            }
-            lastIndexOf(data) {
-                if (this.isEmpty())
-                    return -1;
-                let rst = -1, node = this._tail, i = this._size - 1;
-                while (node) {
-                    if (data === node.data) {
-                        rst = i;
-                        break;
-                    }
-                    node = node.prev;
-                    --i;
-                }
-                return rst;
-            }
-            contains(data) {
-                return this.indexOf(data) > -1;
-            }
-            _addLast(d) {
-                let node = { data: Jsons.clone(d), prev: null, next: null };
-                if (this._tail) {
-                    node.prev = this._tail;
-                    this._tail.next = node;
-                }
-                this._tail = node;
-                if (!this._head)
-                    this._head = this._tail;
-                this._size += 1;
-            }
-            _addFirst(d) {
-                let node = { data: Jsons.clone(d), prev: null, next: null };
-                if (this._head) {
-                    node.next = this._head;
-                    this._head.prev = node;
-                }
-                this._head = node;
-                if (!this._tail)
-                    this._tail = this._head;
-                this._size += 1;
-            }
-            add(a) {
-                if (Types.isArray(a)) {
-                    a.forEach(el => {
-                        this._addLast(el);
-                    });
-                }
-                else {
-                    this._addLast(a);
-                }
-            }
-            addAll(list) {
-                if (!list || list.isEmpty())
-                    return;
-                list.each(d => {
-                    this._addLast(d);
-                    return true;
-                });
-            }
-            _addAt(i, a) {
-                let nextNode = this._findAt(i);
-                if (!nextNode)
-                    return;
-                let prevNode = nextNode.prev, newNode = { data: Jsons.clone(a), next: nextNode, prev: prevNode };
-                prevNode.next = newNode;
-                nextNode.prev = newNode;
-                this._size += 1;
-            }
-            addAt(i, a) {
-                if (i <= 0) {
-                    this.addFirst(a);
-                    return;
-                }
-                else if (i >= this.size()) {
-                    this.addLast(a);
-                    return;
-                }
-                if (!Types.isArray(a)) {
-                    this._addAt(i, a);
-                }
-                else {
-                    a.forEach((t, j) => {
-                        this._addAt(i + j, t);
-                    });
-                }
-            }
-            addLast(a) {
-                this.add(a);
-            }
-            addFirst(a) {
-                if (Types.isArray(a)) {
-                    for (let i = a.length - 1; i >= 0; i--) {
-                        this._addFirst(a[i]);
-                    }
-                }
-                else {
-                    this._addFirst(a);
-                }
-            }
-            removeFirst() {
-                if (this._size == 0)
-                    return null;
-                let data = this._head.data;
-                if (this._size > 1) {
-                    this._head = this._head.next;
-                    this._head.prev = null;
-                }
-                else {
-                    this._head = null;
-                    this._tail = null;
-                }
-                this._size--;
-                return data;
-            }
-            removeLast() {
-                if (this._size == 0)
-                    return null;
-                let data = this._tail.data;
-                if (this._size > 1) {
-                    this._tail = this._tail.prev;
-                    this._tail.next = null;
-                }
-                else {
-                    this._head = null;
-                    this._tail = null;
-                }
-                this._size--;
-                return data;
-            }
-            removeAt(i) {
-                if (this.isEmpty())
-                    return null;
-                this._check(i);
-                if (i == 0) {
-                    this.removeFirst();
-                    return;
-                }
-                else if (i == this.size() - 1) {
-                    this.removeLast();
-                    return;
-                }
-                let node = this._findAt(i);
-                if (!node)
-                    return null;
-                let next = node.next, prev = node.prev;
-                if (next)
-                    next.prev = prev;
-                if (prev)
-                    prev.next = next;
-                this._size--;
-                return node.data;
-            }
-            peek() {
-                return this._head ? this._head.data : null;
-            }
-            peekFirst() {
-                return this.peek();
-            }
-            peekLast() {
-                return this._tail ? this._tail.data : null;
-            }
-            toString() {
-                return '[' + this.toArray().toString() + ']';
-            }
-        }
-        data_1.LinkedList = LinkedList;
-    })(data = JS.data || (JS.data = {}));
-})(JS || (JS = {}));
-var LinkedList = JS.data.LinkedList;
-var JS;
-(function (JS) {
-    let data;
-    (function (data_2) {
-        class Queue {
-            constructor(a) {
-                this.list = new data_2.LinkedList();
-                this.list.add(a);
-            }
-            each(fn, thisArg) {
-                return this.list.each((item, i) => {
-                    return fn.call(thisArg || this, item, i, this);
-                }, thisArg);
-            }
-            size() {
-                return this.list.size();
-            }
-            isEmpty() {
-                return this.size() == 0;
-            }
-            clear() {
-                this.list.clear();
-            }
-            clone() {
-                let list = new Queue();
-                list.list = this.list.clone();
-                return list;
-            }
-            toArray() {
-                return this.list.toArray();
-            }
-            get(i) {
-                return this.list.get(i);
-            }
-            indexOf(data) {
-                return this.list.indexOf(data);
-            }
-            lastIndexOf(data) {
-                return this.list.lastIndexOf(data);
-            }
-            contains(data) {
-                return this.indexOf(data) > -1;
-            }
-            push(a) {
-                this.list.addLast(a);
-            }
-            pop() {
-                return this.list.removeFirst();
-            }
-            peek() {
-                return this.list.peekFirst();
-            }
-            toString() {
-                return '[' + this.list.toArray().toString() + ']';
-            }
-        }
-        data_2.Queue = Queue;
-    })(data = JS.data || (JS.data = {}));
-})(JS || (JS = {}));
-var Queue = JS.data.Queue;
-var JS;
-(function (JS) {
-    let data;
-    (function (data) {
-        class Stack {
-            constructor(a) {
-                this.list = new data.LinkedList();
-                this.list.add(a);
-            }
-            each(fn, thisArg) {
-                return this.list.each((item, i) => {
-                    return fn.call(thisArg || this, item, i, this);
-                }, thisArg);
-            }
-            size() {
-                return this.list.size();
-            }
-            isEmpty() {
-                return this.size() == 0;
-            }
-            clear() {
-                this.list.clear();
-            }
-            clone() {
-                let list = new Stack();
-                list.list = this.list.clone();
-                return list;
-            }
-            toArray() {
-                return this.list.toArray();
-            }
-            peek() {
-                return this.list.peekLast();
-            }
-            pop() {
-                return this.list.removeLast();
-            }
-            push(item) {
-                this.list.addLast(item);
-            }
-            toString() {
-                return '[' + this.list.toArray().toString() + ']';
-            }
-        }
-        data.Stack = Stack;
-    })(data = JS.data || (JS.data = {}));
-})(JS || (JS = {}));
-var Stack = JS.data.Stack;
-var JS;
-(function (JS) {
-    let ioc;
-    (function (ioc) {
-        class Components {
-            static get(cmpt) {
-                let cmp;
-                if (Types.isString(cmpt)) {
-                    cmp = this._cmps[cmpt];
-                }
-                if (!cmp)
-                    cmp = this.add(cmpt);
-                return cmp;
-            }
-            static add(cmpt) {
-                let cmp, clazz = Class.forName(cmpt);
-                if (!clazz)
-                    return undefined;
-                if (this._cmps.hasOwnProperty(clazz.name)) {
-                    return this._cmps[clazz.name];
-                }
-                else {
-                    cmp = clazz.newInstance();
-                    this._injectFields(clazz, cmp);
-                    this._cmps[clazz.name] = cmp;
-                    if (cmp.initialize)
-                        cmp.initialize();
-                }
-                return cmp;
-            }
-            static remove(cmpt) {
-                let clazz = Class.forName(cmpt);
-                if (!clazz)
-                    return;
-                let cmp = this._cmps[clazz.name];
-                if (cmp) {
-                    if (cmp.destroy)
-                        cmp.destroy();
-                    delete this._cmps[clazz.name];
-                }
-            }
-            static clear() {
-                Jsons.forEach(this._cmps, cmp => {
-                    if (cmp.destroy)
-                        cmp.destroy();
-                });
-                this._cmps = {};
-            }
-            static _injectFields(clazz, cmp) {
-                let fields = clazz.fieldsMap(cmp, ioc.inject);
-                Jsons.forEach(fields, (v, k) => {
-                    let f = Annotations.getPropertyType(cmp, k);
-                    if (!f || !Types.equalKlass(f))
-                        throw new Errors.TypeError('The type of Field[' + k + '] is invalid!');
-                    let cls = f.class;
-                    cmp[k] = this.get(cls.name);
-                });
-            }
-        }
-        Components._cmps = {};
-        ioc.Components = Components;
-    })(ioc = JS.ioc || (JS.ioc = {}));
-})(JS || (JS = {}));
-var Components = JS.ioc.Components;
-var JS;
-(function (JS) {
-    let ioc;
-    (function (ioc) {
-        function component(className) {
-            return Annotations.define({
-                name: 'component',
-                handler: (anno, values, obj) => {
-                    let className = values[0];
-                    Class.register(obj, className);
-                    ioc.Components.get(Class.forName(className).name);
-                }
-            }, arguments);
-        }
-        ioc.component = component;
-        function inject() {
-            return Annotations.define({
-                name: 'inject',
-                target: AnnotationTarget.FIELD
-            });
-        }
-        ioc.inject = inject;
-    })(ioc = JS.ioc || (JS.ioc = {}));
-})(JS || (JS = {}));
-var component = JS.ioc.component;
-var inject = JS.ioc.inject;
+var TimerState = JS.util.TimerState;
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
@@ -5110,8 +4655,8 @@ var JS;
                     let fnString = this._stringify(this.run);
                     this._url = self.URL.createObjectURL(new Blob([fnString], { type: 'text/javascript' }));
                 }
-                this._worker = new Worker(this._url);
-                this._worker.onmessage = e => {
+                this._wk = new Worker(this._url);
+                this._wk.onmessage = e => {
                     let d = e.data;
                     if (d.cmd == 'CLOSE') {
                         this.terminate();
@@ -5124,7 +4669,7 @@ var JS;
                         this._bus.fire('message', [d.data]);
                     }
                 };
-                this._worker.onerror = e => {
+                this._wk.onerror = e => {
                     JSLogger.error(e, `Thread<${this.id}> run error!`);
                     this._bus.fire('error', [e.message]);
                     this.terminate();
@@ -5134,12 +4679,12 @@ var JS;
             terminate() {
                 if (this.isDestroyed())
                     return this;
-                if (this._worker)
-                    this._worker.terminate();
+                if (this._wk)
+                    this._wk.terminate();
                 if (this._url)
                     window.URL.revokeObjectURL(this._url);
                 this._state = ThreadState.TERMINATED;
-                this._worker = null;
+                this._wk = null;
                 this._url = null;
                 return this;
             }
@@ -5168,8 +4713,8 @@ var JS;
             postThread(data, transfer) {
                 if (this._state != 'RUNNING')
                     return this._warn('post data');
-                if (this._worker)
-                    this._worker.postMessage.apply(this._worker, Check.isEmpty(transfer) ? [data] : [data].concat(transfer));
+                if (this._wk)
+                    this._wk.postMessage.apply(this._wk, Check.isEmpty(transfer) ? [data] : [data].concat(transfer));
                 return this;
             }
             static initContext() {
@@ -5213,174 +4758,3 @@ var JS;
 })(JS || (JS = {}));
 var Thread = JS.lang.Thread;
 var ThreadState = JS.lang.ThreadState;
-var JS;
-(function (JS) {
-    let store;
-    (function (store) {
-        class StoreHelper {
-            static toString(value) {
-                if (Types.isUndefined(value))
-                    return 'undefined';
-                if (Types.isNull(value))
-                    return 'null';
-                if (Types.isString(value))
-                    return JSON.stringify(['string', value]);
-                if (Types.isArray(value))
-                    return JSON.stringify(['array', JSON.stringify(value)]);
-                if (Types.isBoolean(value))
-                    return JSON.stringify(['boolean', value]);
-                if (Types.isNumber(value))
-                    return JSON.stringify(['number', value]);
-                if (Types.isDate(value))
-                    return JSON.stringify(['date', '' + value.valueOf()]);
-                if (Types.isJsonObject(value))
-                    return JSON.stringify(['json', JSON.stringify(value)]);
-            }
-            static parse(data) {
-                if (Type.null == data)
-                    return null;
-                if (Type.undefined == data)
-                    return undefined;
-                let [type, val] = JSON.parse(data), v = val;
-                switch (type) {
-                    case Type.object:
-                        v = JSON.parse(val);
-                        break;
-                    case Type.array:
-                        v = JSON.parse(val);
-                        break;
-                    case Type.number:
-                        v = Number(val);
-                        break;
-                    case Type.boolean:
-                        v = Boolean(val);
-                        break;
-                    case Type.date:
-                        v = new Date(val);
-                        break;
-                }
-                return v;
-            }
-        }
-        store.StoreHelper = StoreHelper;
-    })(store = JS.store || (JS.store = {}));
-})(JS || (JS = {}));
-var StoreHelper = JS.store.StoreHelper;
-var JS;
-(function (JS) {
-    let store;
-    (function (store) {
-        class CookieStore {
-            static get(key) {
-                let reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)", "gi"), data = reg.exec(document.cookie), str = data ? window['unescape'](data[2]) : null;
-                return store.StoreHelper.parse(str);
-            }
-            ;
-            static set(key, value, expireHours, path) {
-                if (!key)
-                    return;
-                let exp = CookieStore.EXPIRES_DATETIME;
-                if (Types.isDefined(expireHours) && expireHours > 0) {
-                    var date = new Date();
-                    date.setTime(date.getTime() + expireHours * 3600 * 1000);
-                    exp = date.toUTCString();
-                }
-                let p = path ? path : CookieStore.PATH;
-                let domain = CookieStore.DOMAIN;
-                if (domain)
-                    domain = 'domain=' + domain;
-                document.cookie = key + '=' + window['escape']('' + store.StoreHelper.toString(value)) + '; path=' + p + '; expires=' + exp + domain;
-            }
-            ;
-            static remove(key) {
-                let date = new Date();
-                date.setTime(date.getTime() - 10000);
-                document.cookie = key + "=; expire=" + date.toUTCString();
-            }
-            ;
-            static clear() {
-                document.cookie = '';
-            }
-            ;
-        }
-        CookieStore.EXPIRES_DATETIME = 'Wed, 15 Apr 2099 00:00:00 GMT';
-        CookieStore.PATH = '/';
-        CookieStore.DOMAIN = self.document ? document.domain : null;
-        store.CookieStore = CookieStore;
-    })(store = JS.store || (JS.store = {}));
-})(JS || (JS = {}));
-var CookieStore = JS.store.CookieStore;
-var JS;
-(function (JS) {
-    let store;
-    (function (store) {
-        class LocalStore {
-            static get(key) {
-                let str = localStorage.getItem(key);
-                if (!str)
-                    return undefined;
-                return store.StoreHelper.parse(str);
-            }
-            ;
-            static set(key, value) {
-                localStorage.setItem(key, store.StoreHelper.toString(value));
-            }
-            ;
-            static remove(key) {
-                localStorage.removeItem(key);
-            }
-            ;
-            static key(i) {
-                return localStorage.key(i);
-            }
-            ;
-            static size() {
-                return localStorage.length;
-            }
-            ;
-            static clear() {
-                localStorage.clear();
-            }
-            ;
-        }
-        store.LocalStore = LocalStore;
-    })(store = JS.store || (JS.store = {}));
-})(JS || (JS = {}));
-var LocalStore = JS.store.LocalStore;
-var JS;
-(function (JS) {
-    let store;
-    (function (store) {
-        class SessionStore {
-            static get(key) {
-                let str = sessionStorage.getItem(key);
-                if (!str)
-                    return undefined;
-                return store.StoreHelper.parse(str);
-            }
-            ;
-            static set(key, value) {
-                sessionStorage.setItem(key, store.StoreHelper.toString(value));
-            }
-            ;
-            static remove(key) {
-                sessionStorage.removeItem(key);
-            }
-            ;
-            static key(i) {
-                return sessionStorage.key(i);
-            }
-            ;
-            static size() {
-                return sessionStorage.length;
-            }
-            ;
-            static clear() {
-                sessionStorage.clear();
-            }
-            ;
-        }
-        store.SessionStore = SessionStore;
-    })(store = JS.store || (JS.store = {}));
-})(JS || (JS = {}));
-var SessionStore = JS.store.SessionStore;

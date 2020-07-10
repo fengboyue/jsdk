@@ -319,6 +319,7 @@ module JS {
                 let type = typeof obj;
                 if(type=='number'||type==<any>'bigint') return Type.number;
                 if(type=='object') {
+                    if (this.isJsonObject(obj)) return Type.json;
                     if (this.isArray(obj)) return Type.array;
                     if (this.isDate(obj)) return Type.date;;
                     return Type.object;

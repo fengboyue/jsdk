@@ -7,7 +7,7 @@
  * @author Frank.Feng
  */
 /// <reference path="../lang/System.ts"/>
-/// <reference path="../ui/View.ts"/>
+/// <reference path="../view/View.ts"/>
 /// <reference path="Page.ts"/>
 
 module JS {

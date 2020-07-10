@@ -7,6 +7,175 @@
 */
 var JS;
 (function (JS) {
+    let store;
+    (function (store) {
+        class CookieStore {
+            static get(key) {
+                let reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)", "gi"), data = reg.exec(document.cookie), str = data ? window['unescape'](data[2]) : null;
+                return store.StoreHelper.parse(str);
+            }
+            ;
+            static set(key, value, expireHours, path) {
+                if (!key)
+                    return;
+                let exp = CookieStore.EXPIRES_DATETIME;
+                if (Types.isDefined(expireHours) && expireHours > 0) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + expireHours * 3600 * 1000);
+                    exp = date.toUTCString();
+                }
+                let p = path ? path : CookieStore.PATH;
+                let domain = CookieStore.DOMAIN;
+                if (domain)
+                    domain = 'domain=' + domain;
+                document.cookie = key + '=' + window['escape']('' + store.StoreHelper.toString(value)) + '; path=' + p + '; expires=' + exp + domain;
+            }
+            ;
+            static remove(key) {
+                let date = new Date();
+                date.setTime(date.getTime() - 10000);
+                document.cookie = key + "=; expire=" + date.toUTCString();
+            }
+            ;
+            static clear() {
+                document.cookie = '';
+            }
+            ;
+        }
+        CookieStore.EXPIRES_DATETIME = 'Wed, 15 Apr 2099 00:00:00 GMT';
+        CookieStore.PATH = '/';
+        CookieStore.DOMAIN = self.document ? document.domain : null;
+        store.CookieStore = CookieStore;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var CookieStore = JS.store.CookieStore;
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
+        class LocalStore {
+            static get(key) {
+                let str = localStorage.getItem(key);
+                if (!str)
+                    return undefined;
+                return store.StoreHelper.parse(str);
+            }
+            ;
+            static set(key, value) {
+                localStorage.setItem(key, store.StoreHelper.toString(value));
+            }
+            ;
+            static remove(key) {
+                localStorage.removeItem(key);
+            }
+            ;
+            static key(i) {
+                return localStorage.key(i);
+            }
+            ;
+            static size() {
+                return localStorage.length;
+            }
+            ;
+            static clear() {
+                localStorage.clear();
+            }
+            ;
+        }
+        store.LocalStore = LocalStore;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var LocalStore = JS.store.LocalStore;
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
+        class SessionStore {
+            static get(key) {
+                let str = sessionStorage.getItem(key);
+                if (!str)
+                    return undefined;
+                return store.StoreHelper.parse(str);
+            }
+            ;
+            static set(key, value) {
+                sessionStorage.setItem(key, store.StoreHelper.toString(value));
+            }
+            ;
+            static remove(key) {
+                sessionStorage.removeItem(key);
+            }
+            ;
+            static key(i) {
+                return sessionStorage.key(i);
+            }
+            ;
+            static size() {
+                return sessionStorage.length;
+            }
+            ;
+            static clear() {
+                sessionStorage.clear();
+            }
+            ;
+        }
+        store.SessionStore = SessionStore;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var SessionStore = JS.store.SessionStore;
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
+        class StoreHelper {
+            static toString(value) {
+                if (Types.isUndefined(value))
+                    return 'undefined';
+                if (Types.isNull(value))
+                    return 'null';
+                if (Types.isString(value))
+                    return JSON.stringify(['string', value]);
+                if (Types.isBoolean(value))
+                    return JSON.stringify(['boolean', value]);
+                if (Types.isNumber(value))
+                    return JSON.stringify(['number', value]);
+                if (Types.isDate(value))
+                    return JSON.stringify(['date', '' + value.valueOf()]);
+                if (Types.isArray(value) || Types.isJsonObject(value))
+                    return JSON.stringify(['object', JSON.stringify(value)]);
+            }
+            static parse(data) {
+                if (Type.null == data)
+                    return null;
+                if (Type.undefined == data)
+                    return undefined;
+                let [type, val] = JSON.parse(data), v = val;
+                switch (type) {
+                    case Type.boolean:
+                        v = Boolean(val);
+                        break;
+                    case Type.number:
+                        v = Number(val);
+                        break;
+                    case Type.date:
+                        v = new Date(val);
+                        break;
+                    case Type.array:
+                        v = JSON.parse(val);
+                        break;
+                    case Type.json:
+                        v = JSON.parse(val);
+                        break;
+                }
+                return v;
+            }
+        }
+        store.StoreHelper = StoreHelper;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var StoreHelper = JS.store.StoreHelper;
+var JS;
+(function (JS) {
     let model;
     (function (model) {
         class AppEvent extends CustomEvent {

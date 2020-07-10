@@ -25,13 +25,13 @@ module JS {
 
                 let b = new LinkedList<Number>();
                 b.addLast(22); //22
-                Assert.equalArray([22], b.toArray());
+                Assert.equal([22], b.toArray());
                 b.addFirst(11); //11,22
-                Assert.equalArray([11,22], b.toArray());
+                Assert.equal([11,22], b.toArray());
                 b.addAt(0,33); //33,11,22
-                Assert.equalArray([33,11,22], b.toArray());
+                Assert.equal([33,11,22], b.toArray());
                 b.addAt(2,44); //33,11,44,22
-                Assert.equalArray([33,11,44,22], b.toArray());
+                Assert.equal([33,11,44,22], b.toArray());
                 
                 Assert.equal(4, b.size());
                 Assert.equal(33, b.get(0));
@@ -44,7 +44,7 @@ module JS {
                 this.a.addAll(b);
                 Assert.equal(8, this.a.size());
                 Assert.equal(22, this.a.get(7));
-                Assert.equalArray([3,0.5,2,1,33,11,44,22], this.a.toArray());
+                Assert.equal([3,0.5,2,1,33,11,44,22], this.a.toArray());
             }
             public test2() {
                 this.a.removeFirst();
@@ -55,11 +55,11 @@ module JS {
                 
                 this.a.add([3,2,1]);
                 this.a.removeFirst();
-                Assert.equalArray([2,1], this.a.toArray());
+                Assert.equal([2,1], this.a.toArray());
                 this.a.removeLast();
-                Assert.equalArray([2], this.a.toArray());
+                Assert.equal([2], this.a.toArray());
                 this.a.removeFirst();
-                Assert.equalArray([], this.a.toArray());
+                Assert.equal([], this.a.toArray());
             }
             public test3() {
                 Assert.equal(null, this.a.peek());
@@ -95,7 +95,7 @@ module JS {
             public test6(){
                 this.a.add([3,2,1,1]);
                 let b = this.a.clone();
-                Assert.equalArray(this.a.toArray(), b.toArray());
+                Assert.equal(this.a.toArray(), b.toArray());
             }
             public test7(){
                 this.a.add([3,2,1]);

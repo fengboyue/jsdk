@@ -13,7 +13,7 @@ module JS {
 
         export class KeyCode {
 
-            public static BACK = 8;
+            public static Back = 8;
             public static Tab = 9;
             public static Clear = 12;
             public static Enter = 13;

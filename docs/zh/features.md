@@ -338,33 +338,39 @@ Ajax.send({
 </p>
 
 ## 定时器
-JSDK提供定时器类<b>JS.util.Timer</b>来执行一些定时化或循环化任务。
+JSDK提供定时器类<b>JS.util.Timer</b>来执行定时化或循环化任务。
 ```javascript
-let timer1 = new Timer();
+//明天的23:59:59执行一次
+new Timer(()=>{
+    //do you want
+}, {
+    loop: 1,
+    delay: new Date().add(1, 'd').setLastTime()-new Date()
+}).start();
 
-//三秒后仅打印一次
-timer1.startOne(function(counter){
-    Konsole.print(counter)
-}, {interval: 3000});
-
-//每三秒打印一次，一直打印下去
-timer1.startForever(function(counter){
-    Konsole.print(counter)
-}, {interval: 3000});
-
-//在2020-1-1的零点打印一次
-timer1.startAtDate(function(counter){
-    Konsole.print(counter)
-}, new Date('2020-1-1'));
-
-timer1.stop(); //停止定时器
+//每三秒执行一次，一直不停
+new Timer(()=>{
+    //do you want
+}, {
+    loop: true,
+    interval: 3000
+}).start();
 ```
+
+### 执行模式
+<code>Timer</code>类的参数<code>intervalMode</code>提供两种间隔执行模式：<code>OF</code>模式和<code>BF</code>模式。缺省模式为<code>OF</code>。
+
+在<code>OF</code>模式下，定时器将尽可能保持固定的频率（帧率）来执行任务。当任务本身的执行时间大于等于间隔时间时，定时器将立即执行下一个任务而不等待。可变间隔时间的执行模式最大程度上避免了耗时任务带来的更长执行延迟，因此有更高的执行效率。
+
+而在<code>BF</code>模式下，无论任务执行时长是多少，定时器都保持固定的间隔时间来执行下一个任务。因此高耗时的任务将直接影响执行频率。这是和<code>setInterval</code>一样的传统执行模式。
+
+只有当任务执行时间无限接近于零时，这两种执行模式才是等效的。绝大多数时候，定时任务都需要设置为<code>OF</code>模式。
 
 > 动画与游戏开发
 >
-> 如果你是游戏开发者，你可以考虑基于Timer类来定制你的游戏主循环类。
+> 如果你是高级游戏开发者，你可以基于Timer类来定制你的游戏主循环类。
 > 
-> 如果你是动画开发者，你可以考虑用requestAnimationFrame新特性来重载Timer类的部分方法，然后定制你的动画类。
+> 如果你是高级动画开发者，你可以继承JSAN中Anim类和使用AnimTimer类（是Timer类的子类）来实现自己的动画类。
 
 ## Promise助手
 HTML5提供了Promise API来更好的支持异步回调式编程。

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Api | JSDK 2.0.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.0.0 API">
+	<title>Api | JSDK 2.1.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.1.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.0.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.1.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -101,18 +101,18 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#async" class="tsd-kind-icon">async</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#beforesend" class="tsd-kind-icon">before<wbr>Send</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#cache" class="tsd-kind-icon">cache</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#complete" class="tsd-kind-icon">complete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#contenttype" class="tsd-kind-icon">content<wbr>Type</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#crosscookie" class="tsd-kind-icon">cross<wbr>Cookie</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#data" class="tsd-kind-icon">data</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="js.model.api.html#dataklass" class="tsd-kind-icon">data<wbr>Klass</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#error" class="tsd-kind-icon">error</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#headers" class="tsd-kind-icon">headers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#ifmodified" class="tsd-kind-icon">if<wbr>Modified</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#method" class="tsd-kind-icon">method</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#mimetype" class="tsd-kind-icon">mime<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#oncompleted" class="tsd-kind-icon">on<wbr>Completed</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#onerror" class="tsd-kind-icon">on<wbr>Error</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#onsending" class="tsd-kind-icon">on<wbr>Sending</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#parsers" class="tsd-kind-icon">parsers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#password" class="tsd-kind-icon">password</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="js.model.api.html#thread" class="tsd-kind-icon">thread</a></li>
@@ -147,40 +147,6 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="beforesend" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> before<wbr>Send</h3>
-					<div class="tsd-signature tsd-kind-icon">before<wbr>Send<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="js.util.ajaxrequest.html" class="tsd-signature-type">AjaxRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#beforesend">beforeSend</a></p>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Call back before this send.</p>
-						</div>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="js.util.ajaxrequest.html" class="tsd-signature-type">AjaxRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>req: <a href="js.util.ajaxrequest.html" class="tsd-signature-type">AjaxRequest</a></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="cache" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> cache</h3>
 					<div class="tsd-signature tsd-kind-icon">cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -197,40 +163,6 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="complete" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> complete</h3>
-					<div class="tsd-signature tsd-kind-icon">complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><a href="js.util.ajaxresponse.html" class="tsd-signature-type">AjaxResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#complete">complete</a></p>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Call back after this send when it would be successful.</p>
-						</div>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><a href="js.util.ajaxresponse.html" class="tsd-signature-type">AjaxResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>res: <a href="js.util.ajaxresponse.html" class="tsd-signature-type">AjaxResponse</a></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="contenttype" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> content<wbr>Type</h3>
 					<div class="tsd-signature tsd-kind-icon">content<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></div>
@@ -242,7 +174,7 @@
 							<p>When sending data to the server, use this content type. Default is
 								&quot;application/x-www-form-urlencoded; charset=UTF-8&quot;, which is fine for most cases. If you explicitly
 								pass in a content-type to $.ajax(), then it is always sent to the server (even if no data is sent).
-								As of jQuery 1.6 you can pass false to tell jQuery to not set any content type header. Note: The W3C
+								You can pass false to tell Ajax to not set any content type header. Note: The W3C
 								XMLHttpRequest specification dictates that the charset is always UTF-8; specifying another charset
 								will not force the browser to change the encoding. Note: For cross-domain requests, setting the
 								content type to anything other than application/x-www-form-urlencoded, multipart/form-data, or
@@ -284,11 +216,101 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="error" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> error</h3>
-					<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><a href="js.util.ajaxresponse.html" class="tsd-signature-type">AjaxResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<a name="headers" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> headers</h3>
+					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <a href="../modules/js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#error">error</a></p>
+						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#headers">headers</a></p>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An object of additional header key/value pairs to send along with requests using the XMLHttpRequest
+								transport. The header X-Requested-With: XMLHttpRequest is always added, but its default
+							XMLHttpRequest value can be changed here.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="ifmodified" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> if<wbr>Modified</h3>
+					<div class="tsd-signature tsd-kind-icon">if<wbr>Modified<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#ifmodified">ifModified</a></p>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Allow the request to be successful only if the response has changed since the last request. This is
+								done by checking the Last-Modified header. Default value is false, ignoring the header. This technique
+							also checks the &#39;etag&#39; specified by the server to catch unmodified data.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="method" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> method</h3>
+					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"HEAD"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"GET"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"POST"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"OPTIONS"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"PUT"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"DELETE"</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#method">method</a></p>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The HTTP method to use for the request.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="mimetype" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> mime<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">mime<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#mimetype">mimeType</a></p>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A mime type to override the XHR mime type.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="oncompleted" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Completed</h3>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Completed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><a href="js.util.ajaxresponse.html" class="tsd-signature-type">AjaxResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#oncompleted">onCompleted</a></p>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Call back after this send when it would be successful.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><a href="js.util.ajaxresponse.html" class="tsd-signature-type">AjaxResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>res: <a href="js.util.ajaxresponse.html" class="tsd-signature-type">AjaxResponse</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="onerror" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Error</h3>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><a href="js.util.ajaxresponse.html" class="tsd-signature-type">AjaxResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#onerror">onError</a></p>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
@@ -318,60 +340,37 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="headers" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> headers</h3>
-					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <a href="../modules/js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="onsending" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Sending</h3>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Sending<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="js.util.ajaxrequest.html" class="tsd-signature-type">AjaxRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#headers">headers</a></p>
+						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#onsending">onSending</a></p>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>An object of additional header key/value pairs to send along with requests using the XMLHttpRequest
-								transport. The header X-Requested-With: XMLHttpRequest is always added, but its default
-								XMLHttpRequest value can be changed here. Values in the headers setting can also be overwritten from
-							within the beforeSend function.</p>
+							<p>Call back before this send.</p>
 						</div>
 					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="ifmodified" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> if<wbr>Modified</h3>
-					<div class="tsd-signature tsd-kind-icon">if<wbr>Modified<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#ifmodified">ifModified</a></p>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Allow the request to be successful only if the response has changed since the last request. This is
-								done by checking the Last-Modified header. Default value is false, ignoring the header. In jQuery
-							1.4 this technique also checks the &#39;etag&#39; specified by the server to catch unmodified data.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="method" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> method</h3>
-					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"HEAD"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"GET"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"POST"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"OPTIONS"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"PUT"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"DELETE"</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#method">method</a></p>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The HTTP method to use for the request.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="mimetype" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> mime<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">mime<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="js.model.api.html">Api</a>.<a href="js.model.api.html#mimetype">mimeType</a></p>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>A mime type to override the XHR mime type.</p>
-						</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="js.util.ajaxrequest.html" class="tsd-signature-type">AjaxRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>req: <a href="js.util.ajaxrequest.html" class="tsd-signature-type">AjaxRequest</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
@@ -525,32 +524,11 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The type of data that you&#39;re expecting back from the server. If none is specified, jQuery will try
-								to infer it based on the MIME type of the response (an XML MIME type will yield XML, in 1.4 JSON
-								will yield a JavaScript object, in 1.4 script will execute the script, and anything else will be
-								returned as a string). The available types (and the result passed as the first argument to your
-							success callback) are:</p>
+							<p>&quot;xml&quot;: Returns a XML document that can be processed.<br>
+								&quot;html&quot;: Returns HTML as plain text; included script tags are evaluated when inserted in the DOM.<br>
+								&quot;json&quot;: Evaluates the response as JSON and returns a JavaScript object.<br>
+							&quot;text&quot;: A plain text string.</p>
 						</div>
-						<p>&quot;xml&quot;: Returns a XML document that can be processed via jQuery.</p>
-						<p>&quot;html&quot;: Returns HTML as plain text; included script tags are evaluated when inserted in the DOM.</p>
-						<p>&quot;script&quot;: Evaluates the response as JavaScript and returns it as plain text. Disables caching by
-							appending a query string parameter, _=[TIMESTAMP], to the URL unless the cache option is set to
-						true. Note: This will turn POSTs into GETs for remote-domain requests.</p>
-						<p>&quot;json&quot;: Evaluates the response as JSON and returns a JavaScript object. Cross-domain &quot;json&quot; requests
-							are converted to &quot;jsonp&quot; unless the request includes jsonp: false in its request options. The JSON
-							data is parsed in a strict manner; any malformed JSON is rejected and a parse error is thrown. As of
-							jQuery 1.9, an empty response is also rejected; the server should return a response of null or {}
-						instead. (See json.org for more information on proper JSON formatting.)</p>
-						<p>&quot;jsonp&quot;: Loads in a JSON block using JSONP. Adds an extra &quot;?callback=?&quot; to the end of your URL to
-							specify the callback. Disables caching by appending a query string parameter, &quot;_=[TIMESTAMP]&quot;, to
-						the URL unless the cache option is set to true.</p>
-						<p>&quot;text&quot;: A plain text string.</p>
-						<p>multiple, space-separated values: As of jQuery 1.5, jQuery can convert a dataType from what it
-							received in the Content-Type header to what you require. For example, if you want a text response to
-							be treated as XML, use &quot;text xml&quot; for the dataType. You can also make a JSONP request, have it
-							received as text, and interpreted by jQuery as XML: &quot;jsonp text xml&quot;. Similarly, a shorthand string
-							such as &quot;jsonp xml&quot; will first attempt to convert from jsonp to xml, and, failing that, convert from
-						jsonp to text, and then from text to xml.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
@@ -624,7 +602,10 @@
 						<a href="../modules/js.html">JS</a>
 						<ul>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-								<a href="../modules/js.data.html">data</a>
+								<a href="../modules/js.an.html">an</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.ds.html">ds</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.fx.html">fx</a>
@@ -658,12 +639,57 @@
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.util.html">util</a>
 							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.view.html">view</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.ajaxproxy.html" class="tsd-kind-icon">Ajax<wbr>Proxy</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.app.html" class="tsd-kind-icon">App</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.appevent.html" class="tsd-kind-icon">App<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.field.html" class="tsd-kind-icon">Field</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.jsonproxy.html" class="tsd-kind-icon">Json<wbr>Proxy</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.listmodel.html" class="tsd-kind-icon">List<wbr>Model</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.listmodelconfig.html" class="tsd-kind-icon">List<wbr>Model<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.model.html" class="tsd-kind-icon">Model</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.modelconfig.html" class="tsd-kind-icon">Model<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.page.html" class="tsd-kind-icon">Page</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.pagemodel.html" class="tsd-kind-icon">Page<wbr>Model</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.pagemodelconfig.html" class="tsd-kind-icon">Page<wbr>Model<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace tsd-has-type-parameter">
+						<a href="../classes/js.model.resultset.html" class="tsd-kind-icon">Result<wbr>Set</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.model.service.html" class="tsd-kind-icon">Service</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
@@ -673,13 +699,7 @@
 								<a href="js.model.api.html#async" class="tsd-kind-icon">async</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="js.model.api.html#beforesend" class="tsd-kind-icon">before<wbr>Send</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="js.model.api.html#cache" class="tsd-kind-icon">cache</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="js.model.api.html#complete" class="tsd-kind-icon">complete</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="js.model.api.html#contenttype" class="tsd-kind-icon">content<wbr>Type</a>
@@ -694,9 +714,6 @@
 								<a href="js.model.api.html#dataklass" class="tsd-kind-icon">data<wbr>Klass</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="js.model.api.html#error" class="tsd-kind-icon">error</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="js.model.api.html#headers" class="tsd-kind-icon">headers</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
@@ -707,6 +724,15 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="js.model.api.html#mimetype" class="tsd-kind-icon">mime<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="js.model.api.html#oncompleted" class="tsd-kind-icon">on<wbr>Completed</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="js.model.api.html#onerror" class="tsd-kind-icon">on<wbr>Error</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="js.model.api.html#onsending" class="tsd-kind-icon">on<wbr>Sending</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="js.model.api.html#parsers" class="tsd-kind-icon">parsers</a>
@@ -736,6 +762,66 @@
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="js.model.customvalidatorsetting.html" class="tsd-kind-icon">Custom<wbr>Validator<wbr>Setting</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="js.model.fieldconfig.html" class="tsd-kind-icon">Field<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="js.model.formatvalidatorsetting.html" class="tsd-kind-icon">Format<wbr>Validator<wbr>Setting</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="js.model.lengthvalidatorsetting.html" class="tsd-kind-icon">Length<wbr>Validator<wbr>Setting</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
+						<a href="js.model.listmodellisteners.html" class="tsd-kind-icon">List<wbr>Model<wbr>Listeners</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
+						<a href="js.model.modelable.html" class="tsd-kind-icon">Modelable</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
+						<a href="js.model.pagemodellisteners.html" class="tsd-kind-icon">Page<wbr>Model<wbr>Listeners</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="js.model.pagemodelparametersmapping.html" class="tsd-kind-icon">Page<wbr>Model<wbr>Parameters<wbr>Mapping</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="js.model.pagequery.html" class="tsd-kind-icon">Page<wbr>Query</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="js.model.rangevalidatorsetting.html" class="tsd-kind-icon">Range<wbr>Validator<wbr>Setting</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="js.model.requiredvalidatorsetting.html" class="tsd-kind-icon">Required<wbr>Validator<wbr>Setting</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="js.model.resultsetformat.html" class="tsd-kind-icon">Result<wbr>Set<wbr>Format</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.model.html#appsettings" class="tsd-kind-icon">App<wbr>Settings</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.model.html#listmodelevents" class="tsd-kind-icon">List<wbr>Model<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.model.html#modelevents" class="tsd-kind-icon">Model<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter">
+						<a href="../modules/js.model.html#modellisteners" class="tsd-kind-icon">Model<wbr>Listeners</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.model.html#pageevents" class="tsd-kind-icon">Page<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.model.html#pagemodelevents" class="tsd-kind-icon">Page<wbr>Model<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.model.html#sorter" class="tsd-kind-icon">Sorter</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.model.html#validatorsetting" class="tsd-kind-icon">Validator<wbr>Setting</a>
+					</li>
 				</ul>
 			</nav>
 		</div>

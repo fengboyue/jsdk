@@ -28,16 +28,16 @@ module JS {
          */
         export class Lengths {
 
-            public static toPxNumber(len: string | number): number {
+            public static toNumber(len: string | number, unit: LengthUnit=LengthUnit.PX): number {
                 if (len == void 0) return 0;
-                if (Types.isNumeric(len)) return <number>len;
+                if (Types.isNumeric(len)) return Number(len);
 
                 let le = String(len);
                 if (le.endsWith('%')) return 0;
-                return parseFloat(le.replace(/^.+[px]$/, ''));
+                return Number(le.replace(new RegExp(`${unit}$`), ''));
             }
 
-            public static toCssString(len: string | number, defaultVal:string, unit?: LengthUnit): string {
+            public static toCSS(len: string | number, defaultVal:string, unit?: LengthUnit): string {
                 if (len == void 0) return defaultVal||'auto';
                 if (Types.isNumeric(len)) return Number(len) + '' + (unit || LengthUnit.PX);
 

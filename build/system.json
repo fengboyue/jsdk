@@ -8,10 +8,7 @@
     "include": [
         "../libs/reflect/2.0.0/reflect.js",
         "../source/util/*.ts",
-        "../source/data/*.ts",
         "../source/reflect/*.ts",
-        "../source/ioc/*.ts",
-        "../source/lang/*.ts",
-        "../source/store/*.ts"
+        "../source/lang/*.ts"
     ]
 } 

@@ -11,7 +11,7 @@
 /// <reference path="Jsons.ts"/>
 /// <reference path="../util/Ajax.ts"/>
 /// <reference path="../util/URI.ts"/>
-/// <reference path="Locale.ts"/>
+/// <reference path="Locales.ts"/>
 
 module JS {
 
@@ -25,8 +25,8 @@ module JS {
          * I18n工具类
          */
         export class Bundle {
-            private _locale: Locale;
-            private _data: JsonObject;
+            private _lc: Locale;
+            private _d: JsonObject;
 
             private _load(lc: Locale, prefix: string, suffix: string): boolean {
                 let paths = [];
@@ -45,14 +45,14 @@ module JS {
                     xhr.send();
                     if (xhr.status != 200) return false;
 
-                    this._data = Jsons.parse(xhr.response) || {};
+                    this._d = Jsons.parse(xhr.response) || {};
                     return true
                 })
             }
 
             constructor(res: Resource, locale?: Locale) {
                 let lc = <Locale>(locale == void 0 ? System.info().locale : locale);
-                this._data = {};
+                this._d = {};
 
                 if (res) {
                     if (Types.isString(res)) {
@@ -63,38 +63,38 @@ module JS {
                         if (!this._load(lc, prefix, suffix)) JSLogger.error('Bundle can\'t load resource file:'+res)
                     } else {
                         if (res.hasOwnProperty(lc)) {
-                            this._data = res[lc]
+                            this._d = res[lc]
                         } else {
                             let lang = Locales.lang(lc);
-                            this._data = res.hasOwnProperty(lang)?res[lang]:<JsonObject>res;
+                            this._d = res.hasOwnProperty(lang)?res[lang]:<JsonObject>res;
                         } 
                     }
                 }
 
-                this._locale = lc;
+                this._lc = lc;
             }
 
             public get(): JsonObject
             public get(key: string): any
-            public get(key?: string): any {
-                if (arguments.length == 0) return this._data;
-                return key && this._data ? this._data[key] : undefined
+            public get(k?: string): any {
+                if (arguments.length == 0) return this._d;
+                return k && this._d ? this._d[k] : undefined
             }
 
             public getKeys() {
-                return Reflect.ownKeys(this._data)
+                return Reflect.ownKeys(this._d)
             }
 
-            public hasKey(key: string) {
-                return this._data && this._data.hasOwnProperty(key)
+            public hasKey(k: string) {
+                return this._d && this._d.hasOwnProperty(k)
             }
 
             public getLocale(): Locale {
-                return this._locale
+                return this._lc
             }
 
-            public set(data: JsonObject) {
-                if (data) this._data = data;
+            public set(d: JsonObject) {
+                if (d) this._d = d;
                 return this
             }
         }

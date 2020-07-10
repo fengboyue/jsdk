@@ -1,8 +1,8 @@
-JSDK 2.0 is one of the most comprehensive JS/TS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.
+JSDK 2.0+ is one of the most comprehensive JS/TS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.
 
 It supports the following features:
 <p class="warn">
-Annotation, Reflection, AOP, IOC & Component, Dependency Injection, Thread, Timer, Unit Test, Event Bus, Application Framework. A group of advanced widgets and more powerful toolboxes are also provided.
+Annotation, Reflection, AOP, IOC & Component, Dependency Injection, Thread, Timer, Unit Test, Event Bus, Animations, Application Framework. A group of advanced widgets and more powerful toolboxes are also provided.
 </p>
 
 JSDK will greatly help you to develop libraries, components, widgets, applications and even games.
@@ -16,7 +16,7 @@ npm install jsdk-offical -g
 ```
 
 ## Basic knowledge 
-JSDK 2.0 was written in <code>ES6</code> and <code>TypeScript 2.0+</code>.
+JSDK 2.0+ was written in <code>ES6</code> and <code>TypeScript 2.0+</code>.
 
 If you touch JSDK for the first time, you need to have these following basic knowledge:
 > ES6 core features : class definition / multiline string / arrow function / new native APIs / Promise etc.
@@ -45,13 +45,32 @@ You can visit the following online resources to know JSDK more:
 ## Launch Local Resources
 You can launch a http server on your PC to visit these resources quickly.
 1. Suppose your local installation directory of JSDK is <code>{JSDK-INSTALL}</code>.
-2. Run a http server and set your server path <code>http://fengboyue.github.io/jsdk/</code> to pointer to your <code>{JSDK-INSTALL}</code>.
+2. Run a http server and set your server path <code>http://localhost/jsdk/</code> to refer to your <code>{JSDK-INSTALL}</code>.
 3. Open your browser and visit the URL.
 
 ## License
 JSDK is licensed under the MIT license since version 2.0.
 * *Other open source libraries include in JSDK release package are licensed under their stated licenses*
 
+## Changelogs
+### v2.1.0
+[Added] 
+- create new animation module named jsan.
+- add computedStyle method on HTMLElement.prototype.
+- add some useful methods to Colors class.
+- add Type.json from Type.object which only presents class instance now.
+
+[Removed] 
+- remove and modified some unused methods of Dates class and Date.prototye.
+- remove some unused type definitions on Model classes.
+- remove some unused jsdocs.
+
+[Changed] 
+- redesign new stronger Timer class for constant interval time and calculation of FPS.
+- move all Model and View classes to new "jsmv" module from old "jsui" module.
+- rename the package of "JS.data.*" to "JS.ds.*" and create new "jsds" module for keeping system module size smaller.
+- move the package of "JS.store.*" to "jsvp" module for keeping system module size smaller.
+
 ## Old Versions
 The <a href="https://sourceforge.net/projects/jsdk2/" target="_blank">
-old versions</a> of JSDK was no longer upgraded and maintained. Please use the latest version 2.0.
+0.x versions</a> of JSDK was no longer upgraded and maintained. Please use the latest version 2.1.

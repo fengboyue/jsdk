@@ -31,3 +31,10 @@ em {
 td::before {
     content: none !important;
 }
+
+.sidebar-nav>ul>li:nth-child(8)>a::after{
+    color: red;
+    content: " New!";
+    font-style: italic;
+    font-size: smaller;
+}

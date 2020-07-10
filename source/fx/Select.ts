@@ -116,7 +116,7 @@ module JS {
             }
 
             public load(api: string | AjaxRequest) {
-                if ((<SelectConfig>this._config).autoSearch) throw new Errors.NotHandledError('The method be not supported when autoSearch is true!');
+                if ((<SelectConfig>this._config).autoSearch) throw new NotHandledError('The method be not supported when autoSearch is true!');
                 return super.load(api);
             }
 
@@ -231,7 +231,7 @@ module JS {
                     delay: 500,// 延迟请求500毫秒
                     data: function () { return jsonParams ? jsonParams : {} },
                     processResults: (res: any, params) => {
-                        let data = <Array<any>>Jsons.getValueByPath(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
+                        let data = <Array<any>>Jsons.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
                         this.data(data);
                         return {
                             results: data// 后台返回的数据集
@@ -386,7 +386,7 @@ module JS {
                 if (arguments.length == 0) return super.value();
 
                 let cfg = <SelectConfig>this._config;
-                if((cfg.multiple && Types.isString(val))||(!cfg.multiple && Types.isArray(val))) throw new Errors.TypeError(`Wrong value type for select<${this.id}>!`);
+                if((cfg.multiple && Types.isString(val))||(!cfg.multiple && Types.isArray(val))) throw new TypeError(`Wrong value type for select<${this.id}>!`);
                 return super.value(val, silent)
             }
 

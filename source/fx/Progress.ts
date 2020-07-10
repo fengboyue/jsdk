@@ -43,7 +43,7 @@ module JS {
                 if (arguments.length == 0) return super.value();
 
                 val = val || 0;
-                if (val > 1 || val < 0) throw new Errors.RangeError('Progress value must in [0,1]!');
+                if (val > 1 || val < 0) throw new RangeError('Progress value must in [0,1]!');
 
                 let newVal = val ? val.round(2) : 0
 

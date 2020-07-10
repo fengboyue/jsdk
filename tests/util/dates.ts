@@ -16,17 +16,17 @@ module JS {
                 Assert.false(Dates.isLeapYear(1999));
             }
             public test2() {
-                Assert.true(Dates.getDaysInMonth(2019, 1)==28);
-                Assert.true(Dates.getDaysInMonth(2019, 2)==31);
+                Assert.true(Dates.getDaysOfMonth(1,2019)==28);
+                Assert.true(Dates.getDaysOfMonth(2,2019)==31);
             }
             public test3() {
-                Assert.true(Dates.isSameDay(new Date(2019,0,1,1,1,1), new Date('2019-1-1')));
+                Assert.true(new Date(2019,0,1,1,1,1).equals(new Date('2019-1-1'), 'd'));
             }
             public test4() {
                 let d = new Date(2019,0,1);
-                Assert.true(Dates.compare(d.setLastTime(), new Date('2019-1-1').setLastTime())==0);
-                Assert.true(Dates.compare(d, new Date('2019-1-2'))<0);
-                Assert.true(Dates.compare(d, new Date('2018-12-31'))>0);
+                Assert.true(d.setLastTime().diff(new Date('2019-1-1').setLastTime())==0);
+                Assert.true(d.isBefore(new Date('2019-1-2')));
+                Assert.true(d.isAfter(new Date('2018-12-31')));
             }
             public test5(){
                 Assert.true(new Date('2018-12-30').getWeek()==52);
@@ -37,19 +37,15 @@ module JS {
                 let d = new Date('2018-12-30');
                 d.setWeek(52);
                 Assert.true(d.getWeek()==52);
-                Assert.true(d.isSameDay(new Date('2018-12-24')));
+                Assert.true(d.equals(new Date('2018-12-24'), 'd'));
                 
                 d.setWeek(53);
                 Assert.true(d.getWeek()==53);
-                Assert.true(d.isSameDay(new Date('2018-12-31')));
-            }
-            public test7(){
-                Assert.true(Dates.compare(new Date().setZeroTime(), Dates.today().clone())==0);
+                Assert.true(d.equals(new Date('2018-12-31'), 'd'));
             }
             public test8(){
-                Assert.true(Dates.isSameTime(new Date(2019,0,1,12,0,1,123), new Date(2019,0,1,12,0,1,124)));
-                Assert.false(Dates.isSameTime(new Date(2019,0,1,12,0,1,123), new Date(2019,0,1,12,0,1,124), true));
-                Assert.true(Dates.isSameTime(new Date(2019,0,1,12,0,1,123), new Date(2019,0,1,12,0,1,123), true));
+                Assert.true(new Date(2019,0,1,12,0,1,123).equals(new Date(2019,0,1,12,0,1,123)));
+                Assert.false(new Date(2019,0,1,12,0,1,123).equals(new Date(2019,0,1,12,0,1,124)));
             }
             public test9(){
                 let d = new Date('2019-1-2'), d1 = new Date('2019-1-1'), d2 = new Date('2019-1-3');
@@ -70,7 +66,7 @@ module JS {
                 Assert.false(d.isBefore(d));               
             }
             public test12(){
-                Assert.true(Dates.today().isToday(new Date()));            
+                Assert.true(new Date().isToday(new Date()));            
             }
             public test13(){
                 let d = new Date('2019-1-1').setZeroTime(),
@@ -79,17 +75,17 @@ module JS {
                     s = d.getSeconds(),
                     ms = d.getMilliseconds();
                 
-                Assert.true(d.clone().add(1, 'y').isSameDay(new Date('2020-1-1')));
-                Assert.true(d.clone().add(-1, 'y').isSameDay(new Date('2018-1-1')));
+                Assert.true(d.clone().add(1, 'y').equals(new Date('2020-1-1'),'d'));
+                Assert.true(d.clone().add(-1, 'y').equals(new Date('2018-1-1'),'d'));
 
-                Assert.true(d.clone().add(1, 'M').isSameDay(new Date('2019-2-1')));
-                Assert.true(d.clone().add(-1, 'M').isSameDay(new Date('2018-12-1')));
+                Assert.true(d.clone().add(1, 'M').equals(new Date('2019-2-1'),'d'));
+                Assert.true(d.clone().add(-1, 'M').equals(new Date('2018-12-1'),'d'));
 
-                Assert.true(d.clone().add(1, 'd').isSameDay(new Date('2019-1-2')));
-                Assert.true(d.clone().add(-1, 'd').isSameDay(new Date('2018-12-31')));
+                Assert.true(d.clone().add(1, 'd').equals(new Date('2019-1-2'),'d'));
+                Assert.true(d.clone().add(-1, 'd').equals(new Date('2018-12-31'),'d'));
 
-                Assert.true(d.clone().add(1, 'w').isSameDay(new Date('2019-1-8')));
-                Assert.true(d.clone().add(-1, 'w').isSameDay(new Date('2018-12-25')));
+                Assert.true(d.clone().add(1, 'w').equals(new Date('2019-1-8'),'d'));
+                Assert.true(d.clone().add(-1, 'w').equals(new Date('2018-12-25'),'d'));
 
                 Assert.true(d.clone().add(1, 'h').getHours()==h+1);
                 Assert.true(d.clone().add(-1, 'h').getHours()==23);

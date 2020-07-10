@@ -15,58 +15,47 @@ module JS {
 
         export type ListModelEvents = 'dataupdating'|'dataupdated'|'rowadded'|'rowremoved'|'validated'|'rowvalidated'|'loading'|'loadsuccess'|'loadfailure'|'loaderror';
 
-        /**
-         * [newData, oldData]
-         */
-        export type ListModelEventHandler_Dataupdating<M> = EventHandler2<M, JsonObject[], JsonObject[]>;
-        /**
-         * [newData, oldData]
-         */
-        export type ListModelEventHandler_Dataupdated<M> = EventHandler2<M, JsonObject[], JsonObject[]>;
-        /**
-         * [newRows, index]
-         */
-        export type ListModelEventHandler_Rowadded<M> = EventHandler2<M, JsonObject[], number>;
-        /**
-         * [newRow, index]
-         */
-        export type ListModelEventHandler_Rowremoved<M> = EventHandler2<M, JsonObject, number>;
-        /**
-         * [result, data]
-         */
-        export type ListModelEventHandler_Validated<M> = EventHandler2<M, ValidateResult, JsonObject[]>;
-        /**
-         * [result, row, index]
-         */
-        export type ListModelEventHandler_RowValidated<M> = EventHandler3<M, ValidateResult, JsonObject[], number>;
-        /**
-         * [req]
-         */
-        export type ListModelEventHandler_Loading<M> = EventHandler1<M, AjaxRequest>;
-        /**
-         * [result]
-         */
-        export type ListModelEventHandler_Loadsuccess<M> = EventHandler1<M, ResultSet<any>>;
-        /**
-         * [result]
-         */
-        export type ListModelEventHandler_Loadfailure<M> = EventHandler1<M, ResultSet<any>>;
-        /**
-         * [err]
-         */
-        export type ListModelEventHandler_Loaderror<M> = EventHandler1<M, AjaxResponse|Error>;
-
         export interface ListModelListeners<M> {
-            dataupdating:  ListModelEventHandler_Dataupdating<M>
-            dataupdated: ListModelEventHandler_Dataupdated<M>
-            rowadded:  ListModelEventHandler_Rowadded<M>
-            rowremoved:  ListModelEventHandler_Rowremoved<M>
-            validated: ListModelEventHandler_Validated<M>
-            rowvalidated: ListModelEventHandler_RowValidated<M>
-            loading:  ListModelEventHandler_Loading<M>
-            loadsuccess:  ListModelEventHandler_Loadsuccess<M>
-            loadfailure:  ListModelEventHandler_Loadfailure<M>
-            loaderror:  ListModelEventHandler_Loaderror<M>
+            /**
+             * @event (e, newData, oldData)
+             */
+            dataupdating:  EventHandler2<M, JsonObject[], JsonObject[]>
+            /**
+             * @event (e, newData, oldData)
+             */
+            dataupdated: EventHandler2<M, JsonObject[], JsonObject[]>
+            /**
+             * @event (e, newRows, index)
+             */
+            rowadded:  EventHandler2<M, JsonObject[], number>
+            /**
+             * @event (e, removedRow, index)
+             */
+            rowremoved:  EventHandler2<M, JsonObject, number>
+            /**
+             * @event (e, result, data)
+             */
+            validated: EventHandler2<M, ValidateResult, JsonObject[]>
+            /**
+             * @event (e, result, row, index)
+             */
+            rowvalidated: EventHandler3<M, ValidateResult, JsonObject[], number>
+            /**
+             * @event (e, request)
+             */
+            loading:  EventHandler1<M, AjaxRequest>
+            /**
+             * @event (e, result)
+             */
+            loadsuccess:  EventHandler1<M, ResultSet<any>>
+            /**
+             * @event (e, result)
+             */
+            loadfailure:  EventHandler1<M, ResultSet<any>>
+            /**
+             * @event (e, response|error)
+             */
+            loaderror:  EventHandler1<M, AjaxResponse|Error>
         };
 
         export type Sorter = {
@@ -111,7 +100,7 @@ module JS {
             }
 
             protected _check() {
-                if (this.isDestroyed()) throw new Errors.NotHandledError('The model was destroyed!');
+                if (this.isDestroyed()) throw new NotHandledError('The model was destroyed!');
             }
 
             public addSorter(field: string, dir?: 'asc' | 'desc') {
@@ -285,14 +274,14 @@ module JS {
                 if(!d) return null;
 
                 let k = klass||this._modelKlass;
-                if(!k) throw new Errors.NotFoundError('The model klass not found!');
+                if(!k) throw new NotFoundError('The model klass not found!');
                 return Class.newInstance<T>(k).setData(d,true)
             }
 
             public getModels<T extends Model>(klass?: Klass<T>): T[]{
                 if(this.size()==0) return null;
                 let k = klass||this._modelKlass;
-                if(!k) throw new Errors.NotFoundError('The model klass not found!');
+                if(!k) throw new NotFoundError('The model klass not found!');
                 
                 let mds:T[] = [];
                 this._data.forEach((d,i)=>{

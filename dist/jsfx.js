@@ -329,7 +329,7 @@ var JS;
                 let cfg = this._config, titleAttrs = cfg.tip ? ` title=${cfg.tip}` : '';
                 if (cfg.title) {
                     let tValign = this._vAlign(), tHalign = this._hAlign(), p0 = tHalign == 'right' && cfg.titlePlace == 'top' ? 'p-0' : '', cls = `${p0} font-${cfg.sizeMode || 'md'} items-${tValign} items-${tHalign} ${cfg.colorMode ? 'text-' + cfg.colorMode : ''} ${cfg.titleCls || ''}"`;
-                    let style = Types.isDefined(cfg.titleWidth) ? `width:${Lengths.toCssString(cfg.titleWidth, '100%')};` : '';
+                    let style = Types.isDefined(cfg.titleWidth) ? `width:${Lengths.toCSS(cfg.titleWidth, '100%')};` : '';
                     if (cfg.titleStyle)
                         style += cfg.titleStyle;
                     titleAttrs += ` class="${cls}"`;
@@ -344,7 +344,7 @@ var JS;
                 this._mainEl = this.widgetEl.find('[jsfx-role=main]');
             }
             _onBeforeRender() {
-                let cfg = this._config, w = Lengths.toCssString(cfg.width, '100%'), d = cfg.titlePlace == 'left' ? 'flex' : 'grid', css = {
+                let cfg = this._config, w = Lengths.toCSS(cfg.width, '100%'), d = cfg.titlePlace == 'left' ? 'flex' : 'grid', css = {
                     'display': (w == 'auto' ? 'inline-' : '') + d,
                     'width': w
                 };
@@ -709,7 +709,7 @@ var JS;
             }
             load(api) {
                 if (this._config.autoSearch)
-                    throw new Errors.NotHandledError('The method be not supported when autoSearch is true!');
+                    throw new NotHandledError('The method be not supported when autoSearch is true!');
                 return super.load(api);
             }
             iniValue(v, render) {
@@ -810,7 +810,7 @@ var JS;
                         delay: 500,
                         data: function () { return jsonParams ? jsonParams : {}; },
                         processResults: (res, params) => {
-                            let data = Jsons.getValueByPath(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
+                            let data = Jsons.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
                             this.data(data);
                             return {
                                 results: data
@@ -946,7 +946,7 @@ var JS;
                     return super.value();
                 let cfg = this._config;
                 if ((cfg.multiple && Types.isString(val)) || (!cfg.multiple && Types.isArray(val)))
-                    throw new Errors.TypeError(`Wrong value type for select<${this.id}>!`);
+                    throw new TypeError(`Wrong value type for select<${this.id}>!`);
                 return super.value(val, silent);
             }
             _showError(msg) {
@@ -1030,7 +1030,6 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
-        var Uploader_1;
         let UploaderFaceMode;
         (function (UploaderFaceMode) {
             UploaderFaceMode["list"] = "list";
@@ -1055,7 +1054,7 @@ var JS;
             }
         }
         fx.UploaderConfig = UploaderConfig;
-        let Uploader = Uploader_1 = class Uploader extends fx.FormWidget {
+        let Uploader = class Uploader extends fx.FormWidget {
             constructor(cfg) {
                 super(cfg);
             }
@@ -1104,38 +1103,49 @@ var JS;
                     } : false
                 };
                 this._uploader = WebUploader.Uploader.create(cf);
-                let eMap = Uploader_1._EVENTS_MAP;
-                this._uploader.on(eMap.get('adding'), function (file) {
+                let eMap = {
+                    'adding': 'beforeFileQueued',
+                    'added': 'filesQueued',
+                    'removed': 'fileDequeued',
+                    'uploading': 'uploadStart',
+                    'uploadprogress': 'uploadProgress',
+                    'uploadsuccess': 'uploadSuccess',
+                    'uploaderror': 'uploadError',
+                    'uploaded': 'uploadComplete',
+                    'beginupload': 'startUpload',
+                    'endupload': 'uploadFinished'
+                };
+                this._uploader.on(eMap['adding'], function (file) {
                     return me._fire('adding', [me._toMimeFile(file)]);
                 });
-                this._uploader.on(eMap.get('added'), function (files) {
+                this._uploader.on(eMap['added'], function (files) {
                     files.forEach((file) => {
                         me._onFileQueued(file);
                     });
                     me._fire('added', [me._toMimeFiles(files)]);
                 });
-                this._uploader.on(eMap.get('removed'), function (file) {
+                this._uploader.on(eMap['removed'], function (file) {
                     me._onFileDequeued(file);
                     me._fire('removed', [me._toMimeFile(file)]);
                 });
-                this._uploader.on(eMap.get('uploading'), function (file, percentage) {
+                this._uploader.on(eMap['uploading'], function (file, percentage) {
                     me._fire('uploading', [me._toMimeFile(file), percentage]);
                 });
-                this._uploader.on(eMap.get('uploaderror'), function (file, reason) {
+                this._uploader.on(eMap['uploaderror'], function (file, reason) {
                     me._onUploadFail(file);
                     me._fire('uploaderror', [me._toMimeFile(file), reason]);
                 });
-                this._uploader.on(eMap.get('uploadsuccess'), function (file, response) {
+                this._uploader.on(eMap['uploadsuccess'], function (file, response) {
                     me._onUploadSuccess(file, response);
                     me._fire('uploadsuccess', [me._toMimeFile(file), response]);
                 });
-                this._uploader.on(eMap.get('uploaded'), function (file) {
+                this._uploader.on(eMap['uploaded'], function (file) {
                     me._fire('uploaded', [me._toMimeFile(file)]);
                 });
-                this._uploader.on(eMap.get('beginupload'), function () {
+                this._uploader.on(eMap['beginupload'], function () {
                     me._fire('beginupload');
                 });
-                this._uploader.on(eMap.get('endupload'), function () {
+                this._uploader.on(eMap['endupload'], function () {
                     me._fire('endupload');
                 });
                 let errors = {
@@ -1453,7 +1463,7 @@ var JS;
                 if (!cf)
                     return null;
                 if (!cf.uri)
-                    throw new Errors.URIError(`The file<${cf.name}> has not URI.`);
+                    throw new URIError(`The file<${cf.name}> has not URI.`);
                 let file = {
                     id: cf.id,
                     type: cf.mime,
@@ -1494,18 +1504,6 @@ var JS;
                 return this._uploader.isInProgress();
             }
         };
-        Uploader._EVENTS_MAP = new BiMap([
-            ['adding', 'beforeFileQueued'],
-            ['added', 'filesQueued'],
-            ['removed', 'fileDequeued'],
-            ['uploading', 'uploadStart'],
-            ['uploadprogress', 'uploadProgress'],
-            ['uploadsuccess', 'uploadSuccess'],
-            ['uploaderror', 'uploadError'],
-            ['uploaded', 'uploadComplete'],
-            ['beginupload', 'startUpload'],
-            ['endupload', 'uploadFinished']
-        ]);
         Uploader.I18N = {
             pickTitle: 'Select your local files please',
             pickTip: '<Accepts>\nFileExts={fileExts}\nMaxTotalSize={maxTotalSize}\nMaxNumbers={maxNumbers}\nMaxSingleSize={maxSingleSize}',
@@ -1518,7 +1516,7 @@ var JS;
             exceedNumbers: 'Exceed the max numbers of file',
             exceedMaxTotalSize: 'Exceed the max size of total files'
         };
-        Uploader = Uploader_1 = __decorate([
+        Uploader = __decorate([
             widget('JS.fx.Uploader'),
             __metadata("design:paramtypes", [UploaderConfig])
         ], Uploader);
@@ -1555,7 +1553,7 @@ var JS;
                     return super.value();
                 val = val || 0;
                 if (val > 1 || val < 0)
-                    throw new Errors.RangeError('Progress value must in [0,1]!');
+                    throw new RangeError('Progress value must in [0,1]!');
                 let newVal = val ? val.round(2) : 0;
                 this._setValue(newVal, silent);
                 this._mainEl.css('width', newVal * 100 + '%');
@@ -2345,7 +2343,7 @@ var JS;
                 if (!Number.isFinite(min))
                     return;
                 if (min > this.max())
-                    throw new Errors.RangeError('The min value greater than max value!');
+                    throw new RangeError('The min value greater than max value!');
                 cfg.min = min;
                 this._mainEl.prop('min', cfg.min);
                 return cfg.min;
@@ -2357,7 +2355,7 @@ var JS;
                 if (!Number.isFinite(max))
                     return;
                 if (max < this.min())
-                    throw new Errors.RangeError('The max value less than min value!');
+                    throw new RangeError('The max value less than min value!');
                 cfg.max = max;
                 this._mainEl.prop('max', cfg.max);
                 return cfg.max;
@@ -2374,7 +2372,7 @@ var JS;
                 let cfg = this._config;
                 if (arguments.length == 0)
                     return super.value();
-                let v = val == void 0 ? null : Math.min(Math.max(Number(val), cfg.min), cfg.max);
+                let v = val == void 0 ? null : Math.min(Math.max(val, cfg.min), cfg.max);
                 return super.value(v == null ? null : v.round(cfg.fractionDigits), silent);
             }
             _renderValue() {
@@ -2618,7 +2616,7 @@ var JS;
                 return oldVal[0] == newVal[0] && oldVal[1] == newVal[1];
             }
             _errorType(val) {
-                throw new Errors.TypeError('An invalid date format for DateRangePicker:' + val.toString());
+                throw new TypeError('An invalid date format for DateRangePicker:' + val.toString());
             }
             value(val, silent) {
                 if (arguments.length == 0)
@@ -3530,7 +3528,7 @@ var JS;
                 }
                 return `
                 <div class="carousel-item ${is ? 'active' : ''}" jsfx-index="${i}">
-                    <img class="d-block w-100" src="${item.src}" style="height:${Lengths.toCssString(this._config.height, '100%')};" alt="${item.imgAlt || ''}">
+                    <img class="d-block w-100" src="${item.src}" style="height:${Lengths.toCSS(this._config.height, '100%')};" alt="${item.imgAlt || ''}">
                     ${capHtml}
                 </div>
                 `;
@@ -3563,7 +3561,7 @@ var JS;
                 <ol class="carousel-indicators">
                     ${indsHtml}
                 </ol>
-                <div class="carousel-inner" style="height:${Lengths.toCssString(cfg.height, '100%')}">
+                <div class="carousel-inner" style="height:${Lengths.toCSS(cfg.height, '100%')}">
                     ${itemsHtml}
                 </div>
                 <a class="carousel-control-prev" href="#${this.id}" role="button" data-slide="prev">
@@ -3575,7 +3573,7 @@ var JS;
                 `;
                 this.widgetEl.attr('data-ride', 'carousel');
                 this.widgetEl.addClass('carousel slide bg-light');
-                this.widgetEl.css({ 'width': Lengths.toCssString(cfg.width, '100%') });
+                this.widgetEl.css({ 'width': Lengths.toCSS(cfg.width, '100%') });
                 this.widgetEl.html(html);
                 this.widgetEl.on('slide.bs.carousel', (e) => {
                     let from = e.from, to = e.to;
@@ -3775,7 +3773,7 @@ var JS;
                 let isVtl = this._hasFaceMode(TabFaceMode.vertical);
                 if (isVtl)
                     cls += ' flex-column';
-                let hHtml = `<ul id="${this.id}_headers" role="tablist" class="nav${cls} ${cfg.headCls || ''}" style="${cfg.headStyle || ''}">${heads}</ul>`, cHtml = `<div class="${isVtl ? 'vertical' : ''} tab-content" style="height:${Lengths.toCssString(cfg.height, '100%')};">${contents}</div>`, leftWidth = Lengths.toCssString(cfg.headLeftWidth, '100%');
+                let hHtml = `<ul id="${this.id}_headers" role="tablist" class="nav${cls} ${cfg.headCls || ''}" style="${cfg.headStyle || ''}">${heads}</ul>`, cHtml = `<div class="${isVtl ? 'vertical' : ''} tab-content" style="height:${Lengths.toCSS(cfg.height, '100%')};">${contents}</div>`, leftWidth = Lengths.toCSS(cfg.headLeftWidth, '100%');
                 return isVtl ?
                     `
                 <div class="w-100">
@@ -3886,10 +3884,10 @@ var JS;
                 `;
                 let html = `
                 <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="false" jsfx-role="main">
-                    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:${Lengths.toCssString(cfg.width, 'auto')}">
+                    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:${Lengths.toCSS(cfg.width, 'auto')}">
                     <div class="modal-content" style="border-radius:${this._hasFaceMode(DialogFaceMode.round) ? '0.3rem' : '0px'}">
                         ${titleHtml}
-                        <div class="modal-body jsfx-dialog-body" style="height:${Lengths.toCssString(cfg.height, '100%')}">
+                        <div class="modal-body jsfx-dialog-body" style="height:${Lengths.toCSS(cfg.height, '100%')}">
                         ${cHtml}
                         </div>
                         ${btnHtml}
@@ -4308,15 +4306,15 @@ var JS;
                     return option.field == name;
                 });
                 if (col < 0)
-                    throw new Errors.NotFoundError(`Not found the field:<${name}>`);
+                    throw new NotFoundError(`Not found the field:<${name}>`);
                 return col;
             }
             hideColumn(v) {
-                let i = Types.isNumeric(v) ? Number(v) - 1 : this._colIndexOf(v);
+                let i = Types.isNumeric(v) ? v - 1 : this._colIndexOf(v);
                 this.widgetEl.find(`tr th:eq(${i}),tr td:eq(${i})`).hide();
             }
             showColumn(v) {
-                let i = Types.isNumeric(v) ? Number(v) - 1 : this._colIndexOf(v);
+                let i = Types.isNumeric(v) ? v - 1 : this._colIndexOf(v);
                 this.widgetEl.find(`tr th:eq(${i}),tr td:eq(${i})`).show();
             }
             _bindSortFields() {
@@ -4352,7 +4350,7 @@ var JS;
                 }
             }
             _thHtml(col, colNumber) {
-                let cfg = this._config, html = col.text, title = col.tip ? col.tip : col.text, sortDir = col.sortable === true ? 'desc' : '' + col.sortable, sort = col.sortable ? `<i id="${this.id + '_sort_' + col.field}" style="cursor:pointer;vertical-align:middle;" class="la la-arrow-${sortDir == 'asc' ? 'up' : 'down'}"></i>` : '', hasCheckbox = colNumber == 1 && cfg.checkable, width = Lengths.toCssString(col.width, '100%'), cell = `<div class="cell items-${cfg.headStyle.textAlign} items-middle" jsfx-col="${colNumber}" title="${title}">
+                let cfg = this._config, html = col.text, title = col.tip ? col.tip : col.text, sortDir = col.sortable === true ? 'desc' : '' + col.sortable, sort = col.sortable ? `<i id="${this.id + '_sort_' + col.field}" style="cursor:pointer;vertical-align:middle;" class="la la-arrow-${sortDir == 'asc' ? 'up' : 'down'}"></i>` : '', hasCheckbox = colNumber == 1 && cfg.checkable, width = Lengths.toCSS(col.width, '100%'), cell = `<div class="cell items-${cfg.headStyle.textAlign} items-middle" jsfx-col="${colNumber}" title="${title}">
                     ${html}${sort ? sort : ''}</div>`;
                 if (col.sortable)
                     this._dataModel.addSorter(col.field, sortDir);
@@ -4361,7 +4359,7 @@ var JS;
                 </th>`;
             }
             _tdHtml(opt, html, title, col, row) {
-                let cfg = this._config, hasCheckbox = col == 0 && cfg.checkable, id = this.data()[row]['id'], width = Lengths.toCssString(opt.width, '100%'), cell = `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
+                let cfg = this._config, hasCheckbox = col == 0 && cfg.checkable, id = this.data()[row]['id'], width = Lengths.toCSS(opt.width, '100%'), cell = `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
                     ${html}</div>`;
                 return `<td width="${width}" nowrap>
                 ${hasCheckbox ? `<div class="items-left items-middle" jsfx-row="${row}" jsfx-col="${col}"><span jsfx-alias="checkbox" jsfx-id="${id}"/>${cell}</div>` : cell}
@@ -4516,7 +4514,7 @@ var JS;
                 }, bodyCls = 'table';
                 if (this._hasFaceMode(GridFaceMode.striped))
                     bodyCls += ' striped';
-                let hStyle = cfg.headStyle, bStyle = cfg.bodyStyle, bHeight = Types.isNumeric(cfg.height) ? (Number(cfg.height) - heights[cfg.sizeMode]) + 'px' : '100%', html = `<!-- 表头容器 -->
+                let hStyle = cfg.headStyle, bStyle = cfg.bodyStyle, bHeight = Types.isNumeric(cfg.height) ? (cfg.height - heights[cfg.sizeMode]) + 'px' : '100%', html = `<!-- 表头容器 -->
                     <div class="head">
                         <table id="${this.id}_htable" class="table ${hStyle.cls || ''}">
                             <tr>

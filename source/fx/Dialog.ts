@@ -103,10 +103,10 @@ module JS {
 
                 let html = `
                 <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="false" jsfx-role="main">
-                    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:${Lengths.toCssString(cfg.width,'auto')}">
+                    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:${Lengths.toCSS(cfg.width,'auto')}">
                     <div class="modal-content" style="border-radius:${this._hasFaceMode(DialogFaceMode.round) ? '0.3rem' : '0px'}">
                         ${titleHtml}
-                        <div class="modal-body jsfx-dialog-body" style="height:${Lengths.toCssString(cfg.height,'100%')}">
+                        <div class="modal-body jsfx-dialog-body" style="height:${Lengths.toCSS(cfg.height,'100%')}">
                         ${cHtml}
                         </div>
                         ${btnHtml}

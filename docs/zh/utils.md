@@ -229,6 +229,8 @@ interface HTMLElement {
 
     find(selector:string):HTMLElement;
     findAll(selector:string):NodeListOf<HTMLElement>;
+
+    computedStyle(pseudo?:string):CSSStyleDeclaration;
 }
 ```
 * *你可以在DOM对象上直接使用上述方法。*
@@ -236,8 +238,8 @@ interface HTMLElement {
 同时，JSDK对<code>Window</code>对象的原型链进行了扩展，增加了两个方法以取代旧方法： addListener/removeListener。
 ```javascript
 interface Window {
-    on(type:string, fn:(this:HTMLElement, e:Event)=>boolean|void, once?:boolean):this;
-    off(type?:string, fn?:(this:HTMLElement, e:Event)=>boolean|void):this;
+    on(type:string, fn:(this:Window, e:Event)=>boolean|void, once?:boolean):this;
+    off(type?:string, fn?:(this:Window, e:Event)=>boolean|void):this;
 }
 ```
 * *你可以在Window对象上直接使用上述方法。*

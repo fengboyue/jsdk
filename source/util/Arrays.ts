@@ -19,10 +19,11 @@ interface Array<T> {
      */
     remove(index:number):this;
     /**
-     * Remove a item when the foreach function returns true.
+     * Remove a item when the find function returns true.
      * @param equal 
+     * @returns True if finded it.
      */
-    remove(equal:(item: T, i: number, array: Array<T>)=>boolean):this;
+    remove(find:(item: T, i: number, array: Array<T>)=>boolean):boolean;
 }
 (function () {
     var $A = <any>Array.prototype;
@@ -30,16 +31,17 @@ interface Array<T> {
     $A.add = function (obj: any, from?:number) { 
         if(obj == void 0) return this;
 
-        let arr = obj instanceof Array?<Array<any>>obj:[obj], 
+        let a = obj instanceof Array?<Array<any>>obj:[obj], 
         i = from == void 0?this.length:(from < 0 ? 0 : from);
-        Array.prototype.splice.apply(this, [i, 0].concat(arr));
+        Array.prototype.splice.apply(this, [i, 0].concat(a));
         return this
     };
 
-    $A.remove = function (obj: any) { 
-        let index = typeof obj === 'number'?obj:this.findIndex((<Function>obj))
-        if(index>-1) this.splice(index,1)
-        return this
+    $A.remove = function (this: Array<any>, f: any) { 
+        let i = typeof f === 'number'?f:this.findIndex((<any>f))
+        if(i<0 || i>=this.length) return false; 
+        this.splice(i,1);
+        return true
     };
     
 }())
@@ -86,9 +88,9 @@ module JS {
             public static equal<T, K>(a1: Array<T>, a2: Array<K>, equal?: (item1: T, item2: K, index: number) => boolean): boolean {
                 if (<Array<any>>a1===a2) return true;
 
-                let empty1 = Check.isEmpty(a1), empty2 = Check.isEmpty(a2);
-                if (empty1 && empty2) return true;
-                if (empty1 !== empty2) return false;
+                let y1 = Check.isEmpty(a1), y2 = Check.isEmpty(a2);
+                if (y1 && y2) return true;
+                if (y1 !== y2) return false;
                 
                 if (a1.length != a2.length) return false;
                 return a1.every((item1: any, i: number) => {
@@ -122,14 +124,14 @@ module JS {
                 if (a1===a2 || (Check.isEmpty(a1) && Check.isEmpty(a2))) return true;
                 if (a1.length != a2.length) return false;
 
-                let arr2 = this.newArray(a2);
+                let na = this.newArray(a2);
                 a1.forEach(item1 => {
-                    arr2.remove((v)=>{
+                    na.remove((v)=>{
                         return v==item1
                     });
                 });
 
-                return arr2.length==0
+                return na.length==0
             }
 
             /**

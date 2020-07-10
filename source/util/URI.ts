@@ -46,7 +46,7 @@ module JS {
         /**
          * URI Class<br>
          * URI specs: scheme://username:password@host:port/path?query#fragment <br>
-         * Example:   http://jsdk:1234@example.com:8080/classes/URI?k1=v1#frag1 <br>
+         * Example:   http://jsdk:1234@github.com:8080/classes/URI?k1=v1#frag1 <br>
          */
         export class URI {
             private _scheme: string = null;
@@ -85,7 +85,7 @@ module JS {
 
             private _parseStr(uri: string) {
                 let array = _URI_REG.exec(uri);
-                if (!array) throw new Errors.URIError('URI maybe an invalid format: ' + uri);
+                if (!array) throw new URIError('An invalid URI: ' + uri);
 
                 this._scheme = array[2];
                 this._frag = array[9];
@@ -93,7 +93,7 @@ module JS {
                 let auth = array[4];
                 if (auth) {
                     let authArr = _AUTH_REG.exec(auth);
-                    if (!authArr) throw new Errors.TypeError('Auth part of URI maybe an invalid format: ' + uri);
+                    if (!authArr) throw new URIError('An invalid auth part of URI: ' + uri);
 
                     if (authArr[2]) this._user = authArr[2];
                     if (authArr[4]) this._pwd = authArr[4];

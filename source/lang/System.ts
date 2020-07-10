@@ -12,7 +12,7 @@
 /// <reference path="../util/Errors.ts"/>
 /// <reference path="../util/Dates.ts"/>
 /// <reference path="../util/Numbers.ts"/>
-/// <reference path="../util/Locale.ts"/>
+/// <reference path="../util/Locales.ts"/>
 /// <reference path="../util/Konsole.ts"/>
 
 /// <reference path="Assert.ts"/>
@@ -67,75 +67,77 @@ module JS {
         }
 
         /**
-         * browser window info
+         * browser display info
          */
-        export type BrowserWindow = {
+        export type BrowserDisplay = {
             /**
-             * 窗口相对于屏幕的x坐标
+             * Screen full width
              */
-            screenX: number;
+            screenWidth: number;
             /**
-             * 窗口相对于屏幕的y坐标
+             * Screen full height
              */
-            screenY: number;
+            screenHeight: number;
             /**
-             * 窗口实际宽度
+             * Screen view width
              */
-            width: number;
+            screenViewWidth: number;
             /**
-             * 窗口实际高度
+             * Screen view height
              */
-            height: number;
+            screenViewHeight: number;
+
             /**
-             * 可见区域宽度
+             * X coordinate of browser window relative to screen
              */
-            viewWidth: number;
+            windowX: number;
             /**
-             * 可见区域高度
+             * Y coordinate of browser window relative to screen
              */
-            viewHeight: number;
+            windowY: number;
+            
             /**
-             * 文档相对于窗口的x坐标
+             * X coordinate of document relative to window
              */
             docX: number;
             /**
-             * 文档相对于窗口的y坐标
+             * Y coordinate of document relative to window
              */
             docY: number;
             /**
-             * 文档x方向上滚动距离
+             * Scroll distance of document viewport in X coordinate
              */
             docScrollX: number;
             /**
-             * 文档y方向上滚动距离
+             * Scroll distance of document viewport in Y coordinate
              */
             docScrollY: number;
             /**
-             * 文档全部宽度
+             * Document full width
              */
             docWidth: number;
             /**
-             * 文档全部高度
+             * Document full height
              */
             docHeight: number;
             /**
-             * 文档可视宽度
+             * Document view width
              */
             docViewWidth: number;
             /**
-             * 文档可视高度 
+             * Document view height
              */
             docViewHeight: number;
             /**
-             * 色彩深度
+             * Color depth of screen
              */
             colorDepth: number;
             /**
-             * 色彩分辨率
+             * Pixel depth of screen
              */
             pixelDepth: number;
             /**
-             * 当前显示设备的物理像素分辨率与CSS像素分辨率的比率
+             * Ratio of physical pixel resolution to CSS pixel resolution of display device
              */
             devicePixelRatio: number;
         }
@@ -149,7 +151,7 @@ module JS {
          */
         export type SystemInfo = {
             ua: string;
-            window: BrowserWindow;
+            display: BrowserDisplay;
             browser: { 
                 name: string, 
                 version?: string 
@@ -197,8 +199,8 @@ module JS {
             /**
              * Returns all system infomations.
              */
-            public static info(isRefresh?: boolean): SystemInfo {
-                if (!isRefresh && System._info) return System._info;
+            public static info(refresh?: boolean): SystemInfo {
+                if (!refresh && System._info) return System._info;
 
                 var parser = window['UAParser'] && new UAParser(), dev:any = parser?parser.getDevice():{};
                 if(!dev.type) dev.type = DeviceType.desktop;
@@ -216,27 +218,29 @@ module JS {
                         cpuName: parser && parser.getCPU().architecture,
                         cpuCores: navigator.hardwareConcurrency
                     },
-                    window: null
+                    display: null
                 };
 
                 if(self.window){//在线程脚本中时没有window对象
-                    let winscreen = window.screen, docbody = document.body;
-                    info.window = {
-                        screenX: window.screenLeft || window.screenX,
-                        screenY: window.screenTop || window.screenY,
-                        width: winscreen.width,
-                        height: winscreen.height,
-                        viewWidth: winscreen.availWidth,
-                        viewHeight: winscreen.availHeight,
+                    let winscreen = window.screen, 
+                        doc = (a)=>{return Math.max(document.documentElement[a], document.body[a]);};
+                    info.display = {
+                        screenWidth: winscreen.width,
+                        screenHeight: winscreen.height,
+                        screenViewWidth: winscreen.availWidth,
+                        screenViewHeight: winscreen.availHeight,
     
-                        docX: docbody ? docbody.clientLeft : 0,
-                        docY: docbody ? docbody.clientTop : 0,
-                        docScrollX: docbody ? docbody.scrollLeft : 0,
-                        docScrollY: docbody ? docbody.scrollTop : 0,
-                        docWidth: docbody ? docbody.scrollWidth : 0,
-                        docHeight: docbody ? docbody.scrollHeight : 0,
-                        docViewWidth: docbody ? docbody.clientWidth : 0,
-                        docViewHeight: docbody ? docbody.clientHeight : 0,
+                        windowX: window.screenLeft || window.screenX,
+                        windowY: window.screenTop || window.screenY,
+                        
+                        docX: doc('clientLeft')||0,
+                        docY: doc('clientTop')||0, 
+                        docScrollX: doc('scrollLeft')||0, 
+                        docScrollY: doc('scrollTop')||0, 
+                        docWidth: doc('scrollWidth')||0, 
+                        docHeight: doc('scrollHeight')||0, 
+                        docViewWidth: doc('clientWidth')||0, 
+                        docViewHeight: doc('clientHeight')||0, 
     
                         colorDepth: winscreen.colorDepth,
                         pixelDepth: winscreen.pixelDepth,
@@ -248,6 +252,12 @@ module JS {
                 return info;
             }
 
+            /**
+             * Returns display infomations.
+             */
+            public static display(refresh?: boolean): BrowserDisplay {
+                return this.info(refresh).display
+            }
 
             /**
              * Is the type of?
@@ -257,7 +267,7 @@ module JS {
             }
 
             /**
-             * Is the brower?
+             * Is this browser?
              * @param b 
              */
             public static isBrowser(b: Browser|string): boolean {
@@ -301,7 +311,7 @@ module JS {
             }
 
             /**
-             * The returned value represents the time elapsed since the time origin.
+             * The returned value which unit is millisecond using 9-digits microsecond float represents the time elapsed since the time origin.
              * The time origin is a standard time which is considered to be the beginning of the current document's lifetime.
              * 返回单位为毫秒，但使用了9位小数的浮点数来达到微秒级别的精确度。
              */
@@ -318,4 +328,4 @@ import OS = JS.lang.OS;
 import Browser = JS.lang.Browser;
 import DeviceType = JS.lang.DeviceType;
 import SystemInfo = JS.lang.SystemInfo;
-import BrowserWindow = JS.lang.BrowserWindow;
+import BrowserWindow = JS.lang.BrowserDisplay;

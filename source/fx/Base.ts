@@ -10,11 +10,10 @@
 /// <reference path="../../libs/bootstrap/4.0.0/bootstrap.d.ts" /> 
 
 /// <reference path="../lang/System.ts"/>
-/// <reference path="../data/BiMap.ts"/>
 /// <reference path="../model/Model.ts"/>
 /// <reference path="../model/ListModel.ts"/>
 /// <reference path="../ui/Lengths.ts"/>
-/// <reference path="../ui/Color.ts"/>
+/// <reference path="../ui/Colors.ts"/>
 /// <reference path='../ui/Placements.ts'/>
 /// <reference path="../ui/KeyCode.ts"/>
 /// <reference path="../ui/IWidget.ts"/>

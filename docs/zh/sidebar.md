@@ -5,6 +5,7 @@
 -   [重要特性](features)
 -   [数据类型](datatypes)
 -   [常用工具](utils)
+-   [动画库](jsan)
 -   [应用框架](jsvp)
--   [JS FaceX](widgets)
+-   [UI组件库](jsfx)
 -   [单元测试](jsunit)

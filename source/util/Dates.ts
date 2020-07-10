@@ -3,6 +3,11 @@
  * @license MIT
  * @website https://github.com/fengboyue/jsdk
  * 
+ * @version 2.1.0
+ * @author Frank.Feng
+ * @update Adjust some methods of Dates and Date.prototype
+ * @date 2020/7/7
+ * 
  * @version 2.0.0
  * @author Frank.Feng
  */
@@ -45,18 +50,13 @@ interface Date {
      * @return {Date}    this
      */
     setNowTime(): Date;
-    /**
-     * Compares this instance to a Date object and returns an number indication of their relative values.  
-     * @param date     Date object to compare [Required]
-     * @return {Number}  -1 = this is lessthan date. 0 = values are equal. 1 = this is greaterthan date.
-     */
-    compareTo(date: Date): number;
+    
     /**
      * Compares this instance to another Date object and returns true if they are equal.  
      * @param date     Date object to compare. If no date to compare, new Date() [now] is used.
      * @return {Boolean} true if dates are equal. false if they are not equal.
      */
-    equals(date: Date): boolean;
+    equals(date: Date, type?: 'ms' | 's' | 'm' | 'h' | 'd' | 'w' | 'M' | 'y'): boolean;
     /**
      * Determines if this instance is between a range of two dates or equal to either the start or end dates.
      * @param start     Start of range [Required]
@@ -76,17 +76,6 @@ interface Date {
      * @return {Boolean} true if this date instance is less than the date to compare to (or "now").
      */
     isBefore(date: Date): boolean;
-    /**
-     * Determines if be the same year & month & day of two dates.
-     * @param date 
-     */
-    isSameDay(date: Date): boolean;
-    /**
-     * Determines if be the same hour & minute & second of two dates.
-     * @param date
-     * @param equalsMS Milliseconds needs equals
-     */
-    isSameTime(date: Date, equalsMS?: boolean): boolean;
     /**
      * if this date instance is 'today', otherwise false.
      * @param date 
@@ -126,19 +115,6 @@ interface Date {
         timezoneOffset?: number
     }): Date;
 
-    /**
-     * Gets the 1st day of the month based on the orient day.
-     */
-    getFirstDayOfMonth(): Date;
-    /**
-     * Gets the last day of the month based on the orient day.
-     */
-    getLastDayOfMonth(): Date;
-    /**
-     * Gets the dayOfWeek based on the orient day.
-     * @param dayOfWeek  0 is Sunday; Defaults is 1.
-     */
-    getDayOfWeek(dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6): Date;
     /**
      * Returns the number of milliseconds between this date and date.
      * @param date Defaults to now
@@ -192,7 +168,7 @@ interface Date {
      * @param locale   A local string like {language}-{country}.
      * @return {string}  A string representation of the current Date object.
      */
-    format(format?: string, locale?: string): string;
+    format(format?: string, locale?: Locale): string;
 }
 module JS {
 
@@ -219,78 +195,47 @@ module JS {
             }
 
             /**
-             * Compares the first Date object to the second Date object and returns true if they are equal.  
-             * @param date1     First Date object to compare [Required]
-             * @param date2     Second Date object to compare to [Required]
-             * @return {Boolean} true if dates are equal. false if they are not equal.
-             */
-            public static equals(date1: Date, date2: Date) { return this.compare(date1, date2) === 0 }
-
-            /**
-             * Compares the first date to the second date and returns an number indication of their relative values.  
-             * @param date1     First Date object to compare [Required].
-             * @param date2     Second Date object to compare to [Required].
-             * @return {Number}  -1 = date1 is lessthan date2. 0 = values are equal. 1 = date1 is greaterthan date2.
-             */
-            public static compare(date1: Date, date2: Date): number {
-                if (!Types.isDefined(date1) || !Types.isDefined(date1)) throw new Errors.ArgumentError()
-                return (date1 < date2) ? -1 : (date1 > date2) ? 1 : 0
-            }
-
-            /**
-             * Determines if be the same year & month & day of two dates.
-             * @param day1 
-             * @param day2 
-             */
-            public static isSameDay(day1: Date, day2: Date) {
-                return day1.getFullYear() == day2.getFullYear() && day1.getMonth() == day2.getMonth() && day1.getDate() == day2.getDate();
-            }
-
-            /**
-             * Determines if be the same hour & minute & second of two dates.
-             * @param day1 
-             * @param day2 
-             * @param equalsMS Milliseconds needs equals
-             */
-            public static isSameTime(day1: Date, day2: Date, equalsMS?: boolean) {
-                if (equalsMS && day1.getMilliseconds() != day2.getMilliseconds()) return false;
-                return day1.getHours() == day2.getHours() && day1.getMinutes() == day2.getMinutes() && day1.getSeconds() == day2.getSeconds();
-            }
-
-            /**
-             * Gets a date that is set to the current date. The time is set to the start of the day (00:00)
-             */
-            public static today() { return new Date().setZeroTime() }
-
-            /**
              * Determines if the current date instance is within a LeapYear.
-             * @param year   The year.
-             * @return {Boolean} true if date is within a LeapYear, otherwise false.
+             * @param y The year.
+             * @return {Boolean} True if date is within a LeapYear, otherwise false.
              */
-            public static isLeapYear(year: number) {
-                return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
+            public static isLeapYear(y: number) {
+                return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0
             }
 
             /**
-             * Gets the number of days in the month, given a year and month value. Automatically corrects for LeapYear.
-             * @param year   The year.
-             * @param month   The month (0-11).
-             * @return {Number}  The number of days in the month.
+             * Gets the number of days in the month and the year. Automatically corrects for LeapYear.
+             * @param m   The month (0-11)
+             * @param y   The year or this year
              */
-            public static getDaysInMonth(year: number, month: number) {
-                return [31, (this.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month]
+            public static getDaysOfMonth(m: number, y?: number) {
+                y = y || new Date().getFullYear();
+                return [31, (this.isLeapYear(y) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m]
             }
 
             /**
-             * Format a date or date string.
-             * @see {@link Date.format}
-             * 
-             * @param date 
-             * @param format 
-             * @param locale 
+             * Gets the 1st day of the month based on the orient day.
+             * @param d  The orient day
              */
-            public static format(date: string | Date, format: string, locale?: string): string {
-                return new Date(<any>date).format(format, locale);
+            public static getFirstDayOfMonth(d: Date) { return d.clone().set({ day: 1 }) }
+
+            /**
+             * Gets the last day of the month based on the orient day.
+             * @param d  The orient day
+             */
+            public static getLastDayOfMonth (d: Date) { 
+                return d.clone().set({ day: Dates.getDaysOfMonth(d.getMonth(), d.getFullYear()) }) 
+            }
+
+            /**
+             * Gets the dayOfWeek based on the orient day.
+             * @param d  The orient day
+             * @param dayOfWeek  0 is Sunday; Defaults is 1.
+             */
+            public static getDayOfWeek (d: Date, dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6) {
+                let d2: number = dayOfWeek != void 0 ? dayOfWeek : 1, d1: number = d.getDay();
+                if (d2 == 0) d2 = 7; if (d1 == 0) d1 = 7;
+                return d.clone().add((d2 - d1) % 7, 'd')
             }
 
         }
@@ -299,51 +244,62 @@ module JS {
 import Dates = JS.util.Dates;
 
 (function () {
-    var $D = Date, $P = <any>$D.prototype, pad = function (s: any, l?: number) {
-        new Date()
+    var $D = Date, $P = $D.prototype, pad = function (s: any, l?: number) {
+        new $D()
         if (!l) { l = 2; }
         return ("000" + s).slice(l * -1);
     };
 
     $P.getWeek = function () {
-        let date0 = new Date(this.getFullYear(), 0, 1),
+        let date0 = new $D(this.getFullYear(), 0, 1),
             diff = Math.round((this.valueOf() - date0.valueOf()) / 86400000);
-        return Math.ceil((diff + ((date0.getDay() + 1) - 1)) / 7);
-    };
+        return Math.ceil((diff + ((date0.getDay() + 1) - 1)) / 7)
+    }
 
     $P.setWeek = function (week: number, dayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6) {
         let dw = Types.isDefined(dayOfWeek) ? dayOfWeek : 1;
-        return this.setTime(this.getDayOfWeek(dw).add(week - this.getWeek(), 'w').getTime());
-    };
-    $P.clone = function () { return new Date(this.getTime()) };
+        return this.setTime(Dates.getDayOfWeek(this,dw).add(week - this.getWeek(), 'w').getTime());
+    }
+    $P.clone = function () { return new $D(this.getTime()) }
     $P.setZeroTime = function () {
         this.setHours(0);
         this.setMinutes(0);
         this.setSeconds(0);
         this.setMilliseconds(0); return this
-    };
+    }
     $P.setLastTime = function () {
         this.setHours(23);
         this.setMinutes(59);
         this.setSeconds(59);
         this.setMilliseconds(999); return this
-    };
+    }
     $P.setNowTime = function () {
-        var n = new Date();
+        var n = new $D();
         this.setHours(n.getHours());
         this.setMinutes(n.getMinutes());
         this.setSeconds(n.getSeconds());
         this.setMilliseconds(n.getMilliseconds());
-        return this;
-    };
-    $P.compareTo = function (date: Date) { return Dates.compare(this, date) };
-    $P.equals = function (date: Date) { return Dates.equals(this, date || new Date()) };
-    $P.between = function (start: Date, end: Date) { return this.getTime() >= start.getTime() && this.getTime() <= end.getTime() };
-    $P.isAfter = function (date: Date) { return this.compareTo(date || new Date()) === 1 };
-    $P.isBefore = function (date: Date) { return (this.compareTo(date || new Date()) === -1) };
-    $P.isSameDay = function (date: Date) { return Dates.isSameDay(this, date) };
-    $P.isSameTime = function (date: Date, equalsMS?: boolean) { return Dates.isSameTime(this, date, equalsMS) };
-    $P.isToday = function () { return this.isSameDay(new Date()); };
+        return this
+    }
+    $P.equals = function (d: Date, p = 'ms') { 
+        let m = <Date>this;
+
+        if(p=='ms') return m.diff(d)==0;
+        if(p=='s') return m.getSeconds()==d.getSeconds();
+        if(p=='m') return m.getMinutes()==d.getMinutes();
+        if(p=='h') return m.getHours()==d.getHours();
+        
+        if(p=='y') return m.getFullYear()==d.getFullYear();
+        if(p=='M') return m.getMonth()==d.getMonth();
+        if(p=='d') return m.getFullYear()==d.getFullYear() && m.getMonth()==d.getMonth() && m.getDate()==d.getDate();
+        if(p=='w') return m.getWeek()==d.getWeek();
+        
+        return false
+    }
+    $P.between = function (start: Date, end: Date) { return this.diff(start) >= 0 && this.diff(end) <= 0 }
+    $P.isAfter = function (this:Date, d: Date) { return this.diff(d) > 0 }
+    $P.isBefore = function (this:Date, d: Date) { return this.diff(d) < 0 }
+    $P.isToday = function (this:Date) { return this.equals(new $D(), 'd') }
     $P.add = function (v: number, type: 'ms' | 's' | 'm' | 'h' | 'd' | 'w' | 'M' | 'y'): Date {
         if (v == 0) return this;
         switch (type) {
@@ -370,7 +326,7 @@ import Dates = JS.util.Dates;
                 var n = this.getDate();
                 this.setDate(1);
                 this.setMonth(this.getMonth() + v);
-                this.setDate(Math.min(n, Dates.getDaysInMonth(this.getFullYear(), this.getMonth())));
+                this.setDate(Math.min(n, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear())));
                 return this;
             }
             case 'y': {
@@ -378,10 +334,10 @@ import Dates = JS.util.Dates;
             }
         }
         return this;
-    };
+    }
     $P.setTimezoneOffset = function (offset: number) {
         var here = this.getTimezoneOffset(), there = Number(offset) * -6 / 10; return this.add(there - here, 'm');
-    };
+    }
     $P.formatTimezoneOffset = function () {
         var n = this.getTimezoneOffset() * -10 / 6, r;
         if (n < 0) {
@@ -391,13 +347,13 @@ import Dates = JS.util.Dates;
             r = (n + 10000).toString();
             return "+" + r.substr(1);
         }
-    };
+    }
 
-    let validate = function (n: number, min, max) {
+    let vt = function (n: number, min, max) {
         if (!Types.isDefined(n)) { return false }
         else if (n < min || n > max) { throw new RangeError(n + ' is not a valid value'); }
         return true;
-    };
+    }
 
     $P.set = function (
         config: {
@@ -411,31 +367,23 @@ import Dates = JS.util.Dates;
             year?: number,
             timezoneOffset?: number
         }) {
-        if (validate(config.millisecond, 0, 999)) { this.add(config.millisecond - this.getMilliseconds(), 'ms'); }
-        if (validate(config.second, 0, 59)) { this.add(config.second - this.getSeconds(), 's'); }
-        if (validate(config.minute, 0, 59)) { this.add(config.minute - this.getMinutes(), 'm'); }
-        if (validate(config.hour, 0, 23)) { this.add(config.hour - this.getHours(), 'h'); }
-        if (validate(config.day, 1, Dates.getDaysInMonth(this.getFullYear(), this.getMonth()))) { this.add(config.day - this.getDate(), 'd'); }
-        if (validate(config.week, 0, 53)) { this.setWeek(config.week); }
-        if (validate(config.month, 0, 11)) { this.add(config.month - this.getMonth(), 'M'); }
-        if (validate(config.year, 0, 9999)) { this.add(config.year - this.getFullYear(), 'y'); }
+        if (vt(config.millisecond, 0, 999)) { this.add(config.millisecond - this.getMilliseconds(), 'ms'); }
+        if (vt(config.second, 0, 59)) { this.add(config.second - this.getSeconds(), 's'); }
+        if (vt(config.minute, 0, 59)) { this.add(config.minute - this.getMinutes(), 'm'); }
+        if (vt(config.hour, 0, 23)) { this.add(config.hour - this.getHours(), 'h'); }
+        if (vt(config.day, 1, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear()))) { this.add(config.day - this.getDate(), 'd'); }
+        if (vt(config.week, 0, 53)) { this.setWeek(config.week); }
+        if (vt(config.month, 0, 11)) { this.add(config.month - this.getMonth(), 'M'); }
+        if (vt(config.year, 0, 9999)) { this.add(config.year - this.getFullYear(), 'y'); }
         if (config.timezoneOffset) { this.setTimezoneOffset(config.timezoneOffset); }
         return this;
-    };
-    $P.getFirstDayOfMonth = function () { return this.clone().set({ day: 1 }) };
-    $P.getLastDayOfMonth = function () { return this.clone().set({ day: Dates.getDaysInMonth(this.getFullYear(), this.getMonth()) }) };
-
-    $P.getDayOfWeek = function (dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6) {
-        let d2: number = Types.isDefined(dayOfWeek) ? dayOfWeek : 1, d1: number = this.getDay();
-        if (d2 == 0) d2 = 7; if (d1 == 0) d1 = 7;
-        return this.clone().add((d2 - d1) % 7, 'd')
-    };
+    }
 
     $P.diff = function (date?: Date): number {
-        return (<any>date || new Date()) - this;
-    };
+        return this - (<any>date || new $D());
+    }
 
-    $P.format = function (format?: string, locale?: string) {
+    $P.format = function (format?: string, locale?: Locale) {
         let x = this, fmt = format || 'YYYY-MM-DD HH:mm:ss',
             bundle = new Bundle(Dates.I18N_RESOURCE, locale);
         return fmt.replace(/YYYY|YY|MMMM|MMM|MM|M|DD|D|hh|h|HH|H|mm|m|ss|s|dddd|ddd|A/g,
@@ -489,7 +437,7 @@ import Dates = JS.util.Dates;
                         return m;
                 }
             }
-        );
+        )
     }
 }())
 Class.register(Date);

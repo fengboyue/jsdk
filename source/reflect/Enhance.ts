@@ -42,8 +42,9 @@ interface Object {
   getClass(): Class<any>;
 }
 
-let $F = Function.prototype;
+(function () {
 
+let $F = Function.prototype;
 $F.aop = function (advisor: AopAdvisor, that?: any) {
   let old = <Function>this,
     fn = function () {
@@ -80,7 +81,7 @@ $F.mixin = function (kls: Klass<any>, methodNames?: string[]): void {
         }
     }
 }
-
+})()
 
 //修复TS生成的注解函数：为@before|@after等切面注解
 var __decorate = function (decorators, target, key, desc) {

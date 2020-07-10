@@ -2,11 +2,13 @@
 echo '开始构建'
 ./build-module.sh jsdk
 ./build-module.sh system
+./build-module.sh jsds
 ./build-module.sh jsui
+./build-module.sh jsan
+./build-module.sh jsmv
 ./build-module.sh jsfx
 ./build-module.sh jsvp
 ./build-module.sh jsunit
 ./build-tests.sh 
 ./build-examples.sh 
 echo '构建完毕'
-

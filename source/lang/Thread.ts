@@ -94,7 +94,7 @@ module JS {
         @klass('JS.lang.Thread')
         export class Thread implements Runnable {
             public readonly id: string;
-            private _worker: Worker;
+            private _wk: Worker;
             private _bus = new EventBus(this);
             private _state: ThreadState = ThreadState.NEW;
             private _url = null;
@@ -169,8 +169,8 @@ module JS {
                     let fnString = this._stringify(this.run);
                     this._url = self.URL.createObjectURL(new Blob([fnString], {type : 'text/javascript'}));
                 }
-                this._worker = new Worker(this._url);
-                this._worker.onmessage = e => {
+                this._wk = new Worker(this._url);
+                this._wk.onmessage = e => {
                     let d = e.data;
                     if (d.cmd == 'CLOSE') {
                         this.terminate()
@@ -181,7 +181,7 @@ module JS {
                         this._bus.fire('message', [d.data])
                     }
                 }
-                this._worker.onerror = e => {
+                this._wk.onerror = e => {
                     JSLogger.error(e, `Thread<${this.id}> run error!`)
                     this._bus.fire('error', [e.message]);
                     this.terminate();
@@ -191,10 +191,10 @@ module JS {
             }
             public terminate() {
                 if (this.isDestroyed()) return this;
-                if (this._worker) this._worker.terminate();
+                if (this._wk) this._wk.terminate();
                 if (this._url) window.URL.revokeObjectURL(this._url);//通知浏览器释放此临时URL对象所占用的内存
                 this._state = ThreadState.TERMINATED;
-                this._worker = null;
+                this._wk = null;
                 this._url = null;
                 return this
             }
@@ -227,7 +227,7 @@ module JS {
 
             public postThread(data: any, transfer?: Array<ArrayBuffer | MessagePort | ImageBitmap>) {
                 if (this._state != 'RUNNING') return this._warn('post data');
-                if (this._worker) this._worker.postMessage.apply(this._worker, Check.isEmpty(transfer) ? [data] : [data].concat(transfer));
+                if (this._wk) this._wk.postMessage.apply(this._wk, Check.isEmpty(transfer) ? [data] : [data].concat(transfer));
                 return this
             }
 

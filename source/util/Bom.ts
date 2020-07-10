@@ -10,7 +10,7 @@ module JS {
 
     export namespace util {
 
-        let isReady = false;
+        let _ready = false;
         /**
          * Window Helper
          */
@@ -21,10 +21,10 @@ module JS {
              * DOM加载完成后执行
              */
             public static ready(fn: Function): void {
-                if(isReady) fn();
+                if(_ready) fn();
 
                 let callback = function(){
-                    isReady = true;
+                    _ready = true;
                     fn();
                     callback = null;
                 }
@@ -57,7 +57,7 @@ module JS {
                     //如果是IE并且不是iframe
                     if (top && top['doScroll']) {
                         (function doScrollCheck() {
-                            if (!isReady) {
+                            if (!_ready) {
 
                                 try {
                                     //一直调用doScroll滚动，因为DOM渲染结束前，DOM节点是没有doScroll方法的，所以一直会异常

@@ -229,6 +229,8 @@ interface HTMLElement {
 
     find(selector:string):HTMLElement;
     findAll(selector:string):NodeListOf<HTMLElement>;
+
+    computedStyle(pseudo?:string):CSSStyleDeclaration;
 }
 ```
 * *You can use these methods directly on native DOM object.*
@@ -236,8 +238,8 @@ interface HTMLElement {
 And JSDK extends the prototype chain of the <code>Window</code> object. Add two methods to it for replacing the old methods of addListener/removeListener.
 ```javascript
 interface Window {
-    on(type:string, fn:(this:HTMLElement, e:Event)=>boolean|void, once?:boolean):this;
-    off(type?:string, fn?:(this:HTMLElement, e:Event)=>boolean|void):this;
+    on(type:string, fn:(this:Window, e:Event)=>boolean|void, once?:boolean):this;
+    off(type?:string, fn?:(this:Window, e:Event)=>boolean|void):this;
 }
 ```
 * *You can use these methods directly on Window object.*

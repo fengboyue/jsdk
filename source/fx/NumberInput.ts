@@ -54,7 +54,7 @@ module JS {
                 if (arguments.length == 0) return cfg.min;
 
                 if (!Number.isFinite(min)) return;
-                if (min > this.max()) throw new Errors.RangeError('The min value greater than max value!');
+                if (min > this.max()) throw new RangeError('The min value greater than max value!');
 
                 cfg.min = min;
                 this._mainEl.prop('min', cfg.min);
@@ -65,7 +65,7 @@ module JS {
                 if (arguments.length == 0) return cfg.max;
 
                 if (!Number.isFinite(max)) return;
-                if (max < this.min()) throw new Errors.RangeError('The max value less than min value!');
+                if (max < this.min()) throw new RangeError('The max value less than min value!');
 
                 cfg.max = max;
                 this._mainEl.prop('max', cfg.max);
@@ -86,7 +86,7 @@ module JS {
                 let cfg = <NumberInputConfig>this._config;
                 if (arguments.length == 0) return super.value();
 
-                let v = val==void 0?null:Math.min(Math.max(Number(val), cfg.min), cfg.max);
+                let v = val==void 0?null:Math.min(Math.max(val, cfg.min), cfg.max);
                 return super.value(v==null?null:v.round(cfg.fractionDigits), silent)
             }
 

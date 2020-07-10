@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <script src="/jsdk/dist/system.js"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+
+    <style>
+        .brick {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            border: solid 1px red;
+            background-color: red;
+        }
+    </style>
+</head>
+
+
+<body>
+<button id="btnSeq">Sequential Play</button>
+<button id="btnPar">Parallel Play</button>
+<button id="btnPause">Pause</button>
+<button id="btnStop">Stop</button>
+<br>
+Move Animation:
+<div id="div0" class="brick" style="left:100px;"></div>
+Translate Animation:
+<div id="div1" class="brick" style="left:100px;"></div>
+Fade Animation:
+<div id="div2" class="brick"></div>
+Gradient Animation:
+<div id="div3" class="brick"></div>
+Rotate2D Animation:
+<div id="div4" class="brick"></div>
+Rotate3D Animation:
+<div id="div5" class="brick"></div>
+Scale Animation:
+<div id="div6" class="brick"></div>
+Skew Animation:
+<div id="div7" class="brick"></div>
+
+<script src="../env.js"></script>
+<script src="anim.js"></script>
+</body>
+
+</html>

@@ -109,7 +109,7 @@ module JS {
             }
 
             /**
-             * Sequence execute all plans.<br>
+             * Execute all plans in sequential order.<br>
              * 按顺序依次执行所有计划
              */
             public static order<T>(plans: PromisePlans<T>) {

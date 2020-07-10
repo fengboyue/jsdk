@@ -97,19 +97,6 @@ module JS {
         @widget('JS.fx.Uploader')
         export class Uploader extends FormWidget implements ICRUDWidget<MimeFile[]> {
 
-            private static _EVENTS_MAP = new BiMap<UploaderEvents, string>([
-                ['adding', 'beforeFileQueued'],
-                ['added', 'filesQueued'],
-                ['removed', 'fileDequeued'],
-                ['uploading', 'uploadStart'],
-                ['uploadprogress', 'uploadProgress'],
-                ['uploadsuccess', 'uploadSuccess'],
-                ['uploaderror', 'uploadError'],
-                ['uploaded', 'uploadComplete'],
-                ['beginupload', 'startUpload'],
-                ['endupload', 'uploadFinished']
-            ])
-
             public static I18N: UploaderResource = {
                 pickTitle: 'Select your local files please',
                 pickTip: '<Accepts>\nFileExts={fileExts}\nMaxTotalSize={maxTotalSize}\nMaxNumbers={maxNumbers}\nMaxSingleSize={maxSingleSize}',
@@ -187,38 +174,49 @@ module JS {
 
                 this._uploader = WebUploader.Uploader.create(<WebUploader.UploaderOptions>cf);
 
-                let eMap = Uploader._EVENTS_MAP;
-                this._uploader.on(eMap.get('adding'), function (file) {
+                let eMap = {
+                    'adding': 'beforeFileQueued',
+                    'added': 'filesQueued',
+                    'removed': 'fileDequeued',
+                    'uploading': 'uploadStart',
+                    'uploadprogress': 'uploadProgress',
+                    'uploadsuccess': 'uploadSuccess',
+                    'uploaderror': 'uploadError',
+                    'uploaded': 'uploadComplete',
+                    'beginupload': 'startUpload',
+                    'endupload': 'uploadFinished'
+                };
+                this._uploader.on(eMap['adding'], function (file) {
                     return me._fire('adding', [me._toMimeFile(file)]);
                 });
-                this._uploader.on(eMap.get('added'), function (files: Array<WebUploader.File>) {
+                this._uploader.on(eMap['added'], function (files: Array<WebUploader.File>) {
                     files.forEach((file) => {
                         me._onFileQueued(file);
                     })
                     me._fire('added', [me._toMimeFiles(files)]);
                 });
-                this._uploader.on(eMap.get('removed'), function (file) {
+                this._uploader.on(eMap['removed'], function (file) {
                     me._onFileDequeued(file);
                     me._fire('removed', [me._toMimeFile(file)]);
                 });
-                this._uploader.on(eMap.get('uploading'), function (file, percentage) {
+                this._uploader.on(eMap['uploading'], function (file, percentage) {
                     me._fire('uploading', [me._toMimeFile(file), percentage]);
                 });
-                this._uploader.on(eMap.get('uploaderror'), function (file, reason) {
+                this._uploader.on(eMap['uploaderror'], function (file, reason) {
                     me._onUploadFail(file);
                     me._fire('uploaderror', [me._toMimeFile(file), reason]);
                 });
-                this._uploader.on(eMap.get('uploadsuccess'), function (file, response) {
+                this._uploader.on(eMap['uploadsuccess'], function (file, response) {
                     me._onUploadSuccess(file, response);
                     me._fire('uploadsuccess', [me._toMimeFile(file), response]);
                 });
-                this._uploader.on(eMap.get('uploaded'), function (file) {
+                this._uploader.on(eMap['uploaded'], function (file) {
                     me._fire('uploaded', [me._toMimeFile(file)]);
                 });
-                this._uploader.on(eMap.get('beginupload'), function () {
+                this._uploader.on(eMap['beginupload'], function () {
                     me._fire('beginupload');
                 });
-                this._uploader.on(eMap.get('endupload'), function () {
+                this._uploader.on(eMap['endupload'], function () {
                     me._fire('endupload');
                 });
 
@@ -583,7 +581,7 @@ module JS {
             }
             private _toWUFile(cf: MimeFile): WebUploader.File {
                 if (!cf) return null;
-                if (!cf.uri) throw new Errors.URIError(`The file<${cf.name}> has not URI.`);
+                if (!cf.uri) throw new URIError(`The file<${cf.name}> has not URI.`);
                 let file = {
                     id: cf.id,
                     type: cf.mime,

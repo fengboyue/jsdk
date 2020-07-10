@@ -1,0 +1,11 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../dist/jsds.js",
+        "noResolve": true,
+        "noLib": true
+    },
+    "include": [
+        "../source/ds/*.ts"
+    ]
+} 

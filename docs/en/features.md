@@ -345,32 +345,37 @@ It is designed for the old version of jsgf(JSDK Game Framework), has a narrow us
 ## Timer
 JSDK provides <b>JS.util.Timer</b> to execute some scheduled or cyclic tasks.
 ```javascript
-let timer1 = new Timer();
+//It will be executed at 23:59:59 tomorrow
+new Timer(()=>{
+    //do you want
+}, {
+    loop: 1,
+    delay: new Date().add(1, 'd').setLastTime()-new Date()
+}).start();
 
-//Print only once after three seconds
-timer1.startOne(function(counter){
-    Konsole.print(counter)
-}, {interval: 3000});
-
-//Print every three seconds, keep cyclic printing
-timer1.startForever(function(counter){
-    Konsole.print(counter)
-}, {interval: 3000});
-
-//Print once at 00:00:00 on January 1, 2020
-timer1.startAtDate(function(counter){
-    Konsole.print(counter)
-}, new Date('2020-1-1'));
-
-//Stop timer
-timer1.stop(); 
+//It will be executed per three seconds and never stops
+new Timer(()=>{
+    //do you want
+}, {
+    loop: true,
+    interval: 3000
+}).start();
 ```
 
-> Animation and game development
+### Execution Modes
+The parameter <code>intervalMode</code> of <code>Timer</code> class provides two interval execution modes: <code>OF</code> mode and <code>BF</code> mode. The default mode is <code>OF</code>.
+
+In <code>OF</code> mode, the timer will maintain a fixed frequency (frame rate) to execute task as quickly as possible. When the execution time of task is longer than or equal to the interval time, the timer will immediately execute the next task without waiting. The execution mode with variable interval time avoids longer delay caused by time-consuming task, so it has higher execution efficiency.
+
+In <code>BF</code> mode, no matter how long the task is executed, the timer keeps a fixed interval to execute next task. Therefore, a time-consuming task will directly affect the execution frequency. This is same execution mode with the traditional <code>setInterval</code>.
+
+Only when the task execution time is infinitely close to zero, the two modes are equivalent. Most of times, you need <code>OF</code> mode.
+
+> Animation and Game Developments
 >
-> If you are a game developer, you can consider customizing your main loop class based on the Timer class.
+> If you are a senior game developer, you can customize your main loop class based on Timer class.
 > 
-> If you are an animation developer, you can consider using the new feature "requestAnimationFrame" to overload some methods of Timer class, and then customize your animation base class.
+> If you are a senior animation developer, you can extend from Anim class and use AnimTimer class(a subclass of Timer), and then customize your animation class.
 
 ## Promise Helper
 HTML5 provides the Promise api to better support asynchronous callback programming.

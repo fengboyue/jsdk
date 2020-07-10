@@ -122,7 +122,7 @@ module JS {
                 this.person.setData({
                     _data: [1,2,3]
                 });
-                Assert.equalArray([1,2,3], this.person.get('data'));
+                Assert.equal([1,2,3], this.person.get('data'));
             }
 
 

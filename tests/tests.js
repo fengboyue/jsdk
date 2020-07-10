@@ -9,6 +9,80 @@ var JS;
 (function (JS) {
     let test;
     (function (test) {
+        let ColorsTest = class ColorsTest extends TestCase {
+            test1() {
+                Assert.equal({ r: 39, g: 174, b: 96, a: 1 }, Colors.hex2rgba('27ae60'));
+                Assert.equal({ r: 39, g: 174, b: 96, a: 1 }, Colors.hex2rgba('#27ae60'));
+                Assert.equal({ r: 39, g: 174, b: 96, a: 1 }, Colors.hex2rgba('#27ae60ff'));
+                Assert.equal({ r: 255, g: 255, b: 255, a: 1 }, Colors.hex2rgba('fff'));
+                Assert.equal({ r: 255, g: 255, b: 255, a: 1 }, Colors.hex2rgba('#fff'));
+                Assert.equal({ r: 0, g: 0, b: 0, a: 1 }, Colors.hex2rgba('000'));
+                Assert.equal({ r: 0, g: 0, b: 0, a: 1 }, Colors.hex2rgba('#000'));
+                Assert.equal({ r: 0, g: 0, b: 0, a: 0 }, Colors.hex2rgba('#0000'));
+                Assert.equal({ r: 0, g: 0, b: 0, a: 1 }, Colors.hex2rgba('000f'));
+            }
+            test2() {
+                Assert.equal('#000000', Colors.rgba2hex(0, 0, 0));
+                Assert.equal('#ffffff', Colors.rgba2hex(255, 255, 255));
+                Assert.equal('#000000ff', Colors.rgba2hex(0, 0, 0, 1));
+                Assert.equal('#ffffff00', Colors.rgba2hex(255, 255, 255, 0));
+                Assert.equal('#27ae60', Colors.rgba2hex(39, 174, 96));
+                Assert.equal('#27ae6000', Colors.rgba2hex(39, 174, 96, 0));
+                Assert.equal('#27ae60ff', Colors.rgba2hex(39, 174, 96, 1));
+            }
+            test3() {
+                Assert.equal('#0000000c', Colors.rgba2hex(0, 0, 0, 0.05));
+                Assert.equal('#00000019', Colors.rgba2hex(0, 0, 0, 0.10));
+                Assert.equal('#00000026', Colors.rgba2hex(0, 0, 0, 0.15));
+                Assert.equal('#00000033', Colors.rgba2hex(0, 0, 0, 0.20));
+                Assert.equal('#0000003f', Colors.rgba2hex(0, 0, 0, 0.25));
+                Assert.equal('#0000004c', Colors.rgba2hex(0, 0, 0, 0.30));
+                Assert.equal('#00000059', Colors.rgba2hex(0, 0, 0, 0.35));
+                Assert.equal('#00000066', Colors.rgba2hex(0, 0, 0, 0.40));
+                Assert.equal('#00000072', Colors.rgba2hex(0, 0, 0, 0.45));
+                Assert.equal('#0000007f', Colors.rgba2hex(0, 0, 0, 0.50));
+                Assert.equal('#0000008c', Colors.rgba2hex(0, 0, 0, 0.55));
+                Assert.equal('#00000099', Colors.rgba2hex(0, 0, 0, 0.60));
+                Assert.equal('#000000a5', Colors.rgba2hex(0, 0, 0, 0.65));
+                Assert.equal('#000000b2', Colors.rgba2hex(0, 0, 0, 0.70));
+                Assert.equal('#000000bf', Colors.rgba2hex(0, 0, 0, 0.75));
+                Assert.equal('#000000cc', Colors.rgba2hex(0, 0, 0, 0.80));
+                Assert.equal('#000000d8', Colors.rgba2hex(0, 0, 0, 0.85));
+                Assert.equal('#000000e5', Colors.rgba2hex(0, 0, 0, 0.90));
+                Assert.equal('#000000f2', Colors.rgba2hex(0, 0, 0, 0.95));
+            }
+            test4() {
+                Assert.equal(0.05, Colors.hex2rgba('#0000000c').a);
+                Assert.equal(0.10, Colors.hex2rgba('#00000019').a);
+                Assert.equal(0.15, Colors.hex2rgba('#00000026').a);
+                Assert.equal(0.20, Colors.hex2rgba('#00000033').a);
+                Assert.equal(0.25, Colors.hex2rgba('#0000003f').a);
+                Assert.equal(0.30, Colors.hex2rgba('#0000004c').a);
+                Assert.equal(0.35, Colors.hex2rgba('#00000059').a);
+                Assert.equal(0.40, Colors.hex2rgba('#00000066').a);
+                Assert.equal(0.45, Colors.hex2rgba('#00000072').a);
+                Assert.equal(0.50, Colors.hex2rgba('#0000007f').a);
+                Assert.equal(0.55, Colors.hex2rgba('#0000008c').a);
+                Assert.equal(0.60, Colors.hex2rgba('#00000099').a);
+                Assert.equal(0.65, Colors.hex2rgba('#000000a5').a);
+                Assert.equal(0.70, Colors.hex2rgba('#000000b2').a);
+                Assert.equal(0.75, Colors.hex2rgba('#000000bf').a);
+                Assert.equal(0.80, Colors.hex2rgba('#000000cc').a);
+                Assert.equal(0.85, Colors.hex2rgba('#000000d8').a);
+                Assert.equal(0.90, Colors.hex2rgba('#000000e5').a);
+                Assert.equal(0.95, Colors.hex2rgba('#000000f2').a);
+            }
+        };
+        ColorsTest = __decorate([
+            klass('JS.test.ColorsTest')
+        ], ColorsTest);
+        test.ColorsTest = ColorsTest;
+    })(test = JS.test || (JS.test = {}));
+})(JS || (JS = {}));
+var JS;
+(function (JS) {
+    let test;
+    (function (test) {
         let BiMapTest = class BiMapTest extends TestCase {
             constructor() {
                 super(...arguments);
@@ -76,13 +150,13 @@ var JS;
                 Assert.equal(4, this.a.size());
                 let b = new LinkedList();
                 b.addLast(22);
-                Assert.equalArray([22], b.toArray());
+                Assert.equal([22], b.toArray());
                 b.addFirst(11);
-                Assert.equalArray([11, 22], b.toArray());
+                Assert.equal([11, 22], b.toArray());
                 b.addAt(0, 33);
-                Assert.equalArray([33, 11, 22], b.toArray());
+                Assert.equal([33, 11, 22], b.toArray());
                 b.addAt(2, 44);
-                Assert.equalArray([33, 11, 44, 22], b.toArray());
+                Assert.equal([33, 11, 44, 22], b.toArray());
                 Assert.equal(4, b.size());
                 Assert.equal(33, b.get(0));
                 Assert.equal(11, b.get(1));
@@ -93,7 +167,7 @@ var JS;
                 this.a.addAll(b);
                 Assert.equal(8, this.a.size());
                 Assert.equal(22, this.a.get(7));
-                Assert.equalArray([3, 0.5, 2, 1, 33, 11, 44, 22], this.a.toArray());
+                Assert.equal([3, 0.5, 2, 1, 33, 11, 44, 22], this.a.toArray());
             }
             test2() {
                 this.a.removeFirst();
@@ -102,11 +176,11 @@ var JS;
                 Assert.equal(0, this.a.size());
                 this.a.add([3, 2, 1]);
                 this.a.removeFirst();
-                Assert.equalArray([2, 1], this.a.toArray());
+                Assert.equal([2, 1], this.a.toArray());
                 this.a.removeLast();
-                Assert.equalArray([2], this.a.toArray());
+                Assert.equal([2], this.a.toArray());
                 this.a.removeFirst();
-                Assert.equalArray([], this.a.toArray());
+                Assert.equal([], this.a.toArray());
             }
             test3() {
                 Assert.equal(null, this.a.peek());
@@ -139,7 +213,7 @@ var JS;
             test6() {
                 this.a.add([3, 2, 1, 1]);
                 let b = this.a.clone();
-                Assert.equalArray(this.a.toArray(), b.toArray());
+                Assert.equal(this.a.toArray(), b.toArray());
             }
             test7() {
                 this.a.add([3, 2, 1]);
@@ -152,29 +226,6 @@ var JS;
             klass('JS.test.LinkedListTest')
         ], LinkedListTest);
         test.LinkedListTest = LinkedListTest;
-    })(test = JS.test || (JS.test = {}));
-})(JS || (JS = {}));
-var JS;
-(function (JS) {
-    let test;
-    (function (test) {
-        let SystemTest = class SystemTest extends TestCase {
-            test1() {
-                Assert.true(System.isDevice(DeviceType.desktop));
-                Assert.false(System.isDevice(DeviceType.mobile));
-                Assert.false(System.isDevice(DeviceType.tablet));
-            }
-            test2() {
-                Assert.true(System.isBrowser(Browser.Chrome));
-                Assert.true(System.isOS(OS.MacOS));
-                Assert.true(System.isCountry('CN'));
-                Assert.true(System.isLang('zh'));
-            }
-        };
-        SystemTest = __decorate([
-            klass('JS.test.SystemTest')
-        ], SystemTest);
-        test.SystemTest = SystemTest;
     })(test = JS.test || (JS.test = {}));
 })(JS || (JS = {}));
 let Person = class Person extends Model {
@@ -277,7 +328,7 @@ var JS;
                 this.person.setData({
                     _data: [1, 2, 3]
                 });
-                Assert.equalArray([1, 2, 3], this.person.get('data'));
+                Assert.equal([1, 2, 3], this.person.get('data'));
             }
         };
         ModelTest = __decorate([
@@ -506,8 +557,8 @@ var JS;
                 this.a = [1, '-1', undefined, null, { name: 'jsdk' }];
             }
             test1() {
-                Assert.equalArray(Arrays.newArray(null), []);
-                Assert.equalArray(Arrays.newArray(undefined), []);
+                Assert.equal(Arrays.newArray(null), []);
+                Assert.equal(Arrays.newArray(undefined), []);
             }
             test2() {
                 Assert.equal(this.a.findIndex(it => { return it == 1; }), 0);
@@ -522,19 +573,19 @@ var JS;
                 let rst = this.a.remove(item => {
                     return 'jsdk' === (item && item.name);
                 });
-                Assert.equal(rst.length, 4);
+                Assert.true(rst);
                 Assert.equal(this.a.length, 4);
                 Assert.equal(null, this.a[this.a.length - 1]);
             }
             test4() {
                 this.a.remove(it => { return it == 1; });
-                Assert.equal(this.a[1], undefined);
+                Assert.equal(undefined, this.a[1]);
             }
             test5() {
                 let oldLen = this.a.length;
                 this.a.add([new Date(), 'insertAt'], 0);
                 Assert.true(this.a.length == oldLen + 2);
-                Assert.true(Dates.isSameDay(new Date(), this.a[0]));
+                Assert.true(new Date().equals(this.a[0], 'd'));
                 Assert.true('insertAt' == this.a[1]);
                 let b = [1, 2, 3];
                 b.add([4, 5]);
@@ -797,17 +848,17 @@ var JS;
                 Assert.false(Dates.isLeapYear(1999));
             }
             test2() {
-                Assert.true(Dates.getDaysInMonth(2019, 1) == 28);
-                Assert.true(Dates.getDaysInMonth(2019, 2) == 31);
+                Assert.true(Dates.getDaysOfMonth(1, 2019) == 28);
+                Assert.true(Dates.getDaysOfMonth(2, 2019) == 31);
             }
             test3() {
-                Assert.true(Dates.isSameDay(new Date(2019, 0, 1, 1, 1, 1), new Date('2019-1-1')));
+                Assert.true(new Date(2019, 0, 1, 1, 1, 1).equals(new Date('2019-1-1'), 'd'));
             }
             test4() {
                 let d = new Date(2019, 0, 1);
-                Assert.true(Dates.compare(d.setLastTime(), new Date('2019-1-1').setLastTime()) == 0);
-                Assert.true(Dates.compare(d, new Date('2019-1-2')) < 0);
-                Assert.true(Dates.compare(d, new Date('2018-12-31')) > 0);
+                Assert.true(d.setLastTime().diff(new Date('2019-1-1').setLastTime()) == 0);
+                Assert.true(d.isBefore(new Date('2019-1-2')));
+                Assert.true(d.isAfter(new Date('2018-12-31')));
             }
             test5() {
                 Assert.true(new Date('2018-12-30').getWeek() == 52);
@@ -818,18 +869,14 @@ var JS;
                 let d = new Date('2018-12-30');
                 d.setWeek(52);
                 Assert.true(d.getWeek() == 52);
-                Assert.true(d.isSameDay(new Date('2018-12-24')));
+                Assert.true(d.equals(new Date('2018-12-24'), 'd'));
                 d.setWeek(53);
                 Assert.true(d.getWeek() == 53);
-                Assert.true(d.isSameDay(new Date('2018-12-31')));
-            }
-            test7() {
-                Assert.true(Dates.compare(new Date().setZeroTime(), Dates.today().clone()) == 0);
+                Assert.true(d.equals(new Date('2018-12-31'), 'd'));
             }
             test8() {
-                Assert.true(Dates.isSameTime(new Date(2019, 0, 1, 12, 0, 1, 123), new Date(2019, 0, 1, 12, 0, 1, 124)));
-                Assert.false(Dates.isSameTime(new Date(2019, 0, 1, 12, 0, 1, 123), new Date(2019, 0, 1, 12, 0, 1, 124), true));
-                Assert.true(Dates.isSameTime(new Date(2019, 0, 1, 12, 0, 1, 123), new Date(2019, 0, 1, 12, 0, 1, 123), true));
+                Assert.true(new Date(2019, 0, 1, 12, 0, 1, 123).equals(new Date(2019, 0, 1, 12, 0, 1, 123)));
+                Assert.false(new Date(2019, 0, 1, 12, 0, 1, 123).equals(new Date(2019, 0, 1, 12, 0, 1, 124)));
             }
             test9() {
                 let d = new Date('2019-1-2'), d1 = new Date('2019-1-1'), d2 = new Date('2019-1-3');
@@ -850,18 +897,18 @@ var JS;
                 Assert.false(d.isBefore(d));
             }
             test12() {
-                Assert.true(Dates.today().isToday(new Date()));
+                Assert.true(new Date().isToday(new Date()));
             }
             test13() {
                 let d = new Date('2019-1-1').setZeroTime(), h = d.getHours(), m = d.getMinutes(), s = d.getSeconds(), ms = d.getMilliseconds();
-                Assert.true(d.clone().add(1, 'y').isSameDay(new Date('2020-1-1')));
-                Assert.true(d.clone().add(-1, 'y').isSameDay(new Date('2018-1-1')));
-                Assert.true(d.clone().add(1, 'M').isSameDay(new Date('2019-2-1')));
-                Assert.true(d.clone().add(-1, 'M').isSameDay(new Date('2018-12-1')));
-                Assert.true(d.clone().add(1, 'd').isSameDay(new Date('2019-1-2')));
-                Assert.true(d.clone().add(-1, 'd').isSameDay(new Date('2018-12-31')));
-                Assert.true(d.clone().add(1, 'w').isSameDay(new Date('2019-1-8')));
-                Assert.true(d.clone().add(-1, 'w').isSameDay(new Date('2018-12-25')));
+                Assert.true(d.clone().add(1, 'y').equals(new Date('2020-1-1'), 'd'));
+                Assert.true(d.clone().add(-1, 'y').equals(new Date('2018-1-1'), 'd'));
+                Assert.true(d.clone().add(1, 'M').equals(new Date('2019-2-1'), 'd'));
+                Assert.true(d.clone().add(-1, 'M').equals(new Date('2018-12-1'), 'd'));
+                Assert.true(d.clone().add(1, 'd').equals(new Date('2019-1-2'), 'd'));
+                Assert.true(d.clone().add(-1, 'd').equals(new Date('2018-12-31'), 'd'));
+                Assert.true(d.clone().add(1, 'w').equals(new Date('2019-1-8'), 'd'));
+                Assert.true(d.clone().add(-1, 'w').equals(new Date('2018-12-25'), 'd'));
                 Assert.true(d.clone().add(1, 'h').getHours() == h + 1);
                 Assert.true(d.clone().add(-1, 'h').getHours() == 23);
                 Assert.true(d.clone().add(1, 'm').getMinutes() == m + 1);
@@ -1108,7 +1155,7 @@ var JS;
                 Assert.equal(json.c, '123');
                 Assert.equal(json.d, 1);
                 Assert.equal(json.e, false);
-                Assert.equal(json.f.isSameDay(Dates.today()), true);
+                Assert.equal(new Date().equals(json.f, 'd'), true);
                 Assert.equal(json.g.length, 4);
                 Assert.equal(json.g[0], null);
                 Assert.equal(json.g[1], null);
@@ -1332,7 +1379,7 @@ var JS;
                 Assert.equal(Types.type(Object), Type.class);
                 Assert.equal(Types.type(JSError), Type.class);
                 Assert.equal(Types.type(new JSError()), Type.object);
-                Assert.equal(Types.type({}), Type.object);
+                Assert.equal(Types.type({}), Type.json);
                 Assert.equal(Types.type([]), Type.array);
                 Assert.equal(Types.type(() => { }), Type.function);
             }

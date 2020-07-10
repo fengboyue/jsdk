@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Number | JSDK 2.0.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.0.0 API">
+	<title>Number | JSDK 2.1.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.1.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.0.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.1.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -94,7 +94,9 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="number.html#equals" class="tsd-kind-icon">equals</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="number.html#format" class="tsd-kind-icon">format</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="number.html#fractionlength" class="tsd-kind-icon">fraction<wbr>Length</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="number.html#fractionalpart" class="tsd-kind-icon">fractional<wbr>Part</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="number.html#integerlength" class="tsd-kind-icon">integer<wbr>Length</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="number.html#integralpart" class="tsd-kind-icon">integral<wbr>Part</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="number.html#iseven" class="tsd-kind-icon">is<wbr>Even</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="number.html#isfinite" class="tsd-kind-icon">is<wbr>Finite</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="number.html#isfloat" class="tsd-kind-icon">is<wbr>Float</a></li>
@@ -269,7 +271,7 @@ Number(-12345.6789).format(3);  //return "-12,345.679"
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Returns the length of fraction.<br>
+									<p>Returns the length of fractional part.<br>
 									返回小数位长度<br></p>
 								</div>
 								<pre>
@@ -278,6 +280,25 @@ Number(123.4567).fractionLength(); //return 4
 </pre>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="fractionalpart" class="tsd-anchor"></a>
+					<h3>fractional<wbr>Part</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">fractional<wbr>Part<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the fractional part.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -293,7 +314,7 @@ Number(123.4567).fractionLength(); //return 4
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Returns the length of interger.<br>
+									<p>Returns the length of intergral part.<br>
 									返回整数位长度<br></p>
 								</div>
 								<pre>
@@ -302,6 +323,25 @@ Number(123.4567).fractionLength(); //return 3
 </pre>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="integralpart" class="tsd-anchor"></a>
+					<h3>integral<wbr>Part</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">integral<wbr>Part<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the integral part.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -645,7 +685,13 @@ Number(123.4567).fractionLength(); //return 3
 								<a href="number.html#fractionlength" class="tsd-kind-icon">fraction<wbr>Length</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="number.html#fractionalpart" class="tsd-kind-icon">fractional<wbr>Part</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="number.html#integerlength" class="tsd-kind-icon">integer<wbr>Length</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="number.html#integralpart" class="tsd-kind-icon">integral<wbr>Part</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="number.html#iseven" class="tsd-kind-icon">is<wbr>Even</a>
