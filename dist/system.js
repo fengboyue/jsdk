@@ -3672,13 +3672,16 @@ Class.register(Date);
     $N.toInt = function () {
         return this.round(0);
     };
+    var f3 = (s) => {
+        return s.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+    };
     $N.format = function (dLen) {
         let d = dLen == void 0 || !Number.isFinite(dLen) ? this.fractionLength() : dLen, s = this.round(d).abs().stringfy(), sign = this.isNegative() ? '-' : '';
         let sn = N(s);
         if (sn.isInt())
-            return sign + sn.toLocaleString() + (d < 1 ? '' : '.' + Strings.padEnd('', d, '0'));
+            return sign + f3(sn.toString()) + (d < 1 ? '' : '.' + Strings.padEnd('', d, '0'));
         let p = s.indexOf('.'), ints = s.slice(0, p), digs = s.slice(p + 1);
-        return sign + N(ints).toLocaleString() + '.' + Strings.padEnd(digs, d, '0');
+        return sign + f3(ints) + '.' + Strings.padEnd(digs, d, '0');
     };
     $N.equals = function (n, dLen) {
         if (this.isNaN())

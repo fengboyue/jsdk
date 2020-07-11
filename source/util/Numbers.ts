@@ -32,8 +32,8 @@ interface Number {
     toInt(): number;
 
     /**
-     * Returns a number string with digit format.<br>
-     * 每三位整数逗号分割，缺省保留三位小数<br>
+     * Returns a format number string<br>
+     * 每三位整数逗号分割
      * 
      * <pre>
      * Number(1).format(2); //return "1.00"
@@ -201,22 +201,26 @@ interface Number {
         return this.round(0);
     }
 
+    var f3 = (s:string)=>{//3位逗号分割
+        return s.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+    }
     /**
-     * 每三位整数逗号分割，缺省保留三位小数
+     * 每三位整数逗号分割
      * @param digit 
      */
     $N.format = function (dLen?: number): string {
-        let d = dLen == void 0 || !Number.isFinite(dLen) ? this.fractionLength() : dLen,
-            s = this.round(d).abs().stringfy(),
+        let d:number = dLen == void 0 || !Number.isFinite(dLen) ? this.fractionLength() : dLen,
+            s:string = this.round(d).abs().stringfy(),
             sign = this.isNegative() ? '-' : '';
 
+        //BUGFIX: 微信浏览器下Number.toLocalString方法会返回空，改用自己的f3函数实现逗号分割
         let sn = N(s);
-        if (sn.isInt()) return sign + sn.toLocaleString() + (d < 1 ? '' : '.' + Strings.padEnd('', d, '0'));
+        if (sn.isInt()) return sign + f3(sn.toString()) + (d < 1 ? '' : '.' + Strings.padEnd('', d, '0'));
 
         let p = s.indexOf('.'),
             ints = s.slice(0, p),
             digs = s.slice(p + 1);
-        return sign + N(ints).toLocaleString() + '.' + Strings.padEnd(digs, d, '0');
+        return  sign + f3(ints) + '.' + Strings.padEnd(digs, d, '0');
     }
 
     $N.equals = function (n: number | string | Number, dLen?: number): boolean {
