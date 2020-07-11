@@ -45,7 +45,7 @@ JSDK 2.0是基于 <code>ES6 / TypeScript 2.0+</code> 编写的。
 ## 启动本地资源
 启动本地Http Server，访问上述资源将会更快。
 1. 假设你本地JSDK安装目录为<code>{JSDK-INSTALL}</code>。
-2. 在你本机运行一个Http Server，设置服务器的Web路径 <code>http://fengboyue.github.io/jsdk/</code> 指向你的<code>{JSDK-INSTALL}</code>。
+2. 在你本机运行一个Http Server，设置服务器的Web路径 <code>http://localhost/jsdk/</code> 指向你的<code>{JSDK-INSTALL}</code>。
 3. 打开浏览器访问此Web地址。
 
 ## 许可协议
