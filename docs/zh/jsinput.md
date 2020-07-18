@@ -28,7 +28,7 @@ Konsole.print(VK['F1']);
 keyChar1 + keyChar2 + ... + keyCharN
 ```
 
-举例，当用户光标焦点在Textarea上时，按下组合键“Ctrl+F”会弹出一个查找框：
+举例，当用户光标焦点在<code>textarea</code>上时，按下组合键<code>Ctrl+F</code>会弹出一个查找框：
 ```javascript
 let kb = new Keyboard($1('#textarea1'));
 kb.onKeyDown('ctrl+f', function(e: KeyboardEvent) {
@@ -38,7 +38,7 @@ kb.onKeyDown('ctrl+f', function(e: KeyboardEvent) {
 })
 ```
 
-你也可以在<code>window</code>上监听快捷键。例如，按下<code>CTRL+ALT+L</code>就锁住屏幕
+你也可以在<code>window</code>上监听快捷键。例如，按下<code>CTRL+ALT+L</code>就锁住屏幕：
 ```javascript
 let kb = new Keyboard();//this scope is window
 kb.onKeyDown('ctrl+alt+L', function(e: KeyboardEvent) {
@@ -54,7 +54,7 @@ kb.onKeyDown('ctrl+alt+L', function(e: KeyboardEvent) {
 keychar1 , keychar2 , ... , keycharN-1, keycharN|Hotkeys 
 ```
 
-比如，在街霸II游戏里，隆(RYU)在按下"↓→ + P"后会发出波动拳(Hadouken)。<br>
+比如，在<b>街霸II</b>游戏里，隆(RYU)在按下<code>↓→ + P</code>后会发出波动拳(Hadouken)。<br>
 <img src="assets/images/ryu-hado-blue.gif" />
 
 在<code>JSINPUT</code>中可以用以下代码来实现：
@@ -67,7 +67,7 @@ kb.onKeyDown('DOWN, RIGHT + P', function(e: KeyboardEvent) {
 ```
 
 ### 长时间按键
-当隆(RYU)在按住"P"键保持2秒后再放开，会发出威力更大的红色波动拳。<br>
+当隆(RYU)在按住<code>P</code>键保持2秒后再放开，会发出威力更大的红色波动拳。<br>
 <img src="assets/images/ryu-hado-red.gif" />
 
 将前面的代码稍作修改就可以实现：

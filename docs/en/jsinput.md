@@ -29,7 +29,7 @@ Hotkeys, also known as shortcut keys, is commonly used for applications and widg
 keychar1 + keychar2 + ... + keycharN
 ```
 
-For example, when the user's cursor focus in a textarea, pressing the key combination "Ctrl + F" will pop up a finding dialog:
+For example, when the user's cursor focus in a <code>textarea</code>, pressing <code>Ctrl + F</code> will pop up a finding dialog:
 ```javascript
 let kb = new Keyboard($1('#textarea1'));
 kb.onKeyDown('ctrl+f', function(e: KeyboardEvent) {
@@ -39,7 +39,7 @@ kb.onKeyDown('ctrl+f', function(e: KeyboardEvent) {
 })
 ```
 
-You can also listen hotkeys on <code>window</code>. For example, pressing <code> Ctrl + Alt + L </code> will locks the screen:
+You can also listen hotkeys on <code>window</code>. For example, pressing <code>Ctrl + Alt + L</code> will locks the screen:
 ```javascript
 let kb = new Keyboard();//this scope is window
 kb.onKeyDown('ctrl+alt+L', function(e: KeyboardEvent) {
@@ -55,10 +55,10 @@ Seqkeys is a continuous of keys that are pressed in sequential order. The expres
 keychar1 , keychar2 , ... , keycharN-1, keycharN|Hotkeys 
 ```
 
-For example, in Street Fighter II, Ryu sends out Hadouken after pressing "↓→ + P".<br>
+For example, in <b>Street Fighter II</b>, Ryu sends out Hadouken after pressing <code>↓→ + P</code>.<br>
 <img src="assets/images/ryu-hado-blue.gif" />
 
-It can be implemented in <code>JSINPUT</code> with the following code:
+It can be implemented easily in <code>JSINPUT</code> with the following code:
 ```javascript
 let kb = new Keyboard();
 kb.onKeyDown('DOWN, RIGHT + P', function(e: KeyboardEvent) {
@@ -68,7 +68,7 @@ kb.onKeyDown('DOWN, RIGHT + P', function(e: KeyboardEvent) {
 ```
 
 ### Key Holding
-When Ryu holds the "P" key for 2 seconds and up it, he will sends out more powerful red Hadouken.<br>
+When Ryu holds the <code>P</code> key for 2 seconds and up it, he will sends out more powerful red Hadouken.<br>
 <img src="assets/images/ryu-hado-red.gif" />
 
 With a little modification of the previous code, you can achieve this effect:
