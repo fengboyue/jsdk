@@ -45,8 +45,8 @@ For example, you need an application to read login user information. You can fin
 Remember to load JSDK core library statically in <code>login_user.html</code>:
 
 ```html
-<script src="/libs/jsdk/2.0.0/system.js"></script>
-<script src="/libs/jsdk/2.0.0/jsdk-config.js"></script>
+<script src="/libs/jsdk/{JSDK-VERSION}/system.js"></script>
+<script src="/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script>
 ```
 
 2. In <code>source/</code> directory, create these directories and files:
@@ -70,7 +70,7 @@ Remember to load JSDK core library statically in <code>login_user.html</code>:
 ```javascript
 JS.config({
     minimize: false, //for develop mode
-    jsdkRoot: '/libs/jsdk/2.0.0',
+    jsdkRoot: '/libs/jsdk/{JSDK-VERSION}',
     libRoot: '/libs'
 })
 App.init({

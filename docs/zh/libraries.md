@@ -1,7 +1,7 @@
 
 ## 类库配置
 假设一个名为xyz的类库（版本1.0.0）需要被JSDK管理，那么你需要完成以下步骤。
-1. 创建目录：<code>/{your project root}/libs/xyz/1.0.0/</code>, 拷贝以下文件至上述目录中：
+1. 创建目录：<code>/{PROJECT_ROOT}/libs/xyz/1.0.0/</code>, 拷贝以下文件至上述目录中：
 
 ```
 xyz.js
@@ -12,7 +12,7 @@ xyz.d.ts
 ```
 - *备注：压缩文件和d.ts定义文件最好有但非必须*
 
-2. 打开文件 <code>/{your project root}/libs/jsdk/2.0.0/jsdk-config.js</code>，添加新类库配置项:
+2. 打开文件 <code>/{PROJECT_ROOT}/libs/jsdk/{JSDK-VERSION}/jsdk-config.js</code>，添加新类库配置项:
 
 ```javascript
 JS.config({
@@ -31,7 +31,7 @@ JS.config({
 3. 你就可以用<b>JLU</b>格式加载此类库了:
 
 ```javascript
-/// <reference path="{your project root}/libs/xyz/1.0.0/xyz.d.ts" /> 
+/// <reference path="{PROJECT_ROOT}/libs/xyz/1.0.0/xyz.d.ts" /> 
 JS.imports('$xyz').then(()=>{ //$xyz is JLU format
     //your code
 });
@@ -42,10 +42,10 @@ JS.imports('$xyz').then(()=>{ //$xyz is JLU format
 
 ```javascript
 JS.config({
-    importMode: 'js'|'html',            //值为js时表示JSDK当前使用动态加载模式，值为html时表示类库已在html文件中静态加载所以JSDK当前关闭动态加载。
-    minimize: true|false,               //是否加载JS或CSS资源的最小化文件(自动加载.min文件)。
-    jsdkRoot: null,                     //JSDK自库的根网址。缺省为null时表示JSDK库部署在libsRoot目录以下；其他网址时表示部署在该网址。
-    libRoot: '/libs',                   //第三方类库的根网址。     
+    canImport: true|false,         //True表示JSDK将启用动态加载；False表示JSDK将关闭动态加载因后续类库可能已在html中静态加载过。
+    minimize: true|false,          //是否加载JS或CSS资源的最小化文件(自动加载.min文件)。
+    jsdkRoot: null,                //JSDK自库的根网址。缺省为null时表示JSDK库部署在{libsRoot}/jsdk/{JSDK-VERSION}下；其他网址时表示部署在该网址。
+    libRoot: '/libs',              //第三方类库的根网址。     
     libs: {
         ...
     }
@@ -94,15 +94,16 @@ JSDK被划分成多个模块（类库）。最底层的核心模块是<b>system<
 ### 模块清单
 模块名|备注|所含包|依赖模块|最小尺寸
 ---|---|---|---|---
-system|核心库|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||104kb
+system|核心库|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||102kb
 jsds|数据结构库|JS.ds.* |system |6kb
-jsui|UI相关库|JS.ui.* |system |6kb
+jsinput|UI外设库|JS.input.* |jsds |7kb
+jsui|UI相关库|JS.ui.* |system |5kb
 jsmv|模型、视图及IOC库|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
 jsan|动画库|JS.an.* |jsui |16kb
 jsfx|widget组件库 |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
 jsvp|应用层框架|JS.store.*<br>JS.app.* |jsmv|8kb
 jsunit|单元测试框架|JS.unit.* |system|js: 9kb<br>css: 669b
-jsdk|包含上述全部模块|JS.* ||js: 270kb
+jsdk|包含上述全部模块|JS.* ||js: 275kb
 
 ### 自定义模块
 当你需要更小尺寸的模块文件，你可以修改build/目录下的构建脚本，去掉不需要用到的类或包，重新构建出自定义的模块文件。

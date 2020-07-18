@@ -518,7 +518,7 @@ For example, you want to wrap "xpicker"(a fictitious open source time-picker) to
 3. Create <code>XPicker.ts</code> file:
 
 ```javascript
-/// <reference path="../libs/jsdk/2.0.0/jsdk.d.ts" />
+/// <reference path="../libs/jsdk/{JSDK-VERSION}/jsdk.d.ts" />
 /// <reference path="../libs/xpicker/1.0.0/xpicker.d.ts" />
 module My {
     export namespace fx {

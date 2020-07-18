@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Queue | JSDK 2.1.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.1.0 API">
+	<title>Queue | JSDK 2.2.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.2.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.1.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.2.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -114,12 +114,13 @@
 						<section class="tsd-index-section tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="js.ds.queue.html#list" class="tsd-kind-icon">list</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="js.ds.queue.html#_list" class="tsd-kind-icon">_list</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#add" class="tsd-kind-icon">add</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#clear" class="tsd-kind-icon">clear</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#clone" class="tsd-kind-icon">clone</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#contains" class="tsd-kind-icon">contains</a></li>
@@ -127,10 +128,11 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#get" class="tsd-kind-icon">get</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#indexof" class="tsd-kind-icon">index<wbr>Of</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#isempty" class="tsd-kind-icon">is<wbr>Empty</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#isfull" class="tsd-kind-icon">is<wbr>Full</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#lastindexof" class="tsd-kind-icon">last<wbr>Index<wbr>Of</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#maxsize" class="tsd-kind-icon">max<wbr>Size</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#peek" class="tsd-kind-icon">peek</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#pop" class="tsd-kind-icon">pop</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#push" class="tsd-kind-icon">push</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#remove" class="tsd-kind-icon">remove</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#size" class="tsd-kind-icon">size</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#toarray" class="tsd-kind-icon">to<wbr>Array</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.ds.queue.html#tostring" class="tsd-kind-icon">to<wbr>String</a></li>
@@ -145,7 +147,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Queue<span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.ds.queue.html" class="tsd-signature-type">Queue</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Queue<span class="tsd-signature-symbol">(</span>maxSize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.ds.queue.html" class="tsd-signature-type">Queue</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -154,7 +156,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> a: <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> maxSize: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="js.ds.queue.html" class="tsd-signature-type">Queue</a></h4>
@@ -165,15 +167,43 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-					<a name="list" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> list</h3>
-					<div class="tsd-signature tsd-kind-icon">list<span class="tsd-signature-symbol">:</span> <a href="js.ds.linkedlist.html" class="tsd-signature-type">LinkedList</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new LinkedList&lt;T&gt;()</span></div>
+					<a name="_list" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _list</h3>
+					<div class="tsd-signature tsd-kind-icon">_list<span class="tsd-signature-symbol">:</span> <a href="js.ds.linkedlist.html" class="tsd-signature-type">LinkedList</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new LinkedList&lt;T&gt;()</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="add" class="tsd-anchor"></a>
+					<h3>add</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Inserts the specified element into this queue if it is possible to do so immediately
+									without violating capacity restrictions.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>a: <span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="clear" class="tsd-anchor"></a>
 					<h3>clear</h3>
@@ -206,7 +236,7 @@
 					<a name="contains" class="tsd-anchor"></a>
 					<h3>contains</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">contains<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">contains<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, eq<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -216,6 +246,30 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>data: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> eq: <span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>data: <span class="tsd-signature-type">T</span></h5>
+														</li>
+														<li>
+															<h5>item: <span class="tsd-signature-type">T</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -293,7 +347,7 @@
 					<a name="indexof" class="tsd-anchor"></a>
 					<h3>index<wbr>Of</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">index<wbr>Of<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon">index<wbr>Of<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, eq<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -303,6 +357,30 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>data: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> eq: <span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>data: <span class="tsd-signature-type">T</span></h5>
+														</li>
+														<li>
+															<h5>item: <span class="tsd-signature-type">T</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -324,10 +402,24 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="isfull" class="tsd-anchor"></a>
+					<h3>is<wbr>Full</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Full<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="lastindexof" class="tsd-anchor"></a>
 					<h3>last<wbr>Index<wbr>Of</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">last<wbr>Index<wbr>Of<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon">last<wbr>Index<wbr>Of<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, eq<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -338,7 +430,45 @@
 								<li>
 									<h5>data: <span class="tsd-signature-type">T</span></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> eq: <span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>data: <span class="tsd-signature-type">T</span></h5>
+														</li>
+														<li>
+															<h5>item: <span class="tsd-signature-type">T</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
 							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="maxsize" class="tsd-anchor"></a>
+					<h3>max<wbr>Size</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">max<wbr>Size<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
 						</li>
 					</ul>
@@ -355,7 +485,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Retrieves, but does not remove, the first element of this list.</p>
+									<p>Retrieves, but does not remove, the head of this queue, or returns null if this queue is empty.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
@@ -363,36 +493,21 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="pop" class="tsd-anchor"></a>
-					<h3>pop</h3>
+					<a name="remove" class="tsd-anchor"></a>
+					<h3>remove</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">pop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retrieves and removes the head of this queue, or returns null if this queue is empty.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="push" class="tsd-anchor"></a>
-					<h3>push</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">push<span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>a: <span class="tsd-signature-type">T</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -459,6 +574,9 @@
 								<a href="../modules/js.fx.html">fx</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.input.html">input</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.ioc.html">ioc</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
@@ -506,7 +624,10 @@
 								<a href="js.ds.queue.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-								<a href="js.ds.queue.html#list" class="tsd-kind-icon">list</a>
+								<a href="js.ds.queue.html#_list" class="tsd-kind-icon">_list</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="js.ds.queue.html#add" class="tsd-kind-icon">add</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="js.ds.queue.html#clear" class="tsd-kind-icon">clear</a>
@@ -530,16 +651,19 @@
 								<a href="js.ds.queue.html#isempty" class="tsd-kind-icon">is<wbr>Empty</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="js.ds.queue.html#isfull" class="tsd-kind-icon">is<wbr>Full</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="js.ds.queue.html#lastindexof" class="tsd-kind-icon">last<wbr>Index<wbr>Of</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="js.ds.queue.html#maxsize" class="tsd-kind-icon">max<wbr>Size</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="js.ds.queue.html#peek" class="tsd-kind-icon">peek</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="js.ds.queue.html#pop" class="tsd-kind-icon">pop</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="js.ds.queue.html#push" class="tsd-kind-icon">push</a>
+								<a href="js.ds.queue.html#remove" class="tsd-kind-icon">remove</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="js.ds.queue.html#size" class="tsd-kind-icon">size</a>

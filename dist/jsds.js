@@ -1,6 +1,6 @@
 //@ sourceURL=jsds.js
 /**
-* JSDK 2.0.0 
+* JSDK 2.2.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -10,12 +10,9 @@ var JS;
     let ds;
     (function (ds) {
         class BiMap {
-            constructor(k) {
+            constructor(m) {
                 this._m = new Map();
-                if (k)
-                    k.forEach(kv => {
-                        this._m.set(kv["0"], kv["1"]);
-                    });
+                this.putAll(m);
             }
             inverse() {
                 let m = new BiMap();
@@ -45,8 +42,16 @@ var JS;
                 this._m.set(k, v);
             }
             putAll(map) {
-                if (map)
-                    map.forEach((v, k) => { this.put(k, v); });
+                if (map) {
+                    map instanceof Array ? map.forEach(kv => { this.put(kv["0"], kv["1"]); }) : map.forEach((v, k) => { this.put(k, v); });
+                }
+            }
+            static convert(json) {
+                let m = new BiMap();
+                Jsons.forEach(json, (v, k) => {
+                    m.put(k, v);
+                });
+                return m;
             }
         }
         ds.BiMap = BiMap;
@@ -149,34 +154,34 @@ var JS;
                 }
                 return node;
             }
-            indexOf(data) {
+            indexOf(data, eq) {
                 if (this.isEmpty())
                     return -1;
                 let rst = -1;
                 this.each((item, i) => {
-                    let is = (data === item);
+                    let is = eq ? eq(data, item) : (data === item);
                     if (is)
                         rst = i;
                     return !is;
                 });
                 return rst;
             }
-            lastIndexOf(data) {
+            lastIndexOf(data, eq) {
                 if (this.isEmpty())
                     return -1;
-                let rst = -1, node = this._tl, i = this._s - 1;
+                let j = -1, node = this._tl, i = this._s - 1;
                 while (node) {
-                    if (data === node.data) {
-                        rst = i;
+                    if (eq ? eq(data, node.data) : (data === node.data)) {
+                        j = i;
                         break;
                     }
                     node = node.prev;
                     --i;
                 }
-                return rst;
+                return j;
             }
-            contains(data) {
-                return this.indexOf(data) > -1;
+            contains(data, eq) {
+                return this.indexOf(data, eq) > -1;
             }
             _addLast(d) {
                 let node = { data: Jsons.clone(d), prev: null, next: null };
@@ -333,55 +338,65 @@ var JS;
     let ds;
     (function (ds) {
         class Queue {
-            constructor(a) {
-                this.list = new ds.LinkedList();
-                this.list.add(a);
+            constructor(maxSize) {
+                this._list = new ds.LinkedList();
+                this._maxSize = Infinity;
+                this._maxSize = maxSize;
             }
             each(fn, thisArg) {
-                return this.list.each((item, i) => {
+                return this._list.each((item, i) => {
                     return fn.call(thisArg || this, item, i, this);
                 }, thisArg);
             }
+            maxSize() {
+                return this._maxSize;
+            }
             size() {
-                return this.list.size();
+                return this._list.size();
+            }
+            isFull() {
+                return this.size() == this._maxSize;
             }
             isEmpty() {
                 return this.size() == 0;
             }
             clear() {
-                this.list.clear();
+                this._list.clear();
             }
             clone() {
                 let list = new Queue();
-                list.list = this.list.clone();
+                list._list = this._list.clone();
                 return list;
             }
             toArray() {
-                return this.list.toArray();
+                return this._list.toArray();
             }
             get(i) {
-                return this.list.get(i);
+                return this._list.get(i);
             }
-            indexOf(data) {
-                return this.list.indexOf(data);
+            indexOf(data, eq) {
+                return this._list.indexOf(data, eq);
             }
-            lastIndexOf(data) {
-                return this.list.lastIndexOf(data);
+            lastIndexOf(data, eq) {
+                return this._list.lastIndexOf(data, eq);
             }
-            contains(data) {
-                return this.indexOf(data) > -1;
+            contains(data, eq) {
+                return this.indexOf(data, eq) > -1;
             }
-            push(a) {
-                this.list.addLast(a);
+            add(a) {
+                if (this.isFull())
+                    return false;
+                this._list.addLast(a);
+                return true;
             }
-            pop() {
-                return this.list.removeFirst();
+            remove() {
+                return this._list.removeFirst();
             }
             peek() {
-                return this.list.peekFirst();
+                return this._list.peekFirst();
             }
             toString() {
-                return '[' + this.list.toArray().toString() + ']';
+                return '[' + this._list.toArray().toString() + ']';
             }
         }
         ds.Queue = Queue;

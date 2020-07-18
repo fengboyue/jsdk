@@ -1,6 +1,6 @@
 
 ## Annotation
-Annotations provide more runtime information for classes, is also one foundation feature of reflection, AOP and IOC.
+Annotation provides more additional information for class, is also foundation feature of AOP and DI.
 
 ### Use of Annotation
 Let's take a look at example code:
@@ -15,7 +15,7 @@ export class MyClass {
     }
 }
 ```
-- *@deprecated is an annotation function provided by JSDK, prints warning message on console to indicate that the class or property or method has been discarded.*
+- *@deprecated is an annotation function provided by JSDK, prints warning message on console to indicate that a class or property or method has been discarded.*
 
 ### Predefined Annotations
 JSDK has defined the following annotation functions, which can be used directly:
@@ -61,9 +61,9 @@ Konsole.print(Annotations.getValue(version, MyClass)); //print: 1.2.3
 
 ## Reflection
 Reflection is a mechanism for dynamically obtaining the information of class properties and methods at runtime. 
-It allows us to dynamically instantiate a class, dynamically call its methods and dynamically read and write its attributes.
+It allows us to dynamically instantiate a class, dynamically call its methods and dynamically read or write its properties.
 
-- *The reflection functions of JSDK is provided by the class <b> JS.reflect.Class</b>. If you have know Java, it will be easier to understand.*
+- *The reflection functions of JSDK is provided by <b> JS.reflect.Class</b>. If you have know Java, it will be easier to understand.*
 
 ### Make Reflectable Class
 Unlike Java, not every JS class supports reflection. JSDK has two ways to make a class supports reflection.
@@ -100,7 +100,7 @@ In JSDK, the following annotations can mark class to support reflection:
 - @widget
 
 ### Use of Reflections
-When a class supports reflection, you can access more inner informations by its reflection class.
+When a class supports reflection, you can access more inner informations using its reflection class.
 
 1. Get reflect Class
 ```javascript
@@ -155,7 +155,7 @@ let trim = format.aop({ //Returns a new modified function
 ```
 *Note: the original function has not been changed*
 
-You also can AOP a method of class by its reflectable class:
+You also can AOP a method of class using its reflectable class:
 ```javascript
 Date.class.aop('format', {//The 'format' method of Date class be changed.
     before: (format: string) => {
@@ -185,11 +185,11 @@ class Me {
 }
 ```
 
-## IOC Component & DL/DI
+## IOC Container & Components
 The <b>JS.ioc.Components</b> is IOC container. It can register, initialize and destroy all IOC components in it and save memory cost effectively.
 - *The IOC container only supports single instance mode*
 
-### Define Component
+### Define IOC Component
 Use <code>@component</code> to mark a IOC component class, indicates that this class will be managed by the IOC container:
 ```javascript
 module Demo {
@@ -369,7 +369,7 @@ In <code>OF</code> mode, the timer will maintain a fixed frequency (frame rate) 
 
 In <code>BF</code> mode, no matter how long the task is executed, the timer keeps a fixed interval to execute next task. Therefore, a time-consuming task will directly affect the execution frequency. This is same execution mode with the traditional <code>setInterval</code>.
 
-Only when the task execution time is infinitely close to zero, the two modes are equivalent. Most of times, you need <code>OF</code> mode.
+Only when the execution time of a task is infinitely close to zero, the two modes are equivalent. Most of times, you need <code>OF</code> mode.
 
 > Animation and Game Developments
 >
@@ -400,7 +400,7 @@ let p = Promises.create(function(a, b){
 }, 1, 2)
 ```
 
-### Promise Plan & Promise Plan Queue
+### Promise Plan & Promises Queue
 JSDK names a function that returns Promise type as PromisePlan(TS type class):
 ```javascript
 export type PromisePlan<T> = (value?:any)=>Promise<T>;
@@ -411,16 +411,16 @@ export type PromisePlans<T> = Array<PromisePlan<T>>;
 ```
 
 ### Promises Execution
-The execution of an async plan is very simple, and the execution and result return of a queue of async plans are difficult.<br>
+The execution of an async plan is very simple, and the execution of a queue of async plans are difficult.<br>
 
 The native Promise class provides two execution modes for promise queue:
 * <b>all</b>: Parallel execute and returns result after all async plans are completed.
 * <b>race</b>: Parallel execute and returns result when any async plan is completed.
 
 In reality, we often need the third mode of execution:
-* <b>order</b>: Orderly execute and returns result when the last async plan is completed.
+* <b>order</b>: Sequential orderly execute and returns result when the last async plan is completed.
 
-<b>Promises</b> supports for the above three execution modes:
+<b>Promises</b> supports for all above execution modes:
 ```javascript
 //PromisePlan a
 let a = Promises.createPlan<string>(function () {

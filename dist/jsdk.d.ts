@@ -1,5 +1,5 @@
 /**
-* JSDK 2.0.0 
+* JSDK 2.2.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -632,10 +632,10 @@ declare module JS {
             on<H = EventHandler>(types: string, handler: H, once?: boolean): boolean;
             find(type: string): EventHandler[];
             find(type: string, euid: number): EventHandler;
-            types(): () => IterableIterator<string>;
+            types(): string[];
             off(types?: string, handler?: EventHandler): boolean;
             private _call;
-            fire(e: string | Event, args?: Array<any>): boolean;
+            fire(e: string | Event, args?: Array<any>, that?: any): void;
         }
     }
 }
@@ -695,7 +695,7 @@ declare const $L: typeof Dom.$L;
 declare module JS {
     let version: string;
     type GlobalConfig = {
-        importMode?: 'js' | 'html';
+        canImport?: boolean;
         minimize?: boolean;
         jsdkRoot?: string;
         libRoot?: string;
@@ -711,11 +711,11 @@ declare module JS {
     namespace util {
         class Jsons {
             static parse(text: string, reviver?: (key: any, value: any) => any): any;
-            static stringfy(value: any, replacer?: (key: string, value: any) => any | (number | string)[] | null, space?: string | number): string;
+            static stringify(value: any, replacer?: (key: string, value: any) => any | (number | string)[] | null, space?: string | number): string;
             static clone<T>(obj: T): T;
             static forEach<T>(json: JsonObject<T>, fn: (value: T, key: string) => any, that?: any): void;
             static some<T>(json: JsonObject<T>, fn: (value: T, key: string) => boolean, that?: any): boolean;
-            static hasKey(json: JsonObject, key: string): boolean;
+            static hasKey(json: JsonObject, key: string | number): boolean;
             static values<T>(json: JsonObject<T>): T[];
             static keys(json: JsonObject): string[];
             static equalKeys(json1: JsonObject, json2: JsonObject): boolean;
@@ -811,11 +811,11 @@ import Log = JS.util.Log;
 declare let JSLogger: Log;
 declare module JS {
     namespace lang {
-        export interface AopAdvisor {
-            before?: (this: any, ...args: any[]) => void;
-            around?: (this: any, fn: Function, ...args: any[]) => any;
-            after?: (this: any, returns: any) => void;
-            throws?: (this: any, e: Error) => void;
+        export interface AopAdvisor<T> {
+            before?: (this: T, ...args: any[]) => void;
+            around?: (this: T, fn: Function, ...args: any[]) => any;
+            after?: (this: T, returns: any) => void;
+            throws?: (this: T, e: Error) => void;
         }
         export enum AnnotationTarget {
             ANY = 1,
@@ -842,11 +842,11 @@ declare module JS {
             static define(definition: string | AnnotationDefinition, params?: ArrayLike<any>): Function | PropertyDescriptor;
         }
         export function deprecated(info?: string): any;
-        export function before(fn: (this: any, ...args: any[]) => void): any;
-        export function after(fn: (this: any, returns: any) => void): any;
-        export function around(fn: (this: any, fn: Function, ...args: any[]) => any): any;
-        export function throws(fn: (this: any, e: Error) => void): any;
-        export function aop(advisor: AopAdvisor): any;
+        export function before(fn: (...args: any[]) => void): any;
+        export function after(fn: (returns: any) => void): any;
+        export function around(fn: (fn: Function, ...args: any[]) => any): any;
+        export function throws(fn: (e: Error) => void): any;
+        export function aop(advisor: AopAdvisor<any>): any;
         export {};
     }
 }
@@ -898,9 +898,9 @@ declare module JS {
             static byName(name: string): Klass<any>;
             static newInstance<T>(ctor: string | Klass<T>, ...args: any[]): T;
             static aliasInstance<T>(alias: string | Klass<T>, ...args: any[]): T;
-            static aop(klass: Klass<any>, method: string, advisor: AopAdvisor): void;
+            static aop<T>(klass: Klass<any>, method: string, advisor: AopAdvisor<T>): void;
             static cancelAop(klass: Klass<any>, method: string): void;
-            aop(method: string, advisor: AopAdvisor): void;
+            aop<T>(method: string, advisor: AopAdvisor<T>): void;
             private _cancelAop;
             cancelAop(method?: string): void;
             equals(cls: Class<any>): boolean;
@@ -938,7 +938,7 @@ import Class = JS.reflect.Class;
 import klass = JS.reflect.klass;
 interface Function {
     class: Class<any>;
-    aop(this: Function, advisor: AopAdvisor, that?: any): (...args: any[]) => Function;
+    aop<T>(this: Function, advisor: AopAdvisor<T>, that?: T): (...args: any) => any;
     mixin(kls: Klass<any>, methodNames?: string[]): void;
 }
 interface Object {
@@ -1135,7 +1135,7 @@ declare module JS {
 }
 import Dates = JS.util.Dates;
 interface Number {
-    stringfy(): string;
+    stringify(): string;
     round(digit?: number): number;
     toInt(): number;
     format(digit?: number): string;
@@ -1320,16 +1320,6 @@ declare module JS {
 import Bom = JS.util.Bom;
 declare module JS {
     namespace ui {
-        type MouseEvents = 'click' | 'dblclick' | 'mouseleave' | 'mouseenter' | 'mouseout' | 'mouseover' | 'mousedown' | 'mouseup' | 'mousemove' | 'mousewheel' | 'drag' | 'drop' | 'dragend' | 'dragstart' | 'dragenter' | 'dragleave' | 'dragover';
-        type KeyboardEvents = 'keyup' | 'keydown' | 'keypress';
-        type TouchEvents = 'touchstart' | 'touchend' | 'touchmove' | 'touchcancel';
-    }
-}
-import MouseEvents = JS.ui.MouseEvents;
-import KeyboardEvents = JS.ui.KeyboardEvents;
-import TouchEvents = JS.ui.TouchEvents;
-declare module JS {
-    namespace ui {
         interface IWidgetConfig {
         }
         interface IWidget {
@@ -1394,7 +1384,7 @@ declare module JS {
             destroy(): void;
             config(): ViewConfig;
             protected abstract _render(): any;
-            protected _fire(e: ViewEvents, args?: Array<any>): boolean;
+            protected _fire(e: ViewEvents, args?: Array<any>): void;
             render(): void;
             getModel(): Modelable<any>;
             getWidget<W extends IWidget>(id: string): W;
@@ -1575,7 +1565,7 @@ declare module JS {
     namespace ds {
         class BiMap<K, V> {
             private _m;
-            constructor(k?: Array<[K, V]>);
+            constructor(m?: Array<[K, V]> | Map<K, V> | BiMap<K, V>);
             inverse(): BiMap<V, K>;
             delete(k: K): boolean;
             forEach(fn: (value: V, key: K, map: Map<K, V>) => void, ctx?: any): void;
@@ -1584,7 +1574,8 @@ declare module JS {
             has(k: K): boolean;
             get(k: K): V;
             put(k: K, v: V): void;
-            putAll(map: Map<K, V> | BiMap<K, V>): void;
+            putAll(map: Array<[K, V]> | Map<K, V> | BiMap<K, V>): void;
+            static convert(json: JsonObject<string | number>): BiMap<string, string | number>;
         }
     }
 }
@@ -1609,9 +1600,9 @@ declare module JS {
             private _findAt;
             private _fromFirst;
             private _fromLast;
-            indexOf(data: T): number;
-            lastIndexOf(data: T): number;
-            contains(data: T): boolean;
+            indexOf(data: T, eq?: (data: T, item: T) => boolean): number;
+            lastIndexOf(data: T, eq?: (data: T, item: T) => boolean): number;
+            contains(data: T, eq?: (data: T, item: T) => boolean): boolean;
             private _addLast;
             private _addFirst;
             add(a: T | T[]): void;
@@ -1634,20 +1625,23 @@ import LinkedList = JS.ds.LinkedList;
 declare module JS {
     namespace ds {
         class Queue<T> implements Iterware<T> {
-            protected list: LinkedList<T>;
-            constructor(a?: T | T[]);
+            protected _list: LinkedList<T>;
+            private _maxSize;
+            constructor(maxSize?: number);
             each(fn: (item: T, index: number, iter: Queue<T>) => boolean, thisArg?: any): boolean;
+            maxSize(): number;
             size(): number;
+            isFull(): boolean;
             isEmpty(): boolean;
             clear(): void;
             clone(): Queue<T>;
             toArray(): Array<T>;
             get(i: number): T;
-            indexOf(data: T): number;
-            lastIndexOf(data: T): number;
-            contains(data: T): boolean;
-            push(a: T): void;
-            pop(): T;
+            indexOf(data: T, eq?: (data: T, item: T) => boolean): number;
+            lastIndexOf(data: T, eq?: (data: T, item: T) => boolean): number;
+            contains(data: T, eq?: (data: T, item: T) => boolean): boolean;
+            add(a: T): boolean;
+            remove(): T;
             peek(): T;
             toString(): string;
         }
@@ -2044,114 +2038,6 @@ import LRC = JS.ui.LRC;
 import LRTB = JS.ui.LRTB;
 import LOC9 = JS.ui.LOC9;
 declare module JS {
-    namespace ui {
-        class KeyCode {
-            static Back: number;
-            static Tab: number;
-            static Clear: number;
-            static Enter: number;
-            static shift: number;
-            static Control: number;
-            static Alt: number;
-            static Pause: number;
-            static CapsLock: number;
-            static Esc: number;
-            static Space: number;
-            static PageUp: number;
-            static PageDown: number;
-            static End: number;
-            static Home: number;
-            static Left: number;
-            static Up: number;
-            static Right: number;
-            static Down: number;
-            static Select: number;
-            static Print: number;
-            static Execute: number;
-            static Insert: number;
-            static Delete: number;
-            static Help: number;
-            static 0: number;
-            static 1: number;
-            static 2: number;
-            static 3: number;
-            static 4: number;
-            static 5: number;
-            static 6: number;
-            static 7: number;
-            static 8: number;
-            static 9: number;
-            static a: number;
-            static b: number;
-            static c: number;
-            static d: number;
-            static e: number;
-            static f: number;
-            static g: number;
-            static h: number;
-            static i: number;
-            static j: number;
-            static k: number;
-            static l: number;
-            static m: number;
-            static n: number;
-            static o: number;
-            static p: number;
-            static q: number;
-            static r: number;
-            static s: number;
-            static t: number;
-            static u: number;
-            static v: number;
-            static w: number;
-            static x: number;
-            static y: number;
-            static z: number;
-            static pad0: number;
-            static pad1: number;
-            static pad2: number;
-            static pad3: number;
-            static pad4: number;
-            static pad5: number;
-            static pad6: number;
-            static pad7: number;
-            static pad8: number;
-            static pad9: number;
-            static 'pad*': number;
-            static 'pad+': number;
-            static 'pad-': number;
-            static 'pad.': number;
-            static 'pad/': number;
-            static F1: number;
-            static F2: number;
-            static F3: number;
-            static F4: number;
-            static F5: number;
-            static F6: number;
-            static F7: number;
-            static F8: number;
-            static F9: number;
-            static F10: number;
-            static F11: number;
-            static F12: number;
-            static NumLk: number;
-            static ScrLk: number;
-            static ';': number;
-            static '=': number;
-            static ',': number;
-            static '-': number;
-            static '.': number;
-            static '/': number;
-            static '`': number;
-            static '[': number;
-            static '\\': number;
-            static ']': number;
-            static "'": number;
-        }
-    }
-}
-import KeyCode = JS.ui.KeyCode;
-declare module JS {
     namespace fx {
         enum SizeMode {
             hg = "hg",
@@ -2235,7 +2121,7 @@ declare module JS {
             isShown(): boolean;
             on<H = EventHandler<this>>(types: string, fn: H, once?: boolean): this;
             off(types?: string): this;
-            protected _fire<E>(e: E, args?: Array<any>): boolean;
+            protected _fire<E>(e: E, args?: Array<any>): void;
             static I18N: Resource;
             private _i18nBundle;
             private _createBundle;
@@ -3692,24 +3578,11 @@ declare module JS {
             GB = "GB",
             TB = "TB"
         }
-        type FileReadListener = {
-            abort?: (this: File, e: ProgressEvent) => void;
-            error?: (this: File, e: ProgressEvent) => void;
-            load?: (this: File, e: ProgressEvent) => void;
-            loadend?: (this: File, e: ProgressEvent) => void;
-            loadstart?: (this: File, e: ProgressEvent) => void;
-            progress?: (this: File, e: ProgressEvent) => void;
-        };
         class Files {
             static ONE_KB: number;
             static ONE_MB: number;
             static ONE_GB: number;
             static ONE_TB: number;
-            private static _createReader;
-            static readAsArrayBuffer(file: File, listener: FileReadListener): void;
-            static readAsBinaryString(file: File, listener: FileReadListener): void;
-            static readAsDataURL(file: File, listener: FileReadListener): void;
-            static readAsText(file: File, listener: FileReadListener): void;
             static getFileName(path: string): string;
             static getExt(path: string): string;
             static isFileExt(path: string, exts: string): boolean;
@@ -3842,6 +3715,217 @@ import UploaderEvents = JS.fx.UploaderEvents;
 import UploaderConfig = JS.fx.UploaderConfig;
 import UploaderFaceMode = JS.fx.UploaderFaceMode;
 import UploaderResource = JS.fx.UploaderResource;
+declare module JS {
+    namespace ui {
+        type MouseEvents = 'click' | 'dblclick' | 'mouseleave' | 'mouseenter' | 'mouseout' | 'mouseover' | 'mousedown' | 'mouseup' | 'mousemove' | 'mousewheel' | 'drag' | 'drop' | 'dragend' | 'dragstart' | 'dragenter' | 'dragleave' | 'dragover';
+        type KeyboardEvents = 'keyup' | 'keydown' | 'keypress';
+        type TouchEvents = 'touchstart' | 'touchend' | 'touchmove' | 'touchcancel';
+        enum MouseButton {
+            LEFT = 0,
+            MIDDLE = 1,
+            RIGHT = 2
+        }
+    }
+}
+import MouseEvents = JS.ui.MouseEvents;
+import KeyboardEvents = JS.ui.KeyboardEvents;
+import TouchEvents = JS.ui.TouchEvents;
+import MouseButton = JS.ui.MouseButton;
+declare module JS {
+    namespace input {
+        type CursorStyles = 'default' | 'text' | 'auto' | 'pointer' | 'move' | 'not-allowed' | 'no-drop' | 'wait' | 'help' | 'crosshair' | 'n-resize' | 's-resize' | 'w-resize' | 'e-resize' | 'nw-resize' | 'sw-resize' | 'ne-resize' | 'se-resize';
+        class Cursors {
+            static set(sty: CursorStyles, el?: HTMLElement): void;
+            static url(url: string, el?: HTMLElement): void;
+        }
+    }
+}
+import Cursors = JS.input.Cursors;
+declare module JS {
+    namespace input {
+        let VK: {
+            BACK_SPACE: number;
+            TAB: number;
+            ENTER: number;
+            SHIFT: number;
+            CTRL: number;
+            ALT: number;
+            PAUSE: number;
+            CAPS_LOCK: number;
+            ESC: number;
+            SPACE: number;
+            PAGE_UP: number;
+            PAGE_DOWN: number;
+            END: number;
+            HOME: number;
+            LEFT: number;
+            UP: number;
+            RIGHT: number;
+            DOWN: number;
+            PRINT_SCREEN: number;
+            INSERT: number;
+            DELETE: number;
+            KEY0: number;
+            KEY1: number;
+            KEY2: number;
+            KEY3: number;
+            KEY4: number;
+            KEY5: number;
+            KEY6: number;
+            KEY7: number;
+            KEY8: number;
+            KEY9: number;
+            A: number;
+            B: number;
+            C: number;
+            D: number;
+            E: number;
+            F: number;
+            G: number;
+            H: number;
+            I: number;
+            J: number;
+            K: number;
+            L: number;
+            M: number;
+            N: number;
+            O: number;
+            P: number;
+            Q: number;
+            R: number;
+            S: number;
+            T: number;
+            U: number;
+            V: number;
+            W: number;
+            X: number;
+            Y: number;
+            Z: number;
+            PAD0: number;
+            PAD1: number;
+            PAD2: number;
+            PAD3: number;
+            PAD4: number;
+            PAD5: number;
+            PAD6: number;
+            PAD7: number;
+            PAD8: number;
+            PAD9: number;
+            MULTIPLY: number;
+            PLUS: number;
+            SUBTRACT: number;
+            DECIMAL: number;
+            DIVIDE: number;
+            F1: number;
+            F2: number;
+            F3: number;
+            F4: number;
+            F5: number;
+            F6: number;
+            F7: number;
+            F8: number;
+            F9: number;
+            F10: number;
+            F11: number;
+            F12: number;
+            NUM_LOCK: number;
+            SCROLL_LOCK: number;
+            META_LEFT: number;
+            META_RIGHT: number;
+            SEMICOLON: number;
+            EQUAL_SIGN: number;
+            COMMA: number;
+            HYPHEN: number;
+            PERIOD: number;
+            SLASH: number;
+            APOSTROPHE: number;
+            LEFT_SQUARE_BRACKET: number;
+            BACK_SLASH: number;
+            RIGHT_SQUARE_BRACKET: number;
+            QUOTE: number;
+        };
+    }
+}
+import VK = JS.input.VK;
+declare module JS {
+    namespace input {
+        class KeyEventInit {
+            target?: HTMLElement;
+            bubbles?: boolean;
+            cancelable?: boolean;
+            view?: WindowProxy;
+            ctrlKey?: boolean;
+            altKey?: boolean;
+            shiftKey?: boolean;
+            metaKey?: boolean;
+            detail?: any;
+        }
+        class MouseEventInit {
+            target?: HTMLElement;
+            bubbles?: boolean;
+            cancelable?: boolean;
+            view?: WindowProxy;
+            screenX?: number;
+            screenY?: number;
+            clientX?: number;
+            clientY?: number;
+            ctrlKey?: boolean;
+            altKey?: boolean;
+            shiftKey?: boolean;
+            metaKey?: boolean;
+            button?: MouseButton;
+            buttons?: 0 | 1 | 2 | 4;
+            relatedTarget?: EventTarget;
+        }
+        class UIMocker {
+            static newKeyEvent(type: KeyboardEvents | string, keyCode: number, args?: KeyEventInit): KeyboardEvent;
+            static fireKeyEvent(type: KeyboardEvents, keyCode: number, args?: KeyEventInit): void;
+            static newMouseEvent(type: MouseEvents | string, args?: MouseEventInit): MouseEvent;
+            static fireMouseEvent(type: MouseEvents, args?: MouseEventInit): void;
+        }
+    }
+}
+import UIMocker = JS.input.UIMocker;
+declare module JS {
+    namespace input {
+        type Seqkeys = string;
+        type Hotkeys = string;
+        class Keyboard {
+            private _m;
+            private _q;
+            private _mapping;
+            private _busDown;
+            private _busUp;
+            private _d;
+            constructor(el?: HTMLElement);
+            private _fireKeys;
+            private _endsWithCode;
+            isSeqKeys(k: string): boolean;
+            isHotKeys(k: string): boolean;
+            private _on;
+            onKeyDown(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void): void;
+            onKeyUp(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void): void;
+            private _off;
+            offKeyDown(k?: Hotkeys | Seqkeys): void;
+            offKeyUp(k?: Hotkeys | Seqkeys): void;
+            private _equalsSeqkeys;
+            private _isSeqKeysPressing;
+            private _keyChar;
+            private _isHotKeysPressing;
+            private _numeric;
+            isPressingKeys(keys: Hotkeys | Seqkeys | string): boolean;
+            isPressingKey(c: number | string): boolean;
+            getPressingQueue(): Queue<number>;
+            getKeyDownTime(c: number | string): number;
+            beforeKeyDown(k1: number | string, k2: number | string): boolean;
+            off(): void;
+            clear(c?: number | Array<number>): void;
+            private _check;
+            destroy(): void;
+        }
+    }
+}
+import Keyboard = JS.input.Keyboard;
 declare module JS {
     namespace ioc {
         interface IComponent {
@@ -3982,6 +4066,17 @@ declare module JS {
 import SessionStore = JS.store.SessionStore;
 declare module JS {
     namespace ui {
+        class ClipBoard {
+            static copyTarget(clicker: string | HTMLElement, target: string | HTMLElement): void;
+            static cutTarget(clicker: string | HTMLElement, target: string | HTMLElement): void;
+            private static _do;
+            static copyText(clicker: string | HTMLElement, text: string): void;
+        }
+    }
+}
+import ClipBoard = JS.ui.ClipBoard;
+declare module JS {
+    namespace ui {
         interface CustomElementConfig {
             tagName: string;
             extendsTagName?: string;
@@ -4004,6 +4099,25 @@ declare module JS {
 }
 import CustomElementConfig = JS.ui.CustomElementConfig;
 import CustomElement = JS.ui.CustomElement;
+declare module JS {
+    namespace ui {
+        interface TemplateCompileOptions extends CompileOptions {
+        }
+        interface CompiledTemplate extends HandlebarsTemplateDelegate {
+        }
+        interface TemplateHelper extends Handlebars.HelperDelegate {
+        }
+        class Templator {
+            private _hb;
+            constructor();
+            compile(tpl: string, options?: TemplateCompileOptions): CompiledTemplate;
+            registerHelper(name: string, fn: TemplateHelper): void;
+            unregisterHelper(name: string): void;
+            static safeString(s: string): any;
+        }
+    }
+}
+import Templator = JS.ui.Templator;
 declare module JS {
     namespace unit {
         class TestCase {
@@ -4144,17 +4258,6 @@ declare module JS {
 import TestRunner = JS.unit.TestRunner;
 declare module JS {
     namespace util {
-        class ClipBoard {
-            static copyTarget(clicker: string | HTMLElement, target: string | HTMLElement): void;
-            static cutTarget(clicker: string | HTMLElement, target: string | HTMLElement): void;
-            private static _do;
-            static copyText(clicker: string | HTMLElement, text: string): void;
-        }
-    }
-}
-import ClipBoard = JS.util.ClipBoard;
-declare module JS {
-    namespace util {
         class Random {
             static number(max?: number, isInt?: boolean): number;
             static number(range?: {
@@ -4168,25 +4271,6 @@ declare module JS {
     }
 }
 import Random = JS.util.Random;
-declare module JS {
-    namespace util {
-        interface TemplateCompileOptions extends CompileOptions {
-        }
-        interface CompiledTemplate extends HandlebarsTemplateDelegate {
-        }
-        interface TemplateHelper extends Handlebars.HelperDelegate {
-        }
-        class Templator {
-            private _hb;
-            constructor();
-            compile(tpl: string, options?: TemplateCompileOptions): CompiledTemplate;
-            registerHelper(name: string, fn: TemplateHelper): void;
-            unregisterHelper(name: string): void;
-            static safeString(s: string): any;
-        }
-    }
-}
-import Templator = JS.util.Templator;
 declare module JS {
     namespace util {
         type TimerTask = (this: Timer, elapsedTime: number) => void;

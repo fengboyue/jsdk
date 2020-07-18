@@ -1,6 +1,6 @@
 //@ sourceURL=jsdk.js
 /**
-* JSDK 2.0.0 
+* JSDK 2.2.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -1219,7 +1219,7 @@ var JS;
             }
             if (req.async)
                 xhr.responseType = 'text';
-            let data = req.method == 'HEAD' || req.method == 'GET' ? null : (util.Types.isString(req.data) ? req.data : util.Jsons.stringfy(req.data));
+            let data = req.method == 'HEAD' || req.method == 'GET' ? null : (util.Types.isString(req.data) ? req.data : util.Jsons.stringify(req.data));
             try {
                 if (req.async && req.timeout > 0) {
                     var timer = self.setTimeout(function () {
@@ -1718,7 +1718,7 @@ var JS;
                 return fns || null;
             }
             types() {
-                return this._map.keys;
+                return Array.from(this._map.keys());
             }
             off(types, handler) {
                 if (this.isDestroyed())
@@ -1733,22 +1733,24 @@ var JS;
                 }
                 return true;
             }
-            _call(e, fn, args) {
+            _call(e, fn, args, that) {
                 let evt = e['originalEvent'] ? e['originalEvent'] : e, arr = [evt];
                 if (args && args.length > 0)
                     arr = arr.concat(args);
-                let rst = fn.apply(this._ctx, arr);
-                return rst === false;
+                let rst = fn.apply(that || this._ctx, arr);
+                if (rst === false) {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+                }
             }
-            fire(e, args) {
+            fire(e, args, that) {
                 let is = util.Types.isString(e), fns = this._map.get(is ? e : e.type);
                 if (!util.Check.isEmpty(fns)) {
                     let evt = is ? new CustomEvent(e) : e;
-                    return !fns.some(fn => {
-                        return this._call(evt, fn, args);
+                    fns.every(fn => {
+                        this._call(evt, fn, args, that);
                     });
                 }
-                return true;
             }
         }
         util.EventBus = EventBus;
@@ -2082,7 +2084,7 @@ const $1 = Dom.$1;
 const $L = Dom.$L;
 var JS;
 (function (JS) {
-    JS.version = '2.1.0';
+    JS.version = '2.2.0';
     function config(d, v) {
         let l = arguments.length;
         if (l == 0)
@@ -2158,7 +2160,7 @@ var JS;
         }
     };
     function imports(url) {
-        if (JS.config('importMode') == 'html')
+        if (!JS.config('canImport'))
             return Promise.resolve();
         let uris = typeof url === 'string' ? [url] : url, tasks = [];
         uris.forEach(uri => {
@@ -2176,7 +2178,7 @@ var JS;
             static parse(text, reviver) {
                 return text ? JSON.parse(text, reviver) : null;
             }
-            static stringfy(value, replacer, space) {
+            static stringify(value, replacer, space) {
                 return JSON.stringify(value, replacer, space);
             }
             static clone(obj) {
@@ -2222,7 +2224,7 @@ var JS;
                 });
             }
             static hasKey(json, key) {
-                return json && key && json.hasOwnProperty(key);
+                return json && key != void 0 && json.hasOwnProperty(key);
             }
             static values(json) {
                 if (!json)
@@ -2470,7 +2472,7 @@ var JS;
                             break;
                         }
                         case 'f': {
-                            v = Number(v).stringfy();
+                            v = Number(v).stringify();
                             break;
                         }
                         case 'n': {
@@ -3489,8 +3491,6 @@ var JS;
                 paths.push('');
                 return paths.some(p => {
                     let path = `${prefix}${p}.${suffix}`;
-                    if (!util.Check.isExistUrl(path))
-                        return false;
                     let xhr = self.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
                     xhr.open('GET', path, false);
                     xhr.send();
@@ -3780,7 +3780,7 @@ var Dates = JS.util.Dates;
 Class.register(Date);
 (function () {
     var N = Number, $N = N.prototype;
-    $N.stringfy = function () {
+    $N.stringify = function () {
         if (this.isNaN())
             return null;
         if (this.isZero())
@@ -3811,7 +3811,7 @@ Class.register(Date);
         return s.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
     };
     $N.format = function (dLen) {
-        let d = dLen == void 0 || !Number.isFinite(dLen) ? this.fractionLength() : dLen, s = this.round(d).abs().stringfy(), sign = this.isNegative() ? '-' : '';
+        let d = dLen == void 0 || !Number.isFinite(dLen) ? this.fractionLength() : dLen, s = this.round(d).abs().stringify(), sign = this.isNegative() ? '-' : '';
         let sn = N(s);
         if (sn.isInt())
             return sign + f3(sn.toString()) + (d < 1 ? '' : '.' + Strings.padEnd('', d, '0'));
@@ -3854,7 +3854,7 @@ Class.register(Date);
             return 0;
         if (this.isInt() && v.isInt())
             return v.valueOf() * this.valueOf();
-        let s1 = this.stringfy(this), s2 = v.stringfy(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = N(s1.replace('.', '')), n2 = N(s2.replace('.', ''));
+        let s1 = this.stringify(this), s2 = v.stringify(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = N(s1.replace('.', '')), n2 = N(s2.replace('.', ''));
         return n1 * n2 / Math.pow(10, m1 + m2);
     };
     $N.div = function (n) {
@@ -3863,7 +3863,7 @@ Class.register(Date);
         const v = N(n);
         if (v.valueOf() == 0)
             throw new ArithmeticError('Can not divide an Zero.');
-        let s1 = this.stringfy(), s2 = v.stringfy(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = N(s1.replace('.', '')), n2 = N(s2.replace('.', ''));
+        let s1 = this.stringify(), s2 = v.stringify(), m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0, m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0, n1 = N(s1.replace('.', '')), n2 = N(s2.replace('.', ''));
         return (n1 / n2) * Math.pow(10, m2 - m1);
     };
     $N.isNaN = function () {
@@ -3909,7 +3909,7 @@ Class.register(Date);
     $N.fractionLength = function () {
         if (this.isInt() || this.isNaN())
             return 0;
-        let s = this.stringfy();
+        let s = this.stringify();
         return s.slice(s.indexOf('.') + 1).length;
     };
     $N.integerLength = function () {
@@ -3920,13 +3920,13 @@ Class.register(Date);
     $N.fractionalPart = function () {
         if (this.isInt() || this.isNaN())
             return '';
-        let s = this.stringfy();
+        let s = this.stringify();
         return s.slice(s.indexOf('.') + 1);
     };
     $N.integralPart = function () {
         if (this.isNaN())
             return '';
-        let s = this.stringfy(), i = s.indexOf('.');
+        let s = this.stringify(), i = s.indexOf('.');
         if (i < 0)
             return s;
         return s.slice(0, i);
@@ -4790,12 +4790,9 @@ var JS;
     let ds;
     (function (ds) {
         class BiMap {
-            constructor(k) {
+            constructor(m) {
                 this._m = new Map();
-                if (k)
-                    k.forEach(kv => {
-                        this._m.set(kv["0"], kv["1"]);
-                    });
+                this.putAll(m);
             }
             inverse() {
                 let m = new BiMap();
@@ -4825,8 +4822,16 @@ var JS;
                 this._m.set(k, v);
             }
             putAll(map) {
-                if (map)
-                    map.forEach((v, k) => { this.put(k, v); });
+                if (map) {
+                    map instanceof Array ? map.forEach(kv => { this.put(kv["0"], kv["1"]); }) : map.forEach((v, k) => { this.put(k, v); });
+                }
+            }
+            static convert(json) {
+                let m = new BiMap();
+                Jsons.forEach(json, (v, k) => {
+                    m.put(k, v);
+                });
+                return m;
             }
         }
         ds.BiMap = BiMap;
@@ -4929,34 +4934,34 @@ var JS;
                 }
                 return node;
             }
-            indexOf(data) {
+            indexOf(data, eq) {
                 if (this.isEmpty())
                     return -1;
                 let rst = -1;
                 this.each((item, i) => {
-                    let is = (data === item);
+                    let is = eq ? eq(data, item) : (data === item);
                     if (is)
                         rst = i;
                     return !is;
                 });
                 return rst;
             }
-            lastIndexOf(data) {
+            lastIndexOf(data, eq) {
                 if (this.isEmpty())
                     return -1;
-                let rst = -1, node = this._tl, i = this._s - 1;
+                let j = -1, node = this._tl, i = this._s - 1;
                 while (node) {
-                    if (data === node.data) {
-                        rst = i;
+                    if (eq ? eq(data, node.data) : (data === node.data)) {
+                        j = i;
                         break;
                     }
                     node = node.prev;
                     --i;
                 }
-                return rst;
+                return j;
             }
-            contains(data) {
-                return this.indexOf(data) > -1;
+            contains(data, eq) {
+                return this.indexOf(data, eq) > -1;
             }
             _addLast(d) {
                 let node = { data: Jsons.clone(d), prev: null, next: null };
@@ -5113,55 +5118,65 @@ var JS;
     let ds;
     (function (ds) {
         class Queue {
-            constructor(a) {
-                this.list = new ds.LinkedList();
-                this.list.add(a);
+            constructor(maxSize) {
+                this._list = new ds.LinkedList();
+                this._maxSize = Infinity;
+                this._maxSize = maxSize;
             }
             each(fn, thisArg) {
-                return this.list.each((item, i) => {
+                return this._list.each((item, i) => {
                     return fn.call(thisArg || this, item, i, this);
                 }, thisArg);
             }
+            maxSize() {
+                return this._maxSize;
+            }
             size() {
-                return this.list.size();
+                return this._list.size();
+            }
+            isFull() {
+                return this.size() == this._maxSize;
             }
             isEmpty() {
                 return this.size() == 0;
             }
             clear() {
-                this.list.clear();
+                this._list.clear();
             }
             clone() {
                 let list = new Queue();
-                list.list = this.list.clone();
+                list._list = this._list.clone();
                 return list;
             }
             toArray() {
-                return this.list.toArray();
+                return this._list.toArray();
             }
             get(i) {
-                return this.list.get(i);
+                return this._list.get(i);
             }
-            indexOf(data) {
-                return this.list.indexOf(data);
+            indexOf(data, eq) {
+                return this._list.indexOf(data, eq);
             }
-            lastIndexOf(data) {
-                return this.list.lastIndexOf(data);
+            lastIndexOf(data, eq) {
+                return this._list.lastIndexOf(data, eq);
             }
-            contains(data) {
-                return this.indexOf(data) > -1;
+            contains(data, eq) {
+                return this.indexOf(data, eq) > -1;
             }
-            push(a) {
-                this.list.addLast(a);
+            add(a) {
+                if (this.isFull())
+                    return false;
+                this._list.addLast(a);
+                return true;
             }
-            pop() {
-                return this.list.removeFirst();
+            remove() {
+                return this._list.removeFirst();
             }
             peek() {
-                return this.list.peekFirst();
+                return this._list.peekFirst();
             }
             toString() {
-                return '[' + this.list.toArray().toString() + ']';
+                return '[' + this._list.toArray().toString() + ']';
             }
         }
         ds.Queue = Queue;
@@ -6213,117 +6228,6 @@ var JS;
     })(ui = JS.ui || (JS.ui = {}));
 })(JS || (JS = {}));
 var Colors = JS.ui.Colors;
-var JS;
-(function (JS) {
-    let ui;
-    (function (ui) {
-        class KeyCode {
-        }
-        KeyCode.Back = 8;
-        KeyCode.Tab = 9;
-        KeyCode.Clear = 12;
-        KeyCode.Enter = 13;
-        KeyCode.shift = 16;
-        KeyCode.Control = 17;
-        KeyCode.Alt = 18;
-        KeyCode.Pause = 19;
-        KeyCode.CapsLock = 20;
-        KeyCode.Esc = 27;
-        KeyCode.Space = 32;
-        KeyCode.PageUp = 33;
-        KeyCode.PageDown = 34;
-        KeyCode.End = 35;
-        KeyCode.Home = 36;
-        KeyCode.Left = 37;
-        KeyCode.Up = 38;
-        KeyCode.Right = 39;
-        KeyCode.Down = 40;
-        KeyCode.Select = 41;
-        KeyCode.Print = 42;
-        KeyCode.Execute = 43;
-        KeyCode.Insert = 45;
-        KeyCode.Delete = 46;
-        KeyCode.Help = 47;
-        KeyCode[0] = 48;
-        KeyCode[1] = 49;
-        KeyCode[2] = 50;
-        KeyCode[3] = 51;
-        KeyCode[4] = 52;
-        KeyCode[5] = 53;
-        KeyCode[6] = 54;
-        KeyCode[7] = 55;
-        KeyCode[8] = 56;
-        KeyCode[9] = 57;
-        KeyCode.a = 65;
-        KeyCode.b = 66;
-        KeyCode.c = 67;
-        KeyCode.d = 68;
-        KeyCode.e = 69;
-        KeyCode.f = 70;
-        KeyCode.g = 71;
-        KeyCode.h = 72;
-        KeyCode.i = 73;
-        KeyCode.j = 74;
-        KeyCode.k = 75;
-        KeyCode.l = 76;
-        KeyCode.m = 77;
-        KeyCode.n = 78;
-        KeyCode.o = 79;
-        KeyCode.p = 80;
-        KeyCode.q = 81;
-        KeyCode.r = 82;
-        KeyCode.s = 83;
-        KeyCode.t = 84;
-        KeyCode.u = 85;
-        KeyCode.v = 86;
-        KeyCode.w = 87;
-        KeyCode.x = 88;
-        KeyCode.y = 89;
-        KeyCode.z = 90;
-        KeyCode.pad0 = 96;
-        KeyCode.pad1 = 97;
-        KeyCode.pad2 = 98;
-        KeyCode.pad3 = 99;
-        KeyCode.pad4 = 100;
-        KeyCode.pad5 = 101;
-        KeyCode.pad6 = 102;
-        KeyCode.pad7 = 103;
-        KeyCode.pad8 = 104;
-        KeyCode.pad9 = 105;
-        KeyCode['pad*'] = 106;
-        KeyCode['pad+'] = 107;
-        KeyCode['pad-'] = 109;
-        KeyCode['pad.'] = 110;
-        KeyCode['pad/'] = 111;
-        KeyCode.F1 = 112;
-        KeyCode.F2 = 113;
-        KeyCode.F3 = 114;
-        KeyCode.F4 = 115;
-        KeyCode.F5 = 116;
-        KeyCode.F6 = 117;
-        KeyCode.F7 = 118;
-        KeyCode.F8 = 119;
-        KeyCode.F9 = 120;
-        KeyCode.F10 = 121;
-        KeyCode.F11 = 122;
-        KeyCode.F12 = 123;
-        KeyCode.NumLk = 144;
-        KeyCode.ScrLk = 145;
-        KeyCode[';'] = 186;
-        KeyCode['='] = 187;
-        KeyCode[','] = 188;
-        KeyCode['-'] = 189;
-        KeyCode['.'] = 190;
-        KeyCode['/'] = 191;
-        KeyCode['`'] = 192;
-        KeyCode['['] = 219;
-        KeyCode['\\'] = 220;
-        KeyCode[']'] = 221;
-        KeyCode["'"] = 222;
-        ui.KeyCode = KeyCode;
-    })(ui = JS.ui || (JS.ui = {}));
-})(JS || (JS = {}));
-var KeyCode = JS.ui.KeyCode;
 var JS;
 (function (JS) {
     let fx;
@@ -10608,28 +10512,6 @@ var JS;
             FileSizeUnit["TB"] = "TB";
         })(FileSizeUnit = util.FileSizeUnit || (util.FileSizeUnit = {}));
         class Files {
-            static _createReader(listener) {
-                let reader = new FileReader();
-                if (listener) {
-                    util.Jsons.forEach(listener, (fn, key) => {
-                        if (fn)
-                            reader['on' + key] = fn;
-                    });
-                }
-                return reader;
-            }
-            static readAsArrayBuffer(file, listener) {
-                this._createReader(listener).readAsArrayBuffer(file);
-            }
-            static readAsBinaryString(file, listener) {
-                this._createReader(listener).readAsBinaryString(file);
-            }
-            static readAsDataURL(file, listener) {
-                this._createReader(listener).readAsDataURL(file);
-            }
-            static readAsText(file, listener) {
-                this._createReader(listener).readAsText(file);
-            }
             static getFileName(path) {
                 let pos = path.lastIndexOf('/');
                 if (pos < 0)
@@ -11211,6 +11093,412 @@ var UploaderConfig = JS.fx.UploaderConfig;
 var UploaderFaceMode = JS.fx.UploaderFaceMode;
 var JS;
 (function (JS) {
+    let ui;
+    (function (ui) {
+        let MouseButton;
+        (function (MouseButton) {
+            MouseButton[MouseButton["LEFT"] = 0] = "LEFT";
+            MouseButton[MouseButton["MIDDLE"] = 1] = "MIDDLE";
+            MouseButton[MouseButton["RIGHT"] = 2] = "RIGHT";
+        })(MouseButton = ui.MouseButton || (ui.MouseButton = {}));
+    })(ui = JS.ui || (JS.ui = {}));
+})(JS || (JS = {}));
+var MouseButton = JS.ui.MouseButton;
+var JS;
+(function (JS) {
+    let input;
+    (function (input) {
+        class Cursors {
+            static set(sty, el = document.body) {
+                el.style.cursor = sty;
+            }
+            static url(url, el = document.body) {
+                el.style.cursor = `url("${url}")`;
+            }
+        }
+        input.Cursors = Cursors;
+    })(input = JS.input || (JS.input = {}));
+})(JS || (JS = {}));
+var Cursors = JS.input.Cursors;
+var JS;
+(function (JS) {
+    let input;
+    (function (input) {
+        input.VK = {
+            BACK_SPACE: 8,
+            TAB: 9,
+            ENTER: 13,
+            SHIFT: 16,
+            CTRL: 17,
+            ALT: 18,
+            PAUSE: 19,
+            CAPS_LOCK: 20,
+            ESC: 27,
+            SPACE: 32,
+            PAGE_UP: 33,
+            PAGE_DOWN: 34,
+            END: 35,
+            HOME: 36,
+            LEFT: 37,
+            UP: 38,
+            RIGHT: 39,
+            DOWN: 40,
+            PRINT_SCREEN: 44,
+            INSERT: 45,
+            DELETE: 46,
+            KEY0: 48,
+            KEY1: 49,
+            KEY2: 50,
+            KEY3: 51,
+            KEY4: 52,
+            KEY5: 53,
+            KEY6: 54,
+            KEY7: 55,
+            KEY8: 56,
+            KEY9: 57,
+            A: 65,
+            B: 66,
+            C: 67,
+            D: 68,
+            E: 69,
+            F: 70,
+            G: 71,
+            H: 72,
+            I: 73,
+            J: 74,
+            K: 75,
+            L: 76,
+            M: 77,
+            N: 78,
+            O: 79,
+            P: 80,
+            Q: 81,
+            R: 82,
+            S: 83,
+            T: 84,
+            U: 85,
+            V: 86,
+            W: 87,
+            X: 88,
+            Y: 89,
+            Z: 90,
+            PAD0: 96,
+            PAD1: 97,
+            PAD2: 98,
+            PAD3: 99,
+            PAD4: 100,
+            PAD5: 101,
+            PAD6: 102,
+            PAD7: 103,
+            PAD8: 104,
+            PAD9: 105,
+            MULTIPLY: 106,
+            PLUS: 107,
+            SUBTRACT: 109,
+            DECIMAL: 110,
+            DIVIDE: 111,
+            F1: 112,
+            F2: 113,
+            F3: 114,
+            F4: 115,
+            F5: 116,
+            F6: 117,
+            F7: 118,
+            F8: 119,
+            F9: 120,
+            F10: 121,
+            F11: 122,
+            F12: 123,
+            NUM_LOCK: 144,
+            SCROLL_LOCK: 145,
+            META_LEFT: 91,
+            META_RIGHT: 93,
+            SEMICOLON: 186,
+            EQUAL_SIGN: 187,
+            COMMA: 188,
+            HYPHEN: 189,
+            PERIOD: 190,
+            SLASH: 191,
+            APOSTROPHE: 192,
+            LEFT_SQUARE_BRACKET: 219,
+            BACK_SLASH: 220,
+            RIGHT_SQUARE_BRACKET: 221,
+            QUOTE: 222
+        };
+    })(input = JS.input || (JS.input = {}));
+})(JS || (JS = {}));
+var VK = JS.input.VK;
+var JS;
+(function (JS) {
+    let input;
+    (function (input) {
+        let D = document;
+        class KeyEventInit {
+            constructor() {
+                this.target = null;
+                this.bubbles = false;
+                this.cancelable = false;
+                this.view = null;
+                this.ctrlKey = false;
+                this.altKey = false;
+                this.shiftKey = false;
+                this.metaKey = false;
+            }
+        }
+        input.KeyEventInit = KeyEventInit;
+        class MouseEventInit {
+            constructor() {
+                this.target = null;
+                this.bubbles = false;
+                this.cancelable = false;
+                this.view = null;
+                this.screenX = 0;
+                this.screenY = 0;
+                this.clientX = 0;
+                this.clientY = 0;
+                this.ctrlKey = false;
+                this.altKey = false;
+                this.shiftKey = false;
+                this.metaKey = false;
+                this.button = 0;
+                this.buttons = 0;
+                this.relatedTarget = null;
+            }
+        }
+        input.MouseEventInit = MouseEventInit;
+        class UIMocker {
+            static newKeyEvent(type, keyCode, args) {
+                let a = Jsons.union(new KeyEventInit(), args), doc = a.target ? a.target.ownerDocument : document;
+                a.view = a.view || doc.defaultView;
+                let eo = new KeyboardEvent(type, a);
+                Object.defineProperty(eo, 'keyCode', {
+                    value: keyCode,
+                    writable: true
+                });
+                if (a.target)
+                    Object.defineProperty(eo, 'target', {
+                        value: a.target,
+                        writable: true
+                    });
+                return eo;
+            }
+            static fireKeyEvent(type, keyCode, args) {
+                let n = (args && args.target) || window;
+                n.dispatchEvent(this.newKeyEvent(type, keyCode, args));
+            }
+            static newMouseEvent(type, args) {
+                let m = Jsons.union(new MouseEventInit(), args), doc = m.target ? m.target.ownerDocument : document, et = doc.createEvent('MouseEvents');
+                m.view = m.view || doc.defaultView;
+                let detail = type == 'click' || type == 'mousedown' || type == 'mouseup' ? 1 : (type == 'dblclick' ? 2 : 0);
+                et.initMouseEvent(type, m.bubbles, m.cancelable, m.view, detail, m.screenX, m.screenY, m.clientX, m.clientY, m.ctrlKey, m.altKey, m.shiftKey, m.metaKey, m.button, m.relatedTarget);
+                return et;
+            }
+            static fireMouseEvent(type, args) {
+                let n = (args && args.target) || window;
+                n.dispatchEvent(this.newMouseEvent(type, args));
+            }
+        }
+        input.UIMocker = UIMocker;
+    })(input = JS.input || (JS.input = {}));
+})(JS || (JS = {}));
+var UIMocker = JS.input.UIMocker;
+var JS;
+(function (JS) {
+    let input;
+    (function (input) {
+        class Keyboard {
+            constructor(el) {
+                this._mapping = {};
+                this._d = false;
+                let ele = el || window, m = this;
+                m._m = {};
+                m._q = new Queue(16);
+                m._busDown = new EventBus(ele);
+                m._busUp = new EventBus(ele);
+                ele.on('keydown', (e) => {
+                    let c = e.keyCode, sz = m._q.size(), repeat = sz > 0 && c == m._q.get(sz - 1);
+                    if (m._q.isFull())
+                        m._q.remove();
+                    if (!repeat)
+                        m._q.add(c);
+                    if (!Jsons.hasKey(m._m, c) || !repeat)
+                        m._m[c] = e.timeStamp;
+                    if (!repeat && Jsons.hasKey(m._m, c)) {
+                        let types = m._busDown.types();
+                        types.forEach(ty => {
+                            if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
+                                m._fireKeys(ty, c, m._busDown);
+                            if (m.isSeqKeys(ty) && m._endsWithCode(c, ty, ',') && m._isSeqKeysPressing(ty))
+                                m._fireKeys(ty, c, m._busDown);
+                            if (input.VK[ty] == c && m.isPressingKey(c))
+                                m._fireKeys(ty, c, m._busDown);
+                        });
+                    }
+                });
+                ele.on('keyup', (e) => {
+                    let c = e.keyCode;
+                    if (Jsons.hasKey(m._m, c)) {
+                        let types = m._busUp.types();
+                        types.forEach(ty => {
+                            if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
+                                m._fireKeys(ty, c, m._busUp);
+                            if (m.isSeqKeys(ty) && m._endsWithCode(c, ty, ',') && m._isSeqKeysPressing(ty))
+                                m._fireKeys(ty, c, m._busUp);
+                            if (input.VK[ty] == c && m.isPressingKey(c))
+                                m._fireKeys(ty, c, m._busUp);
+                        });
+                        delete m._m[e.keyCode];
+                    }
+                });
+            }
+            _fireKeys(ty, c, bus) {
+                bus.fire(input.UIMocker.newKeyEvent(ty, c), [this]);
+            }
+            _endsWithCode(c, ty, sn) {
+                return (this._mapping[ty] + sn).endsWith(c + sn);
+            }
+            isSeqKeys(k) {
+                return k && k.indexOf(',') > 0;
+            }
+            isHotKeys(k) {
+                return k && k.indexOf('+') > 0;
+            }
+            _on(k, fn, bus) {
+                let m = this, ty = m._keyChar(k);
+                if (!Jsons.hasKey(m._mapping, ty))
+                    m._mapping[ty] = m._numeric(ty, m.isHotKeys(ty) ? '+' : (m.isSeqKeys(ty) ? ',' : ''));
+                bus.on(ty, fn);
+            }
+            onKeyDown(k, fn) {
+                this._on(k, fn, this._busDown);
+            }
+            onKeyUp(k, fn) {
+                this._on(k, fn, this._busUp);
+            }
+            _off(bus, k) {
+                this._check();
+                bus.off(k ? this._keyChar(k) : undefined);
+            }
+            offKeyDown(k) {
+                this._off(this._busDown, k);
+            }
+            offKeyUp(k) {
+                this._off(this._busUp, k);
+            }
+            _equalsSeqkeys(keys, keyCodes) {
+                let sa = '';
+                keys.forEach((b, i) => {
+                    if (i == 0) {
+                        sa += input.VK[b];
+                    }
+                    else {
+                        sa += `,${input.VK[b]}`;
+                    }
+                });
+                return keyCodes.endsWith(sa + ']');
+            }
+            _isSeqKeysPressing(k) {
+                let a = k.split('\,'), l = a.length;
+                if (l == 1)
+                    return false;
+                let lk = a[l - 1], m = this, codes = this._q.toString();
+                if (m.isHotKeys(lk)) {
+                    if (!m._isHotKeysPressing(lk))
+                        return false;
+                    a.remove(l - 1);
+                    a.add(lk.split('\+'));
+                }
+                else {
+                    if (!m.isPressingKey(lk))
+                        return false;
+                }
+                return this._equalsSeqkeys(a, codes);
+            }
+            _keyChar(s) {
+                return s.replace(/\s*/g, '').toUpperCase();
+            }
+            _isHotKeysPressing(k) {
+                let m = this, s = m._keyChar(k), a = s.split('\+');
+                if (a.length == 1)
+                    return false;
+                return a.every((b, i) => {
+                    if (i > 0 && !m.beforeKeyDown(a[i - 1], b))
+                        return false;
+                    return m.isPressingKey(b);
+                });
+            }
+            _numeric(ty, sign) {
+                if (!sign)
+                    return input.VK[ty];
+                let a = ty.split(sign), sk = '';
+                a.forEach(k => {
+                    sk += `${!sk ? '' : sign}${input.VK[k.toUpperCase()]}`;
+                });
+                return sk;
+            }
+            isPressingKeys(keys) {
+                let m = this, k = m._keyChar(keys);
+                if (!k)
+                    return false;
+                if (m.isSeqKeys(k)) {
+                    return m._isSeqKeysPressing(k);
+                }
+                else if (m.isHotKeys(k)) {
+                    return m._isHotKeysPressing(k);
+                }
+                return this.isPressingKey(input.VK[k]);
+            }
+            isPressingKey(c) {
+                let m = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[m._keyChar(c)]);
+                return Jsons.hasKey(m._m, n);
+            }
+            getPressingQueue() {
+                return this._q.clone();
+            }
+            getKeyDownTime(c) {
+                let m = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[m._keyChar(c)]);
+                return !Jsons.hasKey(m._m, n) ? 0 : m._m[n];
+            }
+            beforeKeyDown(k1, k2) {
+                let d1 = this.getKeyDownTime(k1), d2 = this.getKeyDownTime(k2);
+                return d1 > 0 && d2 > 0 && d1 < d2;
+            }
+            off() {
+                this._check();
+                this._busDown.off();
+                this._busUp.off();
+            }
+            clear(c) {
+                let m = this;
+                if (c == void 0) {
+                    m._mapping = {};
+                    m._m = {};
+                    m._q.clear();
+                    return;
+                }
+                let a = Types.isNumber(c) ? [c] : c;
+                a.forEach(k => {
+                    m._m[k] = null;
+                });
+            }
+            _check() {
+                if (this._d)
+                    throw new NotHandledError();
+            }
+            destroy() {
+                let m = this;
+                m._d = true;
+                m.clear();
+                m._busDown.destroy();
+                m._busUp.destroy();
+            }
+        }
+        input.Keyboard = Keyboard;
+    })(input = JS.input || (JS.input = {}));
+})(JS || (JS = {}));
+var Keyboard = JS.input.Keyboard;
+var JS;
+(function (JS) {
     let ioc;
     (function (ioc) {
         class Components {
@@ -11688,6 +11976,41 @@ var JS;
 (function (JS) {
     let ui;
     (function (ui) {
+        class ClipBoard {
+            static copyTarget(clicker, target) {
+                this._do('copy', clicker, target);
+            }
+            static cutTarget(clicker, target) {
+                this._do('cut', clicker, target);
+            }
+            static _do(action, clicker, target) {
+                Bom.ready(() => {
+                    let cli = Dom.$1(clicker), tar = Dom.$1(target);
+                    if (!cli || !tar)
+                        throw new NotFoundError('The clicker or target not found!');
+                    cli.attr('data-clipboard-action', action);
+                    cli.attr('data-clipboard-target', '#' + tar.attr('id'));
+                    new ClipboardJS('#' + cli.attr('id'));
+                });
+            }
+            static copyText(clicker, text) {
+                Bom.ready(() => {
+                    let cli = Dom.$1(clicker);
+                    if (cli)
+                        throw new NotFoundError('The clicker not found!');
+                    cli.attr('data-clipboard-text', text);
+                    new ClipboardJS('#' + cli.attr('id'));
+                });
+            }
+        }
+        ui.ClipBoard = ClipBoard;
+    })(ui = JS.ui || (JS.ui = {}));
+})(JS || (JS = {}));
+var ClipBoard = JS.ui.ClipBoard;
+var JS;
+(function (JS) {
+    let ui;
+    (function (ui) {
         class CustomElement extends HTMLElement {
             constructor(cfg) {
                 super();
@@ -11715,6 +12038,31 @@ var JS;
     })(ui = JS.ui || (JS.ui = {}));
 })(JS || (JS = {}));
 var CustomElement = JS.ui.CustomElement;
+var JS;
+(function (JS) {
+    let ui;
+    (function (ui) {
+        class Templator {
+            constructor() {
+                this._hb = Handlebars.create();
+            }
+            compile(tpl, options) {
+                return this._hb.compile(tpl, options);
+            }
+            registerHelper(name, fn) {
+                this._hb.registerHelper(name, fn);
+            }
+            unregisterHelper(name) {
+                this._hb.unregisterHelper(name);
+            }
+            static safeString(s) {
+                return new Handlebars.SafeString(s);
+            }
+        }
+        ui.Templator = Templator;
+    })(ui = JS.ui || (JS.ui = {}));
+})(JS || (JS = {}));
+var Templator = JS.ui.Templator;
 var JS;
 (function (JS) {
     let unit;
@@ -12157,41 +12505,6 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        class ClipBoard {
-            static copyTarget(clicker, target) {
-                this._do('copy', clicker, target);
-            }
-            static cutTarget(clicker, target) {
-                this._do('cut', clicker, target);
-            }
-            static _do(action, clicker, target) {
-                util.Bom.ready(() => {
-                    let cli = util.Dom.$1(clicker), tar = util.Dom.$1(target);
-                    if (!cli || !tar)
-                        throw new NotFoundError('The clicker or target not found!');
-                    cli.attr('data-clipboard-action', action);
-                    cli.attr('data-clipboard-target', '#' + tar.attr('id'));
-                    new ClipboardJS('#' + cli.attr('id'));
-                });
-            }
-            static copyText(clicker, text) {
-                util.Bom.ready(() => {
-                    let cli = util.Dom.$1(clicker);
-                    if (cli)
-                        throw new NotFoundError('The clicker not found!');
-                    cli.attr('data-clipboard-text', text);
-                    new ClipboardJS('#' + cli.attr('id'));
-                });
-            }
-        }
-        util.ClipBoard = ClipBoard;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var ClipBoard = JS.util.ClipBoard;
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
         var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
         class Random {
             static number(range, isInt) {
@@ -12237,31 +12550,6 @@ var JS;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
 var Random = JS.util.Random;
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        class Templator {
-            constructor() {
-                this._hb = Handlebars.create();
-            }
-            compile(tpl, options) {
-                return this._hb.compile(tpl, options);
-            }
-            registerHelper(name, fn) {
-                this._hb.registerHelper(name, fn);
-            }
-            unregisterHelper(name) {
-                this._hb.unregisterHelper(name);
-            }
-            static safeString(s) {
-                return new Handlebars.SafeString(s);
-            }
-        }
-        util.Templator = Templator;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Templator = JS.util.Templator;
 var JS;
 (function (JS) {
     let util;

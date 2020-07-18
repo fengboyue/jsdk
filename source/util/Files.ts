@@ -92,15 +92,6 @@ module JS {
             GB = 'GB',
             TB = 'TB'
         }
-
-        export type FileReadListener = {
-            abort?: (this: File, e: ProgressEvent) => void;
-            error?: (this: File, e: ProgressEvent) => void;
-            load?: (this: File, e: ProgressEvent) => void;
-            loadend?: (this: File, e: ProgressEvent) => void;
-            loadstart?: (this: File, e: ProgressEvent) => void;
-            progress?: (this: File, e: ProgressEvent) => void;
-        }
         /**
          * File Helper
          */
@@ -109,32 +100,6 @@ module JS {
             public static ONE_MB = 1048576;
             public static ONE_GB = 1073741824;
             public static ONE_TB = 1099511627776;
-
-            private static _createReader(listener: FileReadListener) {
-                let reader = new FileReader();
-                if (listener) {
-                    Jsons.forEach(listener, (fn: Function, key: string) => {
-                        if (fn) reader['on' + key] = fn;
-                    })
-                }
-                return reader;
-            }
-
-            public static readAsArrayBuffer(file: File, listener: FileReadListener) {
-                this._createReader(listener).readAsArrayBuffer(file);
-            }
-
-            public static readAsBinaryString(file: File, listener: FileReadListener) {
-                this._createReader(listener).readAsBinaryString(file);
-            }
-
-            public static readAsDataURL(file: File, listener: FileReadListener) {
-                this._createReader(listener).readAsDataURL(file);
-            }
-
-            public static readAsText(file: File, listener: FileReadListener) {
-                this._createReader(listener).readAsText(file);
-            }
 
             public static getFileName(path: string): string {
                 let pos = path.lastIndexOf('/');

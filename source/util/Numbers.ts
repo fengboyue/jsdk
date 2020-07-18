@@ -17,7 +17,7 @@ interface Number {
      * 返回数字字符串
      * @return {string} 
      */
-    stringfy(): string;
+    stringify(): string;
 
     /**
      * Returns a new round number.<br>
@@ -168,7 +168,7 @@ interface Number {
 (function () {
     var N = Number, $N = <any>N.prototype;
 
-    $N.stringfy = function (): string {
+    $N.stringify = function (): string {
         if (this.isNaN()) return null;
         if (this.isZero()) return '0';
 
@@ -210,7 +210,7 @@ interface Number {
      */
     $N.format = function (dLen?: number): string {
         let d:number = dLen == void 0 || !Number.isFinite(dLen) ? this.fractionLength() : dLen,
-            s:string = this.round(d).abs().stringfy(),
+            s:string = this.round(d).abs().stringify(),
             sign = this.isNegative() ? '-' : '';
 
         //BUGFIX: 微信浏览器下Number.toLocalString方法会返回空，改用自己的f3函数实现逗号分割
@@ -262,8 +262,8 @@ interface Number {
         if (v.valueOf() == 0) return 0;
         if (this.isInt() && v.isInt()) return v.valueOf() * this.valueOf();
 
-        let s1 = this.stringfy(this),
-            s2 = v.stringfy(),
+        let s1 = this.stringify(this),
+            s2 = v.stringify(),
             m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0,
             m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0,
             n1 = N(s1.replace('.', '')), n2 = N(s2.replace('.', ''));
@@ -276,8 +276,8 @@ interface Number {
         const v = N(n);
         if (v.valueOf() == 0) throw new ArithmeticError('Can not divide an Zero.');
 
-        let s1 = this.stringfy(),
-            s2 = v.stringfy(),
+        let s1 = this.stringify(),
+            s2 = v.stringify(),
             m1 = s1.indexOf('.') >= 0 ? s1.split(".")[1].length : 0,
             m2 = s2.indexOf('.') >= 0 ? s2.split(".")[1].length : 0,
             n1 = N(s1.replace('.', '')),
@@ -323,7 +323,7 @@ interface Number {
     $N.fractionLength = function (): number {
         if (this.isInt() || this.isNaN()) return 0;
 
-        let s = this.stringfy();
+        let s = this.stringify();
         return s.slice(s.indexOf('.') + 1).length;
     }
     $N.integerLength = function (): number {
@@ -334,13 +334,13 @@ interface Number {
     $N.fractionalPart = function(): string{
         if (this.isInt() || this.isNaN()) return '';
 
-        let s = this.stringfy();
+        let s = this.stringify();
         return s.slice(s.indexOf('.') + 1);
     }
     $N.integralPart = function (): string {
         if (this.isNaN()) return '';
 
-        let s:string = this.stringfy(), i = s.indexOf('.');
+        let s:string = this.stringify(), i = s.indexOf('.');
         if(i<0) return s;
         return s.slice(0,i);
     }

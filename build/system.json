@@ -7,8 +7,8 @@
     },
     "include": [
         "../libs/reflect/2.0.0/reflect.js",
-        "../source/util/*.ts",
         "../source/reflect/*.ts",
+        "../source/util/*.ts",
         "../source/lang/*.ts"
     ]
 } 

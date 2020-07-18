@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>lang | JSDK 2.1.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.1.0 API">
+	<title>lang | JSDK 2.2.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.2.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.1.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.2.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -106,7 +106,7 @@
 						<section class="tsd-index-section ">
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-namespace"><a href="../interfaces/js.lang.aopadvisor.html" class="tsd-kind-icon">Aop<wbr>Advisor</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter"><a href="../interfaces/js.lang.aopadvisor.html" class="tsd-kind-icon">Aop<wbr>Advisor</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter"><a href="../interfaces/js.lang.iterware.html" class="tsd-kind-icon">Iterware</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter"><a href="../interfaces/js.lang.klass.html" class="tsd-kind-icon">Klass</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-namespace"><a href="../interfaces/js.lang.runnable.html" class="tsd-kind-icon">Runnable</a></li>
@@ -753,7 +753,7 @@
 					<a name="_aop" class="tsd-anchor"></a>
 					<h3>_aop</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">_aop<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, fn<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/js.lang.aopadvisor.html" class="tsd-signature-type">AopAdvisor</a>, anno<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PropertyDescriptor</span></li>
+						<li class="tsd-signature tsd-kind-icon">_aop<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, fn<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/js.lang.aopadvisor.html" class="tsd-signature-type">AopAdvisor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, anno<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PropertyDescriptor</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -765,7 +765,7 @@
 									<h5>args: <span class="tsd-signature-type">ArrayLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
-									<h5>fn: <a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/js.lang.aopadvisor.html" class="tsd-signature-type">AopAdvisor</a></h5>
+									<h5>fn: <a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/js.lang.aopadvisor.html" class="tsd-signature-type">AopAdvisor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> anno: <span class="tsd-signature-type">string</span></h5>
@@ -882,7 +882,7 @@
 					<a name="after" class="tsd-anchor"></a>
 					<h3>after</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
-						<li class="tsd-signature tsd-kind-icon">after<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, returns<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">after<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>returns<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -896,19 +896,16 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>fn: <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, returns<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>fn: <span class="tsd-signature-symbol">(</span>returns<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, returns<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>returns<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
-														<li>
-															<h5>this: <span class="tsd-signature-type">any</span></h5>
-														</li>
 														<li>
 															<h5>returns: <span class="tsd-signature-type">any</span></h5>
 														</li>
@@ -928,7 +925,7 @@
 					<a name="aop" class="tsd-anchor"></a>
 					<h3>aop</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
-						<li class="tsd-signature tsd-kind-icon">aop<span class="tsd-signature-symbol">(</span>advisor<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.aopadvisor.html" class="tsd-signature-type">AopAdvisor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">aop<span class="tsd-signature-symbol">(</span>advisor<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.aopadvisor.html" class="tsd-signature-type">AopAdvisor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -942,7 +939,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>advisor: <a href="../interfaces/js.lang.aopadvisor.html" class="tsd-signature-type">AopAdvisor</a></h5>
+									<h5>advisor: <a href="../interfaces/js.lang.aopadvisor.html" class="tsd-signature-type">AopAdvisor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
@@ -953,7 +950,7 @@
 					<a name="around" class="tsd-anchor"></a>
 					<h3>around</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
-						<li class="tsd-signature tsd-kind-icon">around<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, fn<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">around<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -967,19 +964,16 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>fn: <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, fn<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></h5>
+									<h5>fn: <span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, fn<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
-														<li>
-															<h5>this: <span class="tsd-signature-type">any</span></h5>
-														</li>
 														<li>
 															<h5>fn: <a href="../interfaces/js.lang.klass.html#function" class="tsd-signature-type">Function</a></h5>
 														</li>
@@ -1002,7 +996,7 @@
 					<a name="before" class="tsd-anchor"></a>
 					<h3>before</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
-						<li class="tsd-signature tsd-kind-icon">before<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">before<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -1016,19 +1010,16 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>fn: <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>fn: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
-														<li>
-															<h5>this: <span class="tsd-signature-type">any</span></h5>
-														</li>
 														<li>
 															<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
 														</li>
@@ -1077,7 +1068,7 @@
 					<a name="throws" class="tsd-anchor"></a>
 					<h3>throws</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
-						<li class="tsd-signature tsd-kind-icon">throws<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, e<span class="tsd-signature-symbol">: </span><a href="../classes/js.lang.jserror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">throws<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="../classes/js.lang.jserror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -1091,19 +1082,16 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>fn: <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, e<span class="tsd-signature-symbol">: </span><a href="../classes/js.lang.jserror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>fn: <span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="../classes/js.lang.jserror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, e<span class="tsd-signature-symbol">: </span><a href="../classes/js.lang.jserror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="../classes/js.lang.jserror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
-														<li>
-															<h5>this: <span class="tsd-signature-type">any</span></h5>
-														</li>
 														<li>
 															<h5>e: <a href="../classes/js.lang.jserror.html#error" class="tsd-signature-type">Error</a></h5>
 														</li>
@@ -1255,6 +1243,9 @@
 								<a href="js.fx.html">fx</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.input.html">input</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.ioc.html">ioc</a>
 							</li>
 							<li class="current tsd-kind-namespace tsd-parent-kind-namespace">
@@ -1347,7 +1338,7 @@
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
 						<a href="../classes/js.lang.timeouterror.html" class="tsd-kind-icon">Timeout<wbr>Error</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
 						<a href="../interfaces/js.lang.aopadvisor.html" class="tsd-kind-icon">Aop<wbr>Advisor</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">

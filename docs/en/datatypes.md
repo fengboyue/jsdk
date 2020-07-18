@@ -167,16 +167,16 @@ JSDK extends the prototype chain of the Number object.
 
 For example: Add stringfy method, can transfer the number even represented by scientific notation to a numeric string in normal format.
 ```javascript
-Assert.equal(Number(-1e-7).stringfy(), '-0.0000001');
-Assert.equal(Number(2/3).stringfy(), '0.6666666666666666');
+Assert.equal(Number(-1e-7).stringify(), '-0.0000001');
+Assert.equal(Number(2/3).stringify(), '0.6666666666666666');
 ```
 
 Another example: Add high-precision add/subtract/multiple/divide methods to solve the problem of float operation error.
 ```javascript
-Assert.equal(Number(0.1).add(0.2).stringfy(), '0.3');
-Assert.equal(Number(0.15).sub(0.1).stringfy(), '0.05');
-Assert.equal(Number(0.1).mul(0.2).stringfy(), '0.02');
-Assert.equal(Number(0.15).div(0.2).stringfy(), '0.75');
+Assert.equal(Number(0.1).add(0.2).stringify(), '0.3');
+Assert.equal(Number(0.15).sub(0.1).stringify(), '0.05');
+Assert.equal(Number(0.1).mul(0.2).stringify(), '0.02');
+Assert.equal(Number(0.15).div(0.2).stringify(), '0.75');
 ```
 * *See api doc for more methods*
 

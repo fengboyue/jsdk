@@ -41,8 +41,8 @@ JSVP推荐的工程目录如下：
 记得在<code>login_user.html</code>中静态加载JSDK核心库：
 
 ```html
-<script src="/libs/jsdk/2.0.0/system.js"></script>
-<script src="/libs/jsdk/2.0.0/jsdk-config.js"></script>
+<script src="/libs/jsdk/{JSDK-VERSION}/system.js"></script>
+<script src="/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script>
 ```
 
 2. 在source目录中创建这些目录及文件：
@@ -66,7 +66,7 @@ JSVP推荐的工程目录如下：
 ```javascript
 JS.config({
     minimize: false, //for develop mode
-    jsdkRoot: '/libs/jsdk/2.0.0',
+    jsdkRoot: '/libs/jsdk/{JSDK-VERSION}',
     libRoot: '/libs'
 })
 App.init({

@@ -15,7 +15,6 @@
 /// <reference path="../ui/Lengths.ts"/>
 /// <reference path="../ui/Colors.ts"/>
 /// <reference path='../ui/Placements.ts'/>
-/// <reference path="../ui/KeyCode.ts"/>
 /// <reference path="../ui/IWidget.ts"/>
 /// <reference path="../util/URI.ts"/>
 module JS {

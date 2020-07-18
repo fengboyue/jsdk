@@ -22,7 +22,9 @@ uglifyjs        首选压缩工具，可选
 ```
 
 2. 拷贝 <code>/{JSDK安装目录}/libs/</code>下的所有文件到 <code>{工程目录}/libs/</code>;<br>
-再拷贝 <code>/{JSDK安装目录}/dist/</code> 下的所有文件到 <code>{工程目录}/libs/jsdk/2.0.0/</code>。
+再拷贝 <code>/{JSDK安装目录}/dist/</code> 下的所有文件到 <code>{工程目录}/libs/jsdk/{JSDK-VERSION}/</code>。
+
+* *JSDK-VERSION就是你安装的JSDK的版本号，例如：2.0.0, 2.2.0等*
 
 ### 工程配置
 为了让你工程中的JSDK能正确加载已配置的类库，那么你需要修改JSDK的全局配置。
@@ -31,7 +33,7 @@ uglifyjs        首选压缩工具，可选
 * *此URL可以使用相对地址*
 
 <b>[方法一]</b><br>
-直接修改JSDK的全局配置文件<code>{工程目录}/libs/jsdk/2.0.0/jsdk-config.js</code>
+直接修改JSDK的全局配置文件<code>{工程目录}/libs/jsdk/{JSDK-VERSION}/jsdk-config.js</code>
 ```
 libRoot:  '{工程网址}/libs',
 ```
@@ -53,9 +55,9 @@ JS.config({
 
 ```html
 <!--JSDK's necessary kernel file-->
-<script src="http://mydomain/myproject/libs/jsdk/2.0.0/system.min.js"></script>
+<script src="http://mydomain/myproject/libs/jsdk/{JSDK-VERSION}/system.min.js"></script>
 <!--JSDK's global config file-->
-<script src="http://mydomain/myproject/libs/jsdk/2.0.0/jsdk-config.js"></script>
+<script src="http://mydomain/myproject/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script>
 ```
 
 2. 加载JSDK中的已配置类库。
@@ -65,7 +67,7 @@ JS.config({
 <b>[动态加载]</b><br>
 在TS／JS代码中加载类库，这是推荐的方式。
 ```javascript
-/// <reference path="../libs/jsdk/2.0.0/jsdk.d.ts" /> 
+/// <reference path="../libs/jsdk/{JSDK-VERSION}/jsdk.d.ts" /> 
 JS.imports([
     '$jsunit', 
 ]).then(()=>{
@@ -75,7 +77,7 @@ JS.imports([
 <b>[静态加载]</b><br>
 在HTML代码中加载类库。
 ```html
-<script src="http://mydomain/myproject/libs/jsdk/2.0.0/jsunit.min.js"></script>
+<script src="http://mydomain/myproject/libs/jsdk/{JSDK-VERSION}/jsunit.min.js"></script>
 ```
 
 ### TS工程编译

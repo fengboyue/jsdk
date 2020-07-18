@@ -9,80 +9,6 @@ var JS;
 (function (JS) {
     let test;
     (function (test) {
-        let ColorsTest = class ColorsTest extends TestCase {
-            test1() {
-                Assert.equal({ r: 39, g: 174, b: 96, a: 1 }, Colors.hex2rgba('27ae60'));
-                Assert.equal({ r: 39, g: 174, b: 96, a: 1 }, Colors.hex2rgba('#27ae60'));
-                Assert.equal({ r: 39, g: 174, b: 96, a: 1 }, Colors.hex2rgba('#27ae60ff'));
-                Assert.equal({ r: 255, g: 255, b: 255, a: 1 }, Colors.hex2rgba('fff'));
-                Assert.equal({ r: 255, g: 255, b: 255, a: 1 }, Colors.hex2rgba('#fff'));
-                Assert.equal({ r: 0, g: 0, b: 0, a: 1 }, Colors.hex2rgba('000'));
-                Assert.equal({ r: 0, g: 0, b: 0, a: 1 }, Colors.hex2rgba('#000'));
-                Assert.equal({ r: 0, g: 0, b: 0, a: 0 }, Colors.hex2rgba('#0000'));
-                Assert.equal({ r: 0, g: 0, b: 0, a: 1 }, Colors.hex2rgba('000f'));
-            }
-            test2() {
-                Assert.equal('#000000', Colors.rgba2hex(0, 0, 0));
-                Assert.equal('#ffffff', Colors.rgba2hex(255, 255, 255));
-                Assert.equal('#000000ff', Colors.rgba2hex(0, 0, 0, 1));
-                Assert.equal('#ffffff00', Colors.rgba2hex(255, 255, 255, 0));
-                Assert.equal('#27ae60', Colors.rgba2hex(39, 174, 96));
-                Assert.equal('#27ae6000', Colors.rgba2hex(39, 174, 96, 0));
-                Assert.equal('#27ae60ff', Colors.rgba2hex(39, 174, 96, 1));
-            }
-            test3() {
-                Assert.equal('#0000000c', Colors.rgba2hex(0, 0, 0, 0.05));
-                Assert.equal('#00000019', Colors.rgba2hex(0, 0, 0, 0.10));
-                Assert.equal('#00000026', Colors.rgba2hex(0, 0, 0, 0.15));
-                Assert.equal('#00000033', Colors.rgba2hex(0, 0, 0, 0.20));
-                Assert.equal('#0000003f', Colors.rgba2hex(0, 0, 0, 0.25));
-                Assert.equal('#0000004c', Colors.rgba2hex(0, 0, 0, 0.30));
-                Assert.equal('#00000059', Colors.rgba2hex(0, 0, 0, 0.35));
-                Assert.equal('#00000066', Colors.rgba2hex(0, 0, 0, 0.40));
-                Assert.equal('#00000072', Colors.rgba2hex(0, 0, 0, 0.45));
-                Assert.equal('#0000007f', Colors.rgba2hex(0, 0, 0, 0.50));
-                Assert.equal('#0000008c', Colors.rgba2hex(0, 0, 0, 0.55));
-                Assert.equal('#00000099', Colors.rgba2hex(0, 0, 0, 0.60));
-                Assert.equal('#000000a5', Colors.rgba2hex(0, 0, 0, 0.65));
-                Assert.equal('#000000b2', Colors.rgba2hex(0, 0, 0, 0.70));
-                Assert.equal('#000000bf', Colors.rgba2hex(0, 0, 0, 0.75));
-                Assert.equal('#000000cc', Colors.rgba2hex(0, 0, 0, 0.80));
-                Assert.equal('#000000d8', Colors.rgba2hex(0, 0, 0, 0.85));
-                Assert.equal('#000000e5', Colors.rgba2hex(0, 0, 0, 0.90));
-                Assert.equal('#000000f2', Colors.rgba2hex(0, 0, 0, 0.95));
-            }
-            test4() {
-                Assert.equal(0.05, Colors.hex2rgba('#0000000c').a);
-                Assert.equal(0.10, Colors.hex2rgba('#00000019').a);
-                Assert.equal(0.15, Colors.hex2rgba('#00000026').a);
-                Assert.equal(0.20, Colors.hex2rgba('#00000033').a);
-                Assert.equal(0.25, Colors.hex2rgba('#0000003f').a);
-                Assert.equal(0.30, Colors.hex2rgba('#0000004c').a);
-                Assert.equal(0.35, Colors.hex2rgba('#00000059').a);
-                Assert.equal(0.40, Colors.hex2rgba('#00000066').a);
-                Assert.equal(0.45, Colors.hex2rgba('#00000072').a);
-                Assert.equal(0.50, Colors.hex2rgba('#0000007f').a);
-                Assert.equal(0.55, Colors.hex2rgba('#0000008c').a);
-                Assert.equal(0.60, Colors.hex2rgba('#00000099').a);
-                Assert.equal(0.65, Colors.hex2rgba('#000000a5').a);
-                Assert.equal(0.70, Colors.hex2rgba('#000000b2').a);
-                Assert.equal(0.75, Colors.hex2rgba('#000000bf').a);
-                Assert.equal(0.80, Colors.hex2rgba('#000000cc').a);
-                Assert.equal(0.85, Colors.hex2rgba('#000000d8').a);
-                Assert.equal(0.90, Colors.hex2rgba('#000000e5').a);
-                Assert.equal(0.95, Colors.hex2rgba('#000000f2').a);
-            }
-        };
-        ColorsTest = __decorate([
-            klass('JS.test.ColorsTest')
-        ], ColorsTest);
-        test.ColorsTest = ColorsTest;
-    })(test = JS.test || (JS.test = {}));
-})(JS || (JS = {}));
-var JS;
-(function (JS) {
-    let test;
-    (function (test) {
         let BiMapTest = class BiMapTest extends TestCase {
             constructor() {
                 super(...arguments);
@@ -546,6 +472,80 @@ var JS;
             klass('JS.test.ClassTest')
         ], ClassTest);
         test_1.ClassTest = ClassTest;
+    })(test = JS.test || (JS.test = {}));
+})(JS || (JS = {}));
+var JS;
+(function (JS) {
+    let test;
+    (function (test) {
+        let ColorsTest = class ColorsTest extends TestCase {
+            test1() {
+                Assert.equal({ r: 39, g: 174, b: 96, a: 1 }, Colors.hex2rgba('27ae60'));
+                Assert.equal({ r: 39, g: 174, b: 96, a: 1 }, Colors.hex2rgba('#27ae60'));
+                Assert.equal({ r: 39, g: 174, b: 96, a: 1 }, Colors.hex2rgba('#27ae60ff'));
+                Assert.equal({ r: 255, g: 255, b: 255, a: 1 }, Colors.hex2rgba('fff'));
+                Assert.equal({ r: 255, g: 255, b: 255, a: 1 }, Colors.hex2rgba('#fff'));
+                Assert.equal({ r: 0, g: 0, b: 0, a: 1 }, Colors.hex2rgba('000'));
+                Assert.equal({ r: 0, g: 0, b: 0, a: 1 }, Colors.hex2rgba('#000'));
+                Assert.equal({ r: 0, g: 0, b: 0, a: 0 }, Colors.hex2rgba('#0000'));
+                Assert.equal({ r: 0, g: 0, b: 0, a: 1 }, Colors.hex2rgba('000f'));
+            }
+            test2() {
+                Assert.equal('#000000', Colors.rgba2hex(0, 0, 0));
+                Assert.equal('#ffffff', Colors.rgba2hex(255, 255, 255));
+                Assert.equal('#000000ff', Colors.rgba2hex(0, 0, 0, 1));
+                Assert.equal('#ffffff00', Colors.rgba2hex(255, 255, 255, 0));
+                Assert.equal('#27ae60', Colors.rgba2hex(39, 174, 96));
+                Assert.equal('#27ae6000', Colors.rgba2hex(39, 174, 96, 0));
+                Assert.equal('#27ae60ff', Colors.rgba2hex(39, 174, 96, 1));
+            }
+            test3() {
+                Assert.equal('#0000000c', Colors.rgba2hex(0, 0, 0, 0.05));
+                Assert.equal('#00000019', Colors.rgba2hex(0, 0, 0, 0.10));
+                Assert.equal('#00000026', Colors.rgba2hex(0, 0, 0, 0.15));
+                Assert.equal('#00000033', Colors.rgba2hex(0, 0, 0, 0.20));
+                Assert.equal('#0000003f', Colors.rgba2hex(0, 0, 0, 0.25));
+                Assert.equal('#0000004c', Colors.rgba2hex(0, 0, 0, 0.30));
+                Assert.equal('#00000059', Colors.rgba2hex(0, 0, 0, 0.35));
+                Assert.equal('#00000066', Colors.rgba2hex(0, 0, 0, 0.40));
+                Assert.equal('#00000072', Colors.rgba2hex(0, 0, 0, 0.45));
+                Assert.equal('#0000007f', Colors.rgba2hex(0, 0, 0, 0.50));
+                Assert.equal('#0000008c', Colors.rgba2hex(0, 0, 0, 0.55));
+                Assert.equal('#00000099', Colors.rgba2hex(0, 0, 0, 0.60));
+                Assert.equal('#000000a5', Colors.rgba2hex(0, 0, 0, 0.65));
+                Assert.equal('#000000b2', Colors.rgba2hex(0, 0, 0, 0.70));
+                Assert.equal('#000000bf', Colors.rgba2hex(0, 0, 0, 0.75));
+                Assert.equal('#000000cc', Colors.rgba2hex(0, 0, 0, 0.80));
+                Assert.equal('#000000d8', Colors.rgba2hex(0, 0, 0, 0.85));
+                Assert.equal('#000000e5', Colors.rgba2hex(0, 0, 0, 0.90));
+                Assert.equal('#000000f2', Colors.rgba2hex(0, 0, 0, 0.95));
+            }
+            test4() {
+                Assert.equal(0.05, Colors.hex2rgba('#0000000c').a);
+                Assert.equal(0.10, Colors.hex2rgba('#00000019').a);
+                Assert.equal(0.15, Colors.hex2rgba('#00000026').a);
+                Assert.equal(0.20, Colors.hex2rgba('#00000033').a);
+                Assert.equal(0.25, Colors.hex2rgba('#0000003f').a);
+                Assert.equal(0.30, Colors.hex2rgba('#0000004c').a);
+                Assert.equal(0.35, Colors.hex2rgba('#00000059').a);
+                Assert.equal(0.40, Colors.hex2rgba('#00000066').a);
+                Assert.equal(0.45, Colors.hex2rgba('#00000072').a);
+                Assert.equal(0.50, Colors.hex2rgba('#0000007f').a);
+                Assert.equal(0.55, Colors.hex2rgba('#0000008c').a);
+                Assert.equal(0.60, Colors.hex2rgba('#00000099').a);
+                Assert.equal(0.65, Colors.hex2rgba('#000000a5').a);
+                Assert.equal(0.70, Colors.hex2rgba('#000000b2').a);
+                Assert.equal(0.75, Colors.hex2rgba('#000000bf').a);
+                Assert.equal(0.80, Colors.hex2rgba('#000000cc').a);
+                Assert.equal(0.85, Colors.hex2rgba('#000000d8').a);
+                Assert.equal(0.90, Colors.hex2rgba('#000000e5').a);
+                Assert.equal(0.95, Colors.hex2rgba('#000000f2').a);
+            }
+        };
+        ColorsTest = __decorate([
+            klass('JS.test.ColorsTest')
+        ], ColorsTest);
+        test.ColorsTest = ColorsTest;
     })(test = JS.test || (JS.test = {}));
 })(JS || (JS = {}));
 var JS;
@@ -1181,8 +1181,8 @@ var JS;
     (function (test) {
         let NumbersTest = class NumbersTest extends TestCase {
             test1() {
-                Assert.equal(Number(-1e-7).stringfy(), '-0.0000001');
-                Assert.equal(Number(2 / 3).stringfy(), '0.6666666666666666');
+                Assert.equal(Number(-1e-7).stringify(), '-0.0000001');
+                Assert.equal(Number(2 / 3).stringify(), '0.6666666666666666');
             }
             test2() {
                 Assert.equal(Number(-1e-7).format(), '-0.0000001');
@@ -1193,25 +1193,25 @@ var JS;
             }
             test3() {
                 let n1 = Number(0.5), n2 = Number(78.1112223335), n3 = Number(535);
-                Assert.equal(n1.round(0).stringfy(), '1');
-                Assert.equal(n2.round(9).stringfy(), '78.111222334');
-                Assert.equal(n3.round(2).stringfy(), '535');
+                Assert.equal(n1.round(0).stringify(), '1');
+                Assert.equal(n2.round(9).stringify(), '78.111222334');
+                Assert.equal(n3.round(2).stringify(), '535');
             }
             test4() {
                 let n1 = Number(0.5), n2 = Number(78.5112223335), n3 = Number(-535);
-                Assert.equal(n1.toInt().stringfy(), '1');
-                Assert.equal(n2.toInt().stringfy(), '79');
-                Assert.equal(n3.toInt().stringfy(), '-535');
+                Assert.equal(n1.toInt().stringify(), '1');
+                Assert.equal(n2.toInt().stringify(), '79');
+                Assert.equal(n3.toInt().stringify(), '-535');
             }
             test5() {
                 Assert.true(Number(78.567).equals(78.567));
                 Assert.true(Number(78.5675).equals(78.568, 3));
             }
             test6() {
-                Assert.equal(Number(0.1).add(0.2).stringfy(), '0.3');
-                Assert.equal(Number(0.15).sub(0.1).stringfy(), '0.05');
-                Assert.equal(Number(0.1).mul(0.2).stringfy(), '0.02');
-                Assert.equal(Number(0.15).div(0.2).stringfy(), '0.75');
+                Assert.equal(Number(0.1).add(0.2).stringify(), '0.3');
+                Assert.equal(Number(0.15).sub(0.1).stringify(), '0.05');
+                Assert.equal(Number(0.1).mul(0.2).stringify(), '0.02');
+                Assert.equal(Number(0.15).div(0.2).stringify(), '0.75');
             }
             test7() {
                 Assert.true(Number(undefined).isNaN());

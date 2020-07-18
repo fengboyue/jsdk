@@ -6,13 +6,13 @@
         alt="License: MIT"></a>
     <a href="#">
         <img
-        src="https://img.shields.io/badge/version-v2.1.0-brightgreen"
-        alt="Version: 2.1.0"></a>
+        src="https://img.shields.io/badge/version-v2.2.0-brightgreen"
+        alt="Version: 2.2.0"></a>
 </p>
 
 JSDK 2.0+ is one of the most comprehensive JS/TS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.
 
-It supports the following features:
+It supports such following features:
 <p class="warn">
 Annotation, Reflection, AOP, IOC & Component, Dependency Injection, Thread, Timer, Unit Test, Event Bus, Animations, Application Framework. A group of advanced widgets and more powerful toolboxes are also provided.
 </p>
@@ -20,9 +20,9 @@ Annotation, Reflection, AOP, IOC & Component, Dependency Injection, Thread, Time
 JSDK will greatly help you to develop libraries, components, widgets, applications and even games.
 
 ## Download
-From <code>Github</code>: https://github.com/fengboyue/jsdk/releases
+Via <code>Github</code>: https://github.com/fengboyue/jsdk/releases
 
-or from <code>npm</code>:
+or via <code>npm</code>:
 ```shell
 npm install jsdk-offical -g
 ```
@@ -56,16 +56,27 @@ You can visit the following online resources to know JSDK more:
 
 ## Launch Local Resources
 You can launch a http server on your PC to visit these resources quickly.
-1. Suppose your local installation directory of JSDK is <code>{JSDK-INSTALL}</code>.
+1. Suppose you download and unzip JSDK to the <code>{JSDK-INSTALL}</code> directory.
 2. Run a http server and set your server path <code>http://localhost/jsdk/</code> to refer to your <code>{JSDK-INSTALL}</code>.
 3. Open your browser and visit the URL.
 
 ## License
 JSDK is licensed under the MIT license since version 2.0.
-* *Other open source libraries include in JSDK release package are licensed under their stated licenses*
+* *Other open source libraries include in JSDK's releases are licensed under their stated licenses*
 
 ## Changelogs
-### v2.1.0
+### v2.2.0 - 2020/7/17
+[Added] 
+- create new ui-input-devices module named jsinput.
+- generate index.html for every directory of examples automatically.
+
+[Changed] 
+- rename "importMode" to "canImport" in global configuration.
+- if EventHandler function renturn false means that: evt.stopPropagation();evt.preventDefault().
+- revise parts of contents in the guides.
+- lightweight bugfixes & optimizes.
+
+### v2.1.0 - 2020/7/11
 [Added] 
 - create new animation module named jsan.
 - add computedStyle method on HTMLElement.prototype.
@@ -85,4 +96,4 @@ JSDK is licensed under the MIT license since version 2.0.
 
 ## Old Versions
 The <a href="https://sourceforge.net/projects/jsdk2/" target="_blank">
-0.x versions</a> of JSDK was no longer upgraded and maintained. Please use the latest version 2.1.
+0.x versions</a> of JSDK was no longer upgraded and maintained. Please use the latest version 2.2.

@@ -8,8 +8,8 @@ module JS {
         export class NumbersTest extends TestCase {
 
             public test1() {
-                Assert.equal(Number(-1e-7).stringfy(), '-0.0000001');
-                Assert.equal(Number(2/3).stringfy(), '0.6666666666666666');
+                Assert.equal(Number(-1e-7).stringify(), '-0.0000001');
+                Assert.equal(Number(2/3).stringify(), '0.6666666666666666');
             }
             public test2() {
                 Assert.equal(Number(-1e-7).format(), '-0.0000001');
@@ -20,25 +20,25 @@ module JS {
             }
             public test3() {
                 let n1 = Number(0.5), n2 = Number(78.1112223335), n3 = Number(535);
-                Assert.equal(n1.round(0).stringfy(), '1');
-                Assert.equal(n2.round(9).stringfy(), '78.111222334');
-                Assert.equal(n3.round(2).stringfy(), '535');
+                Assert.equal(n1.round(0).stringify(), '1');
+                Assert.equal(n2.round(9).stringify(), '78.111222334');
+                Assert.equal(n3.round(2).stringify(), '535');
             }
             public test4() {
                 let n1 = Number(0.5), n2 = Number(78.5112223335), n3 = Number(-535);
-                Assert.equal(n1.toInt().stringfy(), '1');
-                Assert.equal(n2.toInt().stringfy(), '79');
-                Assert.equal(n3.toInt().stringfy(), '-535');
+                Assert.equal(n1.toInt().stringify(), '1');
+                Assert.equal(n2.toInt().stringify(), '79');
+                Assert.equal(n3.toInt().stringify(), '-535');
             }
             public test5() {
                 Assert.true(Number(78.567).equals(78.567));
                 Assert.true(Number(78.5675).equals(78.568, 3));
             }
             public test6() {
-                Assert.equal(Number(0.1).add(0.2).stringfy(), '0.3');
-                Assert.equal(Number(0.15).sub(0.1).stringfy(), '0.05');
-                Assert.equal(Number(0.1).mul(0.2).stringfy(), '0.02');
-                Assert.equal(Number(0.15).div(0.2).stringfy(), '0.75');
+                Assert.equal(Number(0.1).add(0.2).stringify(), '0.3');
+                Assert.equal(Number(0.15).sub(0.1).stringify(), '0.05');
+                Assert.equal(Number(0.1).mul(0.2).stringify(), '0.02');
+                Assert.equal(Number(0.15).div(0.2).stringify(), '0.75');
             }
             public test7() {
                 Assert.true(Number(undefined).isNaN());

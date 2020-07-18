@@ -7,7 +7,7 @@
  * @author Frank.Feng
  */
 /// <reference path="View.ts"/>
-/// <reference path="../util/Templator.ts"/>
+/// <reference path="../ui/Templator.ts"/>
 
 module JS {
     export namespace view {

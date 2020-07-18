@@ -79,7 +79,7 @@ export class AjaxAppender implements LogAppender {
             url: 'xxxx',
             data: {
                 name: this.name,
-                values: Jsons.stringfy(data)
+                values: Jsons.stringify(data)
             }
         })
     }

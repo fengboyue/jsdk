@@ -511,7 +511,7 @@ new Button({
 3. 创建<code>XPicker.ts</code>文件如下：
 
 ```javascript
-/// <reference path="../libs/jsdk/2.0.0/jsdk.d.ts" />
+/// <reference path="../libs/jsdk/{JSDK-VERSION}/jsdk.d.ts" />
 /// <reference path="../libs/xpicker/1.0.0/xpicker.d.ts" />
 module My {
     export namespace fx {

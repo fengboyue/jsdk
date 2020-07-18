@@ -1,17 +1,21 @@
 /**
-* JSDK 2.0.0 
+* JSDK 2.2.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
 JS.config({
-    importMode: 'js',
+    canImport: true,
     minimize: true,
     jsdkRoot: null,
     libRoot: '/jsdk/libs',        
     libs: {
         'jsds': [
             '!/jsds.js'
+        ],
+        'jsinput': [
+            '$jsds',
+            '!/jsinput.js'
         ],
         'jsui': [
             '!/jsui.js'
@@ -47,7 +51,7 @@ JS.config({
         'jsfx.depend': [
             '$font-awesome',
             '$line-awesome',
-            '$jquery',
+            '$jquery#async',
             '$bootstrap'
         ],
         'jsfx': [
@@ -57,53 +61,53 @@ JS.config({
         //jsfx.widget
         'jsfx.select': [
             '$jsfx.depend',
-            '$select2',
+            '$select2#async',
             '$jsfx.only'
         ],
         'jsfx.datepicker': [
             '$jsfx.depend',
-            '$bs-datepicker',
+            '$bs-datepicker#async',
             '$jsfx.only'
         ],
         'jsfx.daterangepicker': [
             '$jsfx.depend',
-            '$bs-daterangepicker',
+            '$bs-daterangepicker#async',
             '$jsfx.only'
         ],
         'jsfx.rangeslider': [
             '$jsfx.depend',
-            '$ion-rangeslider',
+            '$ion-rangeslider#async',
             '$jsfx.only'
         ],
         'jsfx.uploader': [
             '$jsfx.depend',
-            '$toastr',
-            '$webuploader',
+            '$toastr#async',
+            '$webuploader#async',
             '$jsfx.only'
         ],
         'jsfx.texteditor': [
             '$jsfx.depend',
-            '$summernote',
+            '$summernote#async',
             '$jsfx.only'
         ],
         'jsfx.messagebox': [
             '$jsfx.depend',
-            '$sweetalert2',
+            '$sweetalert2#async',
             '$jsfx.only'
         ],
         'jsfx.toast': [
             '$jsfx.depend',
-            '$toastr',
+            '$toastr#async',
             '$jsfx.only'
         ],
         'jsfx.sider': [
             '$jsfx.depend',
-            '$slidereveal',
+            '$slidereveal#async',
             '$jsfx.only'
         ],
         'jsfx.loading': [
             '$jsfx.depend',
-            '$blockui',
+            '$blockui#async',
             '$jsfx.only'
         ],
         //3rd of jsfx
@@ -123,12 +127,12 @@ JS.config({
             '~/select2/4.0.11/js/select2.full.js'
         ],
         'bs-datepicker': [
-            '$moment',
+            '$moment#async',
             '~/datepicker/1.9.0/css/bootstrap-datepicker.standalone.css',
             '~/datepicker/1.9.0/js/bootstrap-datepicker.js'
         ],
         'bs-daterangepicker': [
-            '$moment',
+            '$moment#async',
             '~/daterangepicker/3.0.5/daterangepicker.css',
             '~/daterangepicker/3.0.5/daterangepicker.js'
         ],
@@ -150,7 +154,7 @@ JS.config({
             '~/webuploader/0.1.5/webuploader.css',
             '~/webuploader/0.1.5/webuploader.js',
         ],
-        'webuploader.swf': '~/webuploader/0.1.5/webuploader.swf',
+        'webuploader.swf': '~/webuploader/0.1.5/webuploader.swf',//special store the url for initial webuploader
         'ion-rangeslider': [
             '~/ion-rangeslider/2.3.0/ion.rangeSlider.css',
             '~/ion-rangeslider/2.3.0/ion.rangeSlider.js'

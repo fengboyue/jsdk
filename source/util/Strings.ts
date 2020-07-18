@@ -136,7 +136,7 @@ module JS {
                             break;
                         }
                         case 'f': {
-                            v = Number(v).stringfy();
+                            v = Number(v).stringify();
                             break;
                         }
                         case 'n': {

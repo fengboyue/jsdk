@@ -22,14 +22,14 @@ module JS {
 
             /**
             * Gets randomly generated number within given max number
-            * @param maxNumber max value
-            * @param isInt if true return integer
+            * @param maxNumber maxValue. The default value is 1.
+            * @param isInt if true returns integer
             */
             public static number(max?: number, isInt?: boolean): number
             /**
             * Gets randomly generated number within given min and max range: [min, max]
             * @param range { min?: number, max: number }
-            * @param isInt if true return integer
+            * @param isInt if true returns integer
             */
             public static number(range?: { min?: number, max: number }, isInt?: boolean): number
             public static number(range?: number | { min?: number, max: number }, isInt?: boolean): number {
@@ -45,14 +45,19 @@ module JS {
                 return isInt ? Number(num).toInt() : num;
             }
 
+            /**
+             * Returns a random string by special chars.
+             * @param len 
+             * @param chars 
+             */
             public static string(len?: number, chars?: string): string {
                 return this._string(chars?chars.split(''):CHARS, len)
             }
             /**
              * Returns a new UUID string.<br>
              * 生成一个新的UUID
-             * @param len max length 最大长度
-             * @param radix 2|8|16|... 进制数，比如：二进制、八进制、十六进制
+             * @param len maxlength 最大长度
+             * @param radix 2|8|16|... 进制数，比如：二进制、八进制、十六进制...
              */
             public static uuid(len?: number, radix?: number): string {
                 return this._string(CHARS, len, radix)

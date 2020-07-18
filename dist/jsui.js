@@ -1,10 +1,45 @@
 //@ sourceURL=jsui.js
 /**
-* JSDK 2.0.0 
+* JSDK 2.2.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
+var JS;
+(function (JS) {
+    let ui;
+    (function (ui) {
+        class ClipBoard {
+            static copyTarget(clicker, target) {
+                this._do('copy', clicker, target);
+            }
+            static cutTarget(clicker, target) {
+                this._do('cut', clicker, target);
+            }
+            static _do(action, clicker, target) {
+                Bom.ready(() => {
+                    let cli = Dom.$1(clicker), tar = Dom.$1(target);
+                    if (!cli || !tar)
+                        throw new NotFoundError('The clicker or target not found!');
+                    cli.attr('data-clipboard-action', action);
+                    cli.attr('data-clipboard-target', '#' + tar.attr('id'));
+                    new ClipboardJS('#' + cli.attr('id'));
+                });
+            }
+            static copyText(clicker, text) {
+                Bom.ready(() => {
+                    let cli = Dom.$1(clicker);
+                    if (cli)
+                        throw new NotFoundError('The clicker not found!');
+                    cli.attr('data-clipboard-text', text);
+                    new ClipboardJS('#' + cli.attr('id'));
+                });
+            }
+        }
+        ui.ClipBoard = ClipBoard;
+    })(ui = JS.ui || (JS.ui = {}));
+})(JS || (JS = {}));
+var ClipBoard = JS.ui.ClipBoard;
 var JS;
 (function (JS) {
     let ui;
@@ -197,117 +232,6 @@ var JS;
 (function (JS) {
     let ui;
     (function (ui) {
-        class KeyCode {
-        }
-        KeyCode.Back = 8;
-        KeyCode.Tab = 9;
-        KeyCode.Clear = 12;
-        KeyCode.Enter = 13;
-        KeyCode.shift = 16;
-        KeyCode.Control = 17;
-        KeyCode.Alt = 18;
-        KeyCode.Pause = 19;
-        KeyCode.CapsLock = 20;
-        KeyCode.Esc = 27;
-        KeyCode.Space = 32;
-        KeyCode.PageUp = 33;
-        KeyCode.PageDown = 34;
-        KeyCode.End = 35;
-        KeyCode.Home = 36;
-        KeyCode.Left = 37;
-        KeyCode.Up = 38;
-        KeyCode.Right = 39;
-        KeyCode.Down = 40;
-        KeyCode.Select = 41;
-        KeyCode.Print = 42;
-        KeyCode.Execute = 43;
-        KeyCode.Insert = 45;
-        KeyCode.Delete = 46;
-        KeyCode.Help = 47;
-        KeyCode[0] = 48;
-        KeyCode[1] = 49;
-        KeyCode[2] = 50;
-        KeyCode[3] = 51;
-        KeyCode[4] = 52;
-        KeyCode[5] = 53;
-        KeyCode[6] = 54;
-        KeyCode[7] = 55;
-        KeyCode[8] = 56;
-        KeyCode[9] = 57;
-        KeyCode.a = 65;
-        KeyCode.b = 66;
-        KeyCode.c = 67;
-        KeyCode.d = 68;
-        KeyCode.e = 69;
-        KeyCode.f = 70;
-        KeyCode.g = 71;
-        KeyCode.h = 72;
-        KeyCode.i = 73;
-        KeyCode.j = 74;
-        KeyCode.k = 75;
-        KeyCode.l = 76;
-        KeyCode.m = 77;
-        KeyCode.n = 78;
-        KeyCode.o = 79;
-        KeyCode.p = 80;
-        KeyCode.q = 81;
-        KeyCode.r = 82;
-        KeyCode.s = 83;
-        KeyCode.t = 84;
-        KeyCode.u = 85;
-        KeyCode.v = 86;
-        KeyCode.w = 87;
-        KeyCode.x = 88;
-        KeyCode.y = 89;
-        KeyCode.z = 90;
-        KeyCode.pad0 = 96;
-        KeyCode.pad1 = 97;
-        KeyCode.pad2 = 98;
-        KeyCode.pad3 = 99;
-        KeyCode.pad4 = 100;
-        KeyCode.pad5 = 101;
-        KeyCode.pad6 = 102;
-        KeyCode.pad7 = 103;
-        KeyCode.pad8 = 104;
-        KeyCode.pad9 = 105;
-        KeyCode['pad*'] = 106;
-        KeyCode['pad+'] = 107;
-        KeyCode['pad-'] = 109;
-        KeyCode['pad.'] = 110;
-        KeyCode['pad/'] = 111;
-        KeyCode.F1 = 112;
-        KeyCode.F2 = 113;
-        KeyCode.F3 = 114;
-        KeyCode.F4 = 115;
-        KeyCode.F5 = 116;
-        KeyCode.F6 = 117;
-        KeyCode.F7 = 118;
-        KeyCode.F8 = 119;
-        KeyCode.F9 = 120;
-        KeyCode.F10 = 121;
-        KeyCode.F11 = 122;
-        KeyCode.F12 = 123;
-        KeyCode.NumLk = 144;
-        KeyCode.ScrLk = 145;
-        KeyCode[';'] = 186;
-        KeyCode['='] = 187;
-        KeyCode[','] = 188;
-        KeyCode['-'] = 189;
-        KeyCode['.'] = 190;
-        KeyCode['/'] = 191;
-        KeyCode['`'] = 192;
-        KeyCode['['] = 219;
-        KeyCode['\\'] = 220;
-        KeyCode[']'] = 221;
-        KeyCode["'"] = 222;
-        ui.KeyCode = KeyCode;
-    })(ui = JS.ui || (JS.ui = {}));
-})(JS || (JS = {}));
-var KeyCode = JS.ui.KeyCode;
-var JS;
-(function (JS) {
-    let ui;
-    (function (ui) {
         let LengthUnit;
         (function (LengthUnit) {
             LengthUnit["PCT"] = "%";
@@ -344,3 +268,28 @@ var JS;
     })(ui = JS.ui || (JS.ui = {}));
 })(JS || (JS = {}));
 var Lengths = JS.ui.Lengths;
+var JS;
+(function (JS) {
+    let ui;
+    (function (ui) {
+        class Templator {
+            constructor() {
+                this._hb = Handlebars.create();
+            }
+            compile(tpl, options) {
+                return this._hb.compile(tpl, options);
+            }
+            registerHelper(name, fn) {
+                this._hb.registerHelper(name, fn);
+            }
+            unregisterHelper(name) {
+                this._hb.unregisterHelper(name);
+            }
+            static safeString(s) {
+                return new Handlebars.SafeString(s);
+            }
+        }
+        ui.Templator = Templator;
+    })(ui = JS.ui || (JS.ui = {}));
+})(JS || (JS = {}));
+var Templator = JS.ui.Templator;

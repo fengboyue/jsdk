@@ -1,6 +1,6 @@
 
 ## 注解
-注解为类提供了更多运行时信息，也是反射、AOP切面、IOC容器等特性的基础特性之一。
+注解为类提供了更多附带信息，也是AOP切面、依赖注入等特性的基础特性。
 
 ### 注解的应用
 我们先看一个例子：
@@ -183,11 +183,11 @@ class Me {
 }
 ```
 
-## IOC组件、依赖查找与依赖注入
+## IOC容器与组件
 <b>JS.ioc.Components</b>是一个IOC容器，提供对容器中所有IOC组件对象的注册、初始化、销毁等功能，并且能有效节约内存开销。
 - *此 IOC 容器目前仅支持单例模式*
 
-### 定义组件类
+### 定义IOC组件类
 使用<code>@component</code>注解定义一个IOC组件，则表示此类将被IOC容器管理：
 ```javascript
 module Demo {
@@ -199,7 +199,7 @@ module Demo {
 }  
 ```
 
-### 依赖查找
+### 组件查找
 <b>Components</b>可以通过get访问查找组件对象：
 ```javascript
 let clsA = Components.get<ClassA>(ClassA);

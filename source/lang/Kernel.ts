@@ -6,31 +6,46 @@
  * @author Frank.Feng
  * @email boyue.feng@foxmail.com
  * 
+ * @version 2.2.0
+ * @date 2020/7/12
+ * @update create new module "jsinput" for ui-input-devices
+ * 
+ * @version 2.1.1
+ * @date 2020/7/11
+ * @update bugfix for Number.foramt method on WeChat mobile browser
+ * 
  * @version 2.1.0
  * @date 2020/7/1
- * @update create a new module "jsan" for anmimation
+ * @update create new module "jsan" for anmimation
+ * @update reduce size of system
  * 
  * @version 2.0.0
- * @date 2018/01/08 - 2020/06/12
+ * @date 2018/1/8 - 2020/6/12
  * 
  * @version 1.0.0
  * @date 2012/12/19
  * 
+ * @version 0.6.2
+ * @date 2012/5/2
+ * 
+ * @version 0.6.1
+ * @date 2012/4/18
+ * 
  * @version 0.6.0
- * @date 2009
+ * @date 2011/2-2012/4/14
  * 
  * @version 0.1
- * @date 2007/08/30
+ * @date 2007/8/30
  */
 /// <reference path="../../libs/reflect/2.0.0/reflect.d.ts" />
 /// <reference path="../util/Dom.ts" />
 
 module JS {
 
-    export let version = '2.1.0';
+    export let version = '2.2.0';
 
     export type GlobalConfig = {
-        importMode?: 'js' | 'html';
+        canImport?: boolean;
         minimize?: boolean;
         jsdkRoot?: string;
         libRoot?: string;
@@ -149,7 +164,7 @@ module JS {
      * </pre>
      */    
     export function imports(url: string | string[]): Promise<any> {
-        if (JS.config('importMode') == 'html') return Promise.resolve();
+        if (!JS.config('canImport')) return Promise.resolve();
 
         let uris: any[] = typeof url === 'string' ? [<string>url] : <string[]>url, tasks: PromisePlans<any> = [];
         uris.forEach(uri => {

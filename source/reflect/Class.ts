@@ -175,7 +175,7 @@ module JS {
              * @param method method name 
              * @param advisor 
              */
-            public static aop(klass: Klass<any>, method: string, advisor: AopAdvisor) {
+            public static aop<T>(klass: Klass<any>, method: string, advisor: AopAdvisor<T>) {
                 let isStatic = klass.hasOwnProperty(method),
                     m: Function = isStatic ? klass[method] : klass.prototype[method];
                 if (!Types.isFunction(m)) return;
@@ -206,7 +206,7 @@ module JS {
              * @param method method name 
              * @param advisor 
              */
-            public aop(method: string, advisor: AopAdvisor) {
+            public aop<T>(method: string, advisor: AopAdvisor<T>) {
                 let m = this.method(method);
                 if (!m) return;
                 let pro = m.isStatic ? this._klass : (<any>this._klass).prototype;

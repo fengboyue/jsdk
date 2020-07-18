@@ -36,7 +36,7 @@ module JS {
              * @param space Adds indentation, white space, and line break characters to the return-value JSON text to make it easier to read.
              * @return {string}
              */
-            public static stringfy(value: any, replacer?: (key: string, value: any) => any | (number | string)[] | null, space?: string | number): string {
+            public static stringify(value: any, replacer?: (key: string, value: any) => any | (number | string)[] | null, space?: string | number): string {
                 return JSON.stringify(value, replacer, space);
             }
 
@@ -89,8 +89,8 @@ module JS {
                     return fn.apply(that || json, [json[key], key]);
                 })
             }
-            public static hasKey(json: JsonObject, key: string) {
-                return json && key && json.hasOwnProperty(key);
+            public static hasKey(json: JsonObject, key: string|number) {
+                return json && key!=void 0 && json.hasOwnProperty(key);
             }
             public static values<T>(json: JsonObject<T>): T[] {
                 if (!json) return null;

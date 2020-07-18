@@ -358,7 +358,7 @@ module JS {
 
                 if (req.async) xhr.responseType = 'text';//The response type cannot be changed for synchronous requests made from a document.
                 //如果请求方法是 GET 或者 HEAD，则应将请求主体设置为 null
-                let data = req.method == 'HEAD' || req.method == 'GET' ? null : (Types.isString(req.data) ? <string>req.data : Jsons.stringfy(req.data))
+                let data = req.method == 'HEAD' || req.method == 'GET' ? null : (Types.isString(req.data) ? <string>req.data : Jsons.stringify(req.data))
                 try {
                     //早期浏览器的timeout是无效，自己实现超时取消
                     if (req.async && req.timeout > 0) {

@@ -159,9 +159,9 @@ if (self['HTMLElement']) //当前不在worker线程中
             };
             bus.on(type, <any>fn, once);
 
-            if (this.addEventListener) {                    //所有主流浏览器，除了 IE 8 及更早 IE版本
+            if (this.addEventListener) {                    //所有主流浏览器，除了IE8及更早IE版本
                 this.addEventListener(type, cb);
-            } else if (this['attachEvent']) {                  // IE 8 及更早 IE 版本
+            } else if (this['attachEvent']) {               //IE8及更早IE版本
                 this['attachEvent']('on' + type, cb);
             }
         }
@@ -174,9 +174,9 @@ if (self['HTMLElement']) //当前不在worker线程中
         }
         let _rm = function (this: HTMLElement | Window, type, fn?: Function) {
                 if (!fn) return;
-                if (this.removeEventListener) {                    //所有主流浏览器，除了 IE 8 及更早 IE版本
+                if (this.removeEventListener) {                    //所有主流浏览器，除了IE8及更早IE版本
                     this.removeEventListener(type, <any>fn);
-                } else if (this['detachEvent']) {                  // IE 8 及更早 IE 版本
+                } else if (this['detachEvent']) {                  //IE8及更早IE 版本
                     this['detachEvent']('on' + type, fn);
                 }
             },

@@ -15,11 +15,11 @@ module JS {
          * Advisor interface for AOP.
          * AOP切入通知接口
          */
-        export interface AopAdvisor {
-            before?: (this: any, ...args: any[]) => void;
-            around?: (this: any, fn: Function, ...args: any[]) => any;
-            after?: (this: any, returns: any) => void;
-            throws?: (this: any, e: Error) => void;
+        export interface AopAdvisor<T> {
+            before?: (this: T, ...args: any[]) => void;
+            around?: (this: T, fn: Function, ...args: any[]) => any;
+            after?: (this: T, returns: any) => void;
+            throws?: (this: T, e: Error) => void;
         }
 
         export enum AnnotationTarget {
@@ -184,7 +184,7 @@ module JS {
             }, arguments);
         }
 
-        var _aop = function (args: ArrayLike<any>, fn: Function | AopAdvisor, anno?: string) {
+        var _aop = function (args: ArrayLike<any>, fn: Function | AopAdvisor<any>, anno?: string) {
             return Annotations.define({
                 name: anno,
                 handler: (anno: string, values: Array<any>, obj: object, methodName?: string) => {
@@ -203,31 +203,31 @@ module JS {
         /**
          * The @before annotation.
          */
-        export function before(fn: (this: any, ...args: any[]) => void): any {
+        export function before(fn: (...args: any[]) => void): any {
             return _aop(arguments, fn, 'before');
         }
         /**
          * The @after annotation.
          */
-        export function after(fn: (this: any, returns: any) => void): any {
+        export function after(fn: (returns: any) => void): any {
             return _aop(arguments, fn, 'after');
         }
         /**
          * The @around annotation.
          */
-        export function around(fn: (this: any, fn: Function, ...args: any[]) => any): any {
+        export function around(fn: (fn: Function, ...args: any[]) => any): any {
             return _aop(arguments, fn, 'around');
         }
         /**
          * The @throws annotation.
          */
-        export function throws(fn: (this: any, e: Error) => void): any {
+        export function throws(fn: (e: Error) => void): any {
             return _aop(arguments, fn, 'throws');
         }
         /**
          * The @aop annotation.
          */
-        export function aop(advisor: AopAdvisor): any {
+        export function aop(advisor: AopAdvisor<any>): any {
             return _aop(arguments, advisor);
         }
 

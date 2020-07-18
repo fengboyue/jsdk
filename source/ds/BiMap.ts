@@ -16,10 +16,8 @@ module JS {
 
             private _m = new Map<K, V>();
 
-            constructor(k?:Array<[K, V]>) {//TODO:
-                if(k) k.forEach(kv => {
-                    this._m.set(kv["0"], kv["1"]);
-                });
+            constructor(m?:Array<[K, V]>|Map<K, V>|BiMap<K, V>) {
+                this.putAll(m)
             }
 
             public inverse(): BiMap<V, K> {
@@ -48,8 +46,17 @@ module JS {
             public put(k: K, v: V) {
                 this._m.set(k, v)
             }
-            public putAll(map:Map<K, V>|BiMap<K, V>){
-                if(map) map.forEach((v:V,k:K)=>{this.put(k,v)})
+            public putAll(map:Array<[K, V]>|Map<K, V>|BiMap<K, V>){
+                if(map) {
+                    map instanceof Array?map.forEach(kv=>{this.put(kv["0"], kv["1"])}):map.forEach((v,k)=>{this.put(k,v)})
+                }
+            }
+            public static convert(json:JsonObject<string|number>): BiMap<string, string|number>{
+                let m = new BiMap<string, string|number>();
+                Jsons.forEach(json,(v,k)=>{
+                    m.put(k, v)
+                })
+                return m
             }
         }
     }

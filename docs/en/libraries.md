@@ -2,7 +2,7 @@
 ## Library configuration
 If a js library named xyz (version 1.0.0) needs to be managed by JSDK, you need to complete the following steps.
 
-1. Create directory <code>/{your project root}/libs/xyz/1.0.0/</code> and copy such following files to the above directory:
+1. Create directory <code>/{PROJECT_ROOT}/libs/xyz/1.0.0/</code> and copy such following files to the above directory:
 
 ```
 xyz.js
@@ -13,7 +13,7 @@ xyz.d.ts
 ```
 - *Note: compressed files and d.ts file are recommended but not required*
 
-2. Open the file <code>/{your project root}/libs/jsdk/2.0.0/jsdk-config.js</code> and add configuration item for new library:
+2. Open the file <code>/{PROJECT_ROOT}/libs/jsdk/{JSDK-VERSION}/jsdk-config.js</code> and add configuration item for new library:
 
 ```javascript
 JS.config({
@@ -32,7 +32,7 @@ JS.config({
 3. Finally you can load xyz library in <b>JLU</b> format:
 
 ```javascript
-/// <reference path="{your project root}/libs/xyz/1.0.0/xyz.d.ts" /> 
+/// <reference path="{PROJECT_ROOT}/libs/xyz/1.0.0/xyz.d.ts" /> 
 JS.imports('$xyz').then(()=>{ //$xyz is JLU format
     //your code
 });
@@ -43,12 +43,12 @@ JS.imports('$xyz').then(()=>{ //$xyz is JLU format
 You can modify this file directly or dynamically override its configuration items in JS code:
 ```javascript
 JS.config({
-    importMode: 'js'|'html',  //When is JS, JSDK will load any library dynamically;
-                              //when is HTML, JSDK will not load any library dynamically because any library was loaded statically in HTML.
+    canImport: true|false,    //True indicates JSDK can loads library dynamically now;
+                              //False indicates JSDK can not loads library dynamically now because next library maybe was loaded statically in HTML.
     minimize: true|false,     //Whether to load minimized files of JS or CSS(load their ".min" file automatically)
-    jsdkRoot: null,           //The Root URL of JSDK self-library. The default is null means JSDK deploy in the libRoot directory. 
-                              //Note: JSDK self-library is allowed to be deployed outside the libRoot directory
-    libRoot: '/libs',         //The Root URL of 3rd party library. 
+    jsdkRoot: null,           //The root url of JSDK self-library. The default is null that indicates JSDK self-library be deployed under libRoot: {libsRoot}/jsdk/{JSDK-VERSION}/. 
+                              //Note: The config item means JSDK self-library is allowed to be deployed outside the "libRoot".
+    libRoot: '/libs',         //The root url of 3rd-party libraries using by JSDK. 
     libs: {
         ...
     }
@@ -101,15 +101,16 @@ In real development, you don't have to load the entire <code>jsdk.js</code>, but
 ### JSDK Modules List
 Module Name|Remarks|Includes|Depends|Min Sizes
 ---|---|---|---|---
-system|core module|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||104kb
+system|core module|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||102kb
 jsds|data structures|JS.ds.* |system |6kb
-jsui|ui module|JS.ui.* |system |6kb
-jsmv|models&views&ioc|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
+jsinput|ui-input-devices|JS.input.* |jsds |7kb
+jsui|ui module|JS.ui.* |system |5kb
+jsmv|models+views+ioc|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
 jsan|animations|JS.an.* |jsui |16kb
 jsfx|widgets |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
 jsvp|app framework|JS.store.*<br>JS.app.* |jsmv|8kb
-jsunit|unit test framework|JS.unit.* |system|js: 9kb<br>css: 669b
-jsdk|includes all modules|JS.* ||js: 270kb
+jsunit|unit-test framework|JS.unit.* |system|js: 9kb<br>css: 669b
+jsdk|all above modules|JS.* ||js: 275kb
 
 ### Custom JSDK Module 
 When you need smaller module files, you can modify the build scripts in <code>build/</code> directory. 

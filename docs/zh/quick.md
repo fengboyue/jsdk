@@ -1,4 +1,4 @@
-JSDK 2.0+是最全面的JS/TS框架之一，几乎包括了从最底层到最上层的众多特性、框架与工具。<br>
+JSDK 2.0+是最全面的JS/TS框架之一，包括了从最底层到最上层的大量特性、框架与工具。<br>
 它非常适合做任何JS库的基石，就像JDK在Java中的作用那样。
 
 主要支持以下特性： 
@@ -53,7 +53,18 @@ JSDK自2.0版开始支持MIT许可协议。
 * *JSDK发布包中所引入的其他开源类库受其申明的许可协议保护*
 
 ## 更新日志
-### v2.1.0
+### v2.2.0 - 2020/7/17
+[新增] 
+- 创建UI外设模块：jsinput。
+- 为每个examples的子目录自动化生成index.html.
+
+[修改] 
+- 重命名全局配置项"importMode"为"canImport"。
+- EventHandler函数返回false时将执行: evt.stopPropagation();evt.preventDefault().
+- 修订教程文档的原有部分内容。
+- 轻量的BUG修复与代码优化。
+
+### v2.1.0 - 2020/7/11
 [新增] 
 - 创建新的动画库jsan。
 - 在HTMLElement原型链上新增computedStyle方法。
@@ -73,4 +84,4 @@ JSDK自2.0版开始支持MIT许可协议。
 
 ## 旧版本
 <a href="https://sourceforge.net/projects/jsdk2/" target="_blank">
-0.x版本的JSDK</a>已不再升级与维护，请使用最新的2.1版本。
+0.x版本的JSDK</a>已不再升级与维护，请使用最新的2.2版本。

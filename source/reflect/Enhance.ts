@@ -19,9 +19,9 @@ interface Function {
   /**
    * Returns a new function for AOP.
    * @param advisor 
-   * @param that the 'this' context 
+   * @param that new 'this' context 
    */
-  aop(this: Function, advisor: AopAdvisor, that?: any): (...args) => Function;
+  aop<T>(this: Function, advisor: AopAdvisor<T>, that?: T): (...args:any)=>any;
   /**
    * Mixin other class methods in this class.
    */
@@ -45,7 +45,7 @@ interface Object {
 (function () {
 
 let $F = Function.prototype;
-$F.aop = function (advisor: AopAdvisor, that?: any) {
+$F.aop = function (advisor: AopAdvisor<any>, that?: any) {
   let old = <Function>this,
     fn = function () {
       let args = Arrays.newArray(arguments),

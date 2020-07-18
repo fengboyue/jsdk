@@ -1,3 +1,7 @@
+<p class="warn" style="font-size:larger">
+在JSDK的世界里，一切皆类！
+</p>
+
 - *备注：以下代码的语法均为TypeScript*
 
 ## 类的定义
@@ -22,7 +26,7 @@ module WHO {
 import Convid19 = WHO.virus.Convid19;
 ```
 
-## 类型结构的定义
+## 结构类的定义
 已知Convid19是一种RNA病毒，我们再定义一种数据类型：<code>RNA</code>
 ```javascript
 module WHO {
@@ -94,7 +98,7 @@ Konsole.print((<InfectiousVirus>c19).infect());
 我们为冠状病毒家族定义一个枚举类：
 ```javascript
 export enum ConvidViruses {
-    229E = '229E',
+    '229E' = '229E',
     OC43 = 'OC43',
     NL63 = 'NL63',
     HKU1 = 'HKU1',
@@ -106,12 +110,8 @@ export enum ConvidViruses {
 
 ## 类文件的管理
 JSDK建议参照Java的类文件组织规范：
-> 1. 一个类文件最好仅包含一个主类以及与附属类／接口／类型的定义。（这点与Java稍有不同）
+> 1. 一个类文件最好仅包含一个主类以及与附属类／接口／类型的定义。
 > 
 > 2. 一个类文件应该以其主类的短类名来命名。比如: Ajax.ts以其主类JS.util.Ajax的短类名取名。
 > 
 > 3. 一个类文件应该以其主类的包名空间来作为路径存放。比如: Ajax.ts文件路径为：/util/Ajax.ts。
-
-<p class="warn">
-在JSDK的世界里，一切皆类！
-</p>

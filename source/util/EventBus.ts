@@ -113,7 +113,7 @@ module JS {
                 return fns||null
             }
             public types(){
-                return this._map.keys
+                return Array.from(this._map.keys())
             }
             public off(types?: string, handler?: EventHandler): boolean {
                 if (this.isDestroyed()) return false;
@@ -127,25 +127,27 @@ module JS {
                 }
                 return true
             }
-            private _call(e: Event | CustomEvent, fn: Function, args?: Array<any>): boolean {
+            private _call(e: Event | CustomEvent, fn: Function, args?: Array<any>, that?: any) {
                 let evt = e['originalEvent'] ? e['originalEvent'] : e,//for jQuery.Event
                     arr = [evt];
                 if (args && args.length > 0) arr = arr.concat(args);
-                let rst = fn.apply(this._ctx, arr);
-                return rst === false;
+                let rst = fn.apply(that||this._ctx, arr);
+                if(rst===false) {
+                    evt.stopPropagation();
+                    evt.preventDefault()
+                }
             }
-            public fire(e: string | Event, args?: Array<any>) {
+            public fire(e: string | Event, args?: Array<any>, that?: any) {
                 let is = Types.isString(e),
                     fns = this._map.get(is ? <string>e : (<Event>e).type);
                 if (!Check.isEmpty(fns)) {
                     let evt = is ? new CustomEvent(<string>e) : (<Event>e);
-                    return !fns.some(
+                    fns.every(
                         fn => {
-                            return this._call(evt, fn, args);
+                            this._call(evt, fn, args, that);
                         }
                     )
                 }
-                return true
             }
 
         }

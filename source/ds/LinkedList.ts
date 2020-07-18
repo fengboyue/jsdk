@@ -124,34 +124,34 @@ module JS {
                 return node;
             }
 
-            public indexOf(data: T): number {
+            public indexOf(data: T, eq?:(data:T,item:T)=>boolean): number {
                 if (this.isEmpty()) return -1;
                 let rst = -1;
 
                 this.each((item, i) => {
-                    let is = (data === item);
+                    let is = eq?eq(data,item):(data === item);
                     if (is) rst = i;
                     return !is;
                 })
                 return rst;
             }
-            public lastIndexOf(data: T): number {
+            public lastIndexOf(data: T, eq?:(data:T,item:T)=>boolean): number {
                 if (this.isEmpty()) return -1;
 
-                let rst = -1, node = this._tl, i = this._s - 1;
+                let j = -1, node = this._tl, i = this._s - 1;
                 while (node) {
-                    if (data === node.data) {
-                        rst = i;
+                    if (eq?eq(data,node.data):(data === node.data)) {
+                        j = i;
                         break;
                     }
                     node = node.prev;
                     --i;
                 }
 
-                return rst;
+                return j;
             }
-            public contains(data: T) {
-                return this.indexOf(data) > -1;
+            public contains(data: T, eq?:(data:T,item:T)=>boolean) {
+                return this.indexOf(data, eq) > -1;
             }
 
             private _addLast(d: T) {

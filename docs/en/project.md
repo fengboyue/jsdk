@@ -11,7 +11,7 @@ uglifyjs        A recommended and optional compression tool
 We use JSDK in TS project as an example.
 
 ### Create Project 
-1. First create a new workspace on vscode or import an existing project into the new workspace.<br>
+1. First create a new workspace in vscode or import an existing project into the new workspace.<br>
 Then create the following directories in your <code>{PROJECT-ROOT}/</code> directory.
 ```
 |--libs   //library directory for JSDK
@@ -21,7 +21,8 @@ Then create the following directories in your <code>{PROJECT-ROOT}/</code> direc
 ```
 
 2. Copy all files under <code>{JSDK-INSTALL}/libs/</code> to <code>{PROJECT-ROOT}/libs/</code>.<br>
-Then copy all files under <code>{JSDK-INSTALL}/dist/</code> to <code>{PROJECT-ROOT}/libs/jsdk/2.0.0/</code>.
+Then copy all files under <code>{JSDK-INSTALL}/dist/</code> to <code>{PROJECT-ROOT}/libs/jsdk/{JSDK-VERSION}/</code>.
+* *JSDK-VERSION is the version of JSDK you installed, such as: 2.0.0, 2.2.0, etc*
 
 ### Project Configuration
 In order for JSDK to load its configured libraries correctly in your project, you need to modify the global configuration of JSDK.
@@ -30,7 +31,7 @@ Suppose the deployed url of your project is: <code>{PROJECT-URL}</code> .<br>
 * *You can use a relative path of the url*
 
 <b>[Way 1]</b><br> 
-Open the global configuration file <code>{PROJECT-ROOT}/libs/jsdk/2.0.0/jsdk-config.js</code>, and modify the item:
+Open the global configuration file <code>{PROJECT-ROOT}/libs/jsdk/{JSDK-VERSION}/jsdk-config.js</code>, and modify the item:
 ```
 libRoot:  '{PROJECT-URL}/libs',
 ```
@@ -52,9 +53,9 @@ JSDK kernel library <code>system</code> and the global configuration file <code>
 
 ```html
 <!--JSDK's necessary kernel file-->
-<script src="http://mydomain/myproject/libs/jsdk/2.0.0/system.min.js"></script>
+<script src="http://mydomain/myproject/libs/jsdk/{JSDK-VERSION}/system.min.js"></script>
 <!--JSDK's global config file-->
-<script src="http://mydomain/myproject/libs/jsdk/2.0.0/jsdk-config.js"></script>
+<script src="http://mydomain/myproject/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script>
 ```
 
 2. Load configured libraries in JSDK.
@@ -64,7 +65,7 @@ There are two ways to load a library: dynamic loading and static loading. <br>
 <b>[Dynamic loading]</b><br>
 Load a library in TS/JS code, which is recommended:
 ```javascript
-/// <reference path="../libs/jsdk/2.0.0/jsdk.d.ts" /> 
+/// <reference path="../libs/jsdk/{JSDK-VERSION}/jsdk.d.ts" /> 
 JS.imports([
     '$jsunit' //you need to load a library named jsunit
 ]).then(()=>{
@@ -75,7 +76,7 @@ JS.imports([
 Load a library in HTML code:
 ```html
 <!-- you need to load a library named jsunit -->
-<script src="http://mydomain/myproject/libs/jsdk/2.0.0/jsunit.min.js"></script>
+<script src="http://mydomain/myproject/libs/jsdk/{JSDK-VERSION}/jsunit.min.js"></script>
 ```
 
 ### TS Project Compilation

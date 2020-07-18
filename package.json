@@ -1,6 +1,6 @@
 {
   "name": "jsdk-offical",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "JSDK is one of the most comprehensive JS/TS framework, like JDK.",
   "main": "index.js",
   "directories": {
@@ -24,6 +24,7 @@
     "DI",
     "Thread",
     "Timer",
+    "JSINPUT",
     "JSAN",
     "JSVP",
     "JSFX",

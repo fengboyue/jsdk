@@ -6,6 +6,7 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
+/// <reference path="../lang/Kernel.ts" />
 /// <reference path="Konsole.ts"/>
 module JS {
 

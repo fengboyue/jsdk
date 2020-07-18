@@ -167,16 +167,16 @@ JSDK对原生的Number对象的原型链作了方法扩展。
 
 例如：增加了stringfy方法，支持将科学计数法表示的数字转换成正常格式的字符串。
 ```javascript
-Assert.equal(Number(-1e-7).stringfy(), '-0.0000001');
-Assert.equal(Number(2/3).stringfy(), '0.6666666666666666');
+Assert.equal(Number(-1e-7).stringify(), '-0.0000001');
+Assert.equal(Number(2/3).stringify(), '0.6666666666666666');
 ```
 
 又例如：增加了高精度的加减乘除运算方法，以解决浮点数运算误差问题。
 ```javascript
-Assert.equal(Number(0.1).add(0.2).stringfy(), '0.3');
-Assert.equal(Number(0.15).sub(0.1).stringfy(), '0.05');
-Assert.equal(Number(0.1).mul(0.2).stringfy(), '0.02');
-Assert.equal(Number(0.15).div(0.2).stringfy(), '0.75');
+Assert.equal(Number(0.1).add(0.2).stringify(), '0.3');
+Assert.equal(Number(0.15).sub(0.1).stringify(), '0.05');
+Assert.equal(Number(0.1).mul(0.2).stringify(), '0.02');
+Assert.equal(Number(0.15).div(0.2).stringify(), '0.75');
 ```
 * *更多扩展方法请查阅API文档*
 
