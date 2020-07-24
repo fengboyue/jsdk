@@ -5,6 +5,7 @@
 -   [重要特性](features)
 -   [数据类型](datatypes)
 -   [常用工具](utils)
+-   [媒体库](media)
 -   [输入设备](jsinput)
 -   [动画库](jsan)
 -   [应用框架](jsvp)

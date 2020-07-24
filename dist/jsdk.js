@@ -1,6 +1,6 @@
 //@ sourceURL=jsdk.js
 /**
-* JSDK 2.2.0 
+* JSDK 2.3.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -1078,7 +1078,7 @@ var JS;
                 url: xhr.responseURL,
                 raw: xhr.response,
                 type: req.type,
-                data: null,
+                data: xhr.response,
                 status: xhr.status,
                 statusText: error || (xhr.status == 0 ? 'error' : xhr.statusText),
                 headers: headers,
@@ -1089,7 +1089,7 @@ var JS;
                 let raw = xhr.response, parser = req.parsers && req.parsers[res.type] || PARSERS[res.type];
                 if (req.responseFilter)
                     raw = req.responseFilter(raw, res.type);
-                res.data = parser(raw);
+                res.data = parser ? parser(raw) : raw;
             }
             catch (e) {
                 res.statusText = 'parseerror';
@@ -1163,8 +1163,7 @@ var JS;
                     return false;
             }
             return true;
-        }, _send = function (request) {
-            let req = util.Types.isString(request) ? { url: request } : request;
+        }, _send = function (req) {
             if (!req.url)
                 JSLogger.error('Sent an ajax request without URL.');
             req = util.Jsons.union({
@@ -1176,6 +1175,7 @@ var JS;
                 cache: true
             }, req);
             let xhr = self.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP'), queryURL = _queryURL(req), url = _uncacheURL(queryURL, req.cache), headers = req.headers || {};
+            xhr.responseType = (req.type == 'html' || req.type == 'xml') ? 'document' : req.type;
             xhr.open(req.method, url, req.async, req.username, req.password);
             xhr.setRequestHeader('Accept', req.type && ACCEPTS[req.type] ? ACCEPTS[req.type] + ',' + ACCEPTS['*'] + ';q=0.01' : ACCEPTS['*']);
             if (req.data && req.contentType)
@@ -1217,8 +1217,6 @@ var JS;
                 _rejectError.call(this, req, xhr, 'cancel');
                 return;
             }
-            if (req.async)
-                xhr.responseType = 'text';
             let data = req.method == 'HEAD' || req.method == 'GET' ? null : (util.Types.isString(req.data) ? req.data : util.Jsons.stringify(req.data));
             try {
                 if (req.async && req.timeout > 0) {
@@ -1855,7 +1853,7 @@ if (self['HTMLElement'])
         let _on = function (type, fn, once) {
             if (!this['_bus'])
                 this['_bus'] = new EventBus(this);
-            let bus = this['_bus'], cb = (e) => {
+            let bus = this['_bus'], cb = e => {
                 bus.fire(e);
             };
             bus.on(type, fn, once);
@@ -2084,7 +2082,7 @@ const $1 = Dom.$1;
 const $L = Dom.$L;
 var JS;
 (function (JS) {
-    JS.version = '2.2.0';
+    JS.version = '2.3.0';
     function config(d, v) {
         let l = arguments.length;
         if (l == 0)
@@ -2433,8 +2431,15 @@ var JS;
                 let a = '';
                 if (attrs)
                     util.Jsons.forEach(attrs, (v, k) => {
-                        if (v !== void 0)
-                            a += ` ${k}="${v || ''}"`;
+                        if (v != void 0) {
+                            if (util.Types.isBoolean(v)) {
+                                if (v === true)
+                                    a += ` ${k}`;
+                            }
+                            else {
+                                a += ` ${k}="${v || ''}"`;
+                            }
+                        }
                     });
                 return `<${nodeType}${a}>${text || ''}</${nodeType}>`;
             }
@@ -11310,6 +11315,8 @@ var JS;
             constructor(el) {
                 this._mapping = {};
                 this._d = false;
+                this._i = 300;
+                this._ts = 0;
                 let ele = el || window, m = this;
                 m._m = {};
                 m._q = new Queue(16);
@@ -11319,8 +11326,15 @@ var JS;
                     let c = e.keyCode, sz = m._q.size(), repeat = sz > 0 && c == m._q.get(sz - 1);
                     if (m._q.isFull())
                         m._q.remove();
-                    if (!repeat)
-                        m._q.add(c);
+                    if (!repeat) {
+                        let p = sz > 0 ? m._q.get(sz - 1) : null;
+                        if (m._ts === 0)
+                            m._ts = e.timeStamp;
+                        if (p == void 0 || (p != void 0 && e.timeStamp - m._ts <= m._i)) {
+                            m._ts = e.timeStamp;
+                            m._q.add(c);
+                        }
+                    }
                     if (!Jsons.hasKey(m._m, c) || !repeat)
                         m._m[c] = e.timeStamp;
                     if (!repeat && Jsons.hasKey(m._m, c)) {
@@ -11368,22 +11382,24 @@ var JS;
                 if (!Jsons.hasKey(m._mapping, ty))
                     m._mapping[ty] = m._numeric(ty, m.isHotKeys(ty) ? '+' : (m.isSeqKeys(ty) ? ',' : ''));
                 bus.on(ty, fn);
+                return m;
             }
             onKeyDown(k, fn) {
-                this._on(k, fn, this._busDown);
+                return this._on(k, fn, this._busDown);
             }
             onKeyUp(k, fn) {
-                this._on(k, fn, this._busUp);
+                return this._on(k, fn, this._busUp);
             }
             _off(bus, k) {
                 this._check();
                 bus.off(k ? this._keyChar(k) : undefined);
+                return this;
             }
             offKeyDown(k) {
-                this._off(this._busDown, k);
+                return this._off(this._busDown, k);
             }
             offKeyUp(k) {
-                this._off(this._busUp, k);
+                return this._off(this._busUp, k);
             }
             _equalsSeqkeys(keys, keyCodes) {
                 let sa = '';
@@ -11455,6 +11471,12 @@ var JS;
             getPressingQueue() {
                 return this._q.clone();
             }
+            seqInterval(t) {
+                if (t == void 0)
+                    return this._i;
+                this._i = t;
+                return this;
+            }
             getKeyDownTime(c) {
                 let m = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[m._keyChar(c)]);
                 return !Jsons.hasKey(m._m, n) ? 0 : m._m[n];
@@ -11464,9 +11486,11 @@ var JS;
                 return d1 > 0 && d2 > 0 && d1 < d2;
             }
             off() {
-                this._check();
-                this._busDown.off();
-                this._busUp.off();
+                let m = this;
+                m._check();
+                m._busDown.off();
+                m._busUp.off();
+                return m;
             }
             clear(c) {
                 let m = this;
@@ -11474,12 +11498,14 @@ var JS;
                     m._mapping = {};
                     m._m = {};
                     m._q.clear();
+                    m._ts = 0;
                     return;
                 }
                 let a = Types.isNumber(c) ? [c] : c;
                 a.forEach(k => {
                     m._m[k] = null;
                 });
+                return m;
             }
             _check() {
                 if (this._d)
@@ -11803,6 +11829,244 @@ var JS;
 })(JS || (JS = {}));
 var Thread = JS.lang.Thread;
 var ThreadState = JS.lang.ThreadState;
+var JS;
+(function (JS) {
+    let media;
+    (function (media) {
+        let W = window, A = W.AudioContext || W['msAudioContext'], AC = new A();
+        class Sound {
+            constructor(cfg) {
+                this._bus = new EventBus(this);
+                this._d = false;
+                let m = this;
+                m._cfg = Jsons.union({
+                    volume: 1,
+                    loop: false
+                }, cfg);
+                if (m._cfg.on)
+                    Jsons.forEach(m._cfg.on, (v, k) => { m._bus.on(k, v); });
+            }
+            _check() {
+                if (this._d)
+                    throw new StateError('The object was destroyed!');
+            }
+            load(url) {
+                let m = this;
+                m._check();
+                return new Promise((resolve, reject) => {
+                    Ajax.get({
+                        url: url,
+                        type: 'arraybuffer',
+                        onSending: req => {
+                            if (m._cfg.on && m._cfg.on.loading)
+                                m._bus.fire('loading', [req]);
+                        },
+                        onCompleted: res => {
+                            AC.decodeAudioData(res.data, (buffer) => {
+                                m._src = url;
+                                m._buffer = buffer;
+                                resolve(m);
+                            }, err => {
+                                if (m._cfg.on && m._cfg.on.decode_error)
+                                    m._bus.fire('decode_error', [err]);
+                                reject(err);
+                            });
+                        },
+                        onError: res => {
+                            if (m._cfg.on && m._cfg.on.load_error)
+                                m._bus.fire('load_error', [res]);
+                            reject(res);
+                        }
+                    });
+                });
+            }
+            on(type, fn, once) {
+                this._bus.on(type, fn, once);
+                return this;
+            }
+            off(type, fn) {
+                this._bus.off(type, fn);
+                return this;
+            }
+            loop(is) {
+                let m = this;
+                if (is == void 0)
+                    return m._cfg.loop;
+                m._cfg.loop = is;
+                return m;
+            }
+            src() {
+                return this._src;
+            }
+            play(delay, offset, duration) {
+                let m = this;
+                m._check();
+                m.stop();
+                m._gain = AC.createGain();
+                m._gain.gain.value = m._cfg.volume;
+                m._node = AC.createBufferSource();
+                m._node.buffer = m._buffer;
+                let c = m._cfg;
+                m._node.loop = c.loop;
+                if (c.on && c.on.ended)
+                    m._node.onended = e => {
+                        m._bus.fire('ended');
+                    };
+                m._node.connect(m._gain);
+                if (c.handler) {
+                    let node = c.handler.call(m, AC);
+                    m._gain.connect(node);
+                    node.connect(AC.destination);
+                }
+                else {
+                    m._gain.connect(AC.destination);
+                }
+                if (c.on && c.on.playing)
+                    m._bus.fire('playing', [AC, m._gain.gain]);
+                m._node.start(delay || 0, offset || 0, duration);
+            }
+            stop() {
+                this._check();
+                if (this._node)
+                    this._node.stop();
+            }
+            volume(n) {
+                this._check();
+                this._cfg.volume = n;
+                if (this._gain)
+                    this._gain.gain.value = n;
+            }
+            destroy() {
+                let m = this;
+                m._d = true;
+                m._cfg = null;
+                m._src = null;
+                m._buffer = null;
+                m._gain.disconnect();
+                m._node.disconnect();
+                m._bus.destroy();
+            }
+        }
+        media.Sound = Sound;
+    })(media = JS.media || (JS.media = {}));
+})(JS || (JS = {}));
+var Sound = JS.media.Sound;
+var JS;
+(function (JS) {
+    let media;
+    (function (media) {
+        class Video {
+            constructor(c) {
+                let m = this;
+                m._c = Jsons.union({
+                    controls: true,
+                    autoplay: false,
+                    loop: false,
+                    muted: false,
+                    preload: 'auto'
+                }, c);
+                m._src = m._c.src;
+                let el = $1('#' + m._c.id);
+                if (el) {
+                    m._el = el;
+                    Jsons.forEach(m._c, (v, k) => {
+                        if (k != 'id' && k != 'ctor' && k != 'on')
+                            m._el.attr(k, v);
+                    });
+                }
+                else {
+                    let ctr = (Types.isString(m._c.appendTo) ? $1(m._c.appendTo) : m._c.appendTo) || document.body, id = m._c.id || Random.uuid(4);
+                    ctr.append(Strings.nodeHTML('video', {
+                        id: id,
+                        controls: m._c.controls,
+                        loop: m._c.loop,
+                        muted: m._c.muted,
+                        preload: m._c.preload,
+                        poster: m._c.poster,
+                        width: m._c.width,
+                        height: m._c.height,
+                        src: m._c.src
+                    }));
+                    this._el = $1(`#${id}`);
+                }
+                if (m._c.on)
+                    Jsons.forEach(m._c.on, (v, k) => { this.on(k, v); });
+            }
+            src(src) {
+                let m = this;
+                if (!src)
+                    return m._src;
+                m._src = src;
+                m._el.src = src;
+                m._el.load();
+                return m;
+            }
+            currentTime(t) {
+                return this._gs('currentTime', t);
+            }
+            defaultPlaybackRate(r) {
+                return this._gs('defaultPlaybackRate', r);
+            }
+            playbackRate(r) {
+                return this._gs('playbackRate', r);
+            }
+            defaultMuted(is) {
+                return this._gs('defaultMuted', is);
+            }
+            muted(is) {
+                return this._gs('muted', is);
+            }
+            duration() {
+                return this._el.duration;
+            }
+            play() {
+                return this._el.play();
+            }
+            paused() {
+                return this._el.paused;
+            }
+            ended() {
+                return this._el.ended;
+            }
+            error() {
+                return this._el.error;
+            }
+            loop(is) {
+                return this._gs('loop', is);
+            }
+            played() {
+                return this._el.played;
+            }
+            volume(v) {
+                return this._gs('volume', v);
+            }
+            pause() {
+                this._el.pause();
+                return this;
+            }
+            preload(s) {
+                return this._gs('preload', s);
+            }
+            crossOrigin(s) {
+                return this._gs('crossOrigin', s);
+            }
+            _gs(p, v) {
+                if (v == void 0)
+                    return this._el[p];
+                this._el[p] = v;
+                return this;
+            }
+            canPlayType(type) {
+                return this._el.canPlayType(type);
+            }
+            on(e, fn) {
+                this._el['on' + e] = fn;
+            }
+        }
+        media.Video = Video;
+    })(media = JS.media || (JS.media = {}));
+})(JS || (JS = {}));
+var Video = JS.media.Video;
 var JS;
 (function (JS) {
     let store;

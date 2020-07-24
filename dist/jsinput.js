@@ -1,6 +1,6 @@
 //@ sourceURL=jsinput.js
 /**
-* JSDK 2.2.0 
+* JSDK 2.3.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -42,6 +42,8 @@ var JS;
             constructor(el) {
                 this._mapping = {};
                 this._d = false;
+                this._i = 300;
+                this._ts = 0;
                 let ele = el || window, m = this;
                 m._m = {};
                 m._q = new Queue(16);
@@ -51,8 +53,15 @@ var JS;
                     let c = e.keyCode, sz = m._q.size(), repeat = sz > 0 && c == m._q.get(sz - 1);
                     if (m._q.isFull())
                         m._q.remove();
-                    if (!repeat)
-                        m._q.add(c);
+                    if (!repeat) {
+                        let p = sz > 0 ? m._q.get(sz - 1) : null;
+                        if (m._ts === 0)
+                            m._ts = e.timeStamp;
+                        if (p == void 0 || (p != void 0 && e.timeStamp - m._ts <= m._i)) {
+                            m._ts = e.timeStamp;
+                            m._q.add(c);
+                        }
+                    }
                     if (!Jsons.hasKey(m._m, c) || !repeat)
                         m._m[c] = e.timeStamp;
                     if (!repeat && Jsons.hasKey(m._m, c)) {
@@ -100,22 +109,24 @@ var JS;
                 if (!Jsons.hasKey(m._mapping, ty))
                     m._mapping[ty] = m._numeric(ty, m.isHotKeys(ty) ? '+' : (m.isSeqKeys(ty) ? ',' : ''));
                 bus.on(ty, fn);
+                return m;
             }
             onKeyDown(k, fn) {
-                this._on(k, fn, this._busDown);
+                return this._on(k, fn, this._busDown);
             }
             onKeyUp(k, fn) {
-                this._on(k, fn, this._busUp);
+                return this._on(k, fn, this._busUp);
             }
             _off(bus, k) {
                 this._check();
                 bus.off(k ? this._keyChar(k) : undefined);
+                return this;
             }
             offKeyDown(k) {
-                this._off(this._busDown, k);
+                return this._off(this._busDown, k);
             }
             offKeyUp(k) {
-                this._off(this._busUp, k);
+                return this._off(this._busUp, k);
             }
             _equalsSeqkeys(keys, keyCodes) {
                 let sa = '';
@@ -187,6 +198,12 @@ var JS;
             getPressingQueue() {
                 return this._q.clone();
             }
+            seqInterval(t) {
+                if (t == void 0)
+                    return this._i;
+                this._i = t;
+                return this;
+            }
             getKeyDownTime(c) {
                 let m = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[m._keyChar(c)]);
                 return !Jsons.hasKey(m._m, n) ? 0 : m._m[n];
@@ -196,9 +213,11 @@ var JS;
                 return d1 > 0 && d2 > 0 && d1 < d2;
             }
             off() {
-                this._check();
-                this._busDown.off();
-                this._busUp.off();
+                let m = this;
+                m._check();
+                m._busDown.off();
+                m._busUp.off();
+                return m;
             }
             clear(c) {
                 let m = this;
@@ -206,12 +225,14 @@ var JS;
                     m._mapping = {};
                     m._m = {};
                     m._q.clear();
+                    m._ts = 0;
                     return;
                 }
                 let a = Types.isNumber(c) ? [c] : c;
                 a.forEach(k => {
                     m._m[k] = null;
                 });
+                return m;
             }
             _check() {
                 if (this._d)

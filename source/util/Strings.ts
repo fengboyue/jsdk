@@ -72,10 +72,16 @@ module JS {
              * Returns html string of a node type with its attributes.<br>
              * 返回指定节点的HTML
              */
-            public static nodeHTML(nodeType: string, attrs?: JsonObject<string>, text?: string): string {
+            public static nodeHTML(nodeType: string, attrs?: JsonObject<string|boolean|number>, text?: string): string {
                 let a = '';
                 if (attrs) Jsons.forEach(attrs, (v, k) => {
-                    if (v !== void 0) a += ` ${k}="${v || ''}"`
+                    if (v != void 0) {
+                        if(Types.isBoolean(v)) {
+                            if(v===true) a += ` ${k}`
+                        }else{
+                            a += ` ${k}="${v || ''}"`
+                        }
+                    }
                 });
                 return `<${nodeType}${a}>${text || ''}</${nodeType}>`
             }

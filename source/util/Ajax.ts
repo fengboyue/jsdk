@@ -66,14 +66,14 @@ module JS {
              * A function to be used to handle the raw response data. This is a pre-filtering
              * function to parse the response. You should return the sanitized data.
              */
-            responseFilter?(data: string, type: 'xml' | 'html' | 'json' | 'text'): string;
+            responseFilter?(data: string, type: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer'): string;
             /**
              * "xml": Returns a XML document that can be processed.<br>
              * "html": Returns HTML as plain text; included script tags are evaluated when inserted in the DOM.<br>
              * "json": Evaluates the response as JSON and returns a JavaScript object.<br>
              * "text": A plain text string.
              */
-            type?: 'xml' | 'html' | 'json' | 'text';
+            type?: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer';
 
             /**
              * An object of additional header key/value pairs to send along with requests using the XMLHttpRequest
@@ -132,7 +132,7 @@ module JS {
             request: AjaxRequest,
             url: string,
             raw: any,
-            type: 'xml' | 'html' | 'json' | 'text',
+            type: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer',
             data: any,
             status: number,
             statusText: 'cancel' | 'timeout' | 'abort' | 'parseerror' | 'nocontent' | 'notmodified' | string,
@@ -194,7 +194,7 @@ module JS {
                     url: xhr.responseURL,
                     raw: xhr.response,
                     type: req.type,
-                    data: null,
+                    data: xhr.response,
                     status: xhr.status,
                     statusText: error || (xhr.status == 0 ? 'error' : xhr.statusText),
                     headers: headers,
@@ -205,7 +205,7 @@ module JS {
                 try {
                     let raw = xhr.response, parser = req.parsers && req.parsers[res.type] || PARSERS[res.type];
                     if (req.responseFilter) raw = req.responseFilter(raw, res.type);
-                    res.data = parser(raw)
+                    res.data = parser?parser(raw):raw
                 } catch (e) {
                     res.statusText = 'parseerror';
                     if (req.onError) req.onError(res);
@@ -290,8 +290,7 @@ module JS {
              * 挂起只会显示同步XHR现在处于弃用状态。建议开发人员远离这个API。
              * 同步XHR不允许所有新的XHR功能（如timeout或abort）。这样做会调用InvalidAccessError。
              */
-            _send = function (this: PromiseContext<AjaxResponse>, request: AjaxRequest | URLString) {
-                let req: AjaxRequest = Types.isString(request) ? { url: <URLString>request } : <AjaxRequest>request;
+            _send = function (this: PromiseContext<AjaxResponse>, req: AjaxRequest) {
                 if (!req.url) JSLogger.error('Sent an ajax request without URL.')
 
                 req = <AjaxRequest>Jsons.union(<AjaxRequest>{
@@ -306,6 +305,8 @@ module JS {
                 let xhr: XMLHttpRequest = (<any>self).XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP'),
                     queryURL = _queryURL(req), url = _uncacheURL(queryURL, req.cache),
                     headers = req.headers || {};
+                xhr.responseType = (req.type=='html'||req.type=='xml')?'document':req.type;
+
                 xhr.open(req.method, url, req.async, req.username, req.password);
 
                 //Accept header
@@ -356,7 +357,6 @@ module JS {
                     return//cancel send
                 }
 
-                if (req.async) xhr.responseType = 'text';//The response type cannot be changed for synchronous requests made from a document.
                 //如果请求方法是 GET 或者 HEAD，则应将请求主体设置为 null
                 let data = req.method == 'HEAD' || req.method == 'GET' ? null : (Types.isString(req.data) ? <string>req.data : Jsons.stringify(req.data))
                 try {

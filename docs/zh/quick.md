@@ -1,4 +1,4 @@
-JSDK 2.0+是最全面的JS/TS框架之一，包括了从最底层到最上层的大量特性、框架与工具。<br>
+JSDK 2.0+是最全面的TS/JS框架，包括了从最底层到最上层的大量特性、框架与工具。<br>
 它非常适合做任何JS库的基石，就像JDK在Java中的作用那样。
 
 主要支持以下特性： 
@@ -30,8 +30,8 @@ JSDK 2.0是基于 <code>ES6 / TypeScript 2.0+</code> 编写的。
 * *我<b>强烈建议你在TS工程中使用JSDK</b>，这将让JSDK的全部特性都生效*
 * *如果你需要在不支持ES6的浏览器上运行JSDK，请使用 [Babel](https://babeljs.io/docs/en/)*
 
-## JSDK在线资源
-你可以访问以下在线资源更多的了解JSDK：
+## 在线资源
+你可以访问以下在线资源了解更多：
 <p class="warn">
 <a href="https://fengboyue.github.io/jsdk/docs/#/zh/quick" target="_blank">JSDK开发指南</a>
 <br>
@@ -53,9 +53,16 @@ JSDK自2.0版开始支持MIT许可协议。
 * *JSDK发布包中所引入的其他开源类库受其申明的许可协议保护*
 
 ## 更新日志
+
+### v2.3.0 - 2020/7/24
+[新增] 
+- 创建新模块"jsmedia"包含高级音频和视频播放器。
+- 为Keyboard类的Seqkeys类型事件添加间隔时间设置。
+- Ajax类支持新的响应类型：arraybuffer。
+
 ### v2.2.0 - 2020/7/17
 [新增] 
-- 创建UI外设模块：jsinput。
+- 创建新模块"jsinput"处理复杂键盘和鼠标事件。
 - 为每个examples的子目录自动化生成index.html.
 
 [修改] 
@@ -84,4 +91,4 @@ JSDK自2.0版开始支持MIT许可协议。
 
 ## 旧版本
 <a href="https://sourceforge.net/projects/jsdk2/" target="_blank">
-0.x版本的JSDK</a>已不再升级与维护，请使用最新的2.2版本。
+0.x版本的JSDK</a>已不再升级与维护，请使用最新版本。

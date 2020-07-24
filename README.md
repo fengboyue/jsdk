@@ -10,7 +10,7 @@
         alt="Version: 2.2.0"></a>
 </p>
 
-JSDK 2.0+ is one of the most comprehensive JS/TS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.
+JSDK 2.0+ is the most comprehensive TS/JS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.
 
 It supports such following features:
 <p class="warn">
@@ -42,8 +42,8 @@ If you touch JSDK for the first time, you need to have these following basic kno
 * *It is <b>strongly recommended to use JSDK in TS projects</b>, which will make all features of JSDK effective.*
 * *If you need to run JSDK on a browser that does not support ES6, please use [Babel](https://babeljs.io/docs/en/).*
 
-## Online Resources
-You can visit the following online resources to know JSDK more:
+## Resources Online
+You can visit the following online resources on Github to know more:
 <p class="warn">
 <a href="https://fengboyue.github.io/jsdk/docs/#/en/quick" target="_blank">JSDK Guides</a>
 <br>
@@ -65,9 +65,16 @@ JSDK is licensed under the MIT license since version 2.0.
 * *Other open source libraries include in JSDK's releases are licensed under their stated licenses*
 
 ## Changelogs
+
+### v2.3.0 - 2020/7/24
+[Added] 
+- create new module named jsmedia with advanced audio and video players.
+- add interval time for Seqkeys in Keyboard class.
+- Ajax class supports new response type: arraybuffer.
+
 ### v2.2.0 - 2020/7/17
 [Added] 
-- create new ui-input-devices module named jsinput.
+- create new module named jsinput for complex key and mouse events.
 - generate index.html for every directory of examples automatically.
 
 [Changed] 
@@ -96,4 +103,4 @@ JSDK is licensed under the MIT license since version 2.0.
 
 ## Old Versions
 The <a href="https://sourceforge.net/projects/jsdk2/" target="_blank">
-0.x versions</a> of JSDK was no longer upgraded and maintained. Please use the latest version 2.2.
+0.x versions</a> of JSDK was no longer upgraded and maintained. Please use the latest version.

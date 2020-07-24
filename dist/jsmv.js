@@ -1,6 +1,6 @@
 //@ sourceURL=jsmv.js
 /**
-* JSDK 2.2.0 
+* JSDK 2.3.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license

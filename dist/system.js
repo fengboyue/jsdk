@@ -1,6 +1,6 @@
 //@ sourceURL=system.js
 /**
-* JSDK 2.2.0 
+* JSDK 2.3.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -1350,8 +1350,15 @@ var JS;
                 let a = '';
                 if (attrs)
                     util.Jsons.forEach(attrs, (v, k) => {
-                        if (v !== void 0)
-                            a += ` ${k}="${v || ''}"`;
+                        if (v != void 0) {
+                            if (util.Types.isBoolean(v)) {
+                                if (v === true)
+                                    a += ` ${k}`;
+                            }
+                            else {
+                                a += ` ${k}="${v || ''}"`;
+                            }
+                        }
                     });
                 return `<${nodeType}${a}>${text || ''}</${nodeType}>`;
             }
@@ -1532,7 +1539,7 @@ var JS;
                 url: xhr.responseURL,
                 raw: xhr.response,
                 type: req.type,
-                data: null,
+                data: xhr.response,
                 status: xhr.status,
                 statusText: error || (xhr.status == 0 ? 'error' : xhr.statusText),
                 headers: headers,
@@ -1543,7 +1550,7 @@ var JS;
                 let raw = xhr.response, parser = req.parsers && req.parsers[res.type] || PARSERS[res.type];
                 if (req.responseFilter)
                     raw = req.responseFilter(raw, res.type);
-                res.data = parser(raw);
+                res.data = parser ? parser(raw) : raw;
             }
             catch (e) {
                 res.statusText = 'parseerror';
@@ -1617,8 +1624,7 @@ var JS;
                     return false;
             }
             return true;
-        }, _send = function (request) {
-            let req = util.Types.isString(request) ? { url: request } : request;
+        }, _send = function (req) {
             if (!req.url)
                 JSLogger.error('Sent an ajax request without URL.');
             req = util.Jsons.union({
@@ -1630,6 +1636,7 @@ var JS;
                 cache: true
             }, req);
             let xhr = self.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP'), queryURL = _queryURL(req), url = _uncacheURL(queryURL, req.cache), headers = req.headers || {};
+            xhr.responseType = (req.type == 'html' || req.type == 'xml') ? 'document' : req.type;
             xhr.open(req.method, url, req.async, req.username, req.password);
             xhr.setRequestHeader('Accept', req.type && ACCEPTS[req.type] ? ACCEPTS[req.type] + ',' + ACCEPTS['*'] + ';q=0.01' : ACCEPTS['*']);
             if (req.data && req.contentType)
@@ -1671,8 +1678,6 @@ var JS;
                 _rejectError.call(this, req, xhr, 'cancel');
                 return;
             }
-            if (req.async)
-                xhr.responseType = 'text';
             let data = req.method == 'HEAD' || req.method == 'GET' ? null : (util.Types.isString(req.data) ? req.data : util.Jsons.stringify(req.data));
             try {
                 if (req.async && req.timeout > 0) {
@@ -1974,7 +1979,7 @@ if (self['HTMLElement'])
         let _on = function (type, fn, once) {
             if (!this['_bus'])
                 this['_bus'] = new EventBus(this);
-            let bus = this['_bus'], cb = (e) => {
+            let bus = this['_bus'], cb = e => {
                 bus.fire(e);
             };
             bus.on(type, fn, once);
@@ -2203,7 +2208,7 @@ const $1 = Dom.$1;
 const $L = Dom.$L;
 var JS;
 (function (JS) {
-    JS.version = '2.2.0';
+    JS.version = '2.3.0';
     function config(d, v) {
         let l = arguments.length;
         if (l == 0)

@@ -31,8 +31,8 @@ interface HTMLElement {
      */
     toggleClass(cls: string, isAdd?: boolean): this;
 
-    on(type: string, fn: (this: HTMLElement, e: Event) => boolean | void, once?: boolean): this;
-    off(type?: string, fn?: (this: HTMLElement, e: Event) => boolean | void): this;
+    on(type: string, fn: (this: HTMLElement, e: Event, ...args:any[]) => boolean | void, once?: boolean): this;
+    off(type?: string, fn?: (this: HTMLElement, e: Event, ...args:any[]) => boolean | void): this;
 
     find(selector: string): HTMLElement;
     findAll(selector: string): NodeListOf<HTMLElement>;
@@ -47,8 +47,8 @@ interface HTMLElement {
  * Add methods for window object
  */
 interface Window {
-    on(type: string, fn: (this: Window, e: Event) => boolean | void, once?: boolean): this;
-    off(type?: string, fn?: (this: Window, e: Event) => boolean | void): this;
+    on(type: string, fn: (this: Window, e: Event, ...args:any[]) => boolean | void, once?: boolean): this;
+    off(type?: string, fn?: (this: Window, e: Event, ...args:any[]) => boolean | void): this;
 }
 
 if (self['HTMLElement']) //当前不在worker线程中
@@ -154,7 +154,7 @@ if (self['HTMLElement']) //当前不在worker线程中
         let _on = function (this: HTMLElement, type: string, fn: Function, once: boolean) {
             if (!this['_bus']) this['_bus'] = new EventBus(this);
 
-            let bus = <EventBus>this['_bus'], cb = (e) => {
+            let bus = <EventBus>this['_bus'], cb = e=>{
                 bus.fire(e)
             };
             bus.on(type, <any>fn, once);

@@ -42,6 +42,8 @@ module JS {
             private _busDown: EventBus;
             private _busUp: EventBus;
             private _d: boolean = false;
+            private _i: number = 300; //unit is ms, max interval time of Seqkeys
+            private _ts: number = 0; //上一次的有效按键时刻for seqKeys
 
             constructor(el?: HTMLElement) {
                 let ele = el || window, m = this;
@@ -51,23 +53,32 @@ module JS {
                 m._busUp = new EventBus(ele);
 
                 ele.on('keydown', (e: KeyboardEvent) => {
-                    let c = e.keyCode, sz = m._q.size(), repeat = sz>0 && c == m._q.get(sz - 1);
+                    let c = e.keyCode,
+                        sz = m._q.size(),
+                        repeat = sz > 0 && c == m._q.get(sz - 1);
 
                     if (m._q.isFull()) m._q.remove();
                     //不记录重复按键
-                    if(!repeat) m._q.add(c);
+                    if (!repeat) {
+                        let p = sz > 0 ? m._q.get(sz - 1) : null;
+                        if(m._ts===0) m._ts = e.timeStamp;
+                        if (p == void 0 || (p != void 0 && e.timeStamp - m._ts <= m._i)) {//必须小于最大间隔时间才被记录
+                            m._ts = e.timeStamp;
+                            m._q.add(c)
+                        }
+                    }
 
                     //没记录或与上一次按键不同的键，则更新的时间戳
-                    if (!Jsons.hasKey(m._m, c)|| !repeat) m._m[c] = e.timeStamp;
+                    if (!Jsons.hasKey(m._m, c) || !repeat) m._m[c] = e.timeStamp;
 
                     if (!repeat && Jsons.hasKey(m._m, c)) {
                         let types = m._busDown.types();
                         types.forEach(ty => {
-                            if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty)) 
+                            if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
                                 m._fireKeys(ty, c, m._busDown);
-                            if (m.isSeqKeys(ty) && m._endsWithCode(c, ty, ',') && m._isSeqKeysPressing(ty)) 
+                            if (m.isSeqKeys(ty) && m._endsWithCode(c, ty, ',') && m._isSeqKeysPressing(ty))
                                 m._fireKeys(ty, c, m._busDown);
-                            if (VK[ty] == c && m.isPressingKey(c)) 
+                            if (VK[ty] == c && m.isPressingKey(c))
                                 m._fireKeys(ty, c, m._busDown);
                         })
                     }
@@ -77,11 +88,11 @@ module JS {
                     if (Jsons.hasKey(m._m, c)) {
                         let types = m._busUp.types();
                         types.forEach(ty => {
-                            if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty)) 
+                            if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
                                 m._fireKeys(ty, c, m._busUp);
-                            if (m.isSeqKeys(ty) && m._endsWithCode(c, ty, ',') && m._isSeqKeysPressing(ty)) 
+                            if (m.isSeqKeys(ty) && m._endsWithCode(c, ty, ',') && m._isSeqKeysPressing(ty))
                                 m._fireKeys(ty, c, m._busUp);
-                            if (VK[ty] == c && m.isPressingKey(c)) 
+                            if (VK[ty] == c && m.isPressingKey(c))
                                 m._fireKeys(ty, c, m._busUp);
                         })
                         delete m._m[e.keyCode];
@@ -89,7 +100,7 @@ module JS {
                 })
             }
 
-            private _fireKeys(ty: string, c:number, bus:EventBus) {
+            private _fireKeys(ty: string, c: number, bus: EventBus) {
                 bus.fire(UIMocker.newKeyEvent(ty, c), [this])
             }
 
@@ -104,32 +115,34 @@ module JS {
                 return k && k.indexOf('+') > 0
             }
 
-            private _on(k: string, fn:Function, bus:EventBus){
+            private _on(k: string, fn: Function, bus: EventBus) {
                 let m = this, ty = m._keyChar(k);
                 //keyChar表达式转换为keyCode表达式并缓存
-                if (!Jsons.hasKey(m._mapping, ty)) m._mapping[ty] = m._numeric(ty, m.isHotKeys(ty) ? '+' : (m.isSeqKeys(ty) ? ',' : '')); 
-                bus.on(ty, fn)
+                if (!Jsons.hasKey(m._mapping, ty)) m._mapping[ty] = m._numeric(ty, m.isHotKeys(ty) ? '+' : (m.isSeqKeys(ty) ? ',' : ''));
+                bus.on(ty, fn);
+                return m
             }
             public onKeyDown(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void) {
-                this._on(k,fn,this._busDown)
+                return this._on(k, fn, this._busDown)
             }
             public onKeyUp(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void) {
-                this._on(k,fn,this._busUp)
-            }
-            
-            private _off(bus:EventBus, k?:Hotkeys | Seqkeys){
-                this._check();
-                bus.off(k?this._keyChar(k):undefined)
-            }
-            
-            public offKeyDown(k?: Hotkeys | Seqkeys) {
-                this._off(this._busDown, k)
-            }
-            public offKeyUp(k?: Hotkeys | Seqkeys) {
-                this._off(this._busUp, k)
+                return this._on(k, fn, this._busUp)
             }
 
-            private _equalsSeqkeys(keys:Array<string>, keyCodes:string){
+            private _off(bus: EventBus, k?: Hotkeys | Seqkeys) {
+                this._check();
+                bus.off(k ? this._keyChar(k) : undefined)
+                return this
+            }
+
+            public offKeyDown(k?: Hotkeys | Seqkeys) {
+                return this._off(this._busDown, k)
+            }
+            public offKeyUp(k?: Hotkeys | Seqkeys) {
+                return this._off(this._busUp, k)
+            }
+
+            private _equalsSeqkeys(keys: Array<string>, keyCodes: string) {
                 let sa = '';
                 keys.forEach((b, i) => {
                     if (i == 0) {
@@ -138,7 +151,7 @@ module JS {
                         sa += `,${VK[b]}`
                     }
                 })
-                return keyCodes.endsWith(sa+']')
+                return keyCodes.endsWith(sa + ']')
             }
 
             private _isSeqKeysPressing(k: Seqkeys) {
@@ -148,7 +161,7 @@ module JS {
                 let lk = a[l - 1], m = this, codes = this._q.toString();//取最后一位keyChar
                 if (m.isHotKeys(lk)) {//可能是hotkeys
                     if (!m._isHotKeysPressing(lk)) return false;
-                    a.remove(l-1);
+                    a.remove(l - 1);
                     a.add(lk.split('\+'))
                 } else {
                     if (!m.isPressingKey(lk)) return false;
@@ -212,6 +225,17 @@ module JS {
             }
 
             /**
+             * Gets/Sets the max interval time of Seqkeys.
+             */
+            public seqInterval(): number
+            public seqInterval(t: number): this
+            public seqInterval(t?: number): any {
+                if (t == void 0) return this._i;
+                this._i = t;
+                return this
+            }
+
+            /**
              * Returns the timeStamp(ms) of a key when it was keydown recently.<br>
              * Note: If no record of the key then returns 0.
              * 
@@ -233,9 +257,11 @@ module JS {
             }
 
             public off() {
-                this._check();
-                this._busDown.off();
-                this._busUp.off();
+                let m = this;
+                m._check();
+                m._busDown.off();
+                m._busUp.off();
+                return m
             }
             /**
              * Clear all records or one keyCode's record.
@@ -247,12 +273,14 @@ module JS {
                     m._mapping = {};
                     m._m = {};
                     m._q.clear();
+                    m._ts = 0;
                     return
                 }
                 let a = Types.isNumber(c) ? [c] : <Number[]>c;
                 a.forEach(k => {
                     m._m[k] = null;
                 })
+                return m
             }
 
             private _check() {

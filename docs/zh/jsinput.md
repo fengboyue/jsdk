@@ -66,6 +66,15 @@ kb.onKeyDown('DOWN, RIGHT + P', function(e: KeyboardEvent) {
 })
 ```
 
+### 间隔时间
+在上面的例子中，假设你按下<code>↓</code>，等待3秒甚至30分钟后再下<code>→ + P</code>。这样无间隔时间限制的连续键显然不符合需要。
+实际上，你可以设定连续键的最大间隔时间为200ms：
+```javascript
+kb.seqInterval(200);//200ms
+```
+* *超过最大间隔时间的连续键将被忽略*
+* *缺省的最大间隔时间为300ms*
+
 ### 长时间按键
 当隆(RYU)在按住<code>P</code>键保持2秒后再放开，会发出威力更大的红色波动拳。<br>
 <img src="assets/images/ryu-hado-red.gif" />

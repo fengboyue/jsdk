@@ -5,6 +5,7 @@
 -   [Key Features](features)
 -   [Data Types](datatypes)
 -   [Common Tools](utils)
+-   [Media](media)
 -   [Input Devices](jsinput)
 -   [Animations](jsan)
 -   [App Framework](jsvp)

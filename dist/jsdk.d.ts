@@ -1,5 +1,5 @@
 /**
-* JSDK 2.2.0 
+* JSDK 2.3.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -439,8 +439,8 @@ declare module JS {
                 text?: (data: string) => string;
             };
             data?: JsonObject | string;
-            responseFilter?(data: string, type: 'xml' | 'html' | 'json' | 'text'): string;
-            type?: 'xml' | 'html' | 'json' | 'text';
+            responseFilter?(data: string, type: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer'): string;
+            type?: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer';
             headers?: JsonObject<string | null | undefined>;
             ifModified?: boolean;
             method?: 'HEAD' | 'GET' | 'POST' | 'OPTIONS' | 'PUT' | 'DELETE';
@@ -457,7 +457,7 @@ declare module JS {
             request: AjaxRequest;
             url: string;
             raw: any;
-            type: 'xml' | 'html' | 'json' | 'text';
+            type: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer';
             data: any;
             status: number;
             statusText: 'cancel' | 'timeout' | 'abort' | 'parseerror' | 'nocontent' | 'notmodified' | string;
@@ -659,15 +659,15 @@ interface HTMLElement {
     removeClass(cls: string): this;
     hasClass(cls: string): boolean;
     toggleClass(cls: string, isAdd?: boolean): this;
-    on(type: string, fn: (this: HTMLElement, e: Event) => boolean | void, once?: boolean): this;
-    off(type?: string, fn?: (this: HTMLElement, e: Event) => boolean | void): this;
+    on(type: string, fn: (this: HTMLElement, e: Event, ...args: any[]) => boolean | void, once?: boolean): this;
+    off(type?: string, fn?: (this: HTMLElement, e: Event, ...args: any[]) => boolean | void): this;
     find(selector: string): HTMLElement;
     findAll(selector: string): NodeListOf<HTMLElement>;
     computedStyle(pseudo?: string): CSSStyleDeclaration;
 }
 interface Window {
-    on(type: string, fn: (this: Window, e: Event) => boolean | void, once?: boolean): this;
-    off(type?: string, fn?: (this: Window, e: Event) => boolean | void): this;
+    on(type: string, fn: (this: Window, e: Event, ...args: any[]) => boolean | void, once?: boolean): this;
+    off(type?: string, fn?: (this: Window, e: Event, ...args: any[]) => boolean | void): this;
 }
 declare module JS {
     namespace util {
@@ -745,7 +745,7 @@ declare module JS {
         class Strings {
             static padStart(text: string, maxLength: number, fill?: string): string;
             static padEnd(text: string, maxLength: number, fill?: string): string;
-            static nodeHTML(nodeType: string, attrs?: JsonObject<string>, text?: string): string;
+            static nodeHTML(nodeType: string, attrs?: JsonObject<string | boolean | number>, text?: string): string;
             static escapeHTML(html: string): string;
             static format(tpl: string, ...data: any[]): string;
             static merge(tpl: string, data: JsonObject<PrimitiveType | ((data: JsonObject, match: string, key: string) => string)>): string;
@@ -3897,17 +3897,19 @@ declare module JS {
             private _busDown;
             private _busUp;
             private _d;
+            private _i;
+            private _ts;
             constructor(el?: HTMLElement);
             private _fireKeys;
             private _endsWithCode;
             isSeqKeys(k: string): boolean;
             isHotKeys(k: string): boolean;
             private _on;
-            onKeyDown(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void): void;
-            onKeyUp(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void): void;
+            onKeyDown(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void): this;
+            onKeyUp(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void): this;
             private _off;
-            offKeyDown(k?: Hotkeys | Seqkeys): void;
-            offKeyUp(k?: Hotkeys | Seqkeys): void;
+            offKeyDown(k?: Hotkeys | Seqkeys): this;
+            offKeyUp(k?: Hotkeys | Seqkeys): this;
             private _equalsSeqkeys;
             private _isSeqKeysPressing;
             private _keyChar;
@@ -3916,10 +3918,12 @@ declare module JS {
             isPressingKeys(keys: Hotkeys | Seqkeys | string): boolean;
             isPressingKey(c: number | string): boolean;
             getPressingQueue(): Queue<number>;
+            seqInterval(): number;
+            seqInterval(t: number): this;
             getKeyDownTime(c: number | string): number;
             beforeKeyDown(k1: number | string, k2: number | string): boolean;
-            off(): void;
-            clear(c?: number | Array<number>): void;
+            off(): this;
+            clear(c?: number | Array<number>): this;
             private _check;
             destroy(): void;
         }
@@ -4011,6 +4015,111 @@ import Thread = JS.lang.Thread;
 import ThreadRunner = JS.lang.ThreadRunner;
 import ThreadState = JS.lang.ThreadState;
 import ThreadPreload = JS.lang.ThreadPreload;
+declare module JS {
+    namespace media {
+        type MediaEvents = 'abort' | 'canplay' | 'canplaythrough' | 'durationchange' | 'emptied' | 'ended' | 'error' | 'loadeddata' | 'loadedmetadata' | 'loadstart' | 'pause' | 'play' | 'playing' | 'progress' | 'ratechange' | 'readystatechange' | 'seeking' | 'seeked' | 'stalled' | 'suspend' | 'timeupdate' | 'volumechange' | 'waiting';
+        type MediaSource = {
+            media?: string;
+            src: string;
+            type: 'video/ogg' | 'video/mp4' | 'video/webm' | 'audio/ogg' | 'audio/mpeg';
+        };
+    }
+}
+import MediaEvents = JS.media.MediaEvents;
+declare module JS {
+    namespace media {
+        interface SoundConfig {
+            volume?: number;
+            loop?: boolean;
+            handler?: (this: Sound, ac: AudioContext) => AudioNode;
+            on?: {
+                loading?: EventHandler1<Sound, AjaxRequest>;
+                load_error?: EventHandler1<Sound, AjaxResponse>;
+                decode_error?: EventHandler1<Sound, DOMException>;
+                playing?: EventHandler2<Sound, AudioContext, AudioParam>;
+                ended?: EventHandler<Sound>;
+            };
+        }
+        class Sound {
+            private _cfg;
+            private _bus;
+            private _src;
+            private _buffer;
+            private _node;
+            private _gain;
+            private _d;
+            constructor(cfg?: SoundConfig);
+            protected _check(): void;
+            load(url: URLString): Promise<this>;
+            on(type: string, fn: EventHandler, once?: boolean): this;
+            off(type: string, fn: EventHandler): this;
+            loop(): boolean;
+            loop(is: boolean): this;
+            src(): string;
+            play(delay?: number, offset?: number, duration?: number): void;
+            stop(): void;
+            volume(n: number): void;
+            destroy(): void;
+        }
+    }
+}
+import SoundConfig = JS.media.SoundConfig;
+import Sound = JS.media.Sound;
+declare module JS {
+    namespace media {
+        type VideoConfig = {
+            id?: string;
+            appendTo?: HTMLElement | string;
+            controls?: boolean;
+            loop?: boolean;
+            muted?: boolean;
+            poster?: URLString;
+            preload?: 'auto' | 'meta' | 'none';
+            width?: number;
+            height?: number;
+            src?: URLString;
+            on?: JsonObject<(this: HTMLMediaElement) => void>;
+        };
+        class Video {
+            protected _c: VideoConfig;
+            protected _el: HTMLMediaElement;
+            protected _src: URLString;
+            constructor(c: VideoConfig);
+            src(): URLString;
+            src(src: URLString): this;
+            currentTime(): number;
+            currentTime(t: number): this;
+            defaultPlaybackRate(): number;
+            defaultPlaybackRate(r: number): this;
+            playbackRate(): number;
+            playbackRate(r: number): this;
+            defaultMuted(): boolean;
+            defaultMuted(is: boolean): this;
+            muted(): boolean;
+            muted(is: boolean): this;
+            duration(): number;
+            play(): Promise<void>;
+            paused(): boolean;
+            ended(): boolean;
+            error(): MediaError | null;
+            loop(): boolean;
+            loop(is: boolean): this;
+            played(): TimeRanges;
+            volume(): number;
+            volume(v: number): this;
+            pause(): this;
+            preload(): 'auto' | 'meta' | 'none';
+            preload(s: 'auto' | 'meta' | 'none'): this;
+            crossOrigin(): string | null;
+            crossOrigin(s: string): this;
+            private _gs;
+            canPlayType(type: string): CanPlayTypeResult;
+            on(e: MediaEvents, fn: (this: HTMLMediaElement) => void): void;
+        }
+    }
+}
+import VideoConfig = JS.media.VideoConfig;
+import Video = JS.media.Video;
 declare module JS {
     namespace store {
         type StorePrimitiveType = PrimitiveType | Date | JsonObject<PrimitiveType> | Array<PrimitiveType>;

@@ -96,14 +96,15 @@ JSDK被划分成多个模块（类库）。最底层的核心模块是<b>system<
 ---|---|---|---|---
 system|核心库|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||102kb
 jsds|数据结构库|JS.ds.* |system |6kb
-jsinput|UI外设库|JS.input.* |jsds |7kb
-jsui|UI相关库|JS.ui.* |system |5kb
+jsmedia|音视频播放器|JS.media.* |system |4kb
+jsinput|外设事件库|JS.input.* |jsds |7kb
+jsui|UI基础库|JS.ui.* |system |5kb
 jsmv|模型、视图及IOC库|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
 jsan|动画库|JS.an.* |jsui |16kb
-jsfx|widget组件库 |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
+jsfx|Widget组件库 |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
 jsvp|应用层框架|JS.store.*<br>JS.app.* |jsmv|8kb
 jsunit|单元测试框架|JS.unit.* |system|js: 9kb<br>css: 669b
-jsdk|包含上述全部模块|JS.* ||js: 275kb
+jsdk|包含上述全部模块|JS.* ||js: 279kb
 
 ### 自定义模块
 当你需要更小尺寸的模块文件，你可以修改build/目录下的构建脚本，去掉不需要用到的类或包，重新构建出自定义的模块文件。

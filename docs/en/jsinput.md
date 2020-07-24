@@ -67,7 +67,17 @@ kb.onKeyDown('DOWN, RIGHT + P', function(e: KeyboardEvent) {
 })
 ```
 
-### Key Holding
+### Interval Time
+In the above example, suppose you press <code>↓</code>, and wait for 3 seconds or even 30 minutes and then press <code>→ + P</code>. Such a unlimited time interval of Seqkeys is obviously not suitable for the needs.
+
+In fact, you can set the maximum interval time between sequential keys to be 200ms:
+```javascript
+kb.seqInterval(200);//200ms
+```
+* *Any key be press down exceeding the maximum interval will be ignored.*
+* *The default maximum interval is 300 ms.*
+
+### Holding Time
 When Ryu holds the <code>P</code> key for 2 seconds and up it, he will sends out more powerful red Hadouken.<br>
 <img src="assets/images/ryu-hado-red.gif" />
 

@@ -2,6 +2,7 @@
 echo '开始构建'
 ./build-module.sh jsdk
 ./build-module.sh system
+./build-module.sh jsmedia
 ./build-module.sh jsds
 ./build-module.sh jsinput
 ./build-module.sh jsui

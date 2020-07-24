@@ -103,14 +103,15 @@ Module Name|Remarks|Includes|Depends|Min Sizes
 ---|---|---|---|---
 system|core module|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||102kb
 jsds|data structures|JS.ds.* |system |6kb
-jsinput|ui-input-devices|JS.input.* |jsds |7kb
+jsmedia|audio+video|JS.media.* |system |4kb
+jsinput|key&mouse events|JS.input.* |jsds |7kb
 jsui|ui module|JS.ui.* |system |5kb
 jsmv|models+views+ioc|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
 jsan|animations|JS.an.* |jsui |16kb
 jsfx|widgets |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
 jsvp|app framework|JS.store.*<br>JS.app.* |jsmv|8kb
 jsunit|unit-test framework|JS.unit.* |system|js: 9kb<br>css: 669b
-jsdk|all above modules|JS.* ||js: 275kb
+jsdk|all above modules|JS.* ||js: 279kb
 
 ### Custom JSDK Module 
 When you need smaller module files, you can modify the build scripts in <code>build/</code> directory. 

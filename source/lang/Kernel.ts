@@ -6,6 +6,10 @@
  * @author Frank.Feng
  * @email boyue.feng@foxmail.com
  * 
+ * @version 2.3.0
+ * @date 2020/7/19
+ * @update create new module "jsmedia"" for audio and video
+ *
  * @version 2.2.0
  * @date 2020/7/12
  * @update create new module "jsinput" for ui-input-devices
@@ -42,7 +46,7 @@
 
 module JS {
 
-    export let version = '2.2.0';
+    export let version = '2.3.0';
 
     export type GlobalConfig = {
         canImport?: boolean;
