@@ -1,19 +1,20 @@
 //@ sourceURL=system.js
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
 var Reflect;
 (function (Reflect) {
+    var A = Array, U8A = Uint8Array, TE = TypeError, OP = Object.prototype, MP = Map.prototype, WMP = WeakMap.prototype, SP = Set.prototype, $o = "object", $f = "function", $u = "undefined", TO = function (v, s) { return typeof v === s; };
     (function (factory) {
-        var root = typeof global === "object" ? global :
-            typeof self === "object" ? self :
-                typeof this === "object" ? this :
+        var TO = function (v, s) { return typeof v === s; }, root = typeof global === $o ? global :
+            TO(self, $o) ? self :
+                TO(this, $o) ? this :
                     Function("return this;")();
         var exporter = makeExporter(Reflect);
-        if (typeof root.Reflect === "undefined") {
+        if (TO(root.Reflect, $u)) {
             root.Reflect = Reflect;
         }
         else {
@@ -22,7 +23,7 @@ var Reflect;
         factory(exporter);
         function makeExporter(target, previous) {
             return function (key, value) {
-                if (typeof target[key] !== "function") {
+                if (!TO(target[key], $f)) {
                     Object.defineProperty(target, key, { configurable: true, writable: true, value: value });
                 }
                 if (previous)
@@ -30,40 +31,27 @@ var Reflect;
             };
         }
     })(function (exporter) {
-        var hasOwn = Object.prototype.hasOwnProperty;
-        var supportsSymbol = typeof Symbol === "function";
-        var toPrimitiveSymbol = supportsSymbol && typeof Symbol.toPrimitive !== "undefined" ? Symbol.toPrimitive : "@@toPrimitive";
-        var iteratorSymbol = supportsSymbol && typeof Symbol.iterator !== "undefined" ? Symbol.iterator : "@@iterator";
-        var supportsCreate = typeof Object.create === "function";
-        var supportsProto = { __proto__: [] } instanceof Array;
-        var downLevel = !supportsCreate && !supportsProto;
-        var HashMap = {
+        var hasOwn = OP.hasOwnProperty, supportsSymbol = TO(Symbol, $f), toPrimitiveSymbol = supportsSymbol && !TO(Symbol.toPrimitive, $u) ? Symbol.toPrimitive : "@@toPrimitive", iteratorSymbol = supportsSymbol && !TO(Symbol.iterator, $u) ? Symbol.iterator : "@@iterator", supportsCreate = TO(Object.create, $f), supportsProto = { __proto__: [] } instanceof A, downLevel = !supportsCreate && !supportsProto, HashMap = {
             create: supportsCreate
                 ? function () { return MakeDictionary(Object.create(null)); }
                 : supportsProto
                     ? function () { return MakeDictionary({ __proto__: null }); }
                     : function () { return MakeDictionary({}); },
             has: downLevel
-                ? function (map, key) { return hasOwn.call(map, key); }
-                : function (map, key) { return key in map; },
+                ? function (m, k) { return hasOwn.call(m, k); }
+                : function (m, k) { return k in m; },
             get: downLevel
-                ? function (map, key) { return hasOwn.call(map, key) ? map[key] : undefined; }
-                : function (map, key) { return map[key]; },
-        };
-        var functionPrototype = Object.getPrototypeOf(Function);
-        var usePolyfill = typeof process === "object" && process.env && process.env["REFLECT_METADATA_USE_MAP_POLYFILL"] === "true";
-        var _Map = !usePolyfill && typeof Map === "function" && typeof Map.prototype.entries === "function" ? Map : CreateMapPolyfill();
-        var _Set = !usePolyfill && typeof Set === "function" && typeof Set.prototype.entries === "function" ? Set : CreateSetPolyfill();
-        var _WeakMap = !usePolyfill && typeof WeakMap === "function" ? WeakMap : CreateWeakMapPolyfill();
-        var Metadata = new _WeakMap();
+                ? function (m, k) { return hasOwn.call(m, k) ? m[k] : undefined; }
+                : function (m, k) { return m[k]; }
+        }, FProto = Object.getPrototypeOf(Function), usePolyfill = typeof process === $o && process.env && process.env["REFLECT_METADATA_USE_MAP_POLYFILL"] === "true", _Map = !usePolyfill && TO(Map, $f) && TO(MP.entries, $f) ? Map : CreateMapPolyfill(), _Set = !usePolyfill && TO(Set, $f) && TO(SP.entries, $f) ? Set : CreateSetPolyfill(), _WeakMap = !usePolyfill && TO(WeakMap, $f) ? WeakMap : CreateWeakMapPolyfill(), Metadata = new _WeakMap();
         function decorate(decorators, target, propertyKey, attributes) {
             if (!IsUndefined(propertyKey)) {
                 if (!IsArray(decorators))
-                    throw new TypeError();
+                    throw new TE();
                 if (!IsObject(target))
-                    throw new TypeError();
+                    throw new TE();
                 if (!IsObject(attributes) && !IsUndefined(attributes) && !IsNull(attributes))
-                    throw new TypeError();
+                    throw new TE();
                 if (IsNull(attributes))
                     attributes = undefined;
                 propertyKey = ToPropertyKey(propertyKey);
@@ -71,9 +59,9 @@ var Reflect;
             }
             else {
                 if (!IsArray(decorators))
-                    throw new TypeError();
+                    throw new TE();
                 if (!IsConstructor(target))
-                    throw new TypeError();
+                    throw new TE();
                 return DecorateConstructor(decorators, target);
             }
         }
@@ -81,9 +69,9 @@ var Reflect;
         function metadata(metadataKey, metadataValue) {
             function decorator(target, propertyKey) {
                 if (!IsObject(target))
-                    throw new TypeError();
+                    throw new TE();
                 if (!IsUndefined(propertyKey) && !IsPropertyKey(propertyKey))
-                    throw new TypeError();
+                    throw new TE();
                 OrdinaryDefineOwnMetadata(metadataKey, metadataValue, target, propertyKey);
             }
             return decorator;
@@ -91,7 +79,7 @@ var Reflect;
         exporter("metadata", metadata);
         function defineMetadata(metadataKey, metadataValue, target, propertyKey) {
             if (!IsObject(target))
-                throw new TypeError();
+                throw new TE();
             if (!IsUndefined(propertyKey))
                 propertyKey = ToPropertyKey(propertyKey);
             return OrdinaryDefineOwnMetadata(metadataKey, metadataValue, target, propertyKey);
@@ -99,7 +87,7 @@ var Reflect;
         exporter("defineMetadata", defineMetadata);
         function hasMetadata(metadataKey, target, propertyKey) {
             if (!IsObject(target))
-                throw new TypeError();
+                throw new TE();
             if (!IsUndefined(propertyKey))
                 propertyKey = ToPropertyKey(propertyKey);
             return OrdinaryHasMetadata(metadataKey, target, propertyKey);
@@ -107,7 +95,7 @@ var Reflect;
         exporter("hasMetadata", hasMetadata);
         function hasOwnMetadata(metadataKey, target, propertyKey) {
             if (!IsObject(target))
-                throw new TypeError();
+                throw new TE();
             if (!IsUndefined(propertyKey))
                 propertyKey = ToPropertyKey(propertyKey);
             return OrdinaryHasOwnMetadata(metadataKey, target, propertyKey);
@@ -115,7 +103,7 @@ var Reflect;
         exporter("hasOwnMetadata", hasOwnMetadata);
         function getMetadata(metadataKey, target, propertyKey) {
             if (!IsObject(target))
-                throw new TypeError();
+                throw new TE();
             if (!IsUndefined(propertyKey))
                 propertyKey = ToPropertyKey(propertyKey);
             return OrdinaryGetMetadata(metadataKey, target, propertyKey);
@@ -123,7 +111,7 @@ var Reflect;
         exporter("getMetadata", getMetadata);
         function getOwnMetadata(metadataKey, target, propertyKey) {
             if (!IsObject(target))
-                throw new TypeError();
+                throw new TE();
             if (!IsUndefined(propertyKey))
                 propertyKey = ToPropertyKey(propertyKey);
             return OrdinaryGetOwnMetadata(metadataKey, target, propertyKey);
@@ -131,7 +119,7 @@ var Reflect;
         exporter("getOwnMetadata", getOwnMetadata);
         function getMetadataKeys(target, propertyKey) {
             if (!IsObject(target))
-                throw new TypeError();
+                throw new TE();
             if (!IsUndefined(propertyKey))
                 propertyKey = ToPropertyKey(propertyKey);
             return OrdinaryMetadataKeys(target, propertyKey);
@@ -139,7 +127,7 @@ var Reflect;
         exporter("getMetadataKeys", getMetadataKeys);
         function getOwnMetadataKeys(target, propertyKey) {
             if (!IsObject(target))
-                throw new TypeError();
+                throw new TE();
             if (!IsUndefined(propertyKey))
                 propertyKey = ToPropertyKey(propertyKey);
             return OrdinaryOwnMetadataKeys(target, propertyKey);
@@ -147,7 +135,7 @@ var Reflect;
         exporter("getOwnMetadataKeys", getOwnMetadataKeys);
         function deleteMetadata(metadataKey, target, propertyKey) {
             if (!IsObject(target))
-                throw new TypeError();
+                throw new TE();
             if (!IsUndefined(propertyKey))
                 propertyKey = ToPropertyKey(propertyKey);
             var metadataMap = GetOrCreateMetadataMap(target, propertyKey, false);
@@ -167,11 +155,10 @@ var Reflect;
         exporter("deleteMetadata", deleteMetadata);
         function DecorateConstructor(decorators, target) {
             for (var i = decorators.length - 1; i >= 0; --i) {
-                var decorator = decorators[i];
-                var decorated = decorator(target);
+                var decorator = decorators[i], decorated = decorator(target);
                 if (!IsUndefined(decorated) && !IsNull(decorated)) {
                     if (!IsConstructor(decorated))
-                        throw new TypeError();
+                        throw new TE();
                     target = decorated;
                 }
             }
@@ -183,7 +170,7 @@ var Reflect;
                 var decorated = decorator(target, propertyKey, descriptor);
                 if (!IsUndefined(decorated) && !IsNull(decorated)) {
                     if (!IsObject(decorated))
-                        throw new TypeError();
+                        throw new TE();
                     descriptor = decorated;
                 }
             }
@@ -241,8 +228,7 @@ var Reflect;
             metadataMap.set(MetadataKey, MetadataValue);
         }
         function OrdinaryMetadataKeys(O, P) {
-            var ownKeys = OrdinaryOwnMetadataKeys(O, P);
-            var parent = OrdinaryGetPrototypeOf(O);
+            var ownKeys = OrdinaryOwnMetadataKeys(O, P), parent = OrdinaryGetPrototypeOf(O);
             if (parent === null)
                 return ownKeys;
             var parentKeys = OrdinaryMetadataKeys(parent, P);
@@ -250,19 +236,16 @@ var Reflect;
                 return ownKeys;
             if (ownKeys.length <= 0)
                 return parentKeys;
-            var set = new _Set();
-            var keys = [];
+            var set = new _Set(), keys = [];
             for (var _i = 0, ownKeys_1 = ownKeys; _i < ownKeys_1.length; _i++) {
-                var key = ownKeys_1[_i];
-                var hasKey = set.has(key);
+                var key = ownKeys_1[_i], hasKey = set.has(key);
                 if (!hasKey) {
                     set.add(key);
                     keys.push(key);
                 }
             }
             for (var _a = 0, parentKeys_1 = parentKeys; _a < parentKeys_1.length; _a++) {
-                var key = parentKeys_1[_a];
-                var hasKey = set.has(key);
+                var key = parentKeys_1[_a], hasKey = set.has(key);
                 if (!hasKey) {
                     set.add(key);
                     keys.push(key);
@@ -271,13 +254,10 @@ var Reflect;
             return keys;
         }
         function OrdinaryOwnMetadataKeys(O, P) {
-            var keys = [];
-            var metadataMap = GetOrCreateMetadataMap(O, P, false);
+            var keys = [], metadataMap = GetOrCreateMetadataMap(O, P, false);
             if (IsUndefined(metadataMap))
                 return keys;
-            var keysObj = metadataMap.keys();
-            var iterator = GetIterator(keysObj);
-            var k = 0;
+            var keysObj = metadataMap.keys(), iterator = GetIterator(keysObj), k = 0;
             while (true) {
                 var next = IteratorStep(iterator);
                 if (!next) {
@@ -303,12 +283,12 @@ var Reflect;
             if (x === null)
                 return 1;
             switch (typeof x) {
-                case "undefined": return 0;
+                case $u: return 0;
                 case "boolean": return 2;
                 case "string": return 3;
                 case "symbol": return 4;
                 case "number": return 5;
-                case "object": return x === null ? 1 : 6;
+                case $o: return x === null ? 1 : 6;
                 default: return 6;
             }
         }
@@ -319,10 +299,10 @@ var Reflect;
             return x === null;
         }
         function IsSymbol(x) {
-            return typeof x === "symbol";
+            return TO(x, "symbol");
         }
         function IsObject(x) {
-            return typeof x === "object" ? x !== null : typeof x === "function";
+            return TO(x, $o) ? x !== null : TO(x, $f);
         }
         function ToPrimitive(input, PreferredType) {
             switch (Type(input)) {
@@ -333,25 +313,24 @@ var Reflect;
                 case 4: return input;
                 case 5: return input;
             }
-            var hint = PreferredType === 3 ? "string" : PreferredType === 5 ? "number" : "default";
-            var exoticToPrim = GetMethod(input, toPrimitiveSymbol);
+            var hint = PreferredType === 3 ? "string" : PreferredType === 5 ? "number" : "default", exoticToPrim = GetMethod(input, toPrimitiveSymbol);
             if (exoticToPrim !== undefined) {
                 var result = exoticToPrim.call(input, hint);
                 if (IsObject(result))
-                    throw new TypeError();
+                    throw new TE();
                 return result;
             }
             return OrdinaryToPrimitive(input, hint === "default" ? "number" : hint);
         }
         function OrdinaryToPrimitive(O, hint) {
             if (hint === "string") {
-                var toString_1 = O.toString;
+                var toString_1 = Object.toString;
                 if (IsCallable(toString_1)) {
                     var result = toString_1.call(O);
                     if (!IsObject(result))
                         return result;
                 }
-                var valueOf = O.valueOf;
+                var valueOf = Object.valueOf;
                 if (IsCallable(valueOf)) {
                     var result = valueOf.call(O);
                     if (!IsObject(result))
@@ -359,20 +338,20 @@ var Reflect;
                 }
             }
             else {
-                var valueOf = O.valueOf;
+                var valueOf = Object.valueOf;
                 if (IsCallable(valueOf)) {
                     var result = valueOf.call(O);
                     if (!IsObject(result))
                         return result;
                 }
-                var toString_2 = O.toString;
+                var toString_2 = Object.toString;
                 if (IsCallable(toString_2)) {
                     var result = toString_2.call(O);
                     if (!IsObject(result))
                         return result;
                 }
             }
-            throw new TypeError();
+            throw new TE();
         }
         function ToBoolean(argument) {
             return !!argument;
@@ -387,17 +366,17 @@ var Reflect;
             return ToString(key);
         }
         function IsArray(argument) {
-            return Array.isArray
-                ? Array.isArray(argument)
-                : argument instanceof Object
-                    ? argument instanceof Array
-                    : Object.prototype.toString.call(argument) === "[object Array]";
+            return A.isArray
+                ? A.isArray(argument)
+                : argument instanceof O
+                    ? argument instanceof A
+                    : OP.toString.call(argument) === "[object Array]";
         }
         function IsCallable(argument) {
-            return typeof argument === "function";
+            return TO(argument, $f);
         }
         function IsConstructor(argument) {
-            return typeof argument === "function";
+            return TO(argument, $f);
         }
         function IsPropertyKey(argument) {
             switch (Type(argument)) {
@@ -411,16 +390,16 @@ var Reflect;
             if (func === undefined || func === null)
                 return undefined;
             if (!IsCallable(func))
-                throw new TypeError();
+                throw new TE();
             return func;
         }
         function GetIterator(obj) {
             var method = GetMethod(obj, iteratorSymbol);
             if (!IsCallable(method))
-                throw new TypeError();
+                throw new TE();
             var iterator = method.call(obj);
             if (!IsObject(iterator))
-                throw new TypeError();
+                throw new TE();
             return iterator;
         }
         function IteratorValue(iterResult) {
@@ -437,64 +416,65 @@ var Reflect;
         }
         function OrdinaryGetPrototypeOf(O) {
             var proto = Object.getPrototypeOf(O);
-            if (typeof O !== "function" || O === functionPrototype)
+            if (typeof Object !== $f || Object === FProto)
                 return proto;
-            if (proto !== functionPrototype)
+            if (proto !== FProto)
                 return proto;
-            var prototype = O.prototype;
-            var prototypeProto = prototype && Object.getPrototypeOf(prototype);
-            if (prototypeProto == null || prototypeProto === Object.prototype)
+            var prototype = Object.prototype;
+            var pProto = prototype && Object.getPrototypeOf(prototype);
+            if (pProto == null || pProto === OP)
                 return proto;
-            var constructor = prototypeProto.constructor;
-            if (typeof constructor !== "function")
+            var ctor = pProto.constructor;
+            if (!TO(ctor, $f))
                 return proto;
-            if (constructor === O)
+            if (ctor === O)
                 return proto;
-            return constructor;
+            return ctor;
         }
         function CreateMapPolyfill() {
-            var cacheSentinel = {};
-            var arraySentinel = [];
-            var MapIterator = (function () {
+            var cacheSentinel = {}, arraySentinel = [], MapIterator = (function () {
                 function MapIterator(keys, values, selector) {
                     this._index = 0;
                     this._keys = keys;
                     this._values = values;
                     this._selector = selector;
                 }
-                MapIterator.prototype["@@iterator"] = function () { return this; };
-                MapIterator.prototype[iteratorSymbol] = function () { return this; };
-                MapIterator.prototype.next = function () {
-                    var index = this._index;
-                    if (index >= 0 && index < this._keys.length) {
-                        var result = this._selector(this._keys[index], this._values[index]);
-                        if (index + 1 >= this._keys.length) {
-                            this._index = -1;
-                            this._keys = arraySentinel;
-                            this._values = arraySentinel;
+                var P = MapIterator.prototype;
+                P["@@iterator"] = function () { return this; };
+                P[iteratorSymbol] = function () { return this; };
+                P.next = function () {
+                    var T = this, index = T._index;
+                    if (index >= 0 && index < T._keys.length) {
+                        var result = T._selector(T._keys[index], T._values[index]);
+                        if (index + 1 >= T._keys.length) {
+                            T._index = -1;
+                            T._keys = arraySentinel;
+                            T._values = arraySentinel;
                         }
                         else {
-                            this._index++;
+                            T._index++;
                         }
                         return { value: result, done: false };
                     }
                     return { value: undefined, done: true };
                 };
-                MapIterator.prototype.throw = function (error) {
-                    if (this._index >= 0) {
-                        this._index = -1;
-                        this._keys = arraySentinel;
-                        this._values = arraySentinel;
+                P.throw = function (e) {
+                    var T = this;
+                    if (T._index >= 0) {
+                        T._index = -1;
+                        T._keys = arraySentinel;
+                        T._values = arraySentinel;
                     }
-                    throw error;
+                    throw e;
                 };
-                MapIterator.prototype.return = function (value) {
-                    if (this._index >= 0) {
-                        this._index = -1;
-                        this._keys = arraySentinel;
-                        this._values = arraySentinel;
+                P.return = function (v) {
+                    var T = this;
+                    if (T._index >= 0) {
+                        T._index = -1;
+                        T._keys = arraySentinel;
+                        T._values = arraySentinel;
                     }
-                    return { value: value, done: true };
+                    return { value: v, done: true };
                 };
                 return MapIterator;
             }());
@@ -505,71 +485,73 @@ var Reflect;
                     this._cacheKey = cacheSentinel;
                     this._cacheIndex = -2;
                 }
-                Object.defineProperty(Map.prototype, "size", {
+                Object.defineProperty(MP, "size", {
                     get: function () { return this._keys.length; },
                     enumerable: true,
                     configurable: true
                 });
-                Map.prototype.has = function (key) { return this._find(key, false) >= 0; };
-                Map.prototype.get = function (key) {
-                    var index = this._find(key, false);
+                MP.has = function (k) { return this._find(k, false) >= 0; };
+                MP.get = function (k) {
+                    var index = this._find(k, false);
                     return index >= 0 ? this._values[index] : undefined;
                 };
-                Map.prototype.set = function (key, value) {
-                    var index = this._find(key, true);
-                    this._values[index] = value;
+                MP.set = function (k, v) {
+                    var index = this._find(k, true);
+                    this._values[index] = v;
                     return this;
                 };
-                Map.prototype.delete = function (key) {
-                    var index = this._find(key, false);
+                MP.delete = function (k) {
+                    var T = this, index = T._find(k, false);
                     if (index >= 0) {
-                        var size = this._keys.length;
+                        var size = T._keys.length;
                         for (var i = index + 1; i < size; i++) {
-                            this._keys[i - 1] = this._keys[i];
-                            this._values[i - 1] = this._values[i];
+                            T._keys[i - 1] = T._keys[i];
+                            T._values[i - 1] = T._values[i];
                         }
-                        this._keys.length--;
-                        this._values.length--;
-                        if (key === this._cacheKey) {
-                            this._cacheKey = cacheSentinel;
-                            this._cacheIndex = -2;
+                        T._keys.length--;
+                        T._values.length--;
+                        if (k === T._cacheKey) {
+                            T._cacheKey = cacheSentinel;
+                            T._cacheIndex = -2;
                         }
                         return true;
                     }
                     return false;
                 };
-                Map.prototype.clear = function () {
-                    this._keys.length = 0;
-                    this._values.length = 0;
-                    this._cacheKey = cacheSentinel;
-                    this._cacheIndex = -2;
+                MP.clear = function () {
+                    var T = this;
+                    T._keys.length = 0;
+                    T._values.length = 0;
+                    T._cacheKey = cacheSentinel;
+                    T._cacheIndex = -2;
                 };
-                Map.prototype.keys = function () { return new MapIterator(this._keys, this._values, getKey); };
-                Map.prototype.values = function () { return new MapIterator(this._keys, this._values, getValue); };
-                Map.prototype.entries = function () { return new MapIterator(this._keys, this._values, getEntry); };
-                Map.prototype["@@iterator"] = function () { return this.entries(); };
-                Map.prototype[iteratorSymbol] = function () { return this.entries(); };
-                Map.prototype._find = function (key, insert) {
-                    if (this._cacheKey !== key) {
-                        this._cacheIndex = this._keys.indexOf(this._cacheKey = key);
+                MP.keys = function () { return new MapIterator(this._keys, this._values, getKey); };
+                MP.values = function () { return new MapIterator(this._keys, this._values, getValue); };
+                MP.entries = function () { return new MapIterator(this._keys, this._values, getEntry); };
+                MP["@@iterator"] = function () { return this.entries(); };
+                MP[iteratorSymbol] = function () { return this.entries(); };
+                MP._find = function (k, insert) {
+                    var T = this;
+                    if (T._cacheKey !== k) {
+                        T._cacheIndex = T._keys.indexOf(T._cacheKey = k);
                     }
-                    if (this._cacheIndex < 0 && insert) {
-                        this._cacheIndex = this._keys.length;
-                        this._keys.push(key);
-                        this._values.push(undefined);
+                    if (T._cacheIndex < 0 && insert) {
+                        T._cacheIndex = T._keys.length;
+                        T._keys.push(k);
+                        T._values.push(undefined);
                     }
-                    return this._cacheIndex;
+                    return T._cacheIndex;
                 };
                 return Map;
             }());
-            function getKey(key, _) {
-                return key;
+            function getKey(k, _) {
+                return k;
             }
-            function getValue(_, value) {
-                return value;
+            function getValue(_, v) {
+                return v;
             }
-            function getEntry(key, value) {
-                return [key, value];
+            function getEntry(k, v) {
+                return [k, v];
             }
         }
         function CreateSetPolyfill() {
@@ -577,20 +559,20 @@ var Reflect;
                 function Set() {
                     this._map = new _Map();
                 }
-                Object.defineProperty(Set.prototype, "size", {
+                Object.defineProperty(SP, "size", {
                     get: function () { return this._map.size; },
                     enumerable: true,
                     configurable: true
                 });
-                Set.prototype.has = function (value) { return this._map.has(value); };
-                Set.prototype.add = function (value) { return this._map.set(value, value), this; };
-                Set.prototype.delete = function (value) { return this._map.delete(value); };
-                Set.prototype.clear = function () { this._map.clear(); };
-                Set.prototype.keys = function () { return this._map.keys(); };
-                Set.prototype.values = function () { return this._map.values(); };
-                Set.prototype.entries = function () { return this._map.entries(); };
-                Set.prototype["@@iterator"] = function () { return this.keys(); };
-                Set.prototype[iteratorSymbol] = function () { return this.keys(); };
+                SP.has = function (v) { return this._map.has(v); };
+                SP.add = function (v) { return this._map.set(v, v), this; };
+                SP.delete = function (v) { return this._map.delete(v); };
+                SP.clear = function () { this._map.clear(); };
+                SP.keys = function () { return this._map.keys(); };
+                SP.values = function () { return this._map.values(); };
+                SP.entries = function () { return this._map.entries(); };
+                SP["@@iterator"] = function () { return this.keys(); };
+                SP[iteratorSymbol] = function () { return this.keys(); };
                 return Set;
             }());
         }
@@ -602,24 +584,24 @@ var Reflect;
                 function WeakMap() {
                     this._key = CreateUniqueKey();
                 }
-                WeakMap.prototype.has = function (target) {
-                    var table = GetOrCreateWeakMapTable(target, false);
+                WMP.has = function (t) {
+                    var table = GetOrCreateWeakMapTable(t, false);
                     return table !== undefined ? HashMap.has(table, this._key) : false;
                 };
-                WeakMap.prototype.get = function (target) {
-                    var table = GetOrCreateWeakMapTable(target, false);
+                WMP.get = function (t) {
+                    var table = GetOrCreateWeakMapTable(t, false);
                     return table !== undefined ? HashMap.get(table, this._key) : undefined;
                 };
-                WeakMap.prototype.set = function (target, value) {
-                    var table = GetOrCreateWeakMapTable(target, true);
-                    table[this._key] = value;
+                WMP.set = function (t, v) {
+                    var table = GetOrCreateWeakMapTable(t, true);
+                    table[this._key] = v;
                     return this;
                 };
-                WeakMap.prototype.delete = function (target) {
-                    var table = GetOrCreateWeakMapTable(target, false);
+                WMP.delete = function (t) {
+                    var table = GetOrCreateWeakMapTable(t, false);
                     return table !== undefined ? delete table[this._key] : false;
                 };
-                WeakMap.prototype.clear = function () {
+                WMP.clear = function () {
                     this._key = CreateUniqueKey();
                 };
                 return WeakMap;
@@ -632,49 +614,49 @@ var Reflect;
                 keys[key] = true;
                 return key;
             }
-            function GetOrCreateWeakMapTable(target, create) {
-                if (!hasOwn.call(target, rootKey)) {
+            function GetOrCreateWeakMapTable(t, create) {
+                if (!hasOwn.call(t, rootKey)) {
                     if (!create)
                         return undefined;
-                    Object.defineProperty(target, rootKey, { value: HashMap.create() });
+                    Object.defineProperty(t, rootKey, { value: HashMap.create() });
                 }
-                return target[rootKey];
+                return t[rootKey];
             }
-            function FillRandomBytes(buffer, size) {
+            function FillRandomBytes(b, size) {
                 for (var i = 0; i < size; ++i)
-                    buffer[i] = Math.random() * 0xff | 0;
-                return buffer;
+                    b[i] = Math.random() * 0xff | 0;
+                return b;
             }
-            function GenRandomBytes(size) {
-                if (typeof Uint8Array === "function") {
-                    if (typeof crypto !== "undefined")
-                        return crypto.getRandomValues(new Uint8Array(size));
-                    if (typeof msCrypto !== "undefined")
-                        return msCrypto.getRandomValues(new Uint8Array(size));
-                    return FillRandomBytes(new Uint8Array(size), size);
+            function GenRandomBytes(s) {
+                if (typeof U8A === $f) {
+                    if (typeof crypto !== $u)
+                        return crypto.getRandomValues(new U8A(s));
+                    if (typeof msCrypto !== $u)
+                        return msCrypto.getRandomValues(new U8A(s));
+                    return FillRandomBytes(new U8A(s), s);
                 }
-                return FillRandomBytes(new Array(size), size);
+                return FillRandomBytes(new A(s), s);
             }
             function CreateUUID() {
-                var data = GenRandomBytes(UUID_SIZE);
-                data[6] = data[6] & 0x4f | 0x40;
-                data[8] = data[8] & 0xbf | 0x80;
-                var result = "";
-                for (var offset = 0; offset < UUID_SIZE; ++offset) {
-                    var byte = data[offset];
-                    if (offset === 4 || offset === 6 || offset === 8)
-                        result += "-";
-                    if (byte < 16)
-                        result += "0";
-                    result += byte.toString(16).toLowerCase();
+                var d = GenRandomBytes(UUID_SIZE);
+                d[6] = d[6] & 0x4f | 0x40;
+                d[8] = d[8] & 0xbf | 0x80;
+                var r = "";
+                for (var f = 0; f < UUID_SIZE; ++f) {
+                    var b = d[f];
+                    if (f === 4 || f === 6 || f === 8)
+                        r += "-";
+                    if (b < 16)
+                        r += "0";
+                    r += b.toString(16).toLowerCase();
                 }
-                return result;
+                return r;
             }
         }
-        function MakeDictionary(obj) {
-            obj.__ = undefined;
-            delete obj.__;
-            return obj;
+        function MakeDictionary(b) {
+            b.__ = undefined;
+            delete b.__;
+            return b;
         }
     });
 })(Reflect || (Reflect = {}));
@@ -807,6 +789,9 @@ var JS;
             static isArrayBuffer(obj) {
                 return _is(obj, 'ArrayBuffer');
             }
+            static isTypedArray(value) {
+                return value && this.isNumber(value.length) && /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array]$/.test(toString.call(value));
+            }
             static isElement(el) {
                 return el && typeof el === 'object' && (el.nodeType === 1 || el.nodeType === 9);
             }
@@ -845,9 +830,6 @@ var JS;
             static subClass(cls1, cls2) {
                 return cls1.subclassOf(cls2);
             }
-            static isTypedArray(value) {
-                return value && this.isNumber(value.length) && /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array]$/.test(toString.call(value));
-            }
             static type(obj) {
                 if (obj === null)
                     return Type.null;
@@ -875,19 +857,19 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let N = Number, _test = function (str, pattern) {
-            return str && pattern.test(str.trim());
-        };
+        let N = Number, _test = function (s, exp) {
+            return s && exp.test(s.trim());
+        }, EMAIL = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/, EMAIL_DOMAIN = /^@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/, YYYY_MM_DD = /^(\d{1,4})(-|\/)(\d{1,2})(-|\/)(\d{1,2})$/, HALFWIDTH_CHARS = /^[\u0000-\u00FF]+$/, FULLWIDTH_CHARS = /^[\u0391-\uFFE5]+$/, NUMBERS_ONLY = /^\d+$/, LETTERS_ONLY = /^[A-Za-z]+$/, LETTERS_OR_NUMBERS = /^[A-Za-z\d]+$/, ENGLISH_ONLY = /^[A-Za-z\d\s\`\~\!\@\#\$\%\^\&\*\(\)\_\-\+\=\[\]\{\}\|\:\;\"\'\<\>\,\.\?\\\/]+$/, CHINESE_ONLY = /^[\u4E00-\u9FA5]+$/, IP = /^(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5])$/;
         class Check {
-            static isEmpty(obj) {
-                return obj == void 0
-                    || obj === ''
-                    || (obj.hasOwnProperty('length') && obj.length == 0)
-                    || this.isEmptyObject(obj);
+            static isEmpty(v) {
+                return v == void 0
+                    || v === ''
+                    || (v.hasOwnProperty('length') && v.length == 0)
+                    || Check.isEmptyObject(v);
             }
-            static isEmptyObject(obj) {
+            static isEmptyObject(v) {
                 var name;
-                for (name in obj) {
+                for (name in v) {
                     return false;
                 }
                 return true;
@@ -895,29 +877,25 @@ var JS;
             static isBlank(s) {
                 return s == void 0 || s.trim() === '';
             }
-            static isFormatDate(str, format) {
-                return _test(str, format || this.YYYY_MM_DD);
+            static isFormatDate(s, format) {
+                return _test(s, format || YYYY_MM_DD);
             }
-            static isEmail(str, pattern) {
-                return _test(str, pattern ? pattern : this.EMAIL);
+            static isEmail(s, exp) {
+                return _test(s, exp ? exp : EMAIL);
             }
-            static isEmails(str, pattern) {
-                str = str || '';
-                if (this.isBlank(str))
+            static isEmails(s, exp) {
+                s = s || '';
+                if (this.isBlank(s))
                     return false;
-                var arr = str.split(/;|\s+/);
-                for (var i = 0; i < arr.length; i++) {
-                    var str = arr[i];
-                    if (str.length > 0 && !this.isEmail(str, pattern))
-                        return false;
-                }
-                return true;
+                return s.split(/;|\s+/).every(as => {
+                    return as.length == 0 || this.isEmail(as, exp);
+                });
             }
             static isEmailDomain(str) {
-                return _test(str, this.EMAIL_DOMAIN);
+                return _test(str, EMAIL_DOMAIN);
             }
             static isOnlyNumber(str) {
-                return _test(str, this.NUMBERS_ONLY);
+                return _test(str, NUMBERS_ONLY);
             }
             static isPositive(n) {
                 return N(n).isPositive();
@@ -926,16 +904,16 @@ var JS;
                 return N(n).isNegative();
             }
             static isHalfwidthChars(str) {
-                return _test(str, this.HALFWIDTH_CHARS);
+                return _test(str, HALFWIDTH_CHARS);
             }
             static isFullwidthChars(str) {
-                return _test(str, this.FULLWIDTH_CHARS);
+                return _test(str, FULLWIDTH_CHARS);
             }
             static isEnglishOnly(str) {
-                return _test(str, this.ENGLISH_ONLY);
+                return _test(str, ENGLISH_ONLY);
             }
             static isChineseOnly(str) {
-                return _test(str, this.CHINESE_ONLY);
+                return _test(str, CHINESE_ONLY);
             }
             static isFormatNumber(n, iLength, fLength) {
                 if (!util.Types.isNumeric(n))
@@ -963,23 +941,23 @@ var JS;
                 let num = N(n);
                 return num > N(min) && num < N(max);
             }
-            static shorter(str, len) {
-                return str && str.length < len;
+            static shorter(s, len) {
+                return s && s.length < len;
             }
-            static longer(str, len) {
-                return str && str.length > len;
+            static longer(s, len) {
+                return s && s.length > len;
             }
-            static equalLength(str, len) {
-                return str && str.length == len;
+            static equalLength(s, len) {
+                return s && s.length == len;
             }
-            static isLettersOnly(str) {
-                return _test(str, this.LETTERS_ONLY);
+            static isLettersOnly(s) {
+                return _test(s, LETTERS_ONLY);
             }
-            static isLettersOrNumbers(str) {
-                return _test(str, this.LETTERS_OR_NUMBERS);
+            static isLettersOrNumbers(s) {
+                return _test(s, LETTERS_OR_NUMBERS);
             }
-            static isIP(str) {
-                return _test(str.trim(), this.IP);
+            static isIP(s) {
+                return _test(s.trim(), IP);
             }
             static isExistUrl(url) {
                 let xhr = self.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
@@ -987,28 +965,17 @@ var JS;
                 xhr.send();
                 return xhr.status == 200;
             }
-            static isPattern(str, exp) {
-                return _test(str, exp);
+            static isPattern(s, exp) {
+                return _test(s, exp);
             }
-            static byServer(settings, judge) {
+            static byServer(req, judge) {
                 return new Promise(function (resolve, reject) {
-                    util.Ajax.send(settings).then(res => {
+                    util.Ajax.send(req).then(res => {
                         judge.apply(null, [res]) ? resolve(true) : reject(false);
                     });
                 });
             }
         }
-        Check.EMAIL = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/;
-        Check.EMAIL_DOMAIN = /^@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/;
-        Check.YYYY_MM_DD = /^(\d{1,4})(-|\/)(\d{1,2})(-|\/)(\d{1,2})$/;
-        Check.HALFWIDTH_CHARS = /^[\u0000-\u00FF]+$/;
-        Check.FULLWIDTH_CHARS = /^[\u0391-\uFFE5]+$/;
-        Check.NUMBERS_ONLY = /^\d+$/;
-        Check.LETTERS_ONLY = /^[A-Za-z]+$/;
-        Check.LETTERS_OR_NUMBERS = /^[A-Za-z\d]+$/;
-        Check.ENGLISH_ONLY = /^[A-Za-z\d\s\`\~\!\@\#\$\%\^\&\*\(\)\_\-\+\=\[\]\{\}\|\:\;\"\'\<\>\,\.\?\\\/]+$/;
-        Check.CHINESE_ONLY = /^[\u4E00-\u9FA5]+$/;
-        Check.IP = /^(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5])$/;
         util.Check = Check;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
@@ -1017,6 +984,7 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
+        let A = Array, Y = util.Types, E = util.Check.isEmpty;
         class Jsons {
             static parse(text, reviver) {
                 return text ? JSON.parse(text, reviver) : null;
@@ -1033,14 +1001,14 @@ var JS;
                     copy.setTime(obj.getTime());
                     return copy;
                 }
-                if (obj instanceof Array) {
+                if (obj instanceof A) {
                     copy = [];
                     for (var i = 0, len = obj.length; i < len; ++i) {
                         copy[i] = this.clone(obj[i]);
                     }
                     return copy;
                 }
-                if (util.Types.isJsonObject(obj)) {
+                if (Y.isJsonObject(obj)) {
                     copy = {};
                     var keys = Reflect.ownKeys(obj);
                     keys.forEach(key => {
@@ -1073,7 +1041,7 @@ var JS;
                 if (!json)
                     return null;
                 let arr = [];
-                Jsons.forEach(json, v => {
+                this.forEach(json, v => {
                     arr[arr.length] = v;
                 });
                 return arr;
@@ -1082,42 +1050,42 @@ var JS;
                 if (!json)
                     return null;
                 let keys = [];
-                Jsons.forEach(json, (v, k) => {
+                this.forEach(json, (v, k) => {
                     keys[keys.length] = k;
                 });
                 return keys;
             }
             static equalKeys(json1, json2) {
-                let empty1 = util.Check.isEmpty(json1), empty2 = util.Check.isEmpty(json2);
+                let empty1 = E(json1), empty2 = E(json2);
                 if (empty1 && empty2)
                     return true;
                 if (empty1 || empty2)
                     return false;
-                let map2 = Jsons.clone(json2);
-                Jsons.forEach(json1, (v, k) => {
+                let map2 = this.clone(json2);
+                this.forEach(json1, (v, k) => {
                     delete map2[k];
                 });
-                return util.Check.isEmpty(map2);
+                return E(map2);
             }
             static equal(json1, json2) {
-                let empty1 = util.Check.isEmpty(json1), empty2 = util.Check.isEmpty(json2);
+                let empty1 = E(json1), empty2 = E(json2);
                 if (empty1 && empty2)
                     return true;
                 if (empty1 || empty2)
                     return false;
-                let map2 = Jsons.clone(json2);
-                Jsons.forEach(json1, (v, k) => {
+                let map2 = this.clone(json2);
+                this.forEach(json1, (v, k) => {
                     if ((k in map2) && map2[k] === v)
                         delete map2[k];
                 });
-                return util.Check.isEmpty(map2);
+                return E(map2);
             }
             static replaceKeys(json, keyMapping, needClone) {
                 if (!keyMapping)
                     return json;
-                let clone = needClone ? Jsons.clone(json) : json;
+                let clone = needClone ? this.clone(json) : json;
                 this.forEach(clone, function (val, oldKey) {
-                    let newKey = util.Types.isFunction(keyMapping) ? keyMapping.apply(clone, [val, oldKey]) : keyMapping[oldKey];
+                    let newKey = Y.isFunction(keyMapping) ? keyMapping.apply(clone, [val, oldKey]) : keyMapping[oldKey];
                     if (newKey != oldKey && clone.hasOwnProperty(oldKey)) {
                         let temp = clone[oldKey];
                         delete clone[oldKey];
@@ -1133,7 +1101,7 @@ var JS;
                     target = arguments[i] || {};
                     i++;
                 }
-                if (typeof target !== "object" && !util.Types.isFunction(target)) {
+                if (typeof target !== "object" && !Y.isFunction(target)) {
                     target = {};
                 }
                 for (; i < length; i++) {
@@ -1144,16 +1112,16 @@ var JS;
                             if (target === copy) {
                                 continue;
                             }
-                            if (deep && copy && (util.Types.isJsonObject(copy) ||
-                                (copyIsArray = Array.isArray(copy)))) {
+                            if (deep && copy && (Y.isJsonObject(copy) ||
+                                (copyIsArray = A.isArray(copy)))) {
                                 if (copyIsArray) {
                                     copyIsArray = false;
-                                    clone = src && Array.isArray(src) ? src : [];
+                                    clone = src && A.isArray(src) ? src : [];
                                 }
                                 else {
-                                    clone = src && util.Types.isJsonObject(src) ? src : {};
+                                    clone = src && Y.isJsonObject(src) ? src : {};
                                 }
-                                target[name] = Jsons._union(deep, clone, copy);
+                                target[name] = this._union(deep, clone, copy);
                             }
                             else if (copy !== undefined) {
                                 target[name] = copy;
@@ -1170,20 +1138,20 @@ var JS;
                 return this._union.apply(this, [true, {}].concat(jsons));
             }
             static minus(json1, json2) {
-                if (util.Check.isEmpty(json1) || util.Check.isEmpty(json2))
+                if (E(json1) || E(json2))
                     return json1;
                 let newJson = {};
-                Jsons.forEach(json1, (v, k) => {
+                this.forEach(json1, (v, k) => {
                     if (!json2.hasOwnProperty(k))
                         newJson[k] = v;
                 });
                 return newJson;
             }
             static intersect(json1, json2) {
-                if (util.Check.isEmpty(json1) || util.Check.isEmpty(json2))
+                if (E(json1) || E(json2))
                     return json1;
                 let newJson = {};
-                Jsons.forEach(json1, (v, k) => {
+                this.forEach(json1, (v, k) => {
                     if (json2.hasOwnProperty(k))
                         newJson[k] = v;
                 });
@@ -1191,7 +1159,7 @@ var JS;
             }
             static filter(json, fn) {
                 let newJson = {};
-                Jsons.forEach(json, (v, k) => {
+                this.forEach(json, (v, k) => {
                     if (fn.apply(json, [v, k]))
                         newJson[k] = v;
                 });
@@ -1216,15 +1184,16 @@ var JS;
 })(JS || (JS = {}));
 var Jsons = JS.util.Jsons;
 (function () {
-    var $A = Array.prototype;
-    $A.add = function (obj, from) {
+    var AP = Array.prototype;
+    AP.add = function (obj, from) {
+        let m = this;
         if (obj == void 0)
-            return this;
-        let a = obj instanceof Array ? obj : [obj], i = from == void 0 ? this.length : (from < 0 ? 0 : from);
-        Array.prototype.splice.apply(this, [i, 0].concat(a));
-        return this;
+            return m;
+        let a = obj instanceof Array ? obj : [obj], i = from == void 0 ? m.length : (from < 0 ? 0 : from);
+        AP.splice.apply(m, [i, 0].concat(a));
+        return m;
     };
-    $A.remove = function (f) {
+    AP.remove = function (f) {
         let i = typeof f === 'number' ? f : this.findIndex(f);
         if (i < 0 || i >= this.length)
             return false;
@@ -1236,9 +1205,10 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
+        let E = util.Check.isEmpty, AS = Array.prototype.slice;
         class Arrays {
             static newArray(a, from) {
-                return a == void 0 ? [] : Array.prototype.slice.apply(a, [from == void 0 ? 0 : from]);
+                return a == void 0 ? [] : AS.apply(a, [from == void 0 ? 0 : from]);
             }
             static toArray(a) {
                 return a == void 0 ? [] : (util.Types.isArray(a) ? a : [a]);
@@ -1246,7 +1216,7 @@ var JS;
             static equal(a1, a2, equal) {
                 if (a1 === a2)
                     return true;
-                let y1 = util.Check.isEmpty(a1), y2 = util.Check.isEmpty(a2);
+                let y1 = E(a1), y2 = E(a2);
                 if (y1 && y2)
                     return true;
                 if (y1 !== y2)
@@ -1269,7 +1239,7 @@ var JS;
                 return a1.toString() == a2.toString();
             }
             static same(a1, a2) {
-                if (a1 === a2 || (util.Check.isEmpty(a1) && util.Check.isEmpty(a2)))
+                if (a1 === a2 || (E(a1) && E(a2)))
                     return true;
                 if (a1.length != a2.length)
                     return false;
@@ -1282,7 +1252,7 @@ var JS;
                 return na.length == 0;
             }
             static slice(args, fromIndex, endIndex) {
-                return Array.prototype.slice.apply(args, [fromIndex || 0, endIndex || args.length]);
+                return AS.apply(args, [fromIndex || 0, endIndex || args.length]);
             }
         }
         util.Arrays = Arrays;
@@ -1487,7 +1457,7 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let ACCEPTS = {
+        let Y = util.Types, J = util.Jsons, ACCEPTS = {
             '*': '*/*',
             text: 'text/plain',
             html: 'text/html',
@@ -1517,9 +1487,6 @@ var JS;
                 if (!xml || xml.getElementsByTagName("parsererror").length)
                     throw new NotHandledError();
                 return xml;
-            },
-            json: (str) => {
-                return util.Jsons.parse(str);
             },
             text: (str) => {
                 return str;
@@ -1601,10 +1568,10 @@ var JS;
                 this.reject(res);
             }
         }, _queryString = function (data) {
-            if (util.Types.isString(data))
+            if (Y.isString(data))
                 return encodeURI(data);
             let str = '';
-            util.Jsons.forEach(data, (v, k) => {
+            J.forEach(data, (v, k) => {
                 str += `&${k}=${encodeURIComponent(v)}`;
             });
             return str;
@@ -1627,7 +1594,7 @@ var JS;
         }, _send = function (req) {
             if (!req.url)
                 JSLogger.error('Sent an ajax request without URL.');
-            req = util.Jsons.union({
+            req = J.union({
                 method: 'GET',
                 crossCookie: false,
                 async: true,
@@ -1678,7 +1645,7 @@ var JS;
                 _rejectError.call(this, req, xhr, 'cancel');
                 return;
             }
-            let data = req.method == 'HEAD' || req.method == 'GET' ? null : (util.Types.isString(req.data) ? req.data : util.Jsons.stringify(req.data));
+            let data = req.method == 'HEAD' || req.method == 'GET' ? null : (Y.isString(req.data) ? req.data : J.stringify(req.data));
             try {
                 if (req.async && req.timeout > 0) {
                     var timer = self.setTimeout(function () {
@@ -1699,12 +1666,12 @@ var JS;
             static _toQuery(q) {
                 if (!q)
                     return {};
-                return util.Types.isString(q) ? util.URI.parseQueryString(q) : q;
+                return Y.isString(q) ? util.URI.parseQueryString(q) : q;
             }
             static toRequest(quy, data) {
-                let req = util.Types.isString(quy) ? { url: quy } : quy;
+                let req = Y.isString(quy) ? { url: quy } : quy;
                 if (quy && data)
-                    req.data = util.Jsons.union(this._toQuery(req.data), this._toQuery(data));
+                    req.data = J.union(this._toQuery(req.data), this._toQuery(data));
                 return req;
             }
             static send(req) {
@@ -1717,12 +1684,12 @@ var JS;
                 });
             }
             static get(req) {
-                let r = util.Types.isString(req) ? { url: req } : req;
+                let r = Y.isString(req) ? { url: req } : req;
                 r.method = 'GET';
                 return this.send(r);
             }
             static post(req) {
-                let r = util.Types.isString(req) ? { url: req } : req;
+                let r = Y.isString(req) ? { url: req } : req;
                 r.method = 'POST';
                 return this.send(r);
             }
@@ -1762,7 +1729,7 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let EUID = 1;
+        let EUID = 1, E = util.Check.isEmpty;
         class EventBus {
             constructor(context) {
                 this._isD = false;
@@ -1793,7 +1760,7 @@ var JS;
                 }
                 else {
                     let fns = this._map.get(type);
-                    if (!util.Check.isEmpty(fns)) {
+                    if (!E(fns)) {
                         fns.remove(fn => {
                             return fn['euid'] === h['euid'];
                         });
@@ -1803,7 +1770,7 @@ var JS;
             }
             _removeByEuid(type, euid) {
                 let fns = this._map.get(type);
-                if (!util.Check.isEmpty(fns)) {
+                if (!E(fns)) {
                     fns.remove(fn => {
                         return fn['euid'] === euid;
                     });
@@ -1830,7 +1797,7 @@ var JS;
             find(type, euid) {
                 let fns = this._map.get(type);
                 if (arguments.length >= 1) {
-                    if (!util.Check.isEmpty(fns)) {
+                    if (!E(fns)) {
                         let i = fns.findIndex(fn => {
                             return fn['euid'] === euid;
                         });
@@ -1869,11 +1836,9 @@ var JS;
             }
             fire(e, args, that) {
                 let is = util.Types.isString(e), fns = this._map.get(is ? e : e.type);
-                if (!util.Check.isEmpty(fns)) {
+                if (!E(fns)) {
                     let evt = is ? new CustomEvent(e) : e;
-                    fns.every(fn => {
-                        this._call(evt, fn, args, that);
-                    });
+                    fns.forEach(fn => { this._call(evt, fn, args, that); });
                 }
             }
         }
@@ -2208,7 +2173,7 @@ const $1 = Dom.$1;
 const $L = Dom.$L;
 var JS;
 (function (JS) {
-    JS.version = '2.3.0';
+    JS.version = '2.3.1';
     function config(d, v) {
         let l = arguments.length;
         if (l == 0)
@@ -2352,7 +2317,7 @@ var JS;
             LogLevel[LogLevel["ERROR"] = 1] = "ERROR";
             LogLevel[LogLevel["OFF"] = 0] = "OFF";
         })(LogLevel = util.LogLevel || (util.LogLevel = {}));
-        let LogLevels = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE', 'ALL'], LogLevelStyles = [
+        let LEVELS = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE', 'ALL'], STYLES = [
             '',
             'color:red;background-color:#fff0f0;',
             'color:orange;background-color:#fffbe6;',
@@ -2367,7 +2332,7 @@ var JS;
                 this.name = name;
             }
             log(level, ...data) {
-                this._log(LogLevels[level], LogLevelStyles[level], data);
+                this._log(LEVELS[level], STYLES[level], data);
             }
             _log(cmd, css, data) {
                 console.group(`%c${cmd} ${this.name ? '[' + this.name + '] ' : ''}${new Date().toISOString()}`, css);
@@ -2423,6 +2388,7 @@ var JS;
 (function (JS) {
     let lang;
     (function (lang) {
+        let Y = Types, R = Reflect;
         let AnnotationTarget;
         (function (AnnotationTarget) {
             AnnotationTarget[AnnotationTarget["ANY"] = 1] = "ANY";
@@ -2436,29 +2402,29 @@ var JS;
         lang.Annotation = Annotation;
         class Annotations {
             static getPropertyType(obj, propertyKey) {
-                return Reflect.getMetadata('design:type', obj, propertyKey);
+                return R.getMetadata('design:type', obj, propertyKey);
             }
             static getValue(anno, obj, propertyKey) {
-                return Reflect.getMetadata(anno.name, obj, propertyKey);
+                return R.getMetadata(anno.name, obj, propertyKey);
             }
             static setValue(annoName, metaValue, obj, propertyKey) {
-                Reflect.defineMetadata(typeof annoName == 'string' ? annoName : annoName.name, metaValue, obj, propertyKey);
+                R.defineMetadata(typeof annoName == 'string' ? annoName : annoName.name, metaValue, obj, propertyKey);
             }
             static hasAnnotation(anno, obj, propertyKey) {
-                return Reflect.hasMetadata(anno.name, obj, propertyKey);
+                return R.hasMetadata(anno.name, obj, propertyKey);
             }
             static getAnnotations(obj) {
-                return Reflect.getMetadataKeys(obj);
+                return R.getMetadataKeys(obj);
             }
             static define(definition, params) {
-                let args = Arrays.newArray(params), isStr = Types.isString(definition), annoName = isStr ? definition : definition.name, handler = isStr ? null : definition.handler, target = (isStr ? AnnotationTarget.ANY : definition.target) || AnnotationTarget.ANY, fn = function (anno, values, obj, key, d) {
+                let args = Arrays.newArray(params), isStr = Y.isString(definition), annoName = isStr ? definition : definition.name, handler = isStr ? null : definition.handler, target = (isStr ? AnnotationTarget.ANY : definition.target) || AnnotationTarget.ANY, fn = function (anno, values, obj, key, d) {
                     if (0 == (target & AnnotationTarget.ANY)) {
-                        if (Types.equalKlass(obj)) {
+                        if (Y.equalKlass(obj)) {
                             if (0 == (target & AnnotationTarget.CLASS))
                                 return _wrongTarget(anno, obj.name);
                         }
                         else if (key) {
-                            if (Types.isFunction(obj[key])) {
+                            if (Y.isFunction(obj[key])) {
                                 if (0 == (target & AnnotationTarget.METHOD))
                                     return _wrongTarget(anno, obj.constructor.name, key, 'method');
                             }
@@ -2472,19 +2438,19 @@ var JS;
                     if (handler)
                         handler.apply(null, [anno, values, obj, key, d]);
                 };
-                if (Types.equalKlass(args[0])) {
+                if (Y.equalKlass(args[0])) {
                     let obj = args[0];
                     let detor = function (tar) {
                         fn.call(null, annoName, undefined, tar);
                     };
-                    return Reflect.decorate([detor], obj);
+                    return R.decorate([detor], obj);
                 }
                 else if (args.length == 3 && args[0]['constructor']) {
                     let obj = args[0], key = args[1], desc = args[2];
                     let detor = function (tar, k) {
                         fn.call(null, annoName, undefined, tar, k, desc);
                     };
-                    return Reflect.decorate([detor], obj, key);
+                    return R.decorate([detor], obj, key);
                 }
                 let values = args;
                 return function (tar, key, d) {
@@ -2508,13 +2474,13 @@ var JS;
                 name: 'deprecated',
                 handler: (anno, values, obj, propertyKey) => {
                     let info = values ? (values[0] || '') : '', text = null;
-                    if (Types.equalKlass(obj)) {
+                    if (Y.equalKlass(obj)) {
                         let name = _getClassName(obj);
                         text = `The [${name}] class`;
                     }
                     else {
                         let klass = obj.constructor, name = _getClassName(klass);
-                        text = `The [${propertyKey}] ${Types.isFunction(obj[propertyKey]) ? 'method' : 'field'} of ${name}`;
+                        text = `The [${propertyKey}] ${Y.isFunction(obj[propertyKey]) ? 'method' : 'field'} of ${name}`;
                     }
                     JSLogger.warn(text + ' has been deprecated. ' + info);
                 }
@@ -2526,7 +2492,7 @@ var JS;
                 name: anno,
                 handler: (anno, values, obj, methodName) => {
                     let adv = {};
-                    if (Types.isFunction(values[0])) {
+                    if (Y.isFunction(values[0])) {
                         adv[anno] = values[0];
                     }
                     else {
@@ -2555,10 +2521,6 @@ var JS;
             return _aop(arguments, fn, 'throws');
         }
         lang.throws = throws;
-        function aop(advisor) {
-            return _aop(arguments, advisor);
-        }
-        lang.aop = aop;
     })(lang = JS.lang || (JS.lang = {}));
 })(JS || (JS = {}));
 var AnnotationTarget = JS.lang.AnnotationTarget;
@@ -2569,11 +2531,11 @@ var before = JS.lang.before;
 var after = JS.lang.after;
 var around = JS.lang.around;
 var throws = JS.lang.throws;
-var aop = JS.lang.aop;
 var JS;
 (function (JS) {
     let reflect;
     (function (reflect) {
+        let Y = Types, J = Jsons;
         function klass(fullName) {
             return Annotations.define({
                 name: 'klass',
@@ -2662,10 +2624,10 @@ var JS;
                 return b;
             }
             static newInstance(ctor, ...args) {
-                let tar = Types.isString(ctor) ? Class.byName(ctor) : ctor;
+                let tar = Y.isString(ctor) ? Class.byName(ctor) : ctor;
                 if (!tar)
                     throw new NotFoundError(`The class<${ctor}> is not found!`);
-                return Reflect.construct(tar, Jsons.clone(args));
+                return Reflect.construct(tar, J.clone(args));
             }
             static aliasInstance(alias, ...args) {
                 let cls = Class.forName(alias, true);
@@ -2675,7 +2637,7 @@ var JS;
             }
             static aop(klass, method, advisor) {
                 let isStatic = klass.hasOwnProperty(method), m = isStatic ? klass[method] : klass.prototype[method];
-                if (!Types.isFunction(m))
+                if (!Y.isFunction(m))
                     return;
                 let obj = isStatic ? klass : klass.prototype;
                 if (!obj.hasOwnProperty('__' + method))
@@ -2687,7 +2649,7 @@ var JS;
             }
             static cancelAop(klass, method) {
                 let isStatic = klass.hasOwnProperty(method), m = isStatic ? klass[method] : klass.prototype[method];
-                if (!Types.isFunction(m))
+                if (!Y.isFunction(m))
                     return;
                 let obj = isStatic ? klass : klass.prototype;
                 obj[method] = obj['__' + method];
@@ -2717,7 +2679,7 @@ var JS;
             }
             subclassOf(cls) {
                 let klass = (cls.constructor && cls.constructor === Class) ? cls.getKlass() : cls;
-                return Types.subKlass(this.getKlass(), klass);
+                return Y.subKlass(this.getKlass(), klass);
             }
             newInstance(...args) {
                 let obj = Reflect.construct(this._klass, Arrays.newArray(arguments));
@@ -2739,11 +2701,11 @@ var JS;
                     if (!this._isValidStatic(key))
                         continue;
                     const obj = ctor[key];
-                    if (Types.isFunction(obj)) {
+                    if (Y.isFunction(obj)) {
                         this._methods[key] = new Method(this, key, true, obj, null, null);
                     }
                     else {
-                        this._fields[key] = new Field(this, key, true, Types.type(obj));
+                        this._fields[key] = new Field(this, key, true, Y.type(obj));
                     }
                 }
             }
@@ -2754,11 +2716,11 @@ var JS;
                     if (!this._isValidInstance(key))
                         continue;
                     const obj = this._forceProto(proto, key);
-                    if (Types.isFunction(obj)) {
+                    if (Y.isFunction(obj)) {
                         this._methods[key] = new Method(this, key, false, obj, null, null);
                     }
                     else {
-                        this._fields[key] = new Field(this, key, false, Types.type(obj));
+                        this._fields[key] = new Field(this, key, false, Y.type(obj));
                     }
                 }
             }
@@ -2798,7 +2760,7 @@ var JS;
             }
             _toArray(json) {
                 let arr = [];
-                Jsons.forEach(json, v => {
+                J.forEach(json, v => {
                     arr[arr.length] = v;
                 });
                 return arr;
@@ -2816,32 +2778,31 @@ var JS;
                 return this.fieldsMap(instance)[name];
             }
             _instanceFields(instance) {
-                let instanceFields = {};
-                let keys = Reflect.ownKeys(instance);
+                let fs = {}, keys = Reflect.ownKeys(instance);
                 for (let i = 0; i < keys.length; i++) {
                     const key = keys[i].toString();
                     if (this._isValidInstance(key)) {
                         const obj = instance[key];
-                        if (!Types.isFunction(obj))
-                            instanceFields[key] = new Field(this, key, false, Types.type(obj));
+                        if (!Y.isFunction(obj))
+                            fs[key] = new Field(this, key, false, Y.type(obj));
                     }
                 }
-                this._fields = Jsons.union(instanceFields, this._fields);
+                this._fields = J.union(fs, this._fields);
             }
             fieldsMap(instance, anno) {
                 if (instance)
                     this._instanceFields(instance);
-                let fields = {};
+                let fs = {};
                 if (anno && instance) {
-                    Jsons.forEach(this._fields, (field, key) => {
+                    J.forEach(this._fields, (field, key) => {
                         if (Annotations.hasAnnotation(anno, instance, key))
-                            fields[key] = field;
+                            fs[key] = field;
                     });
                 }
                 else {
-                    fields = this._fields;
+                    fs = this._fields;
                 }
-                return fields;
+                return fs;
             }
             fields(instance, anno) {
                 return this._toArray(this.fieldsMap(instance, anno));
@@ -2849,7 +2810,7 @@ var JS;
             static forName(name, isAlias) {
                 if (!name)
                     return null;
-                let isStr = Types.isString(name);
+                let isStr = Y.isString(name);
                 if (!isStr && name.class)
                     return name.class;
                 let classname = isStr ? name : name.name;
@@ -2878,7 +2839,7 @@ var JS;
                 if (ns.endsWith('.*'))
                     ns = ns.slice(0, ns.length - 2);
                 let a = [];
-                Jsons.forEach(this._MAP, (cls, name) => {
+                J.forEach(this._MAP, (cls, name) => {
                     if (name.startsWith(ns))
                         a.push(cls);
                 });
@@ -2953,37 +2914,39 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let _ready = false;
+        let R = false, D = document, W = window;
         class Bom {
             static ready(fn) {
-                if (_ready)
+                if (R) {
                     fn();
+                    return;
+                }
                 let callback = function () {
-                    _ready = true;
+                    R = true;
                     fn();
                     callback = null;
                 };
-                let wc = window['HTMLImports'] && window['HTMLImports'].whenReady;
+                let wc = W['HTMLImports'] && W['HTMLImports'].whenReady;
                 if (wc)
                     return wc(callback);
-                if (document.readyState === "complete") {
+                if (D.readyState === "complete") {
                     setTimeout(callback, 1);
                 }
-                else if (document.addEventListener) {
-                    document.addEventListener("DOMContentLoaded", callback, false);
-                    window.addEventListener("load", callback, false);
+                else if (D.addEventListener) {
+                    D.addEventListener("DOMContentLoaded", callback, false);
+                    W.addEventListener("load", callback, false);
                 }
                 else {
-                    document['attachEvent']("onreadystatechange", callback);
-                    window['attachEvent']("onload", callback);
+                    D['attachEvent']("onreadystatechange", callback);
+                    W['attachEvent']("onload", callback);
                     var top = false;
                     try {
-                        top = (window.frameElement == null && document.documentElement) ? true : false;
+                        top = (W.frameElement == null && D.documentElement) ? true : false;
                     }
                     catch (e) { }
                     if (top && top['doScroll']) {
                         (function doScrollCheck() {
-                            if (!_ready) {
+                            if (!R) {
                                 try {
                                     top['doScroll']('left');
                                 }
@@ -3009,15 +2972,15 @@ var JS;
                 return e['contentDocument'] || e['contentWindow'].document;
             }
             static fullscreen() {
-                let de = document.documentElement;
+                let de = D.documentElement;
                 let fnName = de['mozRequestFullScreen'] ? 'mozRequestFullScreen' : (de['webkitRequestFullScreen'] ? 'webkitRequestFullScreen' : 'requestFullscreen');
                 if (de[fnName])
                     de[fnName]();
             }
             static normalscreen() {
-                let fnName = document['mozCancelFullScreen'] ? 'mozCancelFullScreen' : (document['webkitCancelFullScreen'] ? 'webkitCancelFullScreen' : 'exitFullscreen');
-                if (document[fnName])
-                    document[fnName]();
+                let fnName = D['mozCancelFullScreen'] ? 'mozCancelFullScreen' : (D['webkitCancelFullScreen'] ? 'webkitCancelFullScreen' : 'exitFullscreen');
+                if (D[fnName])
+                    D[fnName]();
             }
         }
         util.Bom = Bom;
@@ -3028,8 +2991,7 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let _URI_REG = /^(([^\:\/\?\#]+)\:)?(\/\/([^\/\?\#]*))?([^\?\#]*)(\\?([^\#]*))?(\#(.*))?/;
-        let _AUTH_REG = /^(([^\:@]*)(\:([^\:@]*))?@)?([^\:@]*)(\:(\d{1,3}))?/;
+        let Y = util.Types, J = util.Jsons, _URI_REG = /^(([^\:\/\?\#]+)\:)?(\/\/([^\/\?\#]*))?([^\?\#]*)(\\?([^\#]*))?(\#(.*))?/, _AUTH_REG = /^(([^\:@]*)(\:([^\:@]*))?@)?([^\:@]*)(\:(\d{1,3}))?/;
         let _ADU = null;
         class URI {
             constructor(cfg) {
@@ -3044,7 +3006,7 @@ var JS;
                 this._parse(cfg);
             }
             _parse(cfg) {
-                if (util.Types.isString(cfg)) {
+                if (Y.isString(cfg)) {
                     this._parseStr(cfg);
                 }
                 else if (cfg && cfg.href) {
@@ -3056,7 +3018,7 @@ var JS;
                     this.user(uri.user);
                     this.password(uri.password);
                     this.host(uri.host);
-                    this.port(util.Types.isDefined(uri.port) ? uri.port : 80);
+                    this.port(Y.isDefined(uri.port) ? uri.port : 80);
                     this.path(uri.path);
                     this._params = uri.params;
                     this.fragment(uri.fragment);
@@ -3079,7 +3041,7 @@ var JS;
                         this._pwd = authArr[4];
                     if (authArr[5])
                         this._host = authArr[5];
-                    if (util.Types.isDefined(authArr[7]))
+                    if (Y.isDefined(authArr[7]))
                         this._port = parseInt(authArr[7]);
                 }
                 let path = array[5];
@@ -3106,7 +3068,7 @@ var JS;
                     if (!this._params)
                         return null;
                     let query = '';
-                    util.Jsons.forEach(this._params, (v, k) => {
+                    J.forEach(this._params, (v, k) => {
                         query += `${query ? '&' : ''}${k}=${v}`;
                     });
                     return query;
@@ -3163,7 +3125,7 @@ var JS;
             queryObject(params, encode) {
                 if (arguments.length == 0)
                     return this._params;
-                util.Jsons.forEach(params, (value, key) => {
+                J.forEach(params, (value, key) => {
                     this.query(key, value, encode);
                 });
                 return this;
@@ -3172,7 +3134,7 @@ var JS;
                 return this._host ? true : false;
             }
             toAbsolute() {
-                let userinfo = this.userinfo(), port = util.Types.isDefined(this._port) ? ':' + this._port : '', path = this.path() || '', query = this.queryString() || '', fragment = this._frag ? '#' + this._frag : '';
+                let userinfo = this.userinfo(), port = Y.isDefined(this._port) ? ':' + this._port : '', path = this.path() || '', query = this.queryString() || '', fragment = this._frag ? '#' + this._frag : '';
                 path = path + (!query && !fragment ? '' : '?' + query + fragment);
                 return (this._scheme || 'http') + '://' + (userinfo ? userinfo + '@' : '') + (this._host || '') + port + (!path || path.startsWith('/') ? path : ('/' + path));
             }
@@ -3207,7 +3169,7 @@ var JS;
                 if (!json)
                     return '';
                 let q = '';
-                util.Jsons.forEach(json, (v, k) => {
+                J.forEach(json, (v, k) => {
                     q += `&${k}=${encode ? encodeURIComponent(v) : v}`;
                 });
                 return q;
@@ -3261,25 +3223,25 @@ var JS;
     (function (util) {
         class Bundle {
             constructor(res, locale) {
-                let lc = (locale == void 0 ? System.info().locale : locale);
-                this._d = {};
+                let T = this, lc = (locale == void 0 ? System.info().locale : locale);
+                T._d = {};
                 if (res) {
                     if (util.Types.isString(res)) {
                         let pos = res.lastIndexOf('.'), suffix = pos < 0 ? '' : res.slice(pos + 1), prefix = pos < 0 ? res : res.slice(0, pos);
-                        if (!this._load(lc, prefix, suffix))
+                        if (!T._load(lc, prefix, suffix))
                             JSLogger.error('Bundle can\'t load resource file:' + res);
                     }
                     else {
                         if (res.hasOwnProperty(lc)) {
-                            this._d = res[lc];
+                            T._d = res[lc];
                         }
                         else {
                             let lang = util.Locales.lang(lc);
-                            this._d = res.hasOwnProperty(lang) ? res[lang] : res;
+                            T._d = res.hasOwnProperty(lang) ? res[lang] : res;
                         }
                     }
                 }
-                this._lc = lc;
+                T._lc = lc;
             }
             _load(lc, prefix, suffix) {
                 let paths = [];
@@ -3368,104 +3330,107 @@ var JS;
 })(JS || (JS = {}));
 var Dates = JS.util.Dates;
 (function () {
-    var $D = Date, $P = $D.prototype, pad = function (s, l) {
-        new $D();
+    var D = Date, $P = D.prototype, pad = function (s, l) {
+        new D();
         if (!l) {
             l = 2;
         }
         return ("000" + s).slice(l * -1);
     };
     $P.getWeek = function () {
-        let date0 = new $D(this.getFullYear(), 0, 1), diff = Math.round((this.valueOf() - date0.valueOf()) / 86400000);
+        let date0 = new D(this.getFullYear(), 0, 1), diff = Math.round((this.valueOf() - date0.valueOf()) / 86400000);
         return Math.ceil((diff + ((date0.getDay() + 1) - 1)) / 7);
     };
     $P.setWeek = function (week, dayOfWeek) {
         let dw = Types.isDefined(dayOfWeek) ? dayOfWeek : 1;
         return this.setTime(Dates.getDayOfWeek(this, dw).add(week - this.getWeek(), 'w').getTime());
     };
-    $P.clone = function () { return new $D(this.getTime()); };
+    $P.clone = function () { return new D(this.getTime()); };
     $P.setZeroTime = function () {
-        this.setHours(0);
-        this.setMinutes(0);
-        this.setSeconds(0);
-        this.setMilliseconds(0);
-        return this;
+        let T = this;
+        T.setHours(0);
+        T.setMinutes(0);
+        T.setSeconds(0);
+        T.setMilliseconds(0);
+        return T;
     };
     $P.setLastTime = function () {
-        this.setHours(23);
-        this.setMinutes(59);
-        this.setSeconds(59);
-        this.setMilliseconds(999);
-        return this;
+        let T = this;
+        T.setHours(23);
+        T.setMinutes(59);
+        T.setSeconds(59);
+        T.setMilliseconds(999);
+        return T;
     };
     $P.setNowTime = function () {
-        var n = new $D();
-        this.setHours(n.getHours());
-        this.setMinutes(n.getMinutes());
-        this.setSeconds(n.getSeconds());
-        this.setMilliseconds(n.getMilliseconds());
-        return this;
+        let T = this, n = new D();
+        T.setHours(n.getHours());
+        T.setMinutes(n.getMinutes());
+        T.setSeconds(n.getSeconds());
+        T.setMilliseconds(n.getMilliseconds());
+        return T;
     };
     $P.equals = function (d, p = 'ms') {
-        let m = this;
+        let T = this;
         if (p == 'ms')
-            return m.diff(d) == 0;
+            return T.diff(d) == 0;
         if (p == 's')
-            return m.getSeconds() == d.getSeconds();
+            return T.getSeconds() == d.getSeconds();
         if (p == 'm')
-            return m.getMinutes() == d.getMinutes();
+            return T.getMinutes() == d.getMinutes();
         if (p == 'h')
-            return m.getHours() == d.getHours();
+            return T.getHours() == d.getHours();
         if (p == 'y')
-            return m.getFullYear() == d.getFullYear();
+            return T.getFullYear() == d.getFullYear();
         if (p == 'M')
-            return m.getMonth() == d.getMonth();
+            return T.getMonth() == d.getMonth();
         if (p == 'd')
-            return m.getFullYear() == d.getFullYear() && m.getMonth() == d.getMonth() && m.getDate() == d.getDate();
+            return T.getFullYear() == d.getFullYear() && T.getMonth() == d.getMonth() && T.getDate() == d.getDate();
         if (p == 'w')
-            return m.getWeek() == d.getWeek();
+            return T.getWeek() == d.getWeek();
         return false;
     };
     $P.between = function (start, end) { return this.diff(start) >= 0 && this.diff(end) <= 0; };
     $P.isAfter = function (d) { return this.diff(d) > 0; };
     $P.isBefore = function (d) { return this.diff(d) < 0; };
-    $P.isToday = function () { return this.equals(new $D(), 'd'); };
+    $P.isToday = function () { return this.equals(new D(), 'd'); };
     $P.add = function (v, type) {
+        let T = this;
         if (v == 0)
-            return this;
+            return T;
         switch (type) {
             case 'ms': {
-                this.setMilliseconds(this.getMilliseconds() + v);
-                return this;
+                T.setMilliseconds(T.getMilliseconds() + v);
+                return T;
             }
             case 's': {
-                return this.add(v * 1000, 'ms');
+                return T.add(v * 1000, 'ms');
             }
             case 'm': {
-                return this.add(v * 60000, 'ms');
+                return T.add(v * 60000, 'ms');
             }
             case 'h': {
-                return this.add(v * 3600000, 'ms');
+                return T.add(v * 3600000, 'ms');
             }
             case 'd': {
-                this.setDate(this.getDate() + v);
-                return this;
+                T.setDate(T.getDate() + v);
+                return T;
             }
             case 'w': {
-                return this.add(v * 7, 'd');
+                return T.add(v * 7, 'd');
             }
             case 'M': {
-                var n = this.getDate();
-                this.setDate(1);
-                this.setMonth(this.getMonth() + v);
-                this.setDate(Math.min(n, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear())));
-                return this;
+                var n = T.getDate();
+                T.setDate(1);
+                T.setMonth(T.getMonth() + v);
+                T.setDate(Math.min(n, Dates.getDaysOfMonth(T.getMonth(), T.getFullYear())));
+                return T;
             }
             case 'y': {
-                return this.add(v * 12, 'M');
+                return T.add(v * 12, 'M');
             }
         }
-        return this;
+        return T;
     };
     $P.setTimezoneOffset = function (offset) {
         var here = this.getTimezoneOffset(), there = Number(offset) * -6 / 10;
@@ -3492,86 +3457,87 @@ var Dates = JS.util.Dates;
         return true;
     };
     $P.set = function (config) {
+        let T = this;
         if (vt(config.millisecond, 0, 999)) {
-            this.add(config.millisecond - this.getMilliseconds(), 'ms');
+            T.add(config.millisecond - T.getMilliseconds(), 'ms');
         }
         if (vt(config.second, 0, 59)) {
-            this.add(config.second - this.getSeconds(), 's');
+            T.add(config.second - T.getSeconds(), 's');
         }
         if (vt(config.minute, 0, 59)) {
-            this.add(config.minute - this.getMinutes(), 'm');
+            T.add(config.minute - T.getMinutes(), 'm');
         }
         if (vt(config.hour, 0, 23)) {
-            this.add(config.hour - this.getHours(), 'h');
+            T.add(config.hour - T.getHours(), 'h');
         }
-        if (vt(config.day, 1, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear()))) {
-            this.add(config.day - this.getDate(), 'd');
+        if (vt(config.day, 1, Dates.getDaysOfMonth(T.getMonth(), T.getFullYear()))) {
+            T.add(config.day - T.getDate(), 'd');
         }
         if (vt(config.week, 0, 53)) {
-            this.setWeek(config.week);
+            T.setWeek(config.week);
         }
         if (vt(config.month, 0, 11)) {
-            this.add(config.month - this.getMonth(), 'M');
+            T.add(config.month - T.getMonth(), 'M');
         }
         if (vt(config.year, 0, 9999)) {
-            this.add(config.year - this.getFullYear(), 'y');
+            T.add(config.year - T.getFullYear(), 'y');
         }
         if (config.timezoneOffset) {
-            this.setTimezoneOffset(config.timezoneOffset);
+            T.setTimezoneOffset(config.timezoneOffset);
         }
-        return this;
+        return T;
     };
     $P.diff = function (date) {
-        return this - (date || new $D());
+        return this - (date || new D());
     };
     $P.format = function (format, locale) {
-        let x = this, fmt = format || 'YYYY-MM-DD HH:mm:ss', bundle = new Bundle(Dates.I18N_RESOURCE, locale);
+        let T = this, fmt = format || 'YYYY-MM-DD HH:mm:ss', bundle = new Bundle(Dates.I18N_RESOURCE, locale);
         return fmt.replace(/YYYY|YY|MMMM|MMM|MM|M|DD|D|hh|h|HH|H|mm|m|ss|s|dddd|ddd|A/g, function (m) {
             switch (m) {
                 case "YYYY":
-                    return pad(x.getFullYear(), 4);
+                    return pad(T.getFullYear(), 4);
                 case "YY":
-                    return pad(x.getFullYear());
+                    return pad(T.getFullYear());
                 case "MMMM":
-                    return bundle.get('MONTH_NAMES')[x.getMonth()];
+                    return bundle.get('MONTH_NAMES')[T.getMonth()];
                 case "MMM":
-                    return bundle.get('MONTH_SHORT_NAMES')[x.getMonth()];
+                    return bundle.get('MONTH_SHORT_NAMES')[T.getMonth()];
                 case "MM":
-                    return pad((x.getMonth() + 1));
+                    return pad((T.getMonth() + 1));
                 case "M":
-                    return x.getMonth() + 1;
+                    return T.getMonth() + 1;
                 case "DD":
-                    return pad(x.getDate());
+                    return pad(T.getDate());
                 case "D":
-                    return x.getDate();
+                    return T.getDate();
                 case "hh":
                     {
-                        let h = x.getHours();
+                        let h = T.getHours();
                         return pad(h < 13 ? (h === 0 ? 12 : h) : (h - 12));
                     }
                 case "h":
                     {
-                        let h = x.getHours();
+                        let h = T.getHours();
                         return h < 13 ? (h === 0 ? 12 : h) : (h - 12);
                     }
                 case "HH":
-                    return pad(x.getHours());
+                    return pad(T.getHours());
                 case "H":
-                    return x.getHours();
+                    return T.getHours();
                 case "mm":
-                    return pad(x.getMinutes());
+                    return pad(T.getMinutes());
                 case "m":
-                    return x.getMinutes();
+                    return T.getMinutes();
                 case "ss":
-                    return pad(x.getSeconds());
+                    return pad(T.getSeconds());
                 case "s":
-                    return x.getSeconds();
+                    return T.getSeconds();
                 case "dddd":
-                    return bundle.get('WEEK_DAY_NAMES')[x.getDay()];
+                    return bundle.get('WEEK_DAY_NAMES')[T.getDay()];
                 case "ddd":
-                    return bundle.get('WEEK_DAY_SHORT_NAMES')[x.getDay()];
+                    return bundle.get('WEEK_DAY_SHORT_NAMES')[T.getDay()];
                 case "A":
-                    return bundle.get(x.getHours() < 12 ? 'AM' : 'PM');
+                    return bundle.get(T.getHours() < 12 ? 'AM' : 'PM');
                 default:
                     return m;
             }
@@ -3579,75 +3545,6 @@ var Dates = JS.util.Dates;
     };
 }());
 Class.register(Date);
-var JS;
-(function (JS) {
-    let lang;
-    (function (lang) {
-        class JSError extends Error {
-            constructor(msg, cause) {
-                super(cause ? (cause.message || '') + ' -> ' + (msg || '') : msg || '');
-                this.cause = null;
-                this.name = this.className;
-                if (cause)
-                    this.cause = cause;
-            }
-        }
-        lang.JSError = JSError;
-        class NotHandledError extends JSError {
-        }
-        lang.NotHandledError = NotHandledError;
-        class NotFoundError extends JSError {
-        }
-        lang.NotFoundError = NotFoundError;
-        class ArithmeticError extends JSError {
-        }
-        lang.ArithmeticError = ArithmeticError;
-        class ArgumentError extends JSError {
-        }
-        lang.ArgumentError = ArgumentError;
-        class StateError extends JSError {
-        }
-        lang.StateError = StateError;
-        class NetworkError extends JSError {
-        }
-        lang.NetworkError = NetworkError;
-        class TimeoutError extends JSError {
-        }
-        lang.TimeoutError = TimeoutError;
-    })(lang = JS.lang || (JS.lang = {}));
-})(JS || (JS = {}));
-var JSError = JS.lang.JSError;
-var NotHandledError = JS.lang.NotHandledError;
-var NotFoundError = JS.lang.NotFoundError;
-var ArithmeticError = JS.lang.ArithmeticError;
-var ArgumentError = JS.lang.ArgumentError;
-var StateError = JS.lang.StateError;
-var NetworkError = JS.lang.NetworkError;
-var TimeoutError = JS.lang.TimeoutError;
-var JS;
-(function (JS) {
-    let lang;
-    (function (lang) {
-        lang.Errors = {
-            Error: Error,
-            JSError: lang.JSError,
-            URIError: URIError,
-            ReferenceError: ReferenceError,
-            TypeError: TypeError,
-            RangeError: RangeError,
-            SyntaxError: SyntaxError,
-            EvalError: EvalError,
-            NotHandledError: lang.NotHandledError,
-            NotFoundError: lang.NotFoundError,
-            ArithmeticError: lang.ArithmeticError,
-            ArgumentError: lang.ArgumentError,
-            StateError: lang.StateError,
-            NetworkError: lang.NetworkError,
-            TimeoutError: lang.TimeoutError
-        };
-    })(lang = JS.lang || (JS.lang = {}));
-})(JS || (JS = {}));
-var Errors = JS.lang.Errors;
 var JS;
 (function (JS) {
     let util;
@@ -3764,21 +3661,21 @@ var JS;
                 return s * Math.pow(1024, r1 - r2);
             }
             static toSizeString(byte, sizeUnit) {
-                let unit = sizeUnit || FileSizeUnit.B;
+                let unit = sizeUnit || FileSizeUnit.B, TC = this.convertSize;
                 if (!byte)
                     return '0' + unit;
-                let kb = this.convertSize(byte, unit, FileSizeUnit.KB);
+                let kb = TC(byte, unit, FileSizeUnit.KB);
                 if (kb == 0)
                     return '0' + unit;
                 if (kb < 1)
                     return byte + 'B';
-                let mb = this.convertSize(byte, unit, FileSizeUnit.MB);
+                let mb = TC(byte, unit, FileSizeUnit.MB);
                 if (mb < 1)
                     return kb + 'KB';
-                let gb = this.convertSize(byte, unit, FileSizeUnit.GB);
+                let gb = TC(byte, unit, FileSizeUnit.GB);
                 if (gb < 1)
                     return mb + 'MB';
-                let tb = this.convertSize(byte, unit, FileSizeUnit.TB);
+                let tb = TC(byte, unit, FileSizeUnit.TB);
                 return tb < 1 ? (gb + 'GB') : (tb + 'TB');
             }
         }
@@ -4065,12 +3962,12 @@ var JS;
                 return isInt ? Number(num).toInt() : num;
             }
             static string(len, chars) {
-                return this._string(chars ? chars.split('') : CHARS, len);
+                return this._str(chars ? chars.split('') : CHARS, len);
             }
             static uuid(len, radix) {
-                return this._string(CHARS, len, radix);
+                return this._str(CHARS, len, radix);
             }
-            static _string(chars, len, radix) {
+            static _str(chars, len, radix) {
                 var uuid = [], i;
                 radix = radix || chars.length;
                 if (len) {
@@ -4206,29 +4103,29 @@ var JS;
                 }
             }
             start() {
-                let m = this;
-                if (m._sta == TimerState.RUNNING)
+                let T = this;
+                if (T._sta == TimerState.RUNNING)
                     return;
-                let first = false, wait = m._cfg.delay;
-                if (m._sta == TimerState.PAUSED) {
+                let first = false, wait = T._cfg.delay;
+                if (T._sta == TimerState.PAUSED) {
                     wait = 0;
-                    let t = System.highResTime() - m._pt;
-                    m._pt = 0;
-                    m._ts0 += t;
-                    m._ts += t;
+                    let t = System.highResTime() - T._pt;
+                    T._pt = 0;
+                    T._ts0 += t;
+                    T._ts += t;
                 }
                 else {
                     first = true;
-                    m._reset();
+                    T._reset();
                 }
-                m._sta = TimerState.RUNNING;
-                m._timer = setTimeout(() => {
+                T._sta = TimerState.RUNNING;
+                T._timer = setTimeout(() => {
                     if (first) {
-                        this._ts0 = System.highResTime();
-                        this._ts = this._ts0;
-                        m._bus.fire('starting');
+                        T._ts0 = System.highResTime();
+                        T._ts = T._ts0;
+                        T._bus.fire('starting');
                     }
-                    m._cycle();
+                    T._cycle();
                 }, wait);
             }
         }
@@ -4237,6 +4134,51 @@ var JS;
 })(JS || (JS = {}));
 var Timer = JS.util.Timer;
 var TimerState = JS.util.TimerState;
+var JS;
+(function (JS) {
+    let lang;
+    (function (lang) {
+        class JSError extends Error {
+            constructor(msg, cause) {
+                super(cause ? (cause.message || '') + ' -> ' + (msg || '') : msg || '');
+                this.cause = null;
+                this.name = this.className;
+                if (cause)
+                    this.cause = cause;
+            }
+        }
+        lang.JSError = JSError;
+        class NotHandledError extends JSError {
+        }
+        lang.NotHandledError = NotHandledError;
+        class NotFoundError extends JSError {
+        }
+        lang.NotFoundError = NotFoundError;
+        class ArithmeticError extends JSError {
+        }
+        lang.ArithmeticError = ArithmeticError;
+        class ArgumentError extends JSError {
+        }
+        lang.ArgumentError = ArgumentError;
+        class StateError extends JSError {
+        }
+        lang.StateError = StateError;
+        class NetworkError extends JSError {
+        }
+        lang.NetworkError = NetworkError;
+        class TimeoutError extends JSError {
+        }
+        lang.TimeoutError = TimeoutError;
+    })(lang = JS.lang || (JS.lang = {}));
+})(JS || (JS = {}));
+var JSError = JS.lang.JSError;
+var NotHandledError = JS.lang.NotHandledError;
+var NotFoundError = JS.lang.NotFoundError;
+var ArithmeticError = JS.lang.ArithmeticError;
+var ArgumentError = JS.lang.ArgumentError;
+var StateError = JS.lang.StateError;
+var NetworkError = JS.lang.NetworkError;
+var TimeoutError = JS.lang.TimeoutError;
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -4253,27 +4195,28 @@ var JS;
             klass('JS.lang.AssertError')
         ], AssertError);
         lang.AssertError = AssertError;
+        let T = Types, F = Functions;
         class Assert {
             static fail(msg) {
                 throw new AssertError(msg);
             }
             static failNotSameType(expected, actual, msg) {
-                this.fail((msg ? msg + ' ' : '') + 'expected type:<' + expected + '> but was:<' + actual + '>');
+                this.fail((msg || '') + ' expected type:<' + expected + '> but was:<' + actual + '>');
             }
             static failNotEqual(expected, actual, msg) {
-                this.fail((msg ? msg + ' ' : '') + 'expected:<' + expected + '> but was:<' + actual + '>');
+                this.fail((msg || '') + ' expected:<' + expected + '> but was:<' + actual + '>');
             }
             static failEqual(expected, actual, msg) {
-                this.fail((msg ? msg + ' ' : '') + '<' + expected + '> equals to <' + actual + '>');
+                this.fail((msg || '') + ' <' + expected + '> equals to <' + actual + '>');
             }
             static _equal(expected, actual) {
                 if (expected === actual)
                     return true;
-                if (Types.isArray(expected) && Types.isArray(actual) && Arrays.equal(expected, actual))
+                if (T.isArray(expected) && T.isArray(actual) && Arrays.equal(expected, actual))
                     return true;
-                if (Types.isJsonObject(expected) && Types.isJsonObject(actual) && Jsons.equal(expected, actual))
+                if (T.isJsonObject(expected) && T.isJsonObject(actual) && Jsons.equal(expected, actual))
                     return true;
-                if (Types.isDate(expected) && Types.isDate(actual) && expected.getTime() === actual.getTime())
+                if (T.isDate(expected) && T.isDate(actual) && expected.getTime() === actual.getTime())
                     return true;
                 return false;
             }
@@ -4288,23 +4231,23 @@ var JS;
                 this.failEqual(expected, actual, msg);
             }
             static sameType(expected, actual, msg) {
-                let eType = Types.type(expected), aType = Types.type(actual);
-                if (eType == aType)
+                let et = T.type(expected), at = T.type(actual);
+                if (et == at)
                     return;
-                this.failNotSameType(eType, aType, msg);
+                this.failNotSameType(et, at, msg);
             }
             static notSameType(expected, actual, msg) {
-                if (Types.type(expected) != Types.type(actual))
+                if (T.type(expected) != T.type(actual))
                     return;
-                this.fail((msg ? msg + ' ' : '') + 'expected not same type');
+                this.fail((msg || '') + ' expected not same type');
             }
             static true(condition, msg) {
                 if (!condition)
-                    this.fail((msg ? msg + ' ' : '') + 'expected:<TRUE> but was:<FALSE>');
+                    this.fail((msg || '') + ' expected:<TRUE> but was:<FALSE>');
             }
             static false(condition, msg) {
                 if (condition)
-                    this.fail((msg ? msg + ' ' : '') + 'expected:<FALSE> but was:<TRUE>');
+                    this.fail((msg || '') + ' expected:<FALSE> but was:<TRUE>');
             }
             static defined(obj, msg) {
                 this.true(obj != void 0, msg);
@@ -4315,25 +4258,25 @@ var JS;
             static error(fn, msg) {
                 let has = false;
                 try {
-                    Functions.call(fn);
+                    F.call(fn);
                 }
                 catch (e) {
                     has = true;
                 }
                 if (!has)
-                    this.fail((msg ? msg + ' ' : '') + 'expected throw an error');
+                    this.fail((msg || '') + ' expected throw an error');
             }
             static equalError(error, fn, msg) {
                 let has = false;
                 try {
-                    Functions.call(fn);
+                    F.call(fn);
                 }
                 catch (e) {
-                    if (Types.ofKlass(e, error))
+                    if (T.ofKlass(e, error))
                         has = true;
                 }
                 if (!has)
-                    this.fail((msg ? msg + ' ' : '') + 'expected throw an error');
+                    this.fail((msg || '') + ' expected throw an error');
             }
         }
         lang.Assert = Assert;

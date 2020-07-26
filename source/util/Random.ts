@@ -51,7 +51,7 @@ module JS {
              * @param chars 
              */
             public static string(len?: number, chars?: string): string {
-                return this._string(chars?chars.split(''):CHARS, len)
+                return this._str(chars?chars.split(''):CHARS, len)
             }
             /**
              * Returns a new UUID string.<br>
@@ -60,10 +60,10 @@ module JS {
              * @param radix 2|8|16|... 进制数，比如：二进制、八进制、十六进制...
              */
             public static uuid(len?: number, radix?: number): string {
-                return this._string(CHARS, len, radix)
+                return this._str(CHARS, len, radix)
             }
             
-            private static _string(chars: string[], len?: number, radix?: number): string {
+            private static _str(chars: string[], len?: number, radix?: number): string {
                 var uuid = [], i;
                 radix = radix || chars.length;
 

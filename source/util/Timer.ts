@@ -182,30 +182,30 @@ module JS {
              * 周期性执行任务
              */
             public start() {
-                let m = this;
-                if (m._sta == TimerState.RUNNING) return;
+                let T = this;
+                if (T._sta == TimerState.RUNNING) return;
 
-                let first = false, wait = m._cfg.delay;
-                if (m._sta == TimerState.PAUSED) {
+                let first = false, wait = T._cfg.delay;
+                if (T._sta == TimerState.PAUSED) {
                     wait = 0;
                     //补上从暂停到现在的时间差
-                    let t = System.highResTime()-m._pt;
-                    m._pt = 0;
-                    m._ts0+= t;
-                    m._ts += t;
+                    let t = System.highResTime()-T._pt;
+                    T._pt = 0;
+                    T._ts0+= t;
+                    T._ts += t;
                 } else {
                     first = true;
-                    m._reset();
+                    T._reset();
                 }
-                m._sta = TimerState.RUNNING;
+                T._sta = TimerState.RUNNING;
 
-                m._timer = setTimeout(() => {
+                T._timer = setTimeout(() => {
                     if (first) {
-                        this._ts0 = System.highResTime();
-                        this._ts = this._ts0;
-                        m._bus.fire(<TimerEvents>'starting');
+                        T._ts0 = System.highResTime();
+                        T._ts = T._ts0;
+                        T._bus.fire(<TimerEvents>'starting');
                     }
-                    m._cycle();
+                    T._cycle();
                 }, wait);
             }
 

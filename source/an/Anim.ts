@@ -111,10 +111,10 @@ module JS {
             public abstract play(t?: number) : this;
 
             protected _reset(){
-                let m = this;
-                m._loop = 0;
-                m._dir = m._cfg.direction;
-                if (m._timer) m._timer.stop();
+                let T = this;
+                T._loop = 0;
+                T._dir = T._cfg.direction;
+                if (T._timer) T._timer.stop();
             }
 
             /**

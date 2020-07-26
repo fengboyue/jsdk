@@ -19,6 +19,7 @@ module JS {
         @klass('JS.lang.AssertError')
         export class AssertError extends JSError { }
 
+        let T = Types, F = Functions;
         export class Assert {
 
             /**
@@ -29,22 +30,22 @@ module JS {
             }
 
             public static failNotSameType(expected: any, actual: any, msg?: string) {
-                this.fail((msg?msg+' ':'') + 'expected type:<' + expected + '> but was:<' + actual + '>')
+                this.fail((msg||'') + ' expected type:<' + expected + '> but was:<' + actual + '>')
             }
 
             public static failNotEqual(expected: any, actual: any, msg?: string) {
-                this.fail((msg?msg+' ':'') + 'expected:<' + expected + '> but was:<' + actual + '>')
+                this.fail((msg||'') + ' expected:<' + expected + '> but was:<' + actual + '>')
             }
 
             public static failEqual(expected: any, actual: any, msg?: string) {
-                this.fail((msg?msg+' ':'') + '<' + expected + '> equals to <' + actual + '>')
+                this.fail((msg||'') + ' <' + expected + '> equals to <' + actual + '>')
             }
 
             public static _equal(expected: any, actual: any): boolean {
                 if (expected === actual) return true
-                if(Types.isArray(expected) && Types.isArray(actual) && Arrays.equal(expected,actual)) return true
-                if(Types.isJsonObject(expected) && Types.isJsonObject(actual) && Jsons.equal(expected,actual)) return true
-                if(Types.isDate(expected) && Types.isDate(actual) && expected.getTime() === actual.getTime()) return true
+                if(T.isArray(expected) && T.isArray(actual) && Arrays.equal(expected,actual)) return true
+                if(T.isJsonObject(expected) && T.isJsonObject(actual) && Jsons.equal(expected,actual)) return true
+                if(T.isDate(expected) && T.isDate(actual) && expected.getTime() === actual.getTime()) return true
                 return false
             }
 
@@ -79,17 +80,17 @@ module JS {
              * @throw AssertError if they are not same type
              */
             public static sameType(expected: any, actual: any, msg?: string) {
-                let eType = Types.type(expected), aType = Types.type(actual);
-                if (eType == aType) return
-                this.failNotSameType(eType, aType, msg)
+                let et = T.type(expected), at = T.type(actual);
+                if (et == at) return
+                this.failNotSameType(et, at, msg)
             }
             /**
              * Asserts that two objects do not refer to the same type. 
              * @throw AssertError if they are same type
              */
             public static notSameType(expected: any, actual: any, msg?: string) {
-                if (Types.type(expected) != Types.type(actual)) return
-                this.fail((msg?msg+' ':'') + 'expected not same type')
+                if (T.type(expected) != T.type(actual)) return
+                this.fail((msg||'') + ' expected not same type')
             }
 
             /**
@@ -97,14 +98,14 @@ module JS {
              * @throw AssertError if condition is false
              */
             public static true(condition: boolean, msg?: string) {
-                if (!condition) this.fail((msg?msg+' ':'') + 'expected:<TRUE> but was:<FALSE>')
+                if (!condition) this.fail((msg||'') + ' expected:<TRUE> but was:<FALSE>')
             }
             /**
              * Asserts that a condition is false.
              * @throw AssertError if condition is true
              */
             public static false(condition: boolean, msg?: string) {
-                if (condition) this.fail((msg?msg+' ':'') + 'expected:<FALSE> but was:<TRUE>')
+                if (condition) this.fail((msg||'') + ' expected:<FALSE> but was:<TRUE>')
             }
 
             /**
@@ -128,9 +129,9 @@ module JS {
              */
             public static error(fn: Fallback<any>, msg?: string) {
                 let has = false;
-                try { Functions.call(fn) } catch (e) { has = true }
+                try { F.call(fn) } catch (e) { has = true }
 
-                if (!has) this.fail((msg?msg+' ':'') + 'expected throw an error')
+                if (!has) this.fail((msg||'') + ' expected throw an error')
             }
             /**
              * Asserts that a function has error. 
@@ -138,9 +139,9 @@ module JS {
              */
             public static equalError(error: Klass<Error>, fn: Fallback<any>, msg?: string) {
                 let has = false;
-                try { Functions.call(fn) } catch (e) { if (Types.ofKlass(e, error)) has = true }
+                try { F.call(fn) } catch (e) { if (T.ofKlass(e, error)) has = true }
 
-                if (!has) this.fail((msg?msg+' ':'') + 'expected throw an error')
+                if (!has) this.fail((msg||'') + ' expected throw an error')
             }
 
         }

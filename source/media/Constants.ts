@@ -13,12 +13,9 @@ module JS {
 
         export type MediaEvents = 'abort' | 'canplay' | 'canplaythrough' | 'durationchange' | 'emptied' | 'ended' | 'error' | 'loadeddata' | 'loadedmetadata' | 'loadstart' | 'pause' | 'play' | 'playing' | 'progress' | 'ratechange' | 'readystatechange' | 'seeking' | 'seeked' | 'stalled' | 'suspend' | 'timeupdate' | 'volumechange' | 'waiting';
 
-        export type MediaSource = {
-            media?: string,
-            src: string,
-            type: 'video/ogg'|'video/mp4'|'video/webm'|'audio/ogg'|'audio/mpeg'
-        }
+        export type MediaTypes = 'video/ogg'|'video/mp4'|'video/webm'|'audio/ogg'|'audio/mpeg';
 
     }
 }
 import MediaEvents = JS.media.MediaEvents;
+import MediaTypes = JS.media.MediaTypes;

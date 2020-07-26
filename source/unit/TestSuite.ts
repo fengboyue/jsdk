@@ -15,6 +15,8 @@ module JS {
 
         export type TestClass = TestCase | TestSuite | Class<TestCase | TestSuite>;
 
+        let Y = Types;
+
         @klass('JS.unit.TestSuite')
         export class TestSuite {
 
@@ -22,7 +24,7 @@ module JS {
             private _cases: TestCase[] = [];
 
             constructor(name?: string | TestClass | Class<TestCase | TestSuite>[]) {
-                if (Types.isString(name)) {
+                if (Y.isString(name)) {
                     this._name = <string>name;
                 } else {
                     this.addTest(<any>name);
@@ -66,7 +68,7 @@ module JS {
 
             public addTest(test: TestClass | Class<TestCase | TestSuite>[]) {
                 if (!test) return;
-                if (Types.isArray(test)) {
+                if (Y.isArray(test)) {
                     (<Array<Class<any>>>test).forEach(clazz => {
                         this._addTest(<any>clazz);
                     })
@@ -81,14 +83,15 @@ module JS {
             private _addTest(test: TestClass) {
                 if (!test) return;
 
-                if (Types.ofKlass(test, TestSuite)) {
-                    this._cases = this._cases.concat((<TestSuite>test).getTestCases());
-                } else if (Types.ofKlass(test, TestCase)) {
-                    this._cases[this._cases.length] = <TestCase>test;
-                } else if (Types.subClass(<Class<any>>test, TestSuite.class)) {
-                    this._cases = this._cases.concat((<TestSuite>Class.newInstance((<Class<any>>test).name)).getTestCases());
-                } else if (Types.subClass(<Class<any>>test, TestCase.class)) {
-                    this._cases[this._cases.length] = <TestCase>Class.newInstance((<Class<any>>test).name);
+                let T = this;
+                if (Y.ofKlass(test, TestSuite)) {
+                    T._cases = T._cases.concat((<TestSuite>test).getTestCases());
+                } else if (Y.ofKlass(test, TestCase)) {
+                    T._cases[T._cases.length] = <TestCase>test;
+                } else if (Y.subClass(<Class<any>>test, TestSuite.class)) {
+                    T._cases = T._cases.concat((<TestSuite>Class.newInstance((<Class<any>>test).name)).getTestCases());
+                } else if (Y.subClass(<Class<any>>test, TestCase.class)) {
+                    T._cases[T._cases.length] = <TestCase>Class.newInstance((<Class<any>>test).name);
                 }
             }
 

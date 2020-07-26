@@ -1,6 +1,6 @@
 //@ sourceURL=jsmedia.js
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -14,43 +14,43 @@ var JS;
             constructor(cfg) {
                 this._bus = new EventBus(this);
                 this._d = false;
-                let m = this;
-                m._cfg = Jsons.union({
+                let T = this;
+                T._cfg = Jsons.union({
                     volume: 1,
                     loop: false
                 }, cfg);
-                if (m._cfg.on)
-                    Jsons.forEach(m._cfg.on, (v, k) => { m._bus.on(k, v); });
+                if (T._cfg.on)
+                    Jsons.forEach(T._cfg.on, (v, k) => { T._bus.on(k, v); });
             }
             _check() {
                 if (this._d)
                     throw new StateError('The object was destroyed!');
             }
             load(url) {
-                let m = this;
-                m._check();
+                let T = this;
+                T._check();
                 return new Promise((resolve, reject) => {
                     Ajax.get({
                         url: url,
                         type: 'arraybuffer',
                         onSending: req => {
-                            if (m._cfg.on && m._cfg.on.loading)
-                                m._bus.fire('loading', [req]);
+                            if (T._cfg.on && T._cfg.on.loading)
+                                T._bus.fire('loading', [req]);
                         },
                         onCompleted: res => {
                             AC.decodeAudioData(res.data, (buffer) => {
-                                m._src = url;
-                                m._buffer = buffer;
-                                resolve(m);
+                                T._src = url;
+                                T._buffer = buffer;
+                                resolve(T);
                             }, err => {
-                                if (m._cfg.on && m._cfg.on.decode_error)
-                                    m._bus.fire('decode_error', [err]);
+                                if (T._cfg.on && T._cfg.on.decode_error)
+                                    T._bus.fire('decode_error', [err]);
                                 reject(err);
                             });
                         },
                         onError: res => {
-                            if (m._cfg.on && m._cfg.on.load_error)
-                                m._bus.fire('load_error', [res]);
+                            if (T._cfg.on && T._cfg.on.load_error)
+                                T._bus.fire('load_error', [res]);
                             reject(res);
                         }
                     });
@@ -65,41 +65,41 @@ var JS;
                 return this;
             }
             loop(is) {
-                let m = this;
+                let T = this;
                 if (is == void 0)
-                    return m._cfg.loop;
-                m._cfg.loop = is;
-                return m;
+                    return T._cfg.loop;
+                T._cfg.loop = is;
+                return T;
             }
             src() {
                 return this._src;
             }
             play(delay, offset, duration) {
-                let m = this;
-                m._check();
-                m.stop();
-                m._gain = AC.createGain();
-                m._gain.gain.value = m._cfg.volume;
-                m._node = AC.createBufferSource();
-                m._node.buffer = m._buffer;
-                let c = m._cfg;
-                m._node.loop = c.loop;
+                let T = this;
+                T._check();
+                T.stop();
+                T._gain = AC.createGain();
+                T._gain.gain.value = T._cfg.volume;
+                T._node = AC.createBufferSource();
+                T._node.buffer = T._buffer;
+                let c = T._cfg;
+                T._node.loop = c.loop;
                 if (c.on && c.on.ended)
-                    m._node.onended = e => {
-                        m._bus.fire('ended');
+                    T._node.onended = e => {
+                        T._bus.fire('ended');
                     };
-                m._node.connect(m._gain);
+                T._node.connect(T._gain);
                 if (c.handler) {
-                    let node = c.handler.call(m, AC);
-                    m._gain.connect(node);
+                    let node = c.handler.call(T, AC);
+                    T._gain.connect(node);
                     node.connect(AC.destination);
                 }
                 else {
-                    m._gain.connect(AC.destination);
+                    T._gain.connect(AC.destination);
                 }
                 if (c.on && c.on.playing)
-                    m._bus.fire('playing', [AC, m._gain.gain]);
-                m._node.start(delay || 0, offset || 0, duration);
+                    T._bus.fire('playing', [AC, T._gain.gain]);
+                T._node.start(delay || 0, offset || 0, duration);
             }
             stop() {
                 this._check();
@@ -107,20 +107,21 @@ var JS;
                     this._node.stop();
             }
             volume(n) {
-                this._check();
-                this._cfg.volume = n;
-                if (this._gain)
-                    this._gain.gain.value = n;
+                let T = this;
+                T._check();
+                T._cfg.volume = n;
+                if (T._gain)
+                    T._gain.gain.value = n;
             }
             destroy() {
-                let m = this;
-                m._d = true;
-                m._cfg = null;
-                m._src = null;
-                m._buffer = null;
-                m._gain.disconnect();
-                m._node.disconnect();
-                m._bus.destroy();
+                let T = this;
+                T._d = true;
+                T._cfg = null;
+                T._src = null;
+                T._buffer = null;
+                T._gain.disconnect();
+                T._node.disconnect();
+                T._bus.destroy();
             }
         }
         media.Sound = Sound;
@@ -133,49 +134,49 @@ var JS;
     (function (media) {
         class Video {
             constructor(c) {
-                let m = this;
-                m._c = Jsons.union({
+                let T = this;
+                T._c = Jsons.union({
                     controls: true,
                     autoplay: false,
                     loop: false,
                     muted: false,
                     preload: 'auto'
                 }, c);
-                m._src = m._c.src;
-                let el = $1('#' + m._c.id);
+                T._src = T._c.src;
+                let el = $1('#' + T._c.id);
                 if (el) {
-                    m._el = el;
-                    Jsons.forEach(m._c, (v, k) => {
+                    T._el = el;
+                    Jsons.forEach(T._c, (v, k) => {
                         if (k != 'id' && k != 'ctor' && k != 'on')
-                            m._el.attr(k, v);
+                            T._el.attr(k, v);
                     });
                 }
                 else {
-                    let ctr = (Types.isString(m._c.appendTo) ? $1(m._c.appendTo) : m._c.appendTo) || document.body, id = m._c.id || Random.uuid(4);
+                    let ctr = (Types.isString(T._c.appendTo) ? $1(T._c.appendTo) : T._c.appendTo) || document.body, id = T._c.id || Random.uuid(4);
                     ctr.append(Strings.nodeHTML('video', {
                         id: id,
-                        controls: m._c.controls,
-                        loop: m._c.loop,
-                        muted: m._c.muted,
-                        preload: m._c.preload,
-                        poster: m._c.poster,
-                        width: m._c.width,
-                        height: m._c.height,
-                        src: m._c.src
+                        controls: T._c.controls,
+                        loop: T._c.loop,
+                        muted: T._c.muted,
+                        preload: T._c.preload,
+                        poster: T._c.poster,
+                        width: T._c.width,
+                        height: T._c.height,
+                        src: T._c.src
                     }));
                     this._el = $1(`#${id}`);
                 }
-                if (m._c.on)
-                    Jsons.forEach(m._c.on, (v, k) => { this.on(k, v); });
+                if (T._c.on)
+                    Jsons.forEach(T._c.on, (v, k) => { this.on(k, v); });
             }
             src(src) {
-                let m = this;
+                let T = this;
                 if (!src)
-                    return m._src;
-                m._src = src;
-                m._el.src = src;
-                m._el.load();
-                return m;
+                    return T._src;
+                T._src = src;
+                T._el.src = src;
+                T._el.load();
+                return T;
             }
             currentTime(t) {
                 return this._gs('currentTime', t);

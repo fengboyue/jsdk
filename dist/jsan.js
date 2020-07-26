@@ -1,6 +1,6 @@
 //@ sourceURL=jsan.js
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -61,11 +61,11 @@ var JS;
                 return this._loop;
             }
             _reset() {
-                let m = this;
-                m._loop = 0;
-                m._dir = m._cfg.direction;
-                if (m._timer)
-                    m._timer.stop();
+                let T = this;
+                T._loop = 0;
+                T._dir = T._cfg.direction;
+                if (T._timer)
+                    T._timer.stop();
             }
             pause() {
                 if (this._timer)
@@ -327,6 +327,7 @@ var JS;
 (function (JS) {
     let an;
     (function (an) {
+        let J = Jsons;
         class ElementAnimConfig extends an.AnimConfig {
         }
         an.ElementAnimConfig = ElementAnimConfig;
@@ -335,15 +336,15 @@ var JS;
                 super(cfg);
             }
             _parseFrames(frames) {
-                let m = this;
-                Jsons.some(frames, (v, k) => {
+                let T = this;
+                J.some(frames, (v, k) => {
                     if (k == 'from' || k == '0%') {
-                        m._from = this._convertFrame(v);
+                        T._from = this._convertFrame(v);
                     }
                     else if (k == 'to' || k == '100%') {
-                        m._to = this._convertFrame(v);
+                        T._to = this._convertFrame(v);
                     }
-                    return m._from != void 0 && m._to != void 0;
+                    return T._from != void 0 && T._to != void 0;
                 });
             }
             config(cfg) {
@@ -364,7 +365,7 @@ var JS;
                 }
                 else {
                     let json = {};
-                    Jsons.forEach(from, (v, k) => {
+                    J.forEach(from, (v, k) => {
                         json[k] = this._newVal(t, d, from[k], to[k], e, this._frame == void 0 ? null : this._frame[k]);
                     });
                     return json;
@@ -378,39 +379,39 @@ var JS;
                 return Math[tx](n, base);
             }
             _calc(d, t, e) {
-                let m = this, fwd = m._dir == 'forward';
-                if (!Check.isEmpty(this._frames)) {
+                let T = this, fwd = T._dir == 'forward';
+                if (!Check.isEmpty(T._frames)) {
                     let n = Number(t * 100 / d).round(2), key, delKeys = [];
-                    Jsons.forEach(this._frames, (v, k) => {
-                        let nk = this._num(k);
+                    J.forEach(T._frames, (v, k) => {
+                        let nk = T._num(k);
                         if (!nk.isNaN() && nk.round(2) <= n) {
                             delKeys.push(k);
-                            if (nk > this._num(key))
+                            if (nk > T._num(key))
                                 key = k;
                         }
                     });
                     if (key) {
-                        m._frame = this._convertFrame(this._frames[key]);
-                        delKeys.forEach((v) => { delete this._frames[v]; });
-                        return m._frame;
+                        T._frame = T._convertFrame(T._frames[key]);
+                        delKeys.forEach((v) => { delete T._frames[v]; });
+                        return T._frame;
                     }
                 }
-                let from = fwd ? m._from : m._to, to = fwd ? m._to : m._from;
-                return this._newFrame(from, to, t, d, e);
+                let from = fwd ? T._from : T._to, to = fwd ? T._to : T._from;
+                return T._newFrame(from, to, t, d, e);
             }
             _reset4loop() {
-                let m = this;
-                m._frame = null;
-                m._frames = Jsons.clone(m._cfg.frames);
-                delete m._frames.from;
-                delete m._frames.to;
-                delete m._frames['0%'];
-                delete m._frames['100%'];
+                let T = this;
+                T._frame = null;
+                T._frames = J.clone(T._cfg.frames);
+                delete T._frames.from;
+                delete T._frames.to;
+                delete T._frames['0%'];
+                delete T._frames['100%'];
             }
             _reset() {
-                let m = this;
-                m._frame = null;
-                m._frames = null;
+                let T = this;
+                T._frame = null;
+                T._frames = null;
                 super._reset();
             }
             _resetFrame() {
@@ -418,11 +419,11 @@ var JS;
             }
             _resetInitial() { }
             play() {
-                let m = this, r = m._timer, c = m._cfg;
+                let T = this, r = T._timer, c = T._cfg;
                 if (!r) {
-                    m._reset();
+                    T._reset();
                     r = new an.AnimTimer((et) => {
-                        m._onUpdate.call(m, m._calc(c.duration, et, c.easing));
+                        T._onUpdate.call(T, T._calc(c.duration, et, c.easing));
                     }, {
                         delay: c.delay,
                         duration: c.duration,
@@ -430,39 +431,39 @@ var JS;
                     });
                     if (c.onStarting)
                         r.on('starting', () => {
-                            c.onStarting.call(m);
-                            m._resetFrame();
+                            c.onStarting.call(T);
+                            T._resetFrame();
                         });
                     r.on('looping', (e, ct) => {
-                        m._loop = ct;
-                        m._reset4loop();
+                        T._loop = ct;
+                        T._reset4loop();
                         if (ct > 1 && c.autoReverse)
-                            m.direction(m._dir == 'backward' ? 'forward' : 'backward');
+                            T.direction(T._dir == 'backward' ? 'forward' : 'backward');
                         if (!c.autoReverse)
-                            m._resetFrame();
+                            T._resetFrame();
                     });
                     r.on('finished', () => {
                         if (c.autoReset)
-                            m._resetInitial();
+                            T._resetInitial();
                         if (c.onFinished)
-                            c.onFinished.call(m);
-                        m._reset();
+                            c.onFinished.call(T);
+                        T._reset();
                     });
-                    m._timer = r;
+                    T._timer = r;
                 }
-                if (m.getState() == an.AnimState.RUNNING)
-                    return m;
-                if (m._from == void 0 || m._to == void 0)
+                if (T.getState() == an.AnimState.RUNNING)
+                    return T;
+                if (T._from == void 0 || T._to == void 0)
                     throw new NotFoundError('Not found "from" or "to"!');
                 r.start();
-                return m;
+                return T;
             }
             stop() {
                 super.stop();
-                let m = this, c = m._cfg;
+                let T = this, c = T._cfg;
                 if (c.autoReset)
-                    m._resetInitial();
-                return m;
+                    T._resetInitial();
+                return T;
             }
         }
         an.ElementAnim = ElementAnim;
@@ -505,6 +506,7 @@ var JS;
 (function (JS) {
     let an;
     (function (an) {
+        let J = Jsons;
         class GradientAnimConfig extends an.ElementAnimConfig {
         }
         an.GradientAnimConfig = GradientAnimConfig;
@@ -535,16 +537,16 @@ var JS;
             }
             _convertFrame(f) {
                 let json = {};
-                Jsons.forEach(f, (v, k) => {
+                J.forEach(f, (v, k) => {
                     json[k] = Colors.hex2rgba(v);
                 });
                 return json;
             }
             _newFrame(from, to, t, d, e) {
                 let json = {};
-                Jsons.forEach(from, (v, k) => {
+                J.forEach(from, (v, k) => {
                     json[k] = {};
-                    Jsons.forEach(from[k], (vv, kk) => {
+                    J.forEach(from[k], (vv, kk) => {
                         json[k][kk] = this._newColor(t, d, from[k], to[k], kk, e, this._frame == void 0 ? null : this._frame[k]);
                     });
                 });
@@ -552,13 +554,13 @@ var JS;
             }
             _onUpdate(j) {
                 let el = this._el;
-                Jsons.forEach(j, (v, k) => {
+                J.forEach(j, (v, k) => {
                     el.style[k] = Colors.rgba2css(v);
                 });
             }
             _resetInitial() {
                 let el = this._el, c = this._cls;
-                Jsons.forEach(c, (v, k) => {
+                J.forEach(c, (v, k) => {
                     el.style[k] = v;
                 });
             }
@@ -617,6 +619,7 @@ var JS;
         class ParallelAnimConfig extends an.AnimConfig {
         }
         an.ParallelAnimConfig = ParallelAnimConfig;
+        let E = Check.isEmpty;
         class ParallelAnim extends an.Anim {
             constructor(cfg) {
                 super(cfg);
@@ -626,15 +629,16 @@ var JS;
                 return this._sta;
             }
             config(cfg) {
+                let T = this;
                 if (!cfg)
-                    return this._cfg;
+                    return T._cfg;
                 super.config(cfg);
-                let c = this._cfg, as = c.anims;
-                if (!Check.isEmpty(as)) {
-                    this._plans = [];
-                    as.forEach((a, i) => {
+                let c = T._cfg, as = c.anims;
+                if (!E(as)) {
+                    T._plans = [];
+                    as.forEach(a => {
                         a.config(Jsons.union(c, a.config()));
-                        this._plans.push(Promises.createPlan(function () {
+                        T._plans.push(Promises.createPlan(function () {
                             a.config({
                                 onFinished: () => { this.resolve(); }
                             });
@@ -642,40 +646,40 @@ var JS;
                         }));
                     });
                 }
-                return this;
+                return T;
             }
             play() {
-                let m = this, c = m._cfg;
-                if (Check.isEmpty(c.anims) || m.getState() == an.AnimState.RUNNING)
-                    return m;
-                m._sta = an.AnimState.RUNNING;
-                Promises.all(m._plans).always(() => {
+                let T = this, c = T._cfg;
+                if (E(c.anims) || T.getState() == an.AnimState.RUNNING)
+                    return T;
+                T._sta = an.AnimState.RUNNING;
+                Promises.all(T._plans).always(() => {
                     if (c.onFinished)
-                        c.onFinished.call(this);
+                        c.onFinished.call(T);
                 });
-                return m;
+                return T;
             }
             pause() {
-                let m = this, c = m._cfg;
-                if (m._sta != an.AnimState.RUNNING)
-                    return m;
-                m._sta = an.AnimState.PAUSED;
-                if (!Check.isEmpty(c.anims)) {
+                let T = this, c = T._cfg;
+                if (T._sta != an.AnimState.RUNNING)
+                    return T;
+                T._sta = an.AnimState.PAUSED;
+                if (!E(c.anims)) {
                     c.anims.forEach(a => {
                         a.pause();
                     });
                 }
-                return m;
+                return T;
             }
             stop() {
-                let m = this, c = m._cfg;
-                m._sta = an.AnimState.STOPPED;
-                if (!Check.isEmpty(c.anims)) {
+                let T = this, c = T._cfg;
+                T._sta = an.AnimState.STOPPED;
+                if (!E(c.anims)) {
                     c.anims.forEach(a => {
                         a.stop();
                     });
                 }
-                return m;
+                return T;
             }
         }
         an.ParallelAnim = ParallelAnim;
@@ -762,6 +766,7 @@ var JS;
         class SequentialAnimConfig extends an.AnimConfig {
         }
         an.SequentialAnimConfig = SequentialAnimConfig;
+        let E = Check.isEmpty;
         class SequentialAnim extends an.Anim {
             constructor(cfg) {
                 super(cfg);
@@ -773,7 +778,7 @@ var JS;
                     return this._cfg;
                 super.config(cfg);
                 let c = this._cfg, as = c.anims;
-                if (!Check.isEmpty(as)) {
+                if (!E(as)) {
                     as.forEach((a, i) => {
                         a.config(Jsons.union(c, a.config()));
                         if (i < as.length - 1) {
@@ -799,28 +804,28 @@ var JS;
                 return this;
             }
             play() {
-                let m = this, c = m._cfg;
-                if (Check.isEmpty(c.anims) || m.getState() == an.AnimState.RUNNING)
-                    return m;
-                c.anims[m._i].play();
-                return m;
+                let T = this, c = T._cfg;
+                if (E(c.anims) || T.getState() == an.AnimState.RUNNING)
+                    return T;
+                c.anims[T._i].play();
+                return T;
             }
             pause() {
-                let m = this, c = m._cfg;
-                if (m._sta != an.AnimState.RUNNING)
-                    return m;
-                m._sta = an.AnimState.PAUSED;
-                if (!Check.isEmpty(c.anims))
-                    c.anims[m._i].pause();
-                return m;
+                let T = this, c = T._cfg;
+                if (T._sta != an.AnimState.RUNNING)
+                    return T;
+                T._sta = an.AnimState.PAUSED;
+                if (!E(c.anims))
+                    c.anims[T._i].pause();
+                return T;
             }
             stop() {
-                let m = this, c = m._cfg;
-                m._sta = an.AnimState.STOPPED;
-                if (!Check.isEmpty(c.anims))
-                    c.anims[m._i].stop();
-                m._i = 0;
-                return m;
+                let T = this, c = T._cfg;
+                T._sta = an.AnimState.STOPPED;
+                if (!E(c.anims))
+                    c.anims[T._i].stop();
+                T._i = 0;
+                return T;
             }
         }
         an.SequentialAnim = SequentialAnim;

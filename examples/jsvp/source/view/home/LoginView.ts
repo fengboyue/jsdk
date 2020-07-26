@@ -51,7 +51,16 @@ module AppDemo {
                                 colorMode: ColorMode.primary,
                                 listeners: {
                                     click: () => {
-                                        Page.current<LoginPage>().login()
+                                        Page.currentPage<LoginPage>().login()
+                                    }
+                                }
+                            },
+                            'btnEvent': <ButtonConfig>{
+                                text: 'Fire App Event',
+                                colorMode: ColorMode.info,
+                                listeners: {
+                                    click: () => {
+                                        App.fireEvent('access', this.getWidget<TelInput>('phone').value())
                                     }
                                 }
                             }

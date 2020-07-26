@@ -13,6 +13,8 @@ module JS {
 
     export namespace fx {
 
+        let J = Jsons, Y = Types, E = Check.isEmpty;
+
         export enum SelectFaceMode {
             square = 'square',
             round = 'round',
@@ -155,7 +157,7 @@ module JS {
                 this._mainEl.on('change', function (e, data: string) {
                     if (data == '_jsfx') return;
                     let nv = <string[]>$(this).val();
-                    me._setValue(Check.isEmpty(nv) ? null : nv);
+                    me._setValue(E(nv) ? null : nv);
                 })
 
                 let evts = ['selected', 'unselected'];
@@ -184,8 +186,8 @@ module JS {
             private _initSelect2(): void {
                 let cfg = <SelectConfig>this._config,
                     dataQuery = cfg.dataQuery,
-                    url = dataQuery ? (Types.isString(dataQuery) ? <string>dataQuery : (<AjaxRequest>dataQuery).url) : null,
-                    jsonParams = dataQuery ? (Types.isString(dataQuery) ? null : (<AjaxRequest>dataQuery).data) : null,
+                    url = dataQuery ? (Y.isString(dataQuery) ? <string>dataQuery : (<AjaxRequest>dataQuery).url) : null,
+                    jsonParams = dataQuery ? (Y.isString(dataQuery) ? null : (<AjaxRequest>dataQuery).data) : null,
                     options: Select2Options = {
                         disabled: cfg.disabled,
                         allowClear: cfg.allowClear,
@@ -231,7 +233,7 @@ module JS {
                     delay: 500,// 延迟请求500毫秒
                     data: function () { return jsonParams ? jsonParams : {} },
                     processResults: (res: any, params) => {
-                        let data = <Array<any>>Jsons.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
+                        let data = <Array<any>>J.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
                         this.data(data);
                         return {
                             results: data// 后台返回的数据集
@@ -261,7 +263,7 @@ module JS {
 
             public select(i: number, silent?: boolean) {
                 let cfg = <SelectConfig>this._config;
-                if (i < 0 || Check.isEmpty(cfg.data) || i >= cfg.data.length) return;
+                if (i < 0 || E(cfg.data) || i >= cfg.data.length) return;
 
                 this.value('' + cfg.data[i].id, silent);
             }
@@ -309,23 +311,23 @@ module JS {
                 let cfg = <FormWidgetConfig<any>>this._config;
                 if (arguments.length == 0) return cfg.data;
 
-                let newData, newDataCopy, oldData = Jsons.clone(cfg.data);
+                let newData, newDataCopy, oldData = J.clone(cfg.data);
                 if (mode == 'append') {
-                    let tmp = <SelectOption[]>Jsons.clone(cfg.data) || [];
+                    let tmp = <SelectOption[]>J.clone(cfg.data) || [];
                     newData = tmp.add(<SelectOption[]>data);
-                    newDataCopy = Jsons.clone(newData);
+                    newDataCopy = J.clone(newData);
                 } else if (mode == 'remove') {
-                    let tmp = <SelectOption[]>Jsons.clone(cfg.data) || [];
+                    let tmp = <SelectOption[]>J.clone(cfg.data) || [];
                     (<Array<string | number>>data).forEach(id => {
                         tmp.remove(item => {
                             return item.id == id
                         })
                     })
                     newData = tmp;
-                    newDataCopy = Jsons.clone(newData);
+                    newDataCopy = J.clone(newData);
                 } else {
                     newData = data;
-                    newDataCopy = Jsons.clone(newData);
+                    newDataCopy = J.clone(newData);
                 }
 
                 if (!silent) this._fire('dataupdating', [newDataCopy, oldData]);
@@ -368,7 +370,7 @@ module JS {
                 if (!this._equalValues(v, <any>this._mainEl.val())) this._mainEl.val(v).trigger('change', '_jsfx');
             }
             protected _equalValues(newVal: string | string[], oldVal: string | string[]): boolean {
-                if (Check.isEmpty(oldVal) && Check.isEmpty(newVal)) return true;
+                if (E(oldVal) && E(newVal)) return true;
 
                 let cfg = <SelectConfig>this._config;
                 return cfg.multiple ? Arrays.equalToString(<string[]>oldVal, <string[]>newVal) : oldVal == newVal;
@@ -386,7 +388,7 @@ module JS {
                 if (arguments.length == 0) return super.value();
 
                 let cfg = <SelectConfig>this._config;
-                if((cfg.multiple && Types.isString(val))||(!cfg.multiple && Types.isArray(val))) throw new TypeError(`Wrong value type for select<${this.id}>!`);
+                if((cfg.multiple && Y.isString(val))||(!cfg.multiple && Y.isArray(val))) throw new TypeError(`Wrong value type for select<${this.id}>!`);
                 return super.value(val, silent)
             }
 

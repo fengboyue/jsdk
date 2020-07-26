@@ -47,10 +47,10 @@ module JS {
          * Model field class.
          */
         export class Field {
-            protected _config: FieldConfig;
+            protected _cfg: FieldConfig;
 
             constructor(config: FieldConfig) {
-                this._config = <FieldConfig>Jsons.union(<FieldConfig>{
+                this._cfg = <FieldConfig>Jsons.union(<FieldConfig>{
                     type: 'string',
                     isId: false,
                     nullable: true,
@@ -58,41 +58,48 @@ module JS {
                 }, config);
             }
 
-            public config(){
-                return this._config;
+            public config(): FieldConfig
+            public config(cfg: FieldConfig): this
+            public config(cfg?: FieldConfig): any {
+                let T = this;
+                if(cfg==void 0) return T._cfg;
+
+                T._cfg = <FieldConfig>Jsons.union(T._cfg, cfg);
+                return T
             }
 
             public name(): string {
-                return this._config.name
+                return this._cfg.name
             }
 
             public alias(): string {
-                let nameMapping = this._config.nameMapping;
-                if (!nameMapping) return this.name();
+                let mp = this._cfg.nameMapping;
+                if (!mp) return this.name();
 
-                return Types.isString(nameMapping) ? <string>nameMapping : <string>(<Function>nameMapping).call(this);
+                return Types.isString(mp) ? <string>mp : <string>(<Function>mp).call(this);
             }
 
             public isId(): boolean {
-                return this._config.isId
+                return this._cfg.isId
             }
 
-            public defaultValue(){
-                return this._config.defaultValue
+            public defaultValue() {
+                return this._cfg.defaultValue
             }
 
             public type(): 'string' | 'int' | 'float' | 'boolean' | 'date' | 'object' | 'array' {
-                return <any>this._config.type
+                return <any>this._cfg.type
             }
 
             public nullable(): boolean {
-                return this._config.nullable
+                return this._cfg.nullable
             }
 
             public set(val: any): any {
-                if(!this.nullable() && val == void 0) throw new TypeError(`This Field<${this.name()}> must be not null`)
-                let fn = this._config.setter, v = fn?fn.apply(this, [val]): val;
-                return v===undefined?this._config.defaultValue:v
+                let T = this;
+                if (!T.nullable() && val == void 0) throw new TypeError(`This Field<${T.name()}> must be not null`)
+                let fn = T._cfg.setter, v = fn ? fn.apply(T, [val]) : val;
+                return v === undefined ? T._cfg.defaultValue : v
             }
 
             /**
@@ -101,8 +108,8 @@ module JS {
             public compare(v1: any, v2: any): number {
                 let ret = 0;
 
-                if (this._config.comparable) {
-                    ret = this._config.comparable(v1, v2);
+                if (this._cfg.comparable) {
+                    ret = this._cfg.comparable(v1, v2);
                 } else {
                     ret = (v1 === v2) ? 0 : ((v1 < v2) ? -1 : 1);
                 }
@@ -128,7 +135,7 @@ module JS {
              * subclasses may override it to provide an implementation.
              */
             public validate(value: any, errors?: ValidateResult): boolean | string {
-                let cfg = this._config,
+                let cfg = this._cfg,
                     vts = cfg.validators,
                     rst, ret = '';
                 if (!vts) return true;
@@ -137,8 +144,8 @@ module JS {
                     const vSpec = vts[i];
                     rst = Validator.create(<any>vSpec.name, vSpec).validate(value);
                     if (rst !== true) {
-                        if (errors) errors.addError(cfg.name, rst===false?'':rst);
-                        ret += ret?('|'+rst):rst;
+                        if (errors) errors.addError(cfg.name, rst === false ? '' : rst);
+                        ret += ret ? ('|' + rst) : rst;
                     }
                 }
 

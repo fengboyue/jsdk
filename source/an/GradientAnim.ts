@@ -10,6 +10,8 @@ module JS {
 
     export namespace an {
 
+        let J = Jsons;
+
         export type GradientKeyFrame = {
             color?: HEX,
             backgroundColor?: HEX,
@@ -72,7 +74,7 @@ module JS {
 
             protected _convertFrame(f: GradientKeyFrame):JsonObject<RGBA>{
                 let json = {};
-                Jsons.forEach(f, (v,k)=>{
+                J.forEach(f, (v,k)=>{
                     json[k] = Colors.hex2rgba(v)
                 });
                 return json
@@ -80,9 +82,9 @@ module JS {
 
             protected _newFrame(from:JsonObject<RGBA>, to:JsonObject<RGBA>, t:number, d:number, e:EasingFunction):JsonObject<RGBA>{
                 let json = <JsonObject<RGBA>>{};
-                Jsons.forEach(from, (v, k) => {
+                J.forEach(from, (v, k) => {
                     json[k] = <any>{};
-                    Jsons.forEach(from[k], (vv,kk)=>{
+                    J.forEach(from[k], (vv,kk)=>{
                         json[k][kk] = this._newColor(t,d,from[k],to[k],kk,e,this._frame==void 0?null:this._frame[k])
                     })
                 })
@@ -91,14 +93,14 @@ module JS {
 
             protected _onUpdate(j: JsonObject<RGBA>) {
                 let el = this._el;
-                Jsons.forEach(j,(v,k)=>{
+                J.forEach(j,(v,k)=>{
                     el.style[k] = Colors.rgba2css(v)
                 })
             }
 
             protected _resetInitial(){
                 let el = this._el, c = this._cls;
-                Jsons.forEach(c, (v,k)=>{
+                J.forEach(c, (v,k)=>{
                     el.style[k] = v
                 })
             }

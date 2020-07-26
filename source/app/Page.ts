@@ -11,70 +11,61 @@
 
 module JS {
 
-    export namespace model {
+    export namespace app {
 
-        export type PageEvents = 'fullscreening' | 'fullscreened' | 'normalscreening' | 'normalscreened' |
-        'loading' | 'loaded' | 'unloading' | 'close';
+        export type PageEvents = 'fullscreening' | 'fullscreened' | 'normalscreening' | 'normalscreened' | 'leaving' | 'close';
 
         @klass('JS.app.Page')
-        export abstract class Page implements IComponent {
+        export abstract class Page implements IComponent{
+            initialize() {}
+            destroy() {}
 
-            /**
-             * @abstract
-             */
-            public initialize() { };
-            /**
-             * @abstract
-             */
-            public destroy() { };
-
-            /**
-             * @abstract
-             */
-            public abstract render();
+            public abstract enter();
 
             private static _bus = new EventBus();
 
-            public static fireEvent(e: PageEvents, args?: any[]) {
+            public static fireEvent(e: PageEvents|string, args?: any[]) {
                 this._bus.fire(e, args)
             }
-            public static onEvent<H=EventHandler<Page>>(e: string, handler: H) {
-                this._bus.on(e, handler);
+            public static onEvent(e: PageEvents|string, handler: EventHandler<Page>, once?:boolean) {
+                this._bus.on(e, handler, once);
             }
-            public static offEvent(e: PageEvents) {
+            public static offEvent(e: PageEvents|string) {
                 this._bus.off(e)
             }
 
             private static _page: Page;
 
-            public static current(page: Klass<Page>): void;
-            public static current<P extends Page>(): P;
-            public static current(page?: Klass<Page>): any {
-                if (arguments.length == 0) return this._page;
-
-                this._page = Components.get(page);
-                this._bus.context(this._page);
+            public static init(page: Klass<Page>) {
+                let T = this, p = Components.get(page);
+                T._page = p;
+                T._bus.context(T._page);
                 Bom.ready(() => {
-                    this._page.render();
+                    T._page.enter();
                 })
             }
 
-            public static view<V extends View>(view: Klass<V>): V {
-                return <V>Components.get(view);
+            public static currentPage<T extends Page>(): T {
+                return <T>this._page;
             }
 
-            public static uri() {
-                return new URI(window.location.href)
+            public static view<V extends View>(v: Klass<V>): V {
+                return <V>Components.get(v);
             }
 
-            public static load(url?: string) {
-                let u = url ? url : location.href
-                this.fireEvent('loading', [u]);
-                window.location.href = u;
-                this.fireEvent('loaded', [u]);
+            public static redirect(url:string, query?: string|JsonObject<string>) {
+                let T = this, p=T._page;
+                if (p) {
+                    T.fireEvent(<PageEvents>'leaving', [p]);
+                    Components.remove((<Object>p).className)
+                }
+                let uri = new URI(url);
+                if(query) Types.isString(query)?uri.queryString(<string>query):uri.queryObject(<JsonObject>query);
+                
+                location.href = uri.toString()
             }
 
-            public static open(url, target: 'blank' | 'parent' | 'self' = 'blank', specs?: {
+            public static open(url, specs?: {
                 width?: number,
                 height?: number,
                 top?: number,	//窗口距离屏幕上方的象素值
@@ -87,7 +78,7 @@ module JS {
                 titlebar?: boolean,	//是否显示标题栏.默认值是yes
                 toolbar?: boolean	//是否显示浏览器工具栏.默认值是yes
             }) {
-                let args = [url, target];
+                let args = [url, 'blank'];
                 if (specs) {
                     let spe = '';
                     Jsons.forEach(specs, (v, k) => {
@@ -100,26 +91,20 @@ module JS {
             }
 
             public static fullscreen(onoff: boolean) {
+                let T = this;
                 if (onoff) {
-                    this.fireEvent('fullscreening');
+                    T.fireEvent('fullscreening');
                     Bom.fullscreen();
-                    this.fireEvent('fullscreened');
+                    T.fireEvent('fullscreened');
                 } else {
-                    this.fireEvent('normalscreening');
+                    T.fireEvent('normalscreening');
                     Bom.normalscreen();
-                    this.fireEvent('normalscreened');
+                    T.fireEvent('normalscreened');
                 }
             }
         }
     }
 
 }
-import PageEvents = JS.model.PageEvents;
-import Page = JS.model.Page;
-
-window.on('load', () => {
-    Page.fireEvent('loaded', [window.location.href]);
-})
-window.on('beforeunload', () => {
-    Page.fireEvent('unloading', [window.location.href]);
-})
+import PageEvents = JS.app.PageEvents;
+import Page = JS.app.Page;

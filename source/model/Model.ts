@@ -14,6 +14,8 @@ module JS {
 
     export namespace model {
 
+        let E = Check.isEmpty, J = Jsons;
+        
         export interface Modelable<T extends Model> {
             on(event: ModelEvents, fn: EventHandler<this>): this;
             off(event?: ModelEvents): this;
@@ -96,14 +98,14 @@ module JS {
             public static DEFAULT_FIELDS: Array<FieldConfig | string> = [];
 
             constructor(cfg?: ModelConfig) {
-                cfg = Jsons.union(new ModelConfig(), cfg);
+                cfg = J.union(new ModelConfig(), cfg);
 
                 let defaultFields = (<any>(<Object>this).getClass().getKlass()).DEFAULT_FIELDS;
-                this._config = Types.isDefined(defaultFields) ? Jsons.union(cfg, { fields: defaultFields }) : cfg;
+                this._config = Types.isDefined(defaultFields) ? J.union(cfg, { fields: defaultFields }) : cfg;
                 this._addFields(this._config.fields);
 
                 let listeners = this._config.listeners;
-                if (listeners) Jsons.forEach(listeners, (v: (this: Model, ...args) => void, key: string) => {
+                if (listeners) J.forEach(listeners, (v: (this: Model, ...args) => void, key: string) => {
                     this.on(<any>key, v);
                 })
             }
@@ -116,14 +118,12 @@ module JS {
                 let tField: Field = null;
                 if (cfg.name in this._fields) {
                     tField = this._fields[cfg.name];
-                    let c = tField.config();
-                    c = <FieldConfig>Jsons.union(c, cfg);
+                    tField.config(cfg);
                 } else {
                     cfg.isId = cfg.isId || this._config.idProperty === cfg.name;
                     tField = new Field(cfg);
-                    this._fields[tField.name()] = tField;
                 }
-
+                this._fields[tField.name()] = tField;
                 if (tField.isId()) this._config.idProperty = cfg.name;
             }
 
@@ -185,7 +185,7 @@ module JS {
             }
 
             public clone(): this {
-                let model = Class.newInstance<Model>(this.className, Jsons.clone(this._config));
+                let model = Class.newInstance<Model>(this.className, J.clone(this._config));
                 model.setData(this.getData());
                 return <this>model;
             }
@@ -198,7 +198,7 @@ module JS {
                 this._check();
 
                 let me = this,
-                query = <AjaxRequest>Jsons.union(Ajax.toRequest(this._config.dataQuery),Ajax.toRequest(quy));
+                query = <AjaxRequest>J.union(Ajax.toRequest(this._config.dataQuery),Ajax.toRequest(quy));
 
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
@@ -220,18 +220,18 @@ module JS {
             public setData(data: JsonObject, silent?: boolean) {
                 this._check();
 
-                let oldData = Jsons.clone(this._data), newData = data;
+                let oldData = J.clone(this._data), newData = data;
                 if (!silent) this._fire('dataupdating', [newData, oldData]);
 
                 this._data = {};
                 if (newData) {
-                    if (Check.isEmpty(this._fields)) {
-                        Jsons.forEach(newData, (v: any, k: string) => {
+                    if (E(this._fields)) {
+                        J.forEach(newData, (v: any, k: string) => {
                             this._newField({ name: k });
                             this.set(k, v, true);
                         })
                     } else {
-                        Jsons.forEach(this._fields, (f: Field, name: string) => {
+                        J.forEach(this._fields, (f: Field, name: string) => {
                             this.set(name, newData[f.alias()], true);
                         })
                     }
@@ -286,7 +286,7 @@ module JS {
                 return this
             }
             public isEmpty(): boolean {
-                return Check.isEmpty(this._data);
+                return E(this._data);
             }
 
             protected _isD = false;
@@ -313,7 +313,7 @@ module JS {
                 if (!this._fields) return null;
 
                 let f: Field = null;
-                Jsons.some(this._fields, field => {
+                J.some(this._fields, field => {
                     let is = field.isId();
                     if (is) f = field;
                     return is
@@ -328,10 +328,10 @@ module JS {
             }
             public validate(result?: ValidateResult): string | boolean {
                 let vdata = this._data;
-                if (Check.isEmpty(vdata)) return true;
+                if (E(vdata)) return true;
 
                 let rst = result || new ValidateResult(), str = '';
-                Jsons.forEach(vdata, (v: any, k: string) => {
+                J.forEach(vdata, (v: any, k: string) => {
                     let field = this.getField(k);
                     if (field) {
                         let ret = this.validateField(field.name(), v, rst)

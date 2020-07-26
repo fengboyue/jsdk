@@ -6,6 +6,8 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
+/// <reference path="Check.ts" /> 
+
 /**
  * Add some helpful methods for Array.prototype
  */
@@ -26,18 +28,19 @@ interface Array<T> {
     remove(find:(item: T, i: number, array: Array<T>)=>boolean):boolean;
 }
 (function () {
-    var $A = <any>Array.prototype;
+    var AP = <any>Array.prototype;
 
-    $A.add = function (obj: any, from?:number) { 
-        if(obj == void 0) return this;
+    AP.add = function (obj: any, from?:number) { 
+        let m =this;
+        if(obj == void 0) return m;
 
         let a = obj instanceof Array?<Array<any>>obj:[obj], 
-        i = from == void 0?this.length:(from < 0 ? 0 : from);
-        Array.prototype.splice.apply(this, [i, 0].concat(a));
-        return this
+        i = from == void 0?m.length:(from < 0 ? 0 : from);
+        AP.splice.apply(m, [i, 0].concat(a));
+        return m
     };
 
-    $A.remove = function (this: Array<any>, f: any) { 
+    AP.remove = function (this: Array<any>, f: any) { 
         let i = typeof f === 'number'?f:this.findIndex((<any>f))
         if(i<0 || i>=this.length) return false; 
         this.splice(i,1);
@@ -50,6 +53,7 @@ module JS {
 
     export namespace util {
 
+        let E = Check.isEmpty, AS = Array.prototype.slice;
         /**
          * Array Helper<br>
          * 数组工具类
@@ -59,7 +63,7 @@ module JS {
              * Convert an array-like object to a true array.
              */
             public static newArray(a: ArrayLike<any>, from?:number) {
-                return a == void 0?[]:Array.prototype.slice.apply(a, [from==void 0?0:from]);
+                return a == void 0?[]:AS.apply(a, [from==void 0?0:from]);
             }
 
             /**
@@ -88,7 +92,7 @@ module JS {
             public static equal<T, K>(a1: Array<T>, a2: Array<K>, equal?: (item1: T, item2: K, index: number) => boolean): boolean {
                 if (<Array<any>>a1===a2) return true;
 
-                let y1 = Check.isEmpty(a1), y2 = Check.isEmpty(a2);
+                let y1 = E(a1), y2 = E(a2);
                 if (y1 && y2) return true;
                 if (y1 !== y2) return false;
                 
@@ -121,7 +125,7 @@ module JS {
              * </pre>
              */
             public static same(a1: Array<any>, a2: Array<any>): boolean {
-                if (a1===a2 || (Check.isEmpty(a1) && Check.isEmpty(a2))) return true;
+                if (a1===a2 || (E(a1) && E(a2))) return true;
                 if (a1.length != a2.length) return false;
 
                 let na = this.newArray(a2);
@@ -138,7 +142,7 @@ module JS {
              * Slice an array-like object.
              */
             public static slice(args: ArrayLike<any>, fromIndex?: number, endIndex?:number): Array<any> {
-                return <Array<any>>Array.prototype.slice.apply(args, [fromIndex || 0, endIndex||args.length])
+                return <Array<any>>AS.apply(args, [fromIndex || 0, endIndex||args.length])
             }
         }
     }

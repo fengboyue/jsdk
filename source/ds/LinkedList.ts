@@ -12,6 +12,8 @@ module JS {
 
     export namespace ds {
 
+        let J = Jsons;
+
         type LinkedNode<T> = {
             data: T,
             next: LinkedNode<T>,
@@ -63,7 +65,7 @@ module JS {
                 if (this._s > 0) {
                     let node = this._hd;
                     while (node) {
-                        list.add(Jsons.clone(node.data));
+                        list.add(J.clone(node.data));
                         node = node.next;
                     }
                 }
@@ -155,7 +157,7 @@ module JS {
             }
 
             private _addLast(d: T) {
-                let node: LinkedNode<T> = { data: Jsons.clone(d), prev: null, next: null };
+                let node: LinkedNode<T> = { data: J.clone(d), prev: null, next: null };
                 if (this._tl) {
                     node.prev = this._tl;
                     this._tl.next = node;
@@ -165,7 +167,7 @@ module JS {
                 this._s += 1;
             }
             private _addFirst(d: T) {
-                let node: LinkedNode<T> = { data: Jsons.clone(d), prev: null, next: null };
+                let node: LinkedNode<T> = { data: J.clone(d), prev: null, next: null };
                 if (this._hd) {
                     node.next = this._hd;
                     this._hd.prev = node;
@@ -196,7 +198,7 @@ module JS {
                 let nextNode = this._findAt(i);
                 if (!nextNode) return;
 
-                let prevNode = nextNode.prev, newNode = { data: Jsons.clone(a), next: nextNode, prev: prevNode };
+                let prevNode = nextNode.prev, newNode = { data: J.clone(a), next: nextNode, prev: prevNode };
                 prevNode.next = newNode;
                 nextNode.prev = newNode;
                 this._s += 1;

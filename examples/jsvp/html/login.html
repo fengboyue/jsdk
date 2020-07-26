@@ -39,6 +39,11 @@
                     <div id="btnLogin" jsfx-alias="button"></div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div id="btnEvent" jsfx-alias="button"></div>
+                </div>
+            </div>
 
         </div>
 
@@ -56,7 +61,7 @@
             '../source/view/home/LoginView.js',
             '../source/page/home/LoginPage.js'
         ]).then(()=>{
-            Page.current(LoginPage);
+            Page.init(LoginPage);
         })
     </script>
     

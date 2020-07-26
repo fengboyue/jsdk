@@ -28,7 +28,6 @@ Annotation|Module|Scope
 @after|system|method
 @around|system|method
 @throws|system|method
-@aop|system|method
 @component|jsvp|class
 @inject|jsvp|field
 @widget|jsfx|class

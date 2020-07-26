@@ -9,17 +9,17 @@ module JS {
 
             public test1() {
                 Assert.equalError(TypeError, ()=>{
-                    throw new Errors.TypeError()
+                    throw new TypeError()
                 });
             }
             public test2() {
                 Assert.equalError(TypeError, ()=>{
-                    throw new Errors.TypeError('xxx')
+                    throw new TypeError('xxx')
                 });
             }
             public test3() {
                 Assert.equalError(JSError, ()=>{
-                    throw new Errors.JSError('xxx', new TypeError())
+                    throw new JSError('xxx', new TypeError())
                 });
             }
         }

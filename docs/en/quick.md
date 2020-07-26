@@ -52,7 +52,21 @@ You can launch a http server on your PC to visit these resources quickly.
 JSDK is licensed under the MIT license since version 2.0.
 * *Other open source libraries include in JSDK's releases are licensed under their stated licenses*
 
-## Changelogs
+## Updates
+
+### v2.3.1 - 2020/7/26
+[Bugfix] 
+- fix a bug of EventBus's _call method caused by the last refactoring.
+- fix a bug after Bom.ready() has been called many times.
+
+[Removed] 
+- remove redundancy @aop annotation.
+
+[Changed] 
+- refactor some methods of Page class.
+- refactor App Event.
+- minify size of source code.
+- minify Reflect.js.
 
 ### v2.3.0 - 2020/7/24
 [Added] 

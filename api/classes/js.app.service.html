@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Service | JSDK 2.2.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.2.0 API">
+	<title>Service | JSDK 2.3.1 API</title>
+	<meta name="description" content="Documentation for JSDK 2.3.1 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.2.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.3.1 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -59,10 +59,10 @@
 					<a href="../modules/js.html">JS</a>
 				</li>
 				<li>
-					<a href="../modules/js.model.html">model</a>
+					<a href="../modules/js.app.html">app</a>
 				</li>
 				<li>
-					<a href="js.model.service.html">Service</a>
+					<a href="js.app.service.html">Service</a>
 				</li>
 			</ul>
 			<h1>Class Service</h1>
@@ -93,17 +93,17 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="js.model.service.html#_proxy" class="tsd-kind-icon">_proxy</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="js.model.service.html#default_proxy" class="tsd-kind-icon">DEFAULT_<wbr>PROXY</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="js.app.service.html#_proxy" class="tsd-kind-icon">_proxy</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="js.app.service.html#default_proxy" class="tsd-kind-icon">DEFAULT_<wbr>PROXY</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="js.model.service.html#call" class="tsd-kind-icon">call</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.model.service.html#destroy" class="tsd-kind-icon">destroy</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.model.service.html#initialize" class="tsd-kind-icon">initialize</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.model.service.html#proxy" class="tsd-kind-icon">proxy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="js.app.service.html#call" class="tsd-kind-icon">call</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.app.service.html#destroy" class="tsd-kind-icon">destroy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.app.service.html#initialize" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.app.service.html#proxy" class="tsd-kind-icon">proxy</a></li>
 							</ul>
 						</section>
 					</div>
@@ -132,7 +132,7 @@
 					<a name="call" class="tsd-anchor"></a>
 					<h3>call</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">call&lt;T&gt;<span class="tsd-signature-symbol">(</span>api<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.model.api.html" class="tsd-signature-type">Api</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, params<span class="tsd-signature-symbol">?: </span><a href="../modules/js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/promise.html" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">call&lt;T&gt;<span class="tsd-signature-symbol">(</span>api<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.app.api.html" class="tsd-signature-type">Api</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, params<span class="tsd-signature-symbol">?: </span><a href="../modules/js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/promise.html" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -152,7 +152,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>api: <a href="../interfaces/js.model.api.html" class="tsd-signature-type">Api</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>api: <a href="../interfaces/js.app.api.html" class="tsd-signature-type">Api</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> params: <a href="../modules/js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a></h5>
@@ -244,6 +244,9 @@
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.an.html">an</a>
 							</li>
+							<li class="current tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.app.html">app</a>
+							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.ds.html">ds</a>
 							</li>
@@ -262,13 +265,8 @@
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.media.html">media</a>
 							</li>
-							<li class="current tsd-kind-namespace tsd-parent-kind-namespace">
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.model.html">model</a>
-								<ul>
-									<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-										<a href="../modules/js.model.validator.html">validator</a>
-									</li>
-								</ul>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.reflect.html">reflect</a>
@@ -295,133 +293,49 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.ajaxproxy.html" class="tsd-kind-icon">Ajax<wbr>Proxy</a>
+						<a href="js.app.app.html" class="tsd-kind-icon">App</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.app.html" class="tsd-kind-icon">App</a>
+						<a href="js.app.appevent.html" class="tsd-kind-icon">App<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.appevent.html" class="tsd-kind-icon">App<wbr>Event</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.field.html" class="tsd-kind-icon">Field</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.jsonproxy.html" class="tsd-kind-icon">Json<wbr>Proxy</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.listmodel.html" class="tsd-kind-icon">List<wbr>Model</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.listmodelconfig.html" class="tsd-kind-icon">List<wbr>Model<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.model.html" class="tsd-kind-icon">Model</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.modelconfig.html" class="tsd-kind-icon">Model<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.page.html" class="tsd-kind-icon">Page</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.pagemodel.html" class="tsd-kind-icon">Page<wbr>Model</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.pagemodelconfig.html" class="tsd-kind-icon">Page<wbr>Model<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="js.model.resultset.html" class="tsd-kind-icon">Result<wbr>Set</a>
+						<a href="js.app.page.html" class="tsd-kind-icon">Page</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.service.html" class="tsd-kind-icon">Service</a>
+						<a href="js.app.service.html" class="tsd-kind-icon">Service</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-								<a href="js.model.service.html#_proxy" class="tsd-kind-icon">_proxy</a>
+								<a href="js.app.service.html#_proxy" class="tsd-kind-icon">_proxy</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="js.model.service.html#default_proxy" class="tsd-kind-icon">DEFAULT_<wbr>PROXY</a>
+								<a href="js.app.service.html#default_proxy" class="tsd-kind-icon">DEFAULT_<wbr>PROXY</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-								<a href="js.model.service.html#call" class="tsd-kind-icon">call</a>
+								<a href="js.app.service.html#call" class="tsd-kind-icon">call</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="js.model.service.html#destroy" class="tsd-kind-icon">destroy</a>
+								<a href="js.app.service.html#destroy" class="tsd-kind-icon">destroy</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="js.model.service.html#initialize" class="tsd-kind-icon">initialize</a>
+								<a href="js.app.service.html#initialize" class="tsd-kind-icon">initialize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="js.model.service.html#proxy" class="tsd-kind-icon">proxy</a>
+								<a href="js.app.service.html#proxy" class="tsd-kind-icon">proxy</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="../interfaces/js.model.api.html" class="tsd-kind-icon">Api</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.customvalidatorsetting.html" class="tsd-kind-icon">Custom<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.fieldconfig.html" class="tsd-kind-icon">Field<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.formatvalidatorsetting.html" class="tsd-kind-icon">Format<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.lengthvalidatorsetting.html" class="tsd-kind-icon">Length<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="../interfaces/js.model.listmodellisteners.html" class="tsd-kind-icon">List<wbr>Model<wbr>Listeners</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="../interfaces/js.model.modelable.html" class="tsd-kind-icon">Modelable</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="../interfaces/js.model.pagemodellisteners.html" class="tsd-kind-icon">Page<wbr>Model<wbr>Listeners</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.pagemodelparametersmapping.html" class="tsd-kind-icon">Page<wbr>Model<wbr>Parameters<wbr>Mapping</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.pagequery.html" class="tsd-kind-icon">Page<wbr>Query</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.rangevalidatorsetting.html" class="tsd-kind-icon">Range<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.requiredvalidatorsetting.html" class="tsd-kind-icon">Required<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.resultsetformat.html" class="tsd-kind-icon">Result<wbr>Set<wbr>Format</a>
+						<a href="../interfaces/js.app.api.html" class="tsd-kind-icon">Api</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#appsettings" class="tsd-kind-icon">App<wbr>Settings</a>
+						<a href="../modules/js.app.html#appconfig" class="tsd-kind-icon">App<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#listmodelevents" class="tsd-kind-icon">List<wbr>Model<wbr>Events</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#modelevents" class="tsd-kind-icon">Model<wbr>Events</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="../modules/js.model.html#modellisteners" class="tsd-kind-icon">Model<wbr>Listeners</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#pageevents" class="tsd-kind-icon">Page<wbr>Events</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#pagemodelevents" class="tsd-kind-icon">Page<wbr>Model<wbr>Events</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#sorter" class="tsd-kind-icon">Sorter</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#validatorsetting" class="tsd-kind-icon">Validator<wbr>Setting</a>
+						<a href="../modules/js.app.html#pageevents" class="tsd-kind-icon">Page<wbr>Events</a>
 					</li>
 				</ul>
 			</nav>

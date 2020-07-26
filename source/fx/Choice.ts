@@ -11,6 +11,8 @@ module JS {
 
     export namespace fx {
 
+        let A = Arrays;
+
         export interface ChoiceOption {
             id: string | number
             text?: string
@@ -45,7 +47,7 @@ module JS {
                 let cfg = (<ChoiceConfig<any>>this._config), data = cfg.data;
                 if (!data) return '';
 
-                let val = Arrays.toArray<string>(this.value()),
+                let val = A.toArray<string>(this.value()),
                     html = '',
                     textColor = cfg.textColorMode ? 'text-' + cfg.textColorMode : '',
                     mode1 = this._hasFaceMode('round') ? 'round' : 'square',
@@ -85,9 +87,9 @@ module JS {
             }
             protected _renderValue(): void {
                 let cVal = this.value(),
-                    v = Arrays.toArray(cVal),
-                    val = Arrays.toArray(this._getDomValue());
-                if (!Arrays.same(val, v)) {
+                    v = A.toArray(cVal),
+                    val = A.toArray(this._getDomValue());
+                if (!A.same(val, v)) {
                     this._setDomValue(cVal);
                 }
             }

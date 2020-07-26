@@ -50,7 +50,7 @@ interface Date {
      * @return {Date}    this
      */
     setNowTime(): Date;
-    
+
     /**
      * Compares this instance to another Date object and returns true if they are equal.  
      * @param date     Date object to compare. If no date to compare, new Date() [now] is used.
@@ -223,8 +223,8 @@ module JS {
              * Gets the last day of the month based on the orient day.
              * @param d  The orient day
              */
-            public static getLastDayOfMonth (d: Date) { 
-                return d.clone().set({ day: Dates.getDaysOfMonth(d.getMonth(), d.getFullYear()) }) 
+            public static getLastDayOfMonth(d: Date) {
+                return d.clone().set({ day: Dates.getDaysOfMonth(d.getMonth(), d.getFullYear()) })
             }
 
             /**
@@ -232,7 +232,7 @@ module JS {
              * @param d  The orient day
              * @param dayOfWeek  0 is Sunday; Defaults is 1.
              */
-            public static getDayOfWeek (d: Date, dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6) {
+            public static getDayOfWeek(d: Date, dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6) {
                 let d2: number = dayOfWeek != void 0 ? dayOfWeek : 1, d1: number = d.getDay();
                 if (d2 == 0) d2 = 7; if (d1 == 0) d1 = 7;
                 return d.clone().add((d2 - d1) % 7, 'd')
@@ -244,96 +244,101 @@ module JS {
 import Dates = JS.util.Dates;
 
 (function () {
-    var $D = Date, $P = $D.prototype, pad = function (s: any, l?: number) {
-        new $D()
+    var D = Date, $P = D.prototype, pad = function (s: any, l?: number) {
+        new D()
         if (!l) { l = 2; }
         return ("000" + s).slice(l * -1);
     };
 
     $P.getWeek = function () {
-        let date0 = new $D(this.getFullYear(), 0, 1),
+        let date0 = new D(this.getFullYear(), 0, 1),
             diff = Math.round((this.valueOf() - date0.valueOf()) / 86400000);
         return Math.ceil((diff + ((date0.getDay() + 1) - 1)) / 7)
     }
 
     $P.setWeek = function (week: number, dayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6) {
         let dw = Types.isDefined(dayOfWeek) ? dayOfWeek : 1;
-        return this.setTime(Dates.getDayOfWeek(this,dw).add(week - this.getWeek(), 'w').getTime());
+        return this.setTime(Dates.getDayOfWeek(this, dw).add(week - this.getWeek(), 'w').getTime());
     }
-    $P.clone = function () { return new $D(this.getTime()) }
+    $P.clone = function () { return new D(this.getTime()) }
     $P.setZeroTime = function () {
-        this.setHours(0);
-        this.setMinutes(0);
-        this.setSeconds(0);
-        this.setMilliseconds(0); return this
+        let T = this;
+        T.setHours(0);
+        T.setMinutes(0);
+        T.setSeconds(0);
+        T.setMilliseconds(0);
+        return T
     }
     $P.setLastTime = function () {
-        this.setHours(23);
-        this.setMinutes(59);
-        this.setSeconds(59);
-        this.setMilliseconds(999); return this
+        let T = this;
+        T.setHours(23);
+        T.setMinutes(59);
+        T.setSeconds(59);
+        T.setMilliseconds(999);
+        return T
     }
     $P.setNowTime = function () {
-        var n = new $D();
-        this.setHours(n.getHours());
-        this.setMinutes(n.getMinutes());
-        this.setSeconds(n.getSeconds());
-        this.setMilliseconds(n.getMilliseconds());
-        return this
+        let T = this, n = new D();
+        T.setHours(n.getHours());
+        T.setMinutes(n.getMinutes());
+        T.setSeconds(n.getSeconds());
+        T.setMilliseconds(n.getMilliseconds());
+        return T
     }
-    $P.equals = function (d: Date, p = 'ms') { 
-        let m = <Date>this;
+    $P.equals = function (d: Date, p = 'ms') {
+        let T = <Date>this;
 
-        if(p=='ms') return m.diff(d)==0;
-        if(p=='s') return m.getSeconds()==d.getSeconds();
-        if(p=='m') return m.getMinutes()==d.getMinutes();
-        if(p=='h') return m.getHours()==d.getHours();
-        
-        if(p=='y') return m.getFullYear()==d.getFullYear();
-        if(p=='M') return m.getMonth()==d.getMonth();
-        if(p=='d') return m.getFullYear()==d.getFullYear() && m.getMonth()==d.getMonth() && m.getDate()==d.getDate();
-        if(p=='w') return m.getWeek()==d.getWeek();
-        
+        if (p == 'ms') return T.diff(d) == 0;
+        if (p == 's') return T.getSeconds() == d.getSeconds();
+        if (p == 'm') return T.getMinutes() == d.getMinutes();
+        if (p == 'h') return T.getHours() == d.getHours();
+
+        if (p == 'y') return T.getFullYear() == d.getFullYear();
+        if (p == 'M') return T.getMonth() == d.getMonth();
+        if (p == 'd') return T.getFullYear() == d.getFullYear() && T.getMonth() == d.getMonth() && T.getDate() == d.getDate();
+        if (p == 'w') return T.getWeek() == d.getWeek();
+
         return false
     }
     $P.between = function (start: Date, end: Date) { return this.diff(start) >= 0 && this.diff(end) <= 0 }
-    $P.isAfter = function (this:Date, d: Date) { return this.diff(d) > 0 }
-    $P.isBefore = function (this:Date, d: Date) { return this.diff(d) < 0 }
-    $P.isToday = function (this:Date) { return this.equals(new $D(), 'd') }
+    $P.isAfter = function (this: Date, d: Date) { return this.diff(d) > 0 }
+    $P.isBefore = function (this: Date, d: Date) { return this.diff(d) < 0 }
+    $P.isToday = function (this: Date) { return this.equals(new D(), 'd') }
     $P.add = function (v: number, type: 'ms' | 's' | 'm' | 'h' | 'd' | 'w' | 'M' | 'y'): Date {
-        if (v == 0) return this;
+        let T = this;
+        if (v == 0) return T;
         switch (type) {
             case 'ms': {
-                this.setMilliseconds(this.getMilliseconds() + v);
-                return this;
+                T.setMilliseconds(T.getMilliseconds() + v);
+                return T;
             }
             case 's': {
-                return this.add(v * 1000, 'ms');
+                return T.add(v * 1000, 'ms');
             }
             case 'm': {
-                return this.add(v * 60000, 'ms');
+                return T.add(v * 60000, 'ms');
             }
             case 'h': {
-                return this.add(v * 3600000, 'ms');
+                return T.add(v * 3600000, 'ms');
             }
             case 'd': {
-                this.setDate(this.getDate() + v); return this;
+                T.setDate(T.getDate() + v); return T;
             }
             case 'w': {
-                return this.add(v * 7, 'd');
+                return T.add(v * 7, 'd');
             }
             case 'M': {
-                var n = this.getDate();
-                this.setDate(1);
-                this.setMonth(this.getMonth() + v);
-                this.setDate(Math.min(n, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear())));
-                return this;
+                var n = T.getDate();
+                T.setDate(1);
+                T.setMonth(T.getMonth() + v);
+                T.setDate(Math.min(n, Dates.getDaysOfMonth(T.getMonth(), T.getFullYear())));
+                return T;
             }
             case 'y': {
-                return this.add(v * 12, 'M');
+                return T.add(v * 12, 'M');
             }
         }
-        return this;
+        return T;
     }
     $P.setTimezoneOffset = function (offset: number) {
         var here = this.getTimezoneOffset(), there = Number(offset) * -6 / 10; return this.add(there - here, 'm');
@@ -367,72 +372,73 @@ import Dates = JS.util.Dates;
             year?: number,
             timezoneOffset?: number
         }) {
-        if (vt(config.millisecond, 0, 999)) { this.add(config.millisecond - this.getMilliseconds(), 'ms'); }
-        if (vt(config.second, 0, 59)) { this.add(config.second - this.getSeconds(), 's'); }
-        if (vt(config.minute, 0, 59)) { this.add(config.minute - this.getMinutes(), 'm'); }
-        if (vt(config.hour, 0, 23)) { this.add(config.hour - this.getHours(), 'h'); }
-        if (vt(config.day, 1, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear()))) { this.add(config.day - this.getDate(), 'd'); }
-        if (vt(config.week, 0, 53)) { this.setWeek(config.week); }
-        if (vt(config.month, 0, 11)) { this.add(config.month - this.getMonth(), 'M'); }
-        if (vt(config.year, 0, 9999)) { this.add(config.year - this.getFullYear(), 'y'); }
-        if (config.timezoneOffset) { this.setTimezoneOffset(config.timezoneOffset); }
-        return this;
+        let T = this;
+        if (vt(config.millisecond, 0, 999)) { T.add(config.millisecond - T.getMilliseconds(), 'ms') }
+        if (vt(config.second, 0, 59)) { T.add(config.second - T.getSeconds(), 's') }
+        if (vt(config.minute, 0, 59)) { T.add(config.minute - T.getMinutes(), 'm') }
+        if (vt(config.hour, 0, 23)) { T.add(config.hour - T.getHours(), 'h') }
+        if (vt(config.day, 1, Dates.getDaysOfMonth(T.getMonth(), T.getFullYear()))) { T.add(config.day - T.getDate(), 'd') }
+        if (vt(config.week, 0, 53)) { T.setWeek(config.week) }
+        if (vt(config.month, 0, 11)) { T.add(config.month - T.getMonth(), 'M') }
+        if (vt(config.year, 0, 9999)) { T.add(config.year - T.getFullYear(), 'y') }
+        if (config.timezoneOffset) { T.setTimezoneOffset(config.timezoneOffset) }
+        return T;
     }
 
     $P.diff = function (date?: Date): number {
-        return this - (<any>date || new $D());
+        return this - (<any>date || new D());
     }
 
     $P.format = function (format?: string, locale?: Locale) {
-        let x = this, fmt = format || 'YYYY-MM-DD HH:mm:ss',
+        let T = this, fmt = format || 'YYYY-MM-DD HH:mm:ss',
             bundle = new Bundle(Dates.I18N_RESOURCE, locale);
         return fmt.replace(/YYYY|YY|MMMM|MMM|MM|M|DD|D|hh|h|HH|H|mm|m|ss|s|dddd|ddd|A/g,
             function (m) {
                 switch (m) {
                     case "YYYY":
-                        return pad(x.getFullYear(), 4);
+                        return pad(T.getFullYear(), 4);
                     case "YY":
-                        return pad(x.getFullYear());
+                        return pad(T.getFullYear());
                     case "MMMM":
-                        return bundle.get('MONTH_NAMES')[x.getMonth()];
+                        return bundle.get('MONTH_NAMES')[T.getMonth()];
                     case "MMM":
-                        return bundle.get('MONTH_SHORT_NAMES')[x.getMonth()];
+                        return bundle.get('MONTH_SHORT_NAMES')[T.getMonth()];
                     case "MM":
-                        return pad((x.getMonth() + 1));
+                        return pad((T.getMonth() + 1));
                     case "M":
-                        return x.getMonth() + 1;
+                        return T.getMonth() + 1;
                     case "DD":
-                        return pad(x.getDate());
+                        return pad(T.getDate());
                     case "D":
-                        return x.getDate();
+                        return T.getDate();
                     case "hh":
                         {
-                            let h = x.getHours();
+                            let h = T.getHours();
                             return pad(h < 13 ? (h === 0 ? 12 : h) : (h - 12));
                         }
                     case "h":
                         {
-                            let h = x.getHours();
+                            let h = T.getHours();
                             return h < 13 ? (h === 0 ? 12 : h) : (h - 12);
                         }
                     case "HH":
-                        return pad(x.getHours());
+                        return pad(T.getHours());
                     case "H":
-                        return x.getHours();
+                        return T.getHours();
                     case "mm":
-                        return pad(x.getMinutes());
+                        return pad(T.getMinutes());
                     case "m":
-                        return x.getMinutes();
+                        return T.getMinutes();
                     case "ss":
-                        return pad(x.getSeconds());
+                        return pad(T.getSeconds());
                     case "s":
-                        return x.getSeconds();
+                        return T.getSeconds();
                     case "dddd":
-                        return bundle.get('WEEK_DAY_NAMES')[x.getDay()];
+                        return bundle.get('WEEK_DAY_NAMES')[T.getDay()];
                     case "ddd":
-                        return bundle.get('WEEK_DAY_SHORT_NAMES')[x.getDay()];
+                        return bundle.get('WEEK_DAY_SHORT_NAMES')[T.getDay()];
                     case "A":
-                        return bundle.get(x.getHours() < 12 ? 'AM' : 'PM');
+                        return bundle.get(T.getHours() < 12 ? 'AM' : 'PM');
                     default:
                         return m;
                 }

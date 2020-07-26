@@ -101,7 +101,7 @@ In real development, you don't have to load the entire <code>jsdk.js</code>, but
 ### JSDK Modules List
 Module Name|Remarks|Includes|Depends|Min Sizes
 ---|---|---|---|---
-system|core module|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||102kb
+system|core module|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||99kb
 jsds|data structures|JS.ds.* |system |6kb
 jsmedia|audio+video|JS.media.* |system |4kb
 jsinput|key&mouse events|JS.input.* |jsds |7kb
@@ -111,7 +111,7 @@ jsan|animations|JS.an.* |jsui |16kb
 jsfx|widgets |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
 jsvp|app framework|JS.store.*<br>JS.app.* |jsmv|8kb
 jsunit|unit-test framework|JS.unit.* |system|js: 9kb<br>css: 669b
-jsdk|all above modules|JS.* ||js: 279kb
+jsdk|all above modules|JS.* ||js: 276kb
 
 ### Custom JSDK Module 
 When you need smaller module files, you can modify the build scripts in <code>build/</code> directory. 

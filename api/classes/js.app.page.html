@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Page | JSDK 2.2.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.2.0 API">
+	<title>Page | JSDK 2.3.1 API</title>
+	<meta name="description" content="Documentation for JSDK 2.3.1 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.2.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.3.1 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -59,10 +59,10 @@
 					<a href="../modules/js.html">JS</a>
 				</li>
 				<li>
-					<a href="../modules/js.model.html">model</a>
+					<a href="../modules/js.app.html">app</a>
 				</li>
 				<li>
-					<a href="js.model.page.html">Page</a>
+					<a href="js.app.page.html">Page</a>
 				</li>
 			</ul>
 			<h1>Class Page</h1>
@@ -93,18 +93,18 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.model.page.html#destroy" class="tsd-kind-icon">destroy</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.model.page.html#initialize" class="tsd-kind-icon">initialize</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.model.page.html#render" class="tsd-kind-icon">render</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="js.model.page.html#current" class="tsd-kind-icon">current</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.model.page.html#fireevent" class="tsd-kind-icon">fire<wbr>Event</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.model.page.html#fullscreen" class="tsd-kind-icon">fullscreen</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.model.page.html#load" class="tsd-kind-icon">load</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.model.page.html#offevent" class="tsd-kind-icon">off<wbr>Event</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="js.model.page.html#onevent" class="tsd-kind-icon">on<wbr>Event</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.model.page.html#open" class="tsd-kind-icon">open</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.model.page.html#uri" class="tsd-kind-icon">uri</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="js.model.page.html#view" class="tsd-kind-icon">view</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.app.page.html#destroy" class="tsd-kind-icon">destroy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.app.page.html#enter" class="tsd-kind-icon">enter</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.app.page.html#initialize" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="js.app.page.html#currentpage" class="tsd-kind-icon">current<wbr>Page</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.app.page.html#fireevent" class="tsd-kind-icon">fire<wbr>Event</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.app.page.html#fullscreen" class="tsd-kind-icon">fullscreen</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.app.page.html#init" class="tsd-kind-icon">init</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.app.page.html#offevent" class="tsd-kind-icon">off<wbr>Event</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.app.page.html#onevent" class="tsd-kind-icon">on<wbr>Event</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.app.page.html#open" class="tsd-kind-icon">open</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.app.page.html#redirect" class="tsd-kind-icon">redirect</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="js.app.page.html#view" class="tsd-kind-icon">view</a></li>
 							</ul>
 						</section>
 					</div>
@@ -123,13 +123,21 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/js.ioc.icomponent.html">IComponent</a>.<a href="../interfaces/js.ioc.icomponent.html#destroy">destroy</a></p>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<dl class="tsd-comment-tags">
-									<dt>abstract</dt>
-									<dd></dd>
-								</dl>
-							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="enter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> enter</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">enter<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -144,65 +152,27 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/js.ioc.icomponent.html">IComponent</a>.<a href="../interfaces/js.ioc.icomponent.html#initialize">initialize</a></p>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<dl class="tsd-comment-tags">
-									<dt>abstract</dt>
-									<dd></dd>
-								</dl>
-							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="render" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> render</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">render<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<dl class="tsd-comment-tags">
-									<dt>abstract</dt>
-									<dd></dd>
-								</dl>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
-					<a name="current" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> current</h3>
+					<a name="currentpage" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> current<wbr>Page</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">current<span class="tsd-signature-symbol">(</span>page<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html" class="tsd-signature-type">Klass</a><span class="tsd-signature-symbol">&lt;</span><a href="js.model.page.html" class="tsd-signature-type">Page</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-						<li class="tsd-signature tsd-kind-icon">current&lt;P&gt;<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">P</span></li>
+						<li class="tsd-signature tsd-kind-icon">current<wbr>Page&lt;T&gt;<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>page: <a href="../interfaces/js.lang.klass.html" class="tsd-signature-type">Klass</a><span class="tsd-signature-symbol">&lt;</span><a href="js.model.page.html" class="tsd-signature-type">Page</a><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>P<span class="tsd-signature-symbol">: </span><a href="js.model.page.html" class="tsd-signature-type">Page</a></h4>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="js.app.page.html" class="tsd-signature-type">Page</a></h4>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">P</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -210,7 +180,7 @@
 					<a name="fireevent" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> fire<wbr>Event</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">fire<wbr>Event<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="../modules/js.model.html#pageevents" class="tsd-signature-type">PageEvents</a>, args<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">fire<wbr>Event<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="../modules/js.app.html#pageevents" class="tsd-signature-type">PageEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -219,7 +189,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>e: <a href="../modules/js.model.html#pageevents" class="tsd-signature-type">PageEvents</a></h5>
+									<h5>e: <a href="../modules/js.app.html#pageevents" class="tsd-signature-type">PageEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
@@ -250,10 +220,10 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="load" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> load</h3>
+					<a name="init" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> init</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">load<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">init<span class="tsd-signature-symbol">(</span>page<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html" class="tsd-signature-type">Klass</a><span class="tsd-signature-symbol">&lt;</span><a href="js.app.page.html" class="tsd-signature-type">Page</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -262,7 +232,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> url: <span class="tsd-signature-type">string</span></h5>
+									<h5>page: <a href="../interfaces/js.lang.klass.html" class="tsd-signature-type">Klass</a><span class="tsd-signature-symbol">&lt;</span><a href="js.app.page.html" class="tsd-signature-type">Page</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -273,7 +243,7 @@
 					<a name="offevent" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> off<wbr>Event</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">off<wbr>Event<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="../modules/js.model.html#pageevents" class="tsd-signature-type">PageEvents</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">off<wbr>Event<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="../modules/js.app.html#pageevents" class="tsd-signature-type">PageEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -282,36 +252,33 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>e: <a href="../modules/js.model.html#pageevents" class="tsd-signature-type">PageEvents</a></h5>
+									<h5>e: <a href="../modules/js.app.html#pageevents" class="tsd-signature-type">PageEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a name="onevent" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> on<wbr>Event</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">on<wbr>Event&lt;H&gt;<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, handler<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">H</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Event<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="../modules/js.app.html#pageevents" class="tsd-signature-type">PageEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, handler<span class="tsd-signature-symbol">: </span><a href="../modules/js.util.html#eventhandler" class="tsd-signature-type">EventHandler</a><span class="tsd-signature-symbol">&lt;</span><a href="js.app.page.html" class="tsd-signature-type">Page</a><span class="tsd-signature-symbol">&gt;</span>, once<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 							</aside>
-							<h4 class="tsd-type-parameters-title">Type parameters</h4>
-							<ul class="tsd-type-parameters">
-								<li>
-									<h4>H</h4>
-								</li>
-							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>e: <span class="tsd-signature-type">string</span></h5>
+									<h5>e: <a href="../modules/js.app.html#pageevents" class="tsd-signature-type">PageEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>handler: <span class="tsd-signature-type">H</span></h5>
+									<h5>handler: <a href="../modules/js.util.html#eventhandler" class="tsd-signature-type">EventHandler</a><span class="tsd-signature-symbol">&lt;</span><a href="js.app.page.html" class="tsd-signature-type">Page</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> once: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -322,7 +289,7 @@
 					<a name="open" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> open</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">open<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, target<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"blank"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"parent"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"self"</span>, specs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>height<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>left<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>location<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>menubar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>resizable<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>scrollbars<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>status<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>titlebar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>toolbar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>top<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>width<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">open<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, specs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>height<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>left<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>location<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>menubar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>resizable<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>scrollbars<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>status<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>titlebar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>toolbar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>top<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>width<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -332,9 +299,6 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>url: <span class="tsd-signature-type">any</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> target: <span class="tsd-signature-type">"blank"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"parent"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"self"</span><span class="tsd-signature-symbol"> = &quot;blank&quot;</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> specs: <span class="tsd-signature-symbol">{ </span>height<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>left<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>location<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>menubar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>resizable<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>scrollbars<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>status<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>titlebar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>toolbar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>top<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>width<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
@@ -380,16 +344,25 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="uri" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> uri</h3>
+					<a name="redirect" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> redirect</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">uri<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.util.uri.html" class="tsd-signature-type">URI</a></li>
+						<li class="tsd-signature tsd-kind-icon">redirect<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, query<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../modules/js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="js.util.uri.html" class="tsd-signature-type">URI</a></h4>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> query: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../modules/js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -397,7 +370,7 @@
 					<a name="view" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> view</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">view&lt;V&gt;<span class="tsd-signature-symbol">(</span>view<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html" class="tsd-signature-type">Klass</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span></li>
+						<li class="tsd-signature tsd-kind-icon">view&lt;V&gt;<span class="tsd-signature-symbol">(</span>v<span class="tsd-signature-symbol">: </span><a href="../interfaces/js.lang.klass.html" class="tsd-signature-type">Klass</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -412,7 +385,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>view: <a href="../interfaces/js.lang.klass.html" class="tsd-signature-type">Klass</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>v: <a href="../interfaces/js.lang.klass.html" class="tsd-signature-type">Klass</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">V</span></h4>
@@ -433,6 +406,9 @@
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.an.html">an</a>
 							</li>
+							<li class="current tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.app.html">app</a>
+							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.ds.html">ds</a>
 							</li>
@@ -451,13 +427,8 @@
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.media.html">media</a>
 							</li>
-							<li class="current tsd-kind-namespace tsd-parent-kind-namespace">
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.model.html">model</a>
-								<ul>
-									<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-										<a href="../modules/js.model.validator.html">validator</a>
-									</li>
-								</ul>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.reflect.html">reflect</a>
@@ -484,151 +455,67 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.ajaxproxy.html" class="tsd-kind-icon">Ajax<wbr>Proxy</a>
+						<a href="js.app.app.html" class="tsd-kind-icon">App</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.app.html" class="tsd-kind-icon">App</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.appevent.html" class="tsd-kind-icon">App<wbr>Event</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.field.html" class="tsd-kind-icon">Field</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.jsonproxy.html" class="tsd-kind-icon">Json<wbr>Proxy</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.listmodel.html" class="tsd-kind-icon">List<wbr>Model</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.listmodelconfig.html" class="tsd-kind-icon">List<wbr>Model<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.model.html" class="tsd-kind-icon">Model</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.modelconfig.html" class="tsd-kind-icon">Model<wbr>Config</a>
+						<a href="js.app.appevent.html" class="tsd-kind-icon">App<wbr>Event</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.page.html" class="tsd-kind-icon">Page</a>
+						<a href="js.app.page.html" class="tsd-kind-icon">Page</a>
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="js.model.page.html#destroy" class="tsd-kind-icon">destroy</a>
+								<a href="js.app.page.html#destroy" class="tsd-kind-icon">destroy</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="js.model.page.html#initialize" class="tsd-kind-icon">initialize</a>
+								<a href="js.app.page.html#enter" class="tsd-kind-icon">enter</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="js.model.page.html#render" class="tsd-kind-icon">render</a>
+								<a href="js.app.page.html#initialize" class="tsd-kind-icon">initialize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
-								<a href="js.model.page.html#current" class="tsd-kind-icon">current</a>
+								<a href="js.app.page.html#currentpage" class="tsd-kind-icon">current<wbr>Page</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="js.model.page.html#fireevent" class="tsd-kind-icon">fire<wbr>Event</a>
+								<a href="js.app.page.html#fireevent" class="tsd-kind-icon">fire<wbr>Event</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="js.model.page.html#fullscreen" class="tsd-kind-icon">fullscreen</a>
+								<a href="js.app.page.html#fullscreen" class="tsd-kind-icon">fullscreen</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="js.model.page.html#load" class="tsd-kind-icon">load</a>
+								<a href="js.app.page.html#init" class="tsd-kind-icon">init</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="js.model.page.html#offevent" class="tsd-kind-icon">off<wbr>Event</a>
+								<a href="js.app.page.html#offevent" class="tsd-kind-icon">off<wbr>Event</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="js.app.page.html#onevent" class="tsd-kind-icon">on<wbr>Event</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="js.app.page.html#open" class="tsd-kind-icon">open</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="js.app.page.html#redirect" class="tsd-kind-icon">redirect</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
-								<a href="js.model.page.html#onevent" class="tsd-kind-icon">on<wbr>Event</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="js.model.page.html#open" class="tsd-kind-icon">open</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="js.model.page.html#uri" class="tsd-kind-icon">uri</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
-								<a href="js.model.page.html#view" class="tsd-kind-icon">view</a>
+								<a href="js.app.page.html#view" class="tsd-kind-icon">view</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.pagemodel.html" class="tsd-kind-icon">Page<wbr>Model</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.pagemodelconfig.html" class="tsd-kind-icon">Page<wbr>Model<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="js.model.resultset.html" class="tsd-kind-icon">Result<wbr>Set</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.model.service.html" class="tsd-kind-icon">Service</a>
+						<a href="js.app.service.html" class="tsd-kind-icon">Service</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="../interfaces/js.model.api.html" class="tsd-kind-icon">Api</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.customvalidatorsetting.html" class="tsd-kind-icon">Custom<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.fieldconfig.html" class="tsd-kind-icon">Field<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.formatvalidatorsetting.html" class="tsd-kind-icon">Format<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.lengthvalidatorsetting.html" class="tsd-kind-icon">Length<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="../interfaces/js.model.listmodellisteners.html" class="tsd-kind-icon">List<wbr>Model<wbr>Listeners</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="../interfaces/js.model.modelable.html" class="tsd-kind-icon">Modelable</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="../interfaces/js.model.pagemodellisteners.html" class="tsd-kind-icon">Page<wbr>Model<wbr>Listeners</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.pagemodelparametersmapping.html" class="tsd-kind-icon">Page<wbr>Model<wbr>Parameters<wbr>Mapping</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.pagequery.html" class="tsd-kind-icon">Page<wbr>Query</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.rangevalidatorsetting.html" class="tsd-kind-icon">Range<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.requiredvalidatorsetting.html" class="tsd-kind-icon">Required<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.model.resultsetformat.html" class="tsd-kind-icon">Result<wbr>Set<wbr>Format</a>
+						<a href="../interfaces/js.app.api.html" class="tsd-kind-icon">Api</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#appsettings" class="tsd-kind-icon">App<wbr>Settings</a>
+						<a href="../modules/js.app.html#appconfig" class="tsd-kind-icon">App<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#listmodelevents" class="tsd-kind-icon">List<wbr>Model<wbr>Events</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#modelevents" class="tsd-kind-icon">Model<wbr>Events</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter">
-						<a href="../modules/js.model.html#modellisteners" class="tsd-kind-icon">Model<wbr>Listeners</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#pageevents" class="tsd-kind-icon">Page<wbr>Events</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#pagemodelevents" class="tsd-kind-icon">Page<wbr>Model<wbr>Events</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#sorter" class="tsd-kind-icon">Sorter</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="../modules/js.model.html#validatorsetting" class="tsd-kind-icon">Validator<wbr>Setting</a>
+						<a href="../modules/js.app.html#pageevents" class="tsd-kind-icon">Page<wbr>Events</a>
 					</li>
 				</ul>
 			</nav>

@@ -1,6 +1,6 @@
 //@ sourceURL=jsdk.js
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -61,11 +61,11 @@ var JS;
                 return this._loop;
             }
             _reset() {
-                let m = this;
-                m._loop = 0;
-                m._dir = m._cfg.direction;
-                if (m._timer)
-                    m._timer.stop();
+                let T = this;
+                T._loop = 0;
+                T._dir = T._cfg.direction;
+                if (T._timer)
+                    T._timer.stop();
             }
             pause() {
                 if (this._timer)
@@ -327,6 +327,7 @@ var JS;
 (function (JS) {
     let an;
     (function (an) {
+        let J = Jsons;
         class ElementAnimConfig extends an.AnimConfig {
         }
         an.ElementAnimConfig = ElementAnimConfig;
@@ -335,15 +336,15 @@ var JS;
                 super(cfg);
             }
             _parseFrames(frames) {
-                let m = this;
-                Jsons.some(frames, (v, k) => {
+                let T = this;
+                J.some(frames, (v, k) => {
                     if (k == 'from' || k == '0%') {
-                        m._from = this._convertFrame(v);
+                        T._from = this._convertFrame(v);
                     }
                     else if (k == 'to' || k == '100%') {
-                        m._to = this._convertFrame(v);
+                        T._to = this._convertFrame(v);
                     }
-                    return m._from != void 0 && m._to != void 0;
+                    return T._from != void 0 && T._to != void 0;
                 });
             }
             config(cfg) {
@@ -364,7 +365,7 @@ var JS;
                 }
                 else {
                     let json = {};
-                    Jsons.forEach(from, (v, k) => {
+                    J.forEach(from, (v, k) => {
                         json[k] = this._newVal(t, d, from[k], to[k], e, this._frame == void 0 ? null : this._frame[k]);
                     });
                     return json;
@@ -378,39 +379,39 @@ var JS;
                 return Math[tx](n, base);
             }
             _calc(d, t, e) {
-                let m = this, fwd = m._dir == 'forward';
-                if (!Check.isEmpty(this._frames)) {
+                let T = this, fwd = T._dir == 'forward';
+                if (!Check.isEmpty(T._frames)) {
                     let n = Number(t * 100 / d).round(2), key, delKeys = [];
-                    Jsons.forEach(this._frames, (v, k) => {
-                        let nk = this._num(k);
+                    J.forEach(T._frames, (v, k) => {
+                        let nk = T._num(k);
                         if (!nk.isNaN() && nk.round(2) <= n) {
                             delKeys.push(k);
-                            if (nk > this._num(key))
+                            if (nk > T._num(key))
                                 key = k;
                         }
                     });
                     if (key) {
-                        m._frame = this._convertFrame(this._frames[key]);
-                        delKeys.forEach((v) => { delete this._frames[v]; });
-                        return m._frame;
+                        T._frame = T._convertFrame(T._frames[key]);
+                        delKeys.forEach((v) => { delete T._frames[v]; });
+                        return T._frame;
                     }
                 }
-                let from = fwd ? m._from : m._to, to = fwd ? m._to : m._from;
-                return this._newFrame(from, to, t, d, e);
+                let from = fwd ? T._from : T._to, to = fwd ? T._to : T._from;
+                return T._newFrame(from, to, t, d, e);
             }
             _reset4loop() {
-                let m = this;
-                m._frame = null;
-                m._frames = Jsons.clone(m._cfg.frames);
-                delete m._frames.from;
-                delete m._frames.to;
-                delete m._frames['0%'];
-                delete m._frames['100%'];
+                let T = this;
+                T._frame = null;
+                T._frames = J.clone(T._cfg.frames);
+                delete T._frames.from;
+                delete T._frames.to;
+                delete T._frames['0%'];
+                delete T._frames['100%'];
             }
             _reset() {
-                let m = this;
-                m._frame = null;
-                m._frames = null;
+                let T = this;
+                T._frame = null;
+                T._frames = null;
                 super._reset();
             }
             _resetFrame() {
@@ -418,11 +419,11 @@ var JS;
             }
             _resetInitial() { }
             play() {
-                let m = this, r = m._timer, c = m._cfg;
+                let T = this, r = T._timer, c = T._cfg;
                 if (!r) {
-                    m._reset();
+                    T._reset();
                     r = new an.AnimTimer((et) => {
-                        m._onUpdate.call(m, m._calc(c.duration, et, c.easing));
+                        T._onUpdate.call(T, T._calc(c.duration, et, c.easing));
                     }, {
                         delay: c.delay,
                         duration: c.duration,
@@ -430,39 +431,39 @@ var JS;
                     });
                     if (c.onStarting)
                         r.on('starting', () => {
-                            c.onStarting.call(m);
-                            m._resetFrame();
+                            c.onStarting.call(T);
+                            T._resetFrame();
                         });
                     r.on('looping', (e, ct) => {
-                        m._loop = ct;
-                        m._reset4loop();
+                        T._loop = ct;
+                        T._reset4loop();
                         if (ct > 1 && c.autoReverse)
-                            m.direction(m._dir == 'backward' ? 'forward' : 'backward');
+                            T.direction(T._dir == 'backward' ? 'forward' : 'backward');
                         if (!c.autoReverse)
-                            m._resetFrame();
+                            T._resetFrame();
                     });
                     r.on('finished', () => {
                         if (c.autoReset)
-                            m._resetInitial();
+                            T._resetInitial();
                         if (c.onFinished)
-                            c.onFinished.call(m);
-                        m._reset();
+                            c.onFinished.call(T);
+                        T._reset();
                     });
-                    m._timer = r;
+                    T._timer = r;
                 }
-                if (m.getState() == an.AnimState.RUNNING)
-                    return m;
-                if (m._from == void 0 || m._to == void 0)
+                if (T.getState() == an.AnimState.RUNNING)
+                    return T;
+                if (T._from == void 0 || T._to == void 0)
                     throw new NotFoundError('Not found "from" or "to"!');
                 r.start();
-                return m;
+                return T;
             }
             stop() {
                 super.stop();
-                let m = this, c = m._cfg;
+                let T = this, c = T._cfg;
                 if (c.autoReset)
-                    m._resetInitial();
-                return m;
+                    T._resetInitial();
+                return T;
             }
         }
         an.ElementAnim = ElementAnim;
@@ -505,6 +506,7 @@ var JS;
 (function (JS) {
     let an;
     (function (an) {
+        let J = Jsons;
         class GradientAnimConfig extends an.ElementAnimConfig {
         }
         an.GradientAnimConfig = GradientAnimConfig;
@@ -535,16 +537,16 @@ var JS;
             }
             _convertFrame(f) {
                 let json = {};
-                Jsons.forEach(f, (v, k) => {
+                J.forEach(f, (v, k) => {
                     json[k] = Colors.hex2rgba(v);
                 });
                 return json;
             }
             _newFrame(from, to, t, d, e) {
                 let json = {};
-                Jsons.forEach(from, (v, k) => {
+                J.forEach(from, (v, k) => {
                     json[k] = {};
-                    Jsons.forEach(from[k], (vv, kk) => {
+                    J.forEach(from[k], (vv, kk) => {
                         json[k][kk] = this._newColor(t, d, from[k], to[k], kk, e, this._frame == void 0 ? null : this._frame[k]);
                     });
                 });
@@ -552,13 +554,13 @@ var JS;
             }
             _onUpdate(j) {
                 let el = this._el;
-                Jsons.forEach(j, (v, k) => {
+                J.forEach(j, (v, k) => {
                     el.style[k] = Colors.rgba2css(v);
                 });
             }
             _resetInitial() {
                 let el = this._el, c = this._cls;
-                Jsons.forEach(c, (v, k) => {
+                J.forEach(c, (v, k) => {
                     el.style[k] = v;
                 });
             }
@@ -617,6 +619,7 @@ var JS;
         class ParallelAnimConfig extends an.AnimConfig {
         }
         an.ParallelAnimConfig = ParallelAnimConfig;
+        let E = Check.isEmpty;
         class ParallelAnim extends an.Anim {
             constructor(cfg) {
                 super(cfg);
@@ -626,15 +629,16 @@ var JS;
                 return this._sta;
             }
             config(cfg) {
+                let T = this;
                 if (!cfg)
-                    return this._cfg;
+                    return T._cfg;
                 super.config(cfg);
-                let c = this._cfg, as = c.anims;
-                if (!Check.isEmpty(as)) {
-                    this._plans = [];
-                    as.forEach((a, i) => {
+                let c = T._cfg, as = c.anims;
+                if (!E(as)) {
+                    T._plans = [];
+                    as.forEach(a => {
                         a.config(Jsons.union(c, a.config()));
-                        this._plans.push(Promises.createPlan(function () {
+                        T._plans.push(Promises.createPlan(function () {
                             a.config({
                                 onFinished: () => { this.resolve(); }
                             });
@@ -642,40 +646,40 @@ var JS;
                         }));
                     });
                 }
-                return this;
+                return T;
             }
             play() {
-                let m = this, c = m._cfg;
-                if (Check.isEmpty(c.anims) || m.getState() == an.AnimState.RUNNING)
-                    return m;
-                m._sta = an.AnimState.RUNNING;
-                Promises.all(m._plans).always(() => {
+                let T = this, c = T._cfg;
+                if (E(c.anims) || T.getState() == an.AnimState.RUNNING)
+                    return T;
+                T._sta = an.AnimState.RUNNING;
+                Promises.all(T._plans).always(() => {
                     if (c.onFinished)
-                        c.onFinished.call(this);
+                        c.onFinished.call(T);
                 });
-                return m;
+                return T;
             }
             pause() {
-                let m = this, c = m._cfg;
-                if (m._sta != an.AnimState.RUNNING)
-                    return m;
-                m._sta = an.AnimState.PAUSED;
-                if (!Check.isEmpty(c.anims)) {
+                let T = this, c = T._cfg;
+                if (T._sta != an.AnimState.RUNNING)
+                    return T;
+                T._sta = an.AnimState.PAUSED;
+                if (!E(c.anims)) {
                     c.anims.forEach(a => {
                         a.pause();
                     });
                 }
-                return m;
+                return T;
             }
             stop() {
-                let m = this, c = m._cfg;
-                m._sta = an.AnimState.STOPPED;
-                if (!Check.isEmpty(c.anims)) {
+                let T = this, c = T._cfg;
+                T._sta = an.AnimState.STOPPED;
+                if (!E(c.anims)) {
                     c.anims.forEach(a => {
                         a.stop();
                     });
                 }
-                return m;
+                return T;
             }
         }
         an.ParallelAnim = ParallelAnim;
@@ -762,6 +766,7 @@ var JS;
         class SequentialAnimConfig extends an.AnimConfig {
         }
         an.SequentialAnimConfig = SequentialAnimConfig;
+        let E = Check.isEmpty;
         class SequentialAnim extends an.Anim {
             constructor(cfg) {
                 super(cfg);
@@ -773,7 +778,7 @@ var JS;
                     return this._cfg;
                 super.config(cfg);
                 let c = this._cfg, as = c.anims;
-                if (!Check.isEmpty(as)) {
+                if (!E(as)) {
                     as.forEach((a, i) => {
                         a.config(Jsons.union(c, a.config()));
                         if (i < as.length - 1) {
@@ -799,28 +804,28 @@ var JS;
                 return this;
             }
             play() {
-                let m = this, c = m._cfg;
-                if (Check.isEmpty(c.anims) || m.getState() == an.AnimState.RUNNING)
-                    return m;
-                c.anims[m._i].play();
-                return m;
+                let T = this, c = T._cfg;
+                if (E(c.anims) || T.getState() == an.AnimState.RUNNING)
+                    return T;
+                c.anims[T._i].play();
+                return T;
             }
             pause() {
-                let m = this, c = m._cfg;
-                if (m._sta != an.AnimState.RUNNING)
-                    return m;
-                m._sta = an.AnimState.PAUSED;
-                if (!Check.isEmpty(c.anims))
-                    c.anims[m._i].pause();
-                return m;
+                let T = this, c = T._cfg;
+                if (T._sta != an.AnimState.RUNNING)
+                    return T;
+                T._sta = an.AnimState.PAUSED;
+                if (!E(c.anims))
+                    c.anims[T._i].pause();
+                return T;
             }
             stop() {
-                let m = this, c = m._cfg;
-                m._sta = an.AnimState.STOPPED;
-                if (!Check.isEmpty(c.anims))
-                    c.anims[m._i].stop();
-                m._i = 0;
-                return m;
+                let T = this, c = T._cfg;
+                T._sta = an.AnimState.STOPPED;
+                if (!E(c.anims))
+                    c.anims[T._i].stop();
+                T._i = 0;
+                return T;
             }
         }
         an.SequentialAnim = SequentialAnim;
@@ -888,415 +893,6 @@ var JS;
 })(JS || (JS = {}));
 var TranslateAnimConfig = JS.an.TranslateAnimConfig;
 var TranslateAnim = JS.an.TranslateAnim;
-(function () {
-    var $A = Array.prototype;
-    $A.add = function (obj, from) {
-        if (obj == void 0)
-            return this;
-        let a = obj instanceof Array ? obj : [obj], i = from == void 0 ? this.length : (from < 0 ? 0 : from);
-        Array.prototype.splice.apply(this, [i, 0].concat(a));
-        return this;
-    };
-    $A.remove = function (f) {
-        let i = typeof f === 'number' ? f : this.findIndex(f);
-        if (i < 0 || i >= this.length)
-            return false;
-        this.splice(i, 1);
-        return true;
-    };
-}());
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        class Arrays {
-            static newArray(a, from) {
-                return a == void 0 ? [] : Array.prototype.slice.apply(a, [from == void 0 ? 0 : from]);
-            }
-            static toArray(a) {
-                return a == void 0 ? [] : (util.Types.isArray(a) ? a : [a]);
-            }
-            static equal(a1, a2, equal) {
-                if (a1 === a2)
-                    return true;
-                let y1 = util.Check.isEmpty(a1), y2 = util.Check.isEmpty(a2);
-                if (y1 && y2)
-                    return true;
-                if (y1 !== y2)
-                    return false;
-                if (a1.length != a2.length)
-                    return false;
-                return a1.every((item1, i) => {
-                    return equal ? equal(item1, a2[i], i) : item1 === a2[i];
-                });
-            }
-            static equalToString(a1, a2) {
-                if (a1 === a2)
-                    return true;
-                if (a1 == void 0 && a2 == void 0)
-                    return true;
-                if (!a1 || !a2)
-                    return false;
-                if (a1.length != a2.length)
-                    return false;
-                return a1.toString() == a2.toString();
-            }
-            static same(a1, a2) {
-                if (a1 === a2 || (util.Check.isEmpty(a1) && util.Check.isEmpty(a2)))
-                    return true;
-                if (a1.length != a2.length)
-                    return false;
-                let na = this.newArray(a2);
-                a1.forEach(item1 => {
-                    na.remove((v) => {
-                        return v == item1;
-                    });
-                });
-                return na.length == 0;
-            }
-            static slice(args, fromIndex, endIndex) {
-                return Array.prototype.slice.apply(args, [fromIndex || 0, endIndex || args.length]);
-            }
-        }
-        util.Arrays = Arrays;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Arrays = JS.util.Arrays;
-Promise.prototype.always = function (fn) {
-    return this.then((t1) => {
-        return fn.call(this, t1, true);
-    }).catch((t2) => {
-        return fn.call(this, t2, false);
-    });
-};
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        class Promises {
-            static create(fn, ...args) {
-                return new Promise((resolve, reject) => {
-                    fn.apply({
-                        resolve: resolve,
-                        reject: reject
-                    }, util.Arrays.newArray(arguments, 1));
-                });
-            }
-            static createPlan(fn) {
-                return function () {
-                    return Promises.create.apply(Promises, [fn].concat(Array.prototype.slice.apply(arguments)));
-                };
-            }
-            static newPlan(p, args, ctx) {
-                return () => { return p.apply(ctx || p, args); };
-            }
-            static resolvePlan(v) {
-                return () => { return Promise.resolve(v); };
-            }
-            static rejectPlan(v) {
-                return () => { return Promise.reject(v); };
-            }
-            static order(plans) {
-                var seq = Promise.resolve();
-                plans.forEach(plan => {
-                    seq = seq.then(plan);
-                });
-                return seq;
-            }
-            static all(plans) {
-                var rst = [];
-                plans.forEach(task => {
-                    rst.push(task());
-                });
-                return Promise.all(rst);
-            }
-            static race(plans) {
-                var rst = [];
-                plans.forEach(task => {
-                    rst.push(task());
-                });
-                return Promise.race(rst);
-            }
-        }
-        util.Promises = Promises;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Promises = JS.util.Promises;
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        let ACCEPTS = {
-            '*': '*/*',
-            text: 'text/plain',
-            html: 'text/html',
-            xml: 'application/xml, text/xml',
-            json: 'application/json, text/javascript',
-            script: 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript'
-        }, _judgeType = (cType) => {
-            if (!cType)
-                return 'json';
-            if (cType == ACCEPTS['text'])
-                return 'text';
-            if (cType == ACCEPTS['html'])
-                return 'html';
-            if (cType.indexOf('/xml') > 0)
-                return 'xml';
-            return 'json';
-        }, PARSERS = {
-            html: (str) => {
-                if (!str)
-                    return null;
-                return new DOMParser().parseFromString(str, 'text/html');
-            },
-            xml: (str) => {
-                if (!str)
-                    return null;
-                let xml = new DOMParser().parseFromString(str, 'text/xml');
-                if (!xml || xml.getElementsByTagName("parsererror").length)
-                    throw new NotHandledError();
-                return xml;
-            },
-            json: (str) => {
-                return util.Jsons.parse(str);
-            },
-            text: (str) => {
-                return str;
-            }
-        }, _headers = function (xhr) {
-            let headers = {}, hString = xhr.getAllResponseHeaders(), hRegexp = /([^\s]*?):[ \t]*([^\r\n]*)/mg, match = null;
-            while ((match = hRegexp.exec(hString))) {
-                headers[match[1]] = match[2];
-            }
-            return headers;
-        }, _response = function (req, xhr, error) {
-            let type = req.type, headers = _headers(xhr);
-            if (!type && xhr.status > 0)
-                type = _judgeType(headers['Content-Type']);
-            return {
-                request: req,
-                url: xhr.responseURL,
-                raw: xhr.response,
-                type: req.type,
-                data: xhr.response,
-                status: xhr.status,
-                statusText: error || (xhr.status == 0 ? 'error' : xhr.statusText),
-                headers: headers,
-                xhr: xhr
-            };
-        }, _parseResponse = function (res, req, xhr) {
-            try {
-                let raw = xhr.response, parser = req.parsers && req.parsers[res.type] || PARSERS[res.type];
-                if (req.responseFilter)
-                    raw = req.responseFilter(raw, res.type);
-                res.data = parser ? parser(raw) : raw;
-            }
-            catch (e) {
-                res.statusText = 'parseerror';
-                if (req.onError)
-                    req.onError(res);
-                if (Ajax._ON['error'])
-                    Ajax._ON['error'](res);
-                this.reject(res);
-            }
-        }, _rejectError = function (req, xhr, error) {
-            let res = _response(req, xhr, error);
-            if (req.onError)
-                req.onError(res);
-            if (Ajax._ON['error'])
-                Ajax._ON['error'](res);
-            this.reject(res);
-        }, CACHE = {
-            lastModified: {},
-            etag: {}
-        }, _done = function (uncacheURL, req, xhr) {
-            if (xhr['_isTimeout'])
-                return;
-            let status = xhr.status, res = _response(req, xhr);
-            if (req.onCompleted)
-                req.onCompleted(res);
-            if (Ajax._ON['completed'])
-                Ajax._ON['completed'](res);
-            if (status >= 200 && status < 300 || status === 304) {
-                let modified = null;
-                if (req.ifModified) {
-                    modified = xhr.getResponseHeader('Last-Modified');
-                    if (modified)
-                        CACHE.lastModified[uncacheURL] = modified;
-                    modified = xhr.getResponseHeader('etag');
-                    if (modified)
-                        CACHE.etag[uncacheURL] = modified;
-                }
-                if (status === 204 || req.method === "HEAD") {
-                    res.statusText = 'nocontent';
-                }
-                else if (status === 304) {
-                    res.statusText = 'notmodified';
-                }
-                _parseResponse.call(this, res, req, xhr);
-                this.resolve(res);
-            }
-            else {
-                this.reject(res);
-            }
-        }, _queryString = function (data) {
-            if (util.Types.isString(data))
-                return encodeURI(data);
-            let str = '';
-            util.Jsons.forEach(data, (v, k) => {
-                str += `&${k}=${encodeURIComponent(v)}`;
-            });
-            return str;
-        }, _queryURL = (req) => {
-            let url = req.url.replace(/^\/\//, location.protocol + '//');
-            if (!util.Check.isEmpty(req.data))
-                url = `${url}${url.indexOf('?') < 0 ? '?' : ''}${_queryString(req.data)}`;
-            return url;
-        }, _uncacheURL = (url, cache) => {
-            url = url.replace(/([?&])_=[^&]*/, '$1');
-            if (!cache)
-                url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
-            return url;
-        }, _sending = function (fn, req) {
-            if (fn) {
-                if (fn(req) === false)
-                    return false;
-            }
-            return true;
-        }, _send = function (req) {
-            if (!req.url)
-                JSLogger.error('Sent an ajax request without URL.');
-            req = util.Jsons.union({
-                method: 'GET',
-                crossCookie: false,
-                async: true,
-                type: 'text',
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                cache: true
-            }, req);
-            let xhr = self.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP'), queryURL = _queryURL(req), url = _uncacheURL(queryURL, req.cache), headers = req.headers || {};
-            xhr.responseType = (req.type == 'html' || req.type == 'xml') ? 'document' : req.type;
-            xhr.open(req.method, url, req.async, req.username, req.password);
-            xhr.setRequestHeader('Accept', req.type && ACCEPTS[req.type] ? ACCEPTS[req.type] + ',' + ACCEPTS['*'] + ';q=0.01' : ACCEPTS['*']);
-            if (req.data && req.contentType)
-                xhr.setRequestHeader('Content-Type', req.contentType);
-            if (!headers['X-Requested-With'])
-                headers['X-Requested-With'] = "XMLHttpRequest";
-            if (req.mimeType && xhr.overrideMimeType)
-                xhr.overrideMimeType(req.mimeType);
-            if (req.ifModified) {
-                if (CACHE.lastModified[queryURL])
-                    xhr.setRequestHeader('If-Modified-Since', CACHE.lastModified[queryURL]);
-                if (CACHE.etag[queryURL])
-                    xhr.setRequestHeader('If-None-Match', CACHE.etag[queryURL]);
-            }
-            for (let h in headers)
-                xhr.setRequestHeader(h, headers[h]);
-            xhr.onerror = (e) => {
-                _rejectError.call(this, req, xhr, 'error');
-            };
-            xhr.onabort = () => { _rejectError.call(this, req, xhr, xhr['_isTimeout'] ? 'timeout' : 'abort'); };
-            xhr.withCredentials = req.crossCookie;
-            if (req.async) {
-                xhr.timeout = req.timeout || 0;
-                xhr.ontimeout = () => {
-                    _rejectError.call(this, req, xhr, 'timeout');
-                };
-                xhr.onreadystatechange = () => {
-                    if (xhr.readyState == 4 && xhr.status > 0)
-                        _done.call(this, queryURL, req, xhr);
-                };
-            }
-            let rst = _sending(Ajax._ON['sending'], req);
-            if (rst === false) {
-                _rejectError.call(this, req, xhr, 'cancel');
-                return;
-            }
-            rst = _sending(req.onSending, req);
-            if (rst === false) {
-                _rejectError.call(this, req, xhr, 'cancel');
-                return;
-            }
-            let data = req.method == 'HEAD' || req.method == 'GET' ? null : (util.Types.isString(req.data) ? req.data : util.Jsons.stringify(req.data));
-            try {
-                if (req.async && req.timeout > 0) {
-                    var timer = self.setTimeout(function () {
-                        xhr['_isTimeout'] = true;
-                        xhr.abort();
-                        self.clearTimeout(timer);
-                    }, req.timeout);
-                }
-                xhr.send(data);
-            }
-            catch (e) {
-                _rejectError.call(this, req, xhr, 'error');
-            }
-            if (!req.async && xhr.status > 0)
-                _done.call(this, queryURL, req, xhr);
-        };
-        class Ajax {
-            static _toQuery(q) {
-                if (!q)
-                    return {};
-                return util.Types.isString(q) ? util.URI.parseQueryString(q) : q;
-            }
-            static toRequest(quy, data) {
-                let req = util.Types.isString(quy) ? { url: quy } : quy;
-                if (quy && data)
-                    req.data = util.Jsons.union(this._toQuery(req.data), this._toQuery(data));
-                return req;
-            }
-            static send(req) {
-                let q = this.toRequest(req);
-                return q.thread ? this._inThread(req) : this._inMain(req);
-            }
-            static _inMain(req) {
-                return util.Promises.create(function () {
-                    _send.call(this, req);
-                });
-            }
-            static get(req) {
-                let r = util.Types.isString(req) ? { url: req } : req;
-                r.method = 'GET';
-                return this.send(r);
-            }
-            static post(req) {
-                let r = util.Types.isString(req) ? { url: req } : req;
-                r.method = 'POST';
-                return this.send(r);
-            }
-            static on(ev, fn) {
-                this._ON[ev] = fn;
-            }
-            static sendBeacon(e, fn, scope) {
-                window.addEventListener('unload', scope ? fn : function (e) { fn.call(scope, e); }, false);
-            }
-            static _inThread(req) {
-                let r = this.toRequest(req);
-                r.url = util.URI.toAbsoluteURL(r.url);
-                return util.Promises.create(function () {
-                    let ctx = this;
-                    new Thread({
-                        run: function () {
-                            this.onposted((request) => {
-                                self.Ajax._inMain(request).then((res) => {
-                                    delete res.xhr;
-                                    this.postMain(res);
-                                });
-                            });
-                        }
-                    }, typeof r.thread === 'boolean' ? null : r.thread).on('message', function (e, res) {
-                        ctx.resolve(res);
-                        this.terminate();
-                    }).start().postThread(r);
-                });
-            }
-        }
-        Ajax._ON = {};
-        util.Ajax = Ajax;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Ajax = JS.util.Ajax;
 var JS;
 (function (JS) {
     let lang;
@@ -1426,6 +1022,9 @@ var JS;
             static isArrayBuffer(obj) {
                 return _is(obj, 'ArrayBuffer');
             }
+            static isTypedArray(value) {
+                return value && this.isNumber(value.length) && /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array]$/.test(toString.call(value));
+            }
             static isElement(el) {
                 return el && typeof el === 'object' && (el.nodeType === 1 || el.nodeType === 9);
             }
@@ -1464,9 +1063,6 @@ var JS;
             static subClass(cls1, cls2) {
                 return cls1.subclassOf(cls2);
             }
-            static isTypedArray(value) {
-                return value && this.isNumber(value.length) && /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array]$/.test(toString.call(value));
-            }
             static type(obj) {
                 if (obj === null)
                     return Type.null;
@@ -1494,19 +1090,19 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let N = Number, _test = function (str, pattern) {
-            return str && pattern.test(str.trim());
-        };
+        let N = Number, _test = function (s, exp) {
+            return s && exp.test(s.trim());
+        }, EMAIL = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/, EMAIL_DOMAIN = /^@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/, YYYY_MM_DD = /^(\d{1,4})(-|\/)(\d{1,2})(-|\/)(\d{1,2})$/, HALFWIDTH_CHARS = /^[\u0000-\u00FF]+$/, FULLWIDTH_CHARS = /^[\u0391-\uFFE5]+$/, NUMBERS_ONLY = /^\d+$/, LETTERS_ONLY = /^[A-Za-z]+$/, LETTERS_OR_NUMBERS = /^[A-Za-z\d]+$/, ENGLISH_ONLY = /^[A-Za-z\d\s\`\~\!\@\#\$\%\^\&\*\(\)\_\-\+\=\[\]\{\}\|\:\;\"\'\<\>\,\.\?\\\/]+$/, CHINESE_ONLY = /^[\u4E00-\u9FA5]+$/, IP = /^(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5])$/;
         class Check {
-            static isEmpty(obj) {
-                return obj == void 0
-                    || obj === ''
-                    || (obj.hasOwnProperty('length') && obj.length == 0)
-                    || this.isEmptyObject(obj);
+            static isEmpty(v) {
+                return v == void 0
+                    || v === ''
+                    || (v.hasOwnProperty('length') && v.length == 0)
+                    || Check.isEmptyObject(v);
             }
-            static isEmptyObject(obj) {
+            static isEmptyObject(v) {
                 var name;
-                for (name in obj) {
+                for (name in v) {
                     return false;
                 }
                 return true;
@@ -1514,29 +1110,25 @@ var JS;
             static isBlank(s) {
                 return s == void 0 || s.trim() === '';
             }
-            static isFormatDate(str, format) {
-                return _test(str, format || this.YYYY_MM_DD);
+            static isFormatDate(s, format) {
+                return _test(s, format || YYYY_MM_DD);
             }
-            static isEmail(str, pattern) {
-                return _test(str, pattern ? pattern : this.EMAIL);
+            static isEmail(s, exp) {
+                return _test(s, exp ? exp : EMAIL);
             }
-            static isEmails(str, pattern) {
-                str = str || '';
-                if (this.isBlank(str))
+            static isEmails(s, exp) {
+                s = s || '';
+                if (this.isBlank(s))
                     return false;
-                var arr = str.split(/;|\s+/);
-                for (var i = 0; i < arr.length; i++) {
-                    var str = arr[i];
-                    if (str.length > 0 && !this.isEmail(str, pattern))
-                        return false;
-                }
-                return true;
+                return s.split(/;|\s+/).every(as => {
+                    return as.length == 0 || this.isEmail(as, exp);
+                });
             }
             static isEmailDomain(str) {
-                return _test(str, this.EMAIL_DOMAIN);
+                return _test(str, EMAIL_DOMAIN);
             }
             static isOnlyNumber(str) {
-                return _test(str, this.NUMBERS_ONLY);
+                return _test(str, NUMBERS_ONLY);
             }
             static isPositive(n) {
                 return N(n).isPositive();
@@ -1545,16 +1137,16 @@ var JS;
                 return N(n).isNegative();
             }
             static isHalfwidthChars(str) {
-                return _test(str, this.HALFWIDTH_CHARS);
+                return _test(str, HALFWIDTH_CHARS);
             }
             static isFullwidthChars(str) {
-                return _test(str, this.FULLWIDTH_CHARS);
+                return _test(str, FULLWIDTH_CHARS);
             }
             static isEnglishOnly(str) {
-                return _test(str, this.ENGLISH_ONLY);
+                return _test(str, ENGLISH_ONLY);
             }
             static isChineseOnly(str) {
-                return _test(str, this.CHINESE_ONLY);
+                return _test(str, CHINESE_ONLY);
             }
             static isFormatNumber(n, iLength, fLength) {
                 if (!util.Types.isNumeric(n))
@@ -1582,23 +1174,23 @@ var JS;
                 let num = N(n);
                 return num > N(min) && num < N(max);
             }
-            static shorter(str, len) {
-                return str && str.length < len;
+            static shorter(s, len) {
+                return s && s.length < len;
             }
-            static longer(str, len) {
-                return str && str.length > len;
+            static longer(s, len) {
+                return s && s.length > len;
             }
-            static equalLength(str, len) {
-                return str && str.length == len;
+            static equalLength(s, len) {
+                return s && s.length == len;
             }
-            static isLettersOnly(str) {
-                return _test(str, this.LETTERS_ONLY);
+            static isLettersOnly(s) {
+                return _test(s, LETTERS_ONLY);
             }
-            static isLettersOrNumbers(str) {
-                return _test(str, this.LETTERS_OR_NUMBERS);
+            static isLettersOrNumbers(s) {
+                return _test(s, LETTERS_OR_NUMBERS);
             }
-            static isIP(str) {
-                return _test(str.trim(), this.IP);
+            static isIP(s) {
+                return _test(s.trim(), IP);
             }
             static isExistUrl(url) {
                 let xhr = self.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
@@ -1606,37 +1198,637 @@ var JS;
                 xhr.send();
                 return xhr.status == 200;
             }
-            static isPattern(str, exp) {
-                return _test(str, exp);
+            static isPattern(s, exp) {
+                return _test(s, exp);
             }
-            static byServer(settings, judge) {
+            static byServer(req, judge) {
                 return new Promise(function (resolve, reject) {
-                    util.Ajax.send(settings).then(res => {
+                    util.Ajax.send(req).then(res => {
                         judge.apply(null, [res]) ? resolve(true) : reject(false);
                     });
                 });
             }
         }
-        Check.EMAIL = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/;
-        Check.EMAIL_DOMAIN = /^@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/;
-        Check.YYYY_MM_DD = /^(\d{1,4})(-|\/)(\d{1,2})(-|\/)(\d{1,2})$/;
-        Check.HALFWIDTH_CHARS = /^[\u0000-\u00FF]+$/;
-        Check.FULLWIDTH_CHARS = /^[\u0391-\uFFE5]+$/;
-        Check.NUMBERS_ONLY = /^\d+$/;
-        Check.LETTERS_ONLY = /^[A-Za-z]+$/;
-        Check.LETTERS_OR_NUMBERS = /^[A-Za-z\d]+$/;
-        Check.ENGLISH_ONLY = /^[A-Za-z\d\s\`\~\!\@\#\$\%\^\&\*\(\)\_\-\+\=\[\]\{\}\|\:\;\"\'\<\>\,\.\?\\\/]+$/;
-        Check.CHINESE_ONLY = /^[\u4E00-\u9FA5]+$/;
-        Check.IP = /^(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5])$/;
         util.Check = Check;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
 var Check = JS.util.Check;
+(function () {
+    var AP = Array.prototype;
+    AP.add = function (obj, from) {
+        let m = this;
+        if (obj == void 0)
+            return m;
+        let a = obj instanceof Array ? obj : [obj], i = from == void 0 ? m.length : (from < 0 ? 0 : from);
+        AP.splice.apply(m, [i, 0].concat(a));
+        return m;
+    };
+    AP.remove = function (f) {
+        let i = typeof f === 'number' ? f : this.findIndex(f);
+        if (i < 0 || i >= this.length)
+            return false;
+        this.splice(i, 1);
+        return true;
+    };
+}());
 var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let EUID = 1;
+        let E = util.Check.isEmpty, AS = Array.prototype.slice;
+        class Arrays {
+            static newArray(a, from) {
+                return a == void 0 ? [] : AS.apply(a, [from == void 0 ? 0 : from]);
+            }
+            static toArray(a) {
+                return a == void 0 ? [] : (util.Types.isArray(a) ? a : [a]);
+            }
+            static equal(a1, a2, equal) {
+                if (a1 === a2)
+                    return true;
+                let y1 = E(a1), y2 = E(a2);
+                if (y1 && y2)
+                    return true;
+                if (y1 !== y2)
+                    return false;
+                if (a1.length != a2.length)
+                    return false;
+                return a1.every((item1, i) => {
+                    return equal ? equal(item1, a2[i], i) : item1 === a2[i];
+                });
+            }
+            static equalToString(a1, a2) {
+                if (a1 === a2)
+                    return true;
+                if (a1 == void 0 && a2 == void 0)
+                    return true;
+                if (!a1 || !a2)
+                    return false;
+                if (a1.length != a2.length)
+                    return false;
+                return a1.toString() == a2.toString();
+            }
+            static same(a1, a2) {
+                if (a1 === a2 || (E(a1) && E(a2)))
+                    return true;
+                if (a1.length != a2.length)
+                    return false;
+                let na = this.newArray(a2);
+                a1.forEach(item1 => {
+                    na.remove((v) => {
+                        return v == item1;
+                    });
+                });
+                return na.length == 0;
+            }
+            static slice(args, fromIndex, endIndex) {
+                return AS.apply(args, [fromIndex || 0, endIndex || args.length]);
+            }
+        }
+        util.Arrays = Arrays;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Arrays = JS.util.Arrays;
+Promise.prototype.always = function (fn) {
+    return this.then((t1) => {
+        return fn.call(this, t1, true);
+    }).catch((t2) => {
+        return fn.call(this, t2, false);
+    });
+};
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        class Promises {
+            static create(fn, ...args) {
+                return new Promise((resolve, reject) => {
+                    fn.apply({
+                        resolve: resolve,
+                        reject: reject
+                    }, util.Arrays.newArray(arguments, 1));
+                });
+            }
+            static createPlan(fn) {
+                return function () {
+                    return Promises.create.apply(Promises, [fn].concat(Array.prototype.slice.apply(arguments)));
+                };
+            }
+            static newPlan(p, args, ctx) {
+                return () => { return p.apply(ctx || p, args); };
+            }
+            static resolvePlan(v) {
+                return () => { return Promise.resolve(v); };
+            }
+            static rejectPlan(v) {
+                return () => { return Promise.reject(v); };
+            }
+            static order(plans) {
+                var seq = Promise.resolve();
+                plans.forEach(plan => {
+                    seq = seq.then(plan);
+                });
+                return seq;
+            }
+            static all(plans) {
+                var rst = [];
+                plans.forEach(task => {
+                    rst.push(task());
+                });
+                return Promise.all(rst);
+            }
+            static race(plans) {
+                var rst = [];
+                plans.forEach(task => {
+                    rst.push(task());
+                });
+                return Promise.race(rst);
+            }
+        }
+        util.Promises = Promises;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Promises = JS.util.Promises;
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        let A = Array, Y = util.Types, E = util.Check.isEmpty;
+        class Jsons {
+            static parse(text, reviver) {
+                return text ? JSON.parse(text, reviver) : null;
+            }
+            static stringify(value, replacer, space) {
+                return JSON.stringify(value, replacer, space);
+            }
+            static clone(obj) {
+                if (obj == void 0 || 'object' != typeof obj)
+                    return obj;
+                let copy;
+                if (obj instanceof Date) {
+                    copy = new Date();
+                    copy.setTime(obj.getTime());
+                    return copy;
+                }
+                if (obj instanceof A) {
+                    copy = [];
+                    for (var i = 0, len = obj.length; i < len; ++i) {
+                        copy[i] = this.clone(obj[i]);
+                    }
+                    return copy;
+                }
+                if (Y.isJsonObject(obj)) {
+                    copy = {};
+                    var keys = Reflect.ownKeys(obj);
+                    keys.forEach(key => {
+                        copy[key] = this.clone(obj[key]);
+                    });
+                    return copy;
+                }
+                return obj;
+            }
+            static forEach(json, fn, that) {
+                if (!json)
+                    return;
+                let keys = Object.keys(json);
+                keys.forEach((key, i) => {
+                    fn.apply(that || json, [json[key], key]);
+                });
+            }
+            static some(json, fn, that) {
+                if (!json)
+                    return;
+                let keys = Object.keys(json);
+                return keys.some((key, i) => {
+                    return fn.apply(that || json, [json[key], key]);
+                });
+            }
+            static hasKey(json, key) {
+                return json && key != void 0 && json.hasOwnProperty(key);
+            }
+            static values(json) {
+                if (!json)
+                    return null;
+                let arr = [];
+                this.forEach(json, v => {
+                    arr[arr.length] = v;
+                });
+                return arr;
+            }
+            static keys(json) {
+                if (!json)
+                    return null;
+                let keys = [];
+                this.forEach(json, (v, k) => {
+                    keys[keys.length] = k;
+                });
+                return keys;
+            }
+            static equalKeys(json1, json2) {
+                let empty1 = E(json1), empty2 = E(json2);
+                if (empty1 && empty2)
+                    return true;
+                if (empty1 || empty2)
+                    return false;
+                let map2 = this.clone(json2);
+                this.forEach(json1, (v, k) => {
+                    delete map2[k];
+                });
+                return E(map2);
+            }
+            static equal(json1, json2) {
+                let empty1 = E(json1), empty2 = E(json2);
+                if (empty1 && empty2)
+                    return true;
+                if (empty1 || empty2)
+                    return false;
+                let map2 = this.clone(json2);
+                this.forEach(json1, (v, k) => {
+                    if ((k in map2) && map2[k] === v)
+                        delete map2[k];
+                });
+                return E(map2);
+            }
+            static replaceKeys(json, keyMapping, needClone) {
+                if (!keyMapping)
+                    return json;
+                let clone = needClone ? this.clone(json) : json;
+                this.forEach(clone, function (val, oldKey) {
+                    let newKey = Y.isFunction(keyMapping) ? keyMapping.apply(clone, [val, oldKey]) : keyMapping[oldKey];
+                    if (newKey != oldKey && clone.hasOwnProperty(oldKey)) {
+                        let temp = clone[oldKey];
+                        delete clone[oldKey];
+                        clone[newKey] = temp;
+                    }
+                });
+                return clone;
+            }
+            static _union(...args) {
+                var options, name, src, copy, copyIsArray, clone, target = arguments[0] || {}, i = 1, length = arguments.length, deep = false;
+                if (typeof target === "boolean") {
+                    deep = target;
+                    target = arguments[i] || {};
+                    i++;
+                }
+                if (typeof target !== "object" && !Y.isFunction(target)) {
+                    target = {};
+                }
+                for (; i < length; i++) {
+                    if ((options = arguments[i]) != null) {
+                        for (name in options) {
+                            src = target[name];
+                            copy = options[name];
+                            if (target === copy) {
+                                continue;
+                            }
+                            if (deep && copy && (Y.isJsonObject(copy) ||
+                                (copyIsArray = A.isArray(copy)))) {
+                                if (copyIsArray) {
+                                    copyIsArray = false;
+                                    clone = src && A.isArray(src) ? src : [];
+                                }
+                                else {
+                                    clone = src && Y.isJsonObject(src) ? src : {};
+                                }
+                                target[name] = this._union(deep, clone, copy);
+                            }
+                            else if (copy !== undefined) {
+                                target[name] = copy;
+                            }
+                        }
+                    }
+                }
+                return target;
+            }
+            ;
+            static union(...jsons) {
+                if (arguments.length <= 1)
+                    return jsons[0];
+                return this._union.apply(this, [true, {}].concat(jsons));
+            }
+            static minus(json1, json2) {
+                if (E(json1) || E(json2))
+                    return json1;
+                let newJson = {};
+                this.forEach(json1, (v, k) => {
+                    if (!json2.hasOwnProperty(k))
+                        newJson[k] = v;
+                });
+                return newJson;
+            }
+            static intersect(json1, json2) {
+                if (E(json1) || E(json2))
+                    return json1;
+                let newJson = {};
+                this.forEach(json1, (v, k) => {
+                    if (json2.hasOwnProperty(k))
+                        newJson[k] = v;
+                });
+                return newJson;
+            }
+            static filter(json, fn) {
+                let newJson = {};
+                this.forEach(json, (v, k) => {
+                    if (fn.apply(json, [v, k]))
+                        newJson[k] = v;
+                });
+                return newJson;
+            }
+            static find(data, path) {
+                if (!path)
+                    return data;
+                const array = path.split('.');
+                if (array.length == 1)
+                    return data[path];
+                let v = data;
+                array.forEach((a) => {
+                    if (v && a)
+                        v = v[a];
+                });
+                return v;
+            }
+        }
+        util.Jsons = Jsons;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Jsons = JS.util.Jsons;
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        let Y = util.Types, J = util.Jsons, ACCEPTS = {
+            '*': '*/*',
+            text: 'text/plain',
+            html: 'text/html',
+            xml: 'application/xml, text/xml',
+            json: 'application/json, text/javascript',
+            script: 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript'
+        }, _judgeType = (cType) => {
+            if (!cType)
+                return 'json';
+            if (cType == ACCEPTS['text'])
+                return 'text';
+            if (cType == ACCEPTS['html'])
+                return 'html';
+            if (cType.indexOf('/xml') > 0)
+                return 'xml';
+            return 'json';
+        }, PARSERS = {
+            html: (str) => {
+                if (!str)
+                    return null;
+                return new DOMParser().parseFromString(str, 'text/html');
+            },
+            xml: (str) => {
+                if (!str)
+                    return null;
+                let xml = new DOMParser().parseFromString(str, 'text/xml');
+                if (!xml || xml.getElementsByTagName("parsererror").length)
+                    throw new NotHandledError();
+                return xml;
+            },
+            text: (str) => {
+                return str;
+            }
+        }, _headers = function (xhr) {
+            let headers = {}, hString = xhr.getAllResponseHeaders(), hRegexp = /([^\s]*?):[ \t]*([^\r\n]*)/mg, match = null;
+            while ((match = hRegexp.exec(hString))) {
+                headers[match[1]] = match[2];
+            }
+            return headers;
+        }, _response = function (req, xhr, error) {
+            let type = req.type, headers = _headers(xhr);
+            if (!type && xhr.status > 0)
+                type = _judgeType(headers['Content-Type']);
+            return {
+                request: req,
+                url: xhr.responseURL,
+                raw: xhr.response,
+                type: req.type,
+                data: xhr.response,
+                status: xhr.status,
+                statusText: error || (xhr.status == 0 ? 'error' : xhr.statusText),
+                headers: headers,
+                xhr: xhr
+            };
+        }, _parseResponse = function (res, req, xhr) {
+            try {
+                let raw = xhr.response, parser = req.parsers && req.parsers[res.type] || PARSERS[res.type];
+                if (req.responseFilter)
+                    raw = req.responseFilter(raw, res.type);
+                res.data = parser ? parser(raw) : raw;
+            }
+            catch (e) {
+                res.statusText = 'parseerror';
+                if (req.onError)
+                    req.onError(res);
+                if (Ajax._ON['error'])
+                    Ajax._ON['error'](res);
+                this.reject(res);
+            }
+        }, _rejectError = function (req, xhr, error) {
+            let res = _response(req, xhr, error);
+            if (req.onError)
+                req.onError(res);
+            if (Ajax._ON['error'])
+                Ajax._ON['error'](res);
+            this.reject(res);
+        }, CACHE = {
+            lastModified: {},
+            etag: {}
+        }, _done = function (uncacheURL, req, xhr) {
+            if (xhr['_isTimeout'])
+                return;
+            let status = xhr.status, res = _response(req, xhr);
+            if (req.onCompleted)
+                req.onCompleted(res);
+            if (Ajax._ON['completed'])
+                Ajax._ON['completed'](res);
+            if (status >= 200 && status < 300 || status === 304) {
+                let modified = null;
+                if (req.ifModified) {
+                    modified = xhr.getResponseHeader('Last-Modified');
+                    if (modified)
+                        CACHE.lastModified[uncacheURL] = modified;
+                    modified = xhr.getResponseHeader('etag');
+                    if (modified)
+                        CACHE.etag[uncacheURL] = modified;
+                }
+                if (status === 204 || req.method === "HEAD") {
+                    res.statusText = 'nocontent';
+                }
+                else if (status === 304) {
+                    res.statusText = 'notmodified';
+                }
+                _parseResponse.call(this, res, req, xhr);
+                this.resolve(res);
+            }
+            else {
+                this.reject(res);
+            }
+        }, _queryString = function (data) {
+            if (Y.isString(data))
+                return encodeURI(data);
+            let str = '';
+            J.forEach(data, (v, k) => {
+                str += `&${k}=${encodeURIComponent(v)}`;
+            });
+            return str;
+        }, _queryURL = (req) => {
+            let url = req.url.replace(/^\/\//, location.protocol + '//');
+            if (!util.Check.isEmpty(req.data))
+                url = `${url}${url.indexOf('?') < 0 ? '?' : ''}${_queryString(req.data)}`;
+            return url;
+        }, _uncacheURL = (url, cache) => {
+            url = url.replace(/([?&])_=[^&]*/, '$1');
+            if (!cache)
+                url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
+            return url;
+        }, _sending = function (fn, req) {
+            if (fn) {
+                if (fn(req) === false)
+                    return false;
+            }
+            return true;
+        }, _send = function (req) {
+            if (!req.url)
+                JSLogger.error('Sent an ajax request without URL.');
+            req = J.union({
+                method: 'GET',
+                crossCookie: false,
+                async: true,
+                type: 'text',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                cache: true
+            }, req);
+            let xhr = self.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP'), queryURL = _queryURL(req), url = _uncacheURL(queryURL, req.cache), headers = req.headers || {};
+            xhr.responseType = (req.type == 'html' || req.type == 'xml') ? 'document' : req.type;
+            xhr.open(req.method, url, req.async, req.username, req.password);
+            xhr.setRequestHeader('Accept', req.type && ACCEPTS[req.type] ? ACCEPTS[req.type] + ',' + ACCEPTS['*'] + ';q=0.01' : ACCEPTS['*']);
+            if (req.data && req.contentType)
+                xhr.setRequestHeader('Content-Type', req.contentType);
+            if (!headers['X-Requested-With'])
+                headers['X-Requested-With'] = "XMLHttpRequest";
+            if (req.mimeType && xhr.overrideMimeType)
+                xhr.overrideMimeType(req.mimeType);
+            if (req.ifModified) {
+                if (CACHE.lastModified[queryURL])
+                    xhr.setRequestHeader('If-Modified-Since', CACHE.lastModified[queryURL]);
+                if (CACHE.etag[queryURL])
+                    xhr.setRequestHeader('If-None-Match', CACHE.etag[queryURL]);
+            }
+            for (let h in headers)
+                xhr.setRequestHeader(h, headers[h]);
+            xhr.onerror = (e) => {
+                _rejectError.call(this, req, xhr, 'error');
+            };
+            xhr.onabort = () => { _rejectError.call(this, req, xhr, xhr['_isTimeout'] ? 'timeout' : 'abort'); };
+            xhr.withCredentials = req.crossCookie;
+            if (req.async) {
+                xhr.timeout = req.timeout || 0;
+                xhr.ontimeout = () => {
+                    _rejectError.call(this, req, xhr, 'timeout');
+                };
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState == 4 && xhr.status > 0)
+                        _done.call(this, queryURL, req, xhr);
+                };
+            }
+            let rst = _sending(Ajax._ON['sending'], req);
+            if (rst === false) {
+                _rejectError.call(this, req, xhr, 'cancel');
+                return;
+            }
+            rst = _sending(req.onSending, req);
+            if (rst === false) {
+                _rejectError.call(this, req, xhr, 'cancel');
+                return;
+            }
+            let data = req.method == 'HEAD' || req.method == 'GET' ? null : (Y.isString(req.data) ? req.data : J.stringify(req.data));
+            try {
+                if (req.async && req.timeout > 0) {
+                    var timer = self.setTimeout(function () {
+                        xhr['_isTimeout'] = true;
+                        xhr.abort();
+                        self.clearTimeout(timer);
+                    }, req.timeout);
+                }
+                xhr.send(data);
+            }
+            catch (e) {
+                _rejectError.call(this, req, xhr, 'error');
+            }
+            if (!req.async && xhr.status > 0)
+                _done.call(this, queryURL, req, xhr);
+        };
+        class Ajax {
+            static _toQuery(q) {
+                if (!q)
+                    return {};
+                return Y.isString(q) ? util.URI.parseQueryString(q) : q;
+            }
+            static toRequest(quy, data) {
+                let req = Y.isString(quy) ? { url: quy } : quy;
+                if (quy && data)
+                    req.data = J.union(this._toQuery(req.data), this._toQuery(data));
+                return req;
+            }
+            static send(req) {
+                let q = this.toRequest(req);
+                return q.thread ? this._inThread(req) : this._inMain(req);
+            }
+            static _inMain(req) {
+                return util.Promises.create(function () {
+                    _send.call(this, req);
+                });
+            }
+            static get(req) {
+                let r = Y.isString(req) ? { url: req } : req;
+                r.method = 'GET';
+                return this.send(r);
+            }
+            static post(req) {
+                let r = Y.isString(req) ? { url: req } : req;
+                r.method = 'POST';
+                return this.send(r);
+            }
+            static on(ev, fn) {
+                this._ON[ev] = fn;
+            }
+            static sendBeacon(e, fn, scope) {
+                window.addEventListener('unload', scope ? fn : function (e) { fn.call(scope, e); }, false);
+            }
+            static _inThread(req) {
+                let r = this.toRequest(req);
+                r.url = util.URI.toAbsoluteURL(r.url);
+                return util.Promises.create(function () {
+                    let ctx = this;
+                    new Thread({
+                        run: function () {
+                            this.onposted((request) => {
+                                self.Ajax._inMain(request).then((res) => {
+                                    delete res.xhr;
+                                    this.postMain(res);
+                                });
+                            });
+                        }
+                    }, typeof r.thread === 'boolean' ? null : r.thread).on('message', function (e, res) {
+                        ctx.resolve(res);
+                        this.terminate();
+                    }).start().postThread(r);
+                });
+            }
+        }
+        Ajax._ON = {};
+        util.Ajax = Ajax;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Ajax = JS.util.Ajax;
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        let EUID = 1, E = util.Check.isEmpty;
         class EventBus {
             constructor(context) {
                 this._isD = false;
@@ -1667,7 +1859,7 @@ var JS;
                 }
                 else {
                     let fns = this._map.get(type);
-                    if (!util.Check.isEmpty(fns)) {
+                    if (!E(fns)) {
                         fns.remove(fn => {
                             return fn['euid'] === h['euid'];
                         });
@@ -1677,7 +1869,7 @@ var JS;
             }
             _removeByEuid(type, euid) {
                 let fns = this._map.get(type);
-                if (!util.Check.isEmpty(fns)) {
+                if (!E(fns)) {
                     fns.remove(fn => {
                         return fn['euid'] === euid;
                     });
@@ -1704,7 +1896,7 @@ var JS;
             find(type, euid) {
                 let fns = this._map.get(type);
                 if (arguments.length >= 1) {
-                    if (!util.Check.isEmpty(fns)) {
+                    if (!E(fns)) {
                         let i = fns.findIndex(fn => {
                             return fn['euid'] === euid;
                         });
@@ -1743,11 +1935,9 @@ var JS;
             }
             fire(e, args, that) {
                 let is = util.Types.isString(e), fns = this._map.get(is ? e : e.type);
-                if (!util.Check.isEmpty(fns)) {
+                if (!E(fns)) {
                     let evt = is ? new CustomEvent(e) : e;
-                    fns.every(fn => {
-                        this._call(evt, fn, args, that);
-                    });
+                    fns.forEach(fn => { this._call(evt, fn, args, that); });
                 }
             }
         }
@@ -2082,7 +2272,7 @@ const $1 = Dom.$1;
 const $L = Dom.$L;
 var JS;
 (function (JS) {
-    JS.version = '2.3.0';
+    JS.version = '2.3.1';
     function config(d, v) {
         let l = arguments.length;
         if (l == 0)
@@ -2168,208 +2358,6 @@ var JS;
     }
     JS.imports = imports;
 })(JS || (JS = {}));
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        class Jsons {
-            static parse(text, reviver) {
-                return text ? JSON.parse(text, reviver) : null;
-            }
-            static stringify(value, replacer, space) {
-                return JSON.stringify(value, replacer, space);
-            }
-            static clone(obj) {
-                if (obj == void 0 || 'object' != typeof obj)
-                    return obj;
-                let copy;
-                if (obj instanceof Date) {
-                    copy = new Date();
-                    copy.setTime(obj.getTime());
-                    return copy;
-                }
-                if (obj instanceof Array) {
-                    copy = [];
-                    for (var i = 0, len = obj.length; i < len; ++i) {
-                        copy[i] = this.clone(obj[i]);
-                    }
-                    return copy;
-                }
-                if (util.Types.isJsonObject(obj)) {
-                    copy = {};
-                    var keys = Reflect.ownKeys(obj);
-                    keys.forEach(key => {
-                        copy[key] = this.clone(obj[key]);
-                    });
-                    return copy;
-                }
-                return obj;
-            }
-            static forEach(json, fn, that) {
-                if (!json)
-                    return;
-                let keys = Object.keys(json);
-                keys.forEach((key, i) => {
-                    fn.apply(that || json, [json[key], key]);
-                });
-            }
-            static some(json, fn, that) {
-                if (!json)
-                    return;
-                let keys = Object.keys(json);
-                return keys.some((key, i) => {
-                    return fn.apply(that || json, [json[key], key]);
-                });
-            }
-            static hasKey(json, key) {
-                return json && key != void 0 && json.hasOwnProperty(key);
-            }
-            static values(json) {
-                if (!json)
-                    return null;
-                let arr = [];
-                Jsons.forEach(json, v => {
-                    arr[arr.length] = v;
-                });
-                return arr;
-            }
-            static keys(json) {
-                if (!json)
-                    return null;
-                let keys = [];
-                Jsons.forEach(json, (v, k) => {
-                    keys[keys.length] = k;
-                });
-                return keys;
-            }
-            static equalKeys(json1, json2) {
-                let empty1 = util.Check.isEmpty(json1), empty2 = util.Check.isEmpty(json2);
-                if (empty1 && empty2)
-                    return true;
-                if (empty1 || empty2)
-                    return false;
-                let map2 = Jsons.clone(json2);
-                Jsons.forEach(json1, (v, k) => {
-                    delete map2[k];
-                });
-                return util.Check.isEmpty(map2);
-            }
-            static equal(json1, json2) {
-                let empty1 = util.Check.isEmpty(json1), empty2 = util.Check.isEmpty(json2);
-                if (empty1 && empty2)
-                    return true;
-                if (empty1 || empty2)
-                    return false;
-                let map2 = Jsons.clone(json2);
-                Jsons.forEach(json1, (v, k) => {
-                    if ((k in map2) && map2[k] === v)
-                        delete map2[k];
-                });
-                return util.Check.isEmpty(map2);
-            }
-            static replaceKeys(json, keyMapping, needClone) {
-                if (!keyMapping)
-                    return json;
-                let clone = needClone ? Jsons.clone(json) : json;
-                this.forEach(clone, function (val, oldKey) {
-                    let newKey = util.Types.isFunction(keyMapping) ? keyMapping.apply(clone, [val, oldKey]) : keyMapping[oldKey];
-                    if (newKey != oldKey && clone.hasOwnProperty(oldKey)) {
-                        let temp = clone[oldKey];
-                        delete clone[oldKey];
-                        clone[newKey] = temp;
-                    }
-                });
-                return clone;
-            }
-            static _union(...args) {
-                var options, name, src, copy, copyIsArray, clone, target = arguments[0] || {}, i = 1, length = arguments.length, deep = false;
-                if (typeof target === "boolean") {
-                    deep = target;
-                    target = arguments[i] || {};
-                    i++;
-                }
-                if (typeof target !== "object" && !util.Types.isFunction(target)) {
-                    target = {};
-                }
-                for (; i < length; i++) {
-                    if ((options = arguments[i]) != null) {
-                        for (name in options) {
-                            src = target[name];
-                            copy = options[name];
-                            if (target === copy) {
-                                continue;
-                            }
-                            if (deep && copy && (util.Types.isJsonObject(copy) ||
-                                (copyIsArray = Array.isArray(copy)))) {
-                                if (copyIsArray) {
-                                    copyIsArray = false;
-                                    clone = src && Array.isArray(src) ? src : [];
-                                }
-                                else {
-                                    clone = src && util.Types.isJsonObject(src) ? src : {};
-                                }
-                                target[name] = Jsons._union(deep, clone, copy);
-                            }
-                            else if (copy !== undefined) {
-                                target[name] = copy;
-                            }
-                        }
-                    }
-                }
-                return target;
-            }
-            ;
-            static union(...jsons) {
-                if (arguments.length <= 1)
-                    return jsons[0];
-                return this._union.apply(this, [true, {}].concat(jsons));
-            }
-            static minus(json1, json2) {
-                if (util.Check.isEmpty(json1) || util.Check.isEmpty(json2))
-                    return json1;
-                let newJson = {};
-                Jsons.forEach(json1, (v, k) => {
-                    if (!json2.hasOwnProperty(k))
-                        newJson[k] = v;
-                });
-                return newJson;
-            }
-            static intersect(json1, json2) {
-                if (util.Check.isEmpty(json1) || util.Check.isEmpty(json2))
-                    return json1;
-                let newJson = {};
-                Jsons.forEach(json1, (v, k) => {
-                    if (json2.hasOwnProperty(k))
-                        newJson[k] = v;
-                });
-                return newJson;
-            }
-            static filter(json, fn) {
-                let newJson = {};
-                Jsons.forEach(json, (v, k) => {
-                    if (fn.apply(json, [v, k]))
-                        newJson[k] = v;
-                });
-                return newJson;
-            }
-            static find(data, path) {
-                if (!path)
-                    return data;
-                const array = path.split('.');
-                if (array.length == 1)
-                    return data[path];
-                let v = data;
-                array.forEach((a) => {
-                    if (v && a)
-                        v = v[a];
-                });
-                return v;
-            }
-        }
-        util.Jsons = Jsons;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Jsons = JS.util.Jsons;
 var JS;
 (function (JS) {
     let util;
@@ -2562,7 +2550,7 @@ var JS;
             LogLevel[LogLevel["ERROR"] = 1] = "ERROR";
             LogLevel[LogLevel["OFF"] = 0] = "OFF";
         })(LogLevel = util.LogLevel || (util.LogLevel = {}));
-        let LogLevels = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE', 'ALL'], LogLevelStyles = [
+        let LEVELS = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE', 'ALL'], STYLES = [
             '',
             'color:red;background-color:#fff0f0;',
             'color:orange;background-color:#fffbe6;',
@@ -2577,7 +2565,7 @@ var JS;
                 this.name = name;
             }
             log(level, ...data) {
-                this._log(LogLevels[level], LogLevelStyles[level], data);
+                this._log(LEVELS[level], STYLES[level], data);
             }
             _log(cmd, css, data) {
                 console.group(`%c${cmd} ${this.name ? '[' + this.name + '] ' : ''}${new Date().toISOString()}`, css);
@@ -2633,6 +2621,7 @@ var JS;
 (function (JS) {
     let lang;
     (function (lang) {
+        let Y = Types, R = Reflect;
         let AnnotationTarget;
         (function (AnnotationTarget) {
             AnnotationTarget[AnnotationTarget["ANY"] = 1] = "ANY";
@@ -2646,29 +2635,29 @@ var JS;
         lang.Annotation = Annotation;
         class Annotations {
             static getPropertyType(obj, propertyKey) {
-                return Reflect.getMetadata('design:type', obj, propertyKey);
+                return R.getMetadata('design:type', obj, propertyKey);
             }
             static getValue(anno, obj, propertyKey) {
-                return Reflect.getMetadata(anno.name, obj, propertyKey);
+                return R.getMetadata(anno.name, obj, propertyKey);
             }
             static setValue(annoName, metaValue, obj, propertyKey) {
-                Reflect.defineMetadata(typeof annoName == 'string' ? annoName : annoName.name, metaValue, obj, propertyKey);
+                R.defineMetadata(typeof annoName == 'string' ? annoName : annoName.name, metaValue, obj, propertyKey);
             }
             static hasAnnotation(anno, obj, propertyKey) {
-                return Reflect.hasMetadata(anno.name, obj, propertyKey);
+                return R.hasMetadata(anno.name, obj, propertyKey);
             }
             static getAnnotations(obj) {
-                return Reflect.getMetadataKeys(obj);
+                return R.getMetadataKeys(obj);
             }
             static define(definition, params) {
-                let args = Arrays.newArray(params), isStr = Types.isString(definition), annoName = isStr ? definition : definition.name, handler = isStr ? null : definition.handler, target = (isStr ? AnnotationTarget.ANY : definition.target) || AnnotationTarget.ANY, fn = function (anno, values, obj, key, d) {
+                let args = Arrays.newArray(params), isStr = Y.isString(definition), annoName = isStr ? definition : definition.name, handler = isStr ? null : definition.handler, target = (isStr ? AnnotationTarget.ANY : definition.target) || AnnotationTarget.ANY, fn = function (anno, values, obj, key, d) {
                     if (0 == (target & AnnotationTarget.ANY)) {
-                        if (Types.equalKlass(obj)) {
+                        if (Y.equalKlass(obj)) {
                             if (0 == (target & AnnotationTarget.CLASS))
                                 return _wrongTarget(anno, obj.name);
                         }
                         else if (key) {
-                            if (Types.isFunction(obj[key])) {
+                            if (Y.isFunction(obj[key])) {
                                 if (0 == (target & AnnotationTarget.METHOD))
                                     return _wrongTarget(anno, obj.constructor.name, key, 'method');
                             }
@@ -2682,19 +2671,19 @@ var JS;
                     if (handler)
                         handler.apply(null, [anno, values, obj, key, d]);
                 };
-                if (Types.equalKlass(args[0])) {
+                if (Y.equalKlass(args[0])) {
                     let obj = args[0];
                     let detor = function (tar) {
                         fn.call(null, annoName, undefined, tar);
                     };
-                    return Reflect.decorate([detor], obj);
+                    return R.decorate([detor], obj);
                 }
                 else if (args.length == 3 && args[0]['constructor']) {
                     let obj = args[0], key = args[1], desc = args[2];
                     let detor = function (tar, k) {
                         fn.call(null, annoName, undefined, tar, k, desc);
                     };
-                    return Reflect.decorate([detor], obj, key);
+                    return R.decorate([detor], obj, key);
                 }
                 let values = args;
                 return function (tar, key, d) {
@@ -2718,13 +2707,13 @@ var JS;
                 name: 'deprecated',
                 handler: (anno, values, obj, propertyKey) => {
                     let info = values ? (values[0] || '') : '', text = null;
-                    if (Types.equalKlass(obj)) {
+                    if (Y.equalKlass(obj)) {
                         let name = _getClassName(obj);
                         text = `The [${name}] class`;
                     }
                     else {
                         let klass = obj.constructor, name = _getClassName(klass);
-                        text = `The [${propertyKey}] ${Types.isFunction(obj[propertyKey]) ? 'method' : 'field'} of ${name}`;
+                        text = `The [${propertyKey}] ${Y.isFunction(obj[propertyKey]) ? 'method' : 'field'} of ${name}`;
                     }
                     JSLogger.warn(text + ' has been deprecated. ' + info);
                 }
@@ -2736,7 +2725,7 @@ var JS;
                 name: anno,
                 handler: (anno, values, obj, methodName) => {
                     let adv = {};
-                    if (Types.isFunction(values[0])) {
+                    if (Y.isFunction(values[0])) {
                         adv[anno] = values[0];
                     }
                     else {
@@ -2765,10 +2754,6 @@ var JS;
             return _aop(arguments, fn, 'throws');
         }
         lang.throws = throws;
-        function aop(advisor) {
-            return _aop(arguments, advisor);
-        }
-        lang.aop = aop;
     })(lang = JS.lang || (JS.lang = {}));
 })(JS || (JS = {}));
 var AnnotationTarget = JS.lang.AnnotationTarget;
@@ -2779,11 +2764,11 @@ var before = JS.lang.before;
 var after = JS.lang.after;
 var around = JS.lang.around;
 var throws = JS.lang.throws;
-var aop = JS.lang.aop;
 var JS;
 (function (JS) {
     let reflect;
     (function (reflect) {
+        let Y = Types, J = Jsons;
         function klass(fullName) {
             return Annotations.define({
                 name: 'klass',
@@ -2872,10 +2857,10 @@ var JS;
                 return b;
             }
             static newInstance(ctor, ...args) {
-                let tar = Types.isString(ctor) ? Class.byName(ctor) : ctor;
+                let tar = Y.isString(ctor) ? Class.byName(ctor) : ctor;
                 if (!tar)
                     throw new NotFoundError(`The class<${ctor}> is not found!`);
-                return Reflect.construct(tar, Jsons.clone(args));
+                return Reflect.construct(tar, J.clone(args));
             }
             static aliasInstance(alias, ...args) {
                 let cls = Class.forName(alias, true);
@@ -2885,7 +2870,7 @@ var JS;
             }
             static aop(klass, method, advisor) {
                 let isStatic = klass.hasOwnProperty(method), m = isStatic ? klass[method] : klass.prototype[method];
-                if (!Types.isFunction(m))
+                if (!Y.isFunction(m))
                     return;
                 let obj = isStatic ? klass : klass.prototype;
                 if (!obj.hasOwnProperty('__' + method))
@@ -2897,7 +2882,7 @@ var JS;
             }
             static cancelAop(klass, method) {
                 let isStatic = klass.hasOwnProperty(method), m = isStatic ? klass[method] : klass.prototype[method];
-                if (!Types.isFunction(m))
+                if (!Y.isFunction(m))
                     return;
                 let obj = isStatic ? klass : klass.prototype;
                 obj[method] = obj['__' + method];
@@ -2927,7 +2912,7 @@ var JS;
             }
             subclassOf(cls) {
                 let klass = (cls.constructor && cls.constructor === Class) ? cls.getKlass() : cls;
-                return Types.subKlass(this.getKlass(), klass);
+                return Y.subKlass(this.getKlass(), klass);
             }
             newInstance(...args) {
                 let obj = Reflect.construct(this._klass, Arrays.newArray(arguments));
@@ -2949,11 +2934,11 @@ var JS;
                     if (!this._isValidStatic(key))
                         continue;
                     const obj = ctor[key];
-                    if (Types.isFunction(obj)) {
+                    if (Y.isFunction(obj)) {
                         this._methods[key] = new Method(this, key, true, obj, null, null);
                     }
                     else {
-                        this._fields[key] = new Field(this, key, true, Types.type(obj));
+                        this._fields[key] = new Field(this, key, true, Y.type(obj));
                     }
                 }
             }
@@ -2964,11 +2949,11 @@ var JS;
                     if (!this._isValidInstance(key))
                         continue;
                     const obj = this._forceProto(proto, key);
-                    if (Types.isFunction(obj)) {
+                    if (Y.isFunction(obj)) {
                         this._methods[key] = new Method(this, key, false, obj, null, null);
                     }
                     else {
-                        this._fields[key] = new Field(this, key, false, Types.type(obj));
+                        this._fields[key] = new Field(this, key, false, Y.type(obj));
                     }
                 }
             }
@@ -3008,7 +2993,7 @@ var JS;
             }
             _toArray(json) {
                 let arr = [];
-                Jsons.forEach(json, v => {
+                J.forEach(json, v => {
                     arr[arr.length] = v;
                 });
                 return arr;
@@ -3026,32 +3011,31 @@ var JS;
                 return this.fieldsMap(instance)[name];
             }
             _instanceFields(instance) {
-                let instanceFields = {};
-                let keys = Reflect.ownKeys(instance);
+                let fs = {}, keys = Reflect.ownKeys(instance);
                 for (let i = 0; i < keys.length; i++) {
                     const key = keys[i].toString();
                     if (this._isValidInstance(key)) {
                         const obj = instance[key];
-                        if (!Types.isFunction(obj))
-                            instanceFields[key] = new Field(this, key, false, Types.type(obj));
+                        if (!Y.isFunction(obj))
+                            fs[key] = new Field(this, key, false, Y.type(obj));
                     }
                 }
-                this._fields = Jsons.union(instanceFields, this._fields);
+                this._fields = J.union(fs, this._fields);
             }
             fieldsMap(instance, anno) {
                 if (instance)
                     this._instanceFields(instance);
-                let fields = {};
+                let fs = {};
                 if (anno && instance) {
-                    Jsons.forEach(this._fields, (field, key) => {
+                    J.forEach(this._fields, (field, key) => {
                         if (Annotations.hasAnnotation(anno, instance, key))
-                            fields[key] = field;
+                            fs[key] = field;
                     });
                 }
                 else {
-                    fields = this._fields;
+                    fs = this._fields;
                 }
-                return fields;
+                return fs;
             }
             fields(instance, anno) {
                 return this._toArray(this.fieldsMap(instance, anno));
@@ -3059,7 +3043,7 @@ var JS;
             static forName(name, isAlias) {
                 if (!name)
                     return null;
-                let isStr = Types.isString(name);
+                let isStr = Y.isString(name);
                 if (!isStr && name.class)
                     return name.class;
                 let classname = isStr ? name : name.name;
@@ -3088,7 +3072,7 @@ var JS;
                 if (ns.endsWith('.*'))
                     ns = ns.slice(0, ns.length - 2);
                 let a = [];
-                Jsons.forEach(this._MAP, (cls, name) => {
+                J.forEach(this._MAP, (cls, name) => {
                     if (name.startsWith(ns))
                         a.push(cls);
                 });
@@ -3161,79 +3145,9 @@ var __decorate = function (decorators, target, key, desc) {
 };
 var JS;
 (function (JS) {
-    let lang;
-    (function (lang) {
-        class JSError extends Error {
-            constructor(msg, cause) {
-                super(cause ? (cause.message || '') + ' -> ' + (msg || '') : msg || '');
-                this.cause = null;
-                this.name = this.className;
-                if (cause)
-                    this.cause = cause;
-            }
-        }
-        lang.JSError = JSError;
-        class NotHandledError extends JSError {
-        }
-        lang.NotHandledError = NotHandledError;
-        class NotFoundError extends JSError {
-        }
-        lang.NotFoundError = NotFoundError;
-        class ArithmeticError extends JSError {
-        }
-        lang.ArithmeticError = ArithmeticError;
-        class ArgumentError extends JSError {
-        }
-        lang.ArgumentError = ArgumentError;
-        class StateError extends JSError {
-        }
-        lang.StateError = StateError;
-        class NetworkError extends JSError {
-        }
-        lang.NetworkError = NetworkError;
-        class TimeoutError extends JSError {
-        }
-        lang.TimeoutError = TimeoutError;
-    })(lang = JS.lang || (JS.lang = {}));
-})(JS || (JS = {}));
-var JSError = JS.lang.JSError;
-var NotHandledError = JS.lang.NotHandledError;
-var NotFoundError = JS.lang.NotFoundError;
-var ArithmeticError = JS.lang.ArithmeticError;
-var ArgumentError = JS.lang.ArgumentError;
-var StateError = JS.lang.StateError;
-var NetworkError = JS.lang.NetworkError;
-var TimeoutError = JS.lang.TimeoutError;
-var JS;
-(function (JS) {
-    let lang;
-    (function (lang) {
-        lang.Errors = {
-            Error: Error,
-            JSError: lang.JSError,
-            URIError: URIError,
-            ReferenceError: ReferenceError,
-            TypeError: TypeError,
-            RangeError: RangeError,
-            SyntaxError: SyntaxError,
-            EvalError: EvalError,
-            NotHandledError: lang.NotHandledError,
-            NotFoundError: lang.NotFoundError,
-            ArithmeticError: lang.ArithmeticError,
-            ArgumentError: lang.ArgumentError,
-            StateError: lang.StateError,
-            NetworkError: lang.NetworkError,
-            TimeoutError: lang.TimeoutError
-        };
-    })(lang = JS.lang || (JS.lang = {}));
-})(JS || (JS = {}));
-var Errors = JS.lang.Errors;
-var JS;
-(function (JS) {
     let util;
     (function (util) {
-        let _URI_REG = /^(([^\:\/\?\#]+)\:)?(\/\/([^\/\?\#]*))?([^\?\#]*)(\\?([^\#]*))?(\#(.*))?/;
-        let _AUTH_REG = /^(([^\:@]*)(\:([^\:@]*))?@)?([^\:@]*)(\:(\d{1,3}))?/;
+        let Y = util.Types, J = util.Jsons, _URI_REG = /^(([^\:\/\?\#]+)\:)?(\/\/([^\/\?\#]*))?([^\?\#]*)(\\?([^\#]*))?(\#(.*))?/, _AUTH_REG = /^(([^\:@]*)(\:([^\:@]*))?@)?([^\:@]*)(\:(\d{1,3}))?/;
         let _ADU = null;
         class URI {
             constructor(cfg) {
@@ -3248,7 +3162,7 @@ var JS;
                 this._parse(cfg);
             }
             _parse(cfg) {
-                if (util.Types.isString(cfg)) {
+                if (Y.isString(cfg)) {
                     this._parseStr(cfg);
                 }
                 else if (cfg && cfg.href) {
@@ -3260,7 +3174,7 @@ var JS;
                     this.user(uri.user);
                     this.password(uri.password);
                     this.host(uri.host);
-                    this.port(util.Types.isDefined(uri.port) ? uri.port : 80);
+                    this.port(Y.isDefined(uri.port) ? uri.port : 80);
                     this.path(uri.path);
                     this._params = uri.params;
                     this.fragment(uri.fragment);
@@ -3283,7 +3197,7 @@ var JS;
                         this._pwd = authArr[4];
                     if (authArr[5])
                         this._host = authArr[5];
-                    if (util.Types.isDefined(authArr[7]))
+                    if (Y.isDefined(authArr[7]))
                         this._port = parseInt(authArr[7]);
                 }
                 let path = array[5];
@@ -3310,7 +3224,7 @@ var JS;
                     if (!this._params)
                         return null;
                     let query = '';
-                    util.Jsons.forEach(this._params, (v, k) => {
+                    J.forEach(this._params, (v, k) => {
                         query += `${query ? '&' : ''}${k}=${v}`;
                     });
                     return query;
@@ -3367,7 +3281,7 @@ var JS;
             queryObject(params, encode) {
                 if (arguments.length == 0)
                     return this._params;
-                util.Jsons.forEach(params, (value, key) => {
+                J.forEach(params, (value, key) => {
                     this.query(key, value, encode);
                 });
                 return this;
@@ -3376,7 +3290,7 @@ var JS;
                 return this._host ? true : false;
             }
             toAbsolute() {
-                let userinfo = this.userinfo(), port = util.Types.isDefined(this._port) ? ':' + this._port : '', path = this.path() || '', query = this.queryString() || '', fragment = this._frag ? '#' + this._frag : '';
+                let userinfo = this.userinfo(), port = Y.isDefined(this._port) ? ':' + this._port : '', path = this.path() || '', query = this.queryString() || '', fragment = this._frag ? '#' + this._frag : '';
                 path = path + (!query && !fragment ? '' : '?' + query + fragment);
                 return (this._scheme || 'http') + '://' + (userinfo ? userinfo + '@' : '') + (this._host || '') + port + (!path || path.startsWith('/') ? path : ('/' + path));
             }
@@ -3411,7 +3325,7 @@ var JS;
                 if (!json)
                     return '';
                 let q = '';
-                util.Jsons.forEach(json, (v, k) => {
+                J.forEach(json, (v, k) => {
                     q += `&${k}=${encode ? encodeURIComponent(v) : v}`;
                 });
                 return q;
@@ -3465,25 +3379,25 @@ var JS;
     (function (util) {
         class Bundle {
             constructor(res, locale) {
-                let lc = (locale == void 0 ? System.info().locale : locale);
-                this._d = {};
+                let T = this, lc = (locale == void 0 ? System.info().locale : locale);
+                T._d = {};
                 if (res) {
                     if (util.Types.isString(res)) {
                         let pos = res.lastIndexOf('.'), suffix = pos < 0 ? '' : res.slice(pos + 1), prefix = pos < 0 ? res : res.slice(0, pos);
-                        if (!this._load(lc, prefix, suffix))
+                        if (!T._load(lc, prefix, suffix))
                             JSLogger.error('Bundle can\'t load resource file:' + res);
                     }
                     else {
                         if (res.hasOwnProperty(lc)) {
-                            this._d = res[lc];
+                            T._d = res[lc];
                         }
                         else {
                             let lang = util.Locales.lang(lc);
-                            this._d = res.hasOwnProperty(lang) ? res[lang] : res;
+                            T._d = res.hasOwnProperty(lang) ? res[lang] : res;
                         }
                     }
                 }
-                this._lc = lc;
+                T._lc = lc;
             }
             _load(lc, prefix, suffix) {
                 let paths = [];
@@ -3572,104 +3486,107 @@ var JS;
 })(JS || (JS = {}));
 var Dates = JS.util.Dates;
 (function () {
-    var $D = Date, $P = $D.prototype, pad = function (s, l) {
-        new $D();
+    var D = Date, $P = D.prototype, pad = function (s, l) {
+        new D();
         if (!l) {
             l = 2;
         }
         return ("000" + s).slice(l * -1);
     };
     $P.getWeek = function () {
-        let date0 = new $D(this.getFullYear(), 0, 1), diff = Math.round((this.valueOf() - date0.valueOf()) / 86400000);
+        let date0 = new D(this.getFullYear(), 0, 1), diff = Math.round((this.valueOf() - date0.valueOf()) / 86400000);
         return Math.ceil((diff + ((date0.getDay() + 1) - 1)) / 7);
     };
     $P.setWeek = function (week, dayOfWeek) {
         let dw = Types.isDefined(dayOfWeek) ? dayOfWeek : 1;
         return this.setTime(Dates.getDayOfWeek(this, dw).add(week - this.getWeek(), 'w').getTime());
     };
-    $P.clone = function () { return new $D(this.getTime()); };
+    $P.clone = function () { return new D(this.getTime()); };
     $P.setZeroTime = function () {
-        this.setHours(0);
-        this.setMinutes(0);
-        this.setSeconds(0);
-        this.setMilliseconds(0);
-        return this;
+        let T = this;
+        T.setHours(0);
+        T.setMinutes(0);
+        T.setSeconds(0);
+        T.setMilliseconds(0);
+        return T;
     };
     $P.setLastTime = function () {
-        this.setHours(23);
-        this.setMinutes(59);
-        this.setSeconds(59);
-        this.setMilliseconds(999);
-        return this;
+        let T = this;
+        T.setHours(23);
+        T.setMinutes(59);
+        T.setSeconds(59);
+        T.setMilliseconds(999);
+        return T;
     };
     $P.setNowTime = function () {
-        var n = new $D();
-        this.setHours(n.getHours());
-        this.setMinutes(n.getMinutes());
-        this.setSeconds(n.getSeconds());
-        this.setMilliseconds(n.getMilliseconds());
-        return this;
+        let T = this, n = new D();
+        T.setHours(n.getHours());
+        T.setMinutes(n.getMinutes());
+        T.setSeconds(n.getSeconds());
+        T.setMilliseconds(n.getMilliseconds());
+        return T;
     };
     $P.equals = function (d, p = 'ms') {
-        let m = this;
+        let T = this;
         if (p == 'ms')
-            return m.diff(d) == 0;
+            return T.diff(d) == 0;
         if (p == 's')
-            return m.getSeconds() == d.getSeconds();
+            return T.getSeconds() == d.getSeconds();
         if (p == 'm')
-            return m.getMinutes() == d.getMinutes();
+            return T.getMinutes() == d.getMinutes();
         if (p == 'h')
-            return m.getHours() == d.getHours();
+            return T.getHours() == d.getHours();
         if (p == 'y')
-            return m.getFullYear() == d.getFullYear();
+            return T.getFullYear() == d.getFullYear();
         if (p == 'M')
-            return m.getMonth() == d.getMonth();
+            return T.getMonth() == d.getMonth();
         if (p == 'd')
-            return m.getFullYear() == d.getFullYear() && m.getMonth() == d.getMonth() && m.getDate() == d.getDate();
+            return T.getFullYear() == d.getFullYear() && T.getMonth() == d.getMonth() && T.getDate() == d.getDate();
         if (p == 'w')
-            return m.getWeek() == d.getWeek();
+            return T.getWeek() == d.getWeek();
         return false;
     };
     $P.between = function (start, end) { return this.diff(start) >= 0 && this.diff(end) <= 0; };
     $P.isAfter = function (d) { return this.diff(d) > 0; };
     $P.isBefore = function (d) { return this.diff(d) < 0; };
-    $P.isToday = function () { return this.equals(new $D(), 'd'); };
+    $P.isToday = function () { return this.equals(new D(), 'd'); };
     $P.add = function (v, type) {
+        let T = this;
         if (v == 0)
-            return this;
+            return T;
         switch (type) {
             case 'ms': {
-                this.setMilliseconds(this.getMilliseconds() + v);
-                return this;
+                T.setMilliseconds(T.getMilliseconds() + v);
+                return T;
             }
             case 's': {
-                return this.add(v * 1000, 'ms');
+                return T.add(v * 1000, 'ms');
             }
             case 'm': {
-                return this.add(v * 60000, 'ms');
+                return T.add(v * 60000, 'ms');
             }
             case 'h': {
-                return this.add(v * 3600000, 'ms');
+                return T.add(v * 3600000, 'ms');
             }
             case 'd': {
-                this.setDate(this.getDate() + v);
-                return this;
+                T.setDate(T.getDate() + v);
+                return T;
             }
             case 'w': {
-                return this.add(v * 7, 'd');
+                return T.add(v * 7, 'd');
             }
             case 'M': {
-                var n = this.getDate();
-                this.setDate(1);
-                this.setMonth(this.getMonth() + v);
-                this.setDate(Math.min(n, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear())));
-                return this;
+                var n = T.getDate();
+                T.setDate(1);
+                T.setMonth(T.getMonth() + v);
+                T.setDate(Math.min(n, Dates.getDaysOfMonth(T.getMonth(), T.getFullYear())));
+                return T;
             }
             case 'y': {
-                return this.add(v * 12, 'M');
+                return T.add(v * 12, 'M');
             }
         }
-        return this;
+        return T;
     };
     $P.setTimezoneOffset = function (offset) {
         var here = this.getTimezoneOffset(), there = Number(offset) * -6 / 10;
@@ -3696,86 +3613,87 @@ var Dates = JS.util.Dates;
         return true;
     };
     $P.set = function (config) {
+        let T = this;
         if (vt(config.millisecond, 0, 999)) {
-            this.add(config.millisecond - this.getMilliseconds(), 'ms');
+            T.add(config.millisecond - T.getMilliseconds(), 'ms');
         }
         if (vt(config.second, 0, 59)) {
-            this.add(config.second - this.getSeconds(), 's');
+            T.add(config.second - T.getSeconds(), 's');
         }
         if (vt(config.minute, 0, 59)) {
-            this.add(config.minute - this.getMinutes(), 'm');
+            T.add(config.minute - T.getMinutes(), 'm');
         }
         if (vt(config.hour, 0, 23)) {
-            this.add(config.hour - this.getHours(), 'h');
+            T.add(config.hour - T.getHours(), 'h');
         }
-        if (vt(config.day, 1, Dates.getDaysOfMonth(this.getMonth(), this.getFullYear()))) {
-            this.add(config.day - this.getDate(), 'd');
+        if (vt(config.day, 1, Dates.getDaysOfMonth(T.getMonth(), T.getFullYear()))) {
+            T.add(config.day - T.getDate(), 'd');
         }
         if (vt(config.week, 0, 53)) {
-            this.setWeek(config.week);
+            T.setWeek(config.week);
         }
         if (vt(config.month, 0, 11)) {
-            this.add(config.month - this.getMonth(), 'M');
+            T.add(config.month - T.getMonth(), 'M');
         }
         if (vt(config.year, 0, 9999)) {
-            this.add(config.year - this.getFullYear(), 'y');
+            T.add(config.year - T.getFullYear(), 'y');
         }
         if (config.timezoneOffset) {
-            this.setTimezoneOffset(config.timezoneOffset);
+            T.setTimezoneOffset(config.timezoneOffset);
         }
-        return this;
+        return T;
     };
     $P.diff = function (date) {
-        return this - (date || new $D());
+        return this - (date || new D());
     };
     $P.format = function (format, locale) {
-        let x = this, fmt = format || 'YYYY-MM-DD HH:mm:ss', bundle = new Bundle(Dates.I18N_RESOURCE, locale);
+        let T = this, fmt = format || 'YYYY-MM-DD HH:mm:ss', bundle = new Bundle(Dates.I18N_RESOURCE, locale);
         return fmt.replace(/YYYY|YY|MMMM|MMM|MM|M|DD|D|hh|h|HH|H|mm|m|ss|s|dddd|ddd|A/g, function (m) {
             switch (m) {
                 case "YYYY":
-                    return pad(x.getFullYear(), 4);
+                    return pad(T.getFullYear(), 4);
                 case "YY":
-                    return pad(x.getFullYear());
+                    return pad(T.getFullYear());
                 case "MMMM":
-                    return bundle.get('MONTH_NAMES')[x.getMonth()];
+                    return bundle.get('MONTH_NAMES')[T.getMonth()];
                 case "MMM":
-                    return bundle.get('MONTH_SHORT_NAMES')[x.getMonth()];
+                    return bundle.get('MONTH_SHORT_NAMES')[T.getMonth()];
                 case "MM":
-                    return pad((x.getMonth() + 1));
+                    return pad((T.getMonth() + 1));
                 case "M":
-                    return x.getMonth() + 1;
+                    return T.getMonth() + 1;
                 case "DD":
-                    return pad(x.getDate());
+                    return pad(T.getDate());
                 case "D":
-                    return x.getDate();
+                    return T.getDate();
                 case "hh":
                     {
-                        let h = x.getHours();
+                        let h = T.getHours();
                         return pad(h < 13 ? (h === 0 ? 12 : h) : (h - 12));
                     }
                 case "h":
                     {
-                        let h = x.getHours();
+                        let h = T.getHours();
                         return h < 13 ? (h === 0 ? 12 : h) : (h - 12);
                     }
                 case "HH":
-                    return pad(x.getHours());
+                    return pad(T.getHours());
                 case "H":
-                    return x.getHours();
+                    return T.getHours();
                 case "mm":
-                    return pad(x.getMinutes());
+                    return pad(T.getMinutes());
                 case "m":
-                    return x.getMinutes();
+                    return T.getMinutes();
                 case "ss":
-                    return pad(x.getSeconds());
+                    return pad(T.getSeconds());
                 case "s":
-                    return x.getSeconds();
+                    return T.getSeconds();
                 case "dddd":
-                    return bundle.get('WEEK_DAY_NAMES')[x.getDay()];
+                    return bundle.get('WEEK_DAY_NAMES')[T.getDay()];
                 case "ddd":
-                    return bundle.get('WEEK_DAY_SHORT_NAMES')[x.getDay()];
+                    return bundle.get('WEEK_DAY_SHORT_NAMES')[T.getDay()];
                 case "A":
-                    return bundle.get(x.getHours() < 12 ? 'AM' : 'PM');
+                    return bundle.get(T.getHours() < 12 ? 'AM' : 'PM');
                 default:
                     return m;
             }
@@ -4037,6 +3955,51 @@ var JS;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
 var Numbers = JS.util.Numbers;
+var JS;
+(function (JS) {
+    let lang;
+    (function (lang) {
+        class JSError extends Error {
+            constructor(msg, cause) {
+                super(cause ? (cause.message || '') + ' -> ' + (msg || '') : msg || '');
+                this.cause = null;
+                this.name = this.className;
+                if (cause)
+                    this.cause = cause;
+            }
+        }
+        lang.JSError = JSError;
+        class NotHandledError extends JSError {
+        }
+        lang.NotHandledError = NotHandledError;
+        class NotFoundError extends JSError {
+        }
+        lang.NotFoundError = NotFoundError;
+        class ArithmeticError extends JSError {
+        }
+        lang.ArithmeticError = ArithmeticError;
+        class ArgumentError extends JSError {
+        }
+        lang.ArgumentError = ArgumentError;
+        class StateError extends JSError {
+        }
+        lang.StateError = StateError;
+        class NetworkError extends JSError {
+        }
+        lang.NetworkError = NetworkError;
+        class TimeoutError extends JSError {
+        }
+        lang.TimeoutError = TimeoutError;
+    })(lang = JS.lang || (JS.lang = {}));
+})(JS || (JS = {}));
+var JSError = JS.lang.JSError;
+var NotHandledError = JS.lang.NotHandledError;
+var NotFoundError = JS.lang.NotFoundError;
+var ArithmeticError = JS.lang.ArithmeticError;
+var ArgumentError = JS.lang.ArgumentError;
+var StateError = JS.lang.StateError;
+var NetworkError = JS.lang.NetworkError;
+var TimeoutError = JS.lang.TimeoutError;
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -4053,27 +4016,28 @@ var JS;
             klass('JS.lang.AssertError')
         ], AssertError);
         lang.AssertError = AssertError;
+        let T = Types, F = Functions;
         class Assert {
             static fail(msg) {
                 throw new AssertError(msg);
             }
             static failNotSameType(expected, actual, msg) {
-                this.fail((msg ? msg + ' ' : '') + 'expected type:<' + expected + '> but was:<' + actual + '>');
+                this.fail((msg || '') + ' expected type:<' + expected + '> but was:<' + actual + '>');
             }
             static failNotEqual(expected, actual, msg) {
-                this.fail((msg ? msg + ' ' : '') + 'expected:<' + expected + '> but was:<' + actual + '>');
+                this.fail((msg || '') + ' expected:<' + expected + '> but was:<' + actual + '>');
             }
             static failEqual(expected, actual, msg) {
-                this.fail((msg ? msg + ' ' : '') + '<' + expected + '> equals to <' + actual + '>');
+                this.fail((msg || '') + ' <' + expected + '> equals to <' + actual + '>');
             }
             static _equal(expected, actual) {
                 if (expected === actual)
                     return true;
-                if (Types.isArray(expected) && Types.isArray(actual) && Arrays.equal(expected, actual))
+                if (T.isArray(expected) && T.isArray(actual) && Arrays.equal(expected, actual))
                     return true;
-                if (Types.isJsonObject(expected) && Types.isJsonObject(actual) && Jsons.equal(expected, actual))
+                if (T.isJsonObject(expected) && T.isJsonObject(actual) && Jsons.equal(expected, actual))
                     return true;
-                if (Types.isDate(expected) && Types.isDate(actual) && expected.getTime() === actual.getTime())
+                if (T.isDate(expected) && T.isDate(actual) && expected.getTime() === actual.getTime())
                     return true;
                 return false;
             }
@@ -4088,23 +4052,23 @@ var JS;
                 this.failEqual(expected, actual, msg);
             }
             static sameType(expected, actual, msg) {
-                let eType = Types.type(expected), aType = Types.type(actual);
-                if (eType == aType)
+                let et = T.type(expected), at = T.type(actual);
+                if (et == at)
                     return;
-                this.failNotSameType(eType, aType, msg);
+                this.failNotSameType(et, at, msg);
             }
             static notSameType(expected, actual, msg) {
-                if (Types.type(expected) != Types.type(actual))
+                if (T.type(expected) != T.type(actual))
                     return;
-                this.fail((msg ? msg + ' ' : '') + 'expected not same type');
+                this.fail((msg || '') + ' expected not same type');
             }
             static true(condition, msg) {
                 if (!condition)
-                    this.fail((msg ? msg + ' ' : '') + 'expected:<TRUE> but was:<FALSE>');
+                    this.fail((msg || '') + ' expected:<TRUE> but was:<FALSE>');
             }
             static false(condition, msg) {
                 if (condition)
-                    this.fail((msg ? msg + ' ' : '') + 'expected:<FALSE> but was:<TRUE>');
+                    this.fail((msg || '') + ' expected:<FALSE> but was:<TRUE>');
             }
             static defined(obj, msg) {
                 this.true(obj != void 0, msg);
@@ -4115,25 +4079,25 @@ var JS;
             static error(fn, msg) {
                 let has = false;
                 try {
-                    Functions.call(fn);
+                    F.call(fn);
                 }
                 catch (e) {
                     has = true;
                 }
                 if (!has)
-                    this.fail((msg ? msg + ' ' : '') + 'expected throw an error');
+                    this.fail((msg || '') + ' expected throw an error');
             }
             static equalError(error, fn, msg) {
                 let has = false;
                 try {
-                    Functions.call(fn);
+                    F.call(fn);
                 }
                 catch (e) {
-                    if (Types.ofKlass(e, error))
+                    if (T.ofKlass(e, error))
                         has = true;
                 }
                 if (!has)
-                    this.fail((msg ? msg + ' ' : '') + 'expected throw an error');
+                    this.fail((msg || '') + ' expected throw an error');
             }
         }
         lang.Assert = Assert;
@@ -4269,37 +4233,39 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let _ready = false;
+        let R = false, D = document, W = window;
         class Bom {
             static ready(fn) {
-                if (_ready)
+                if (R) {
                     fn();
+                    return;
+                }
                 let callback = function () {
-                    _ready = true;
+                    R = true;
                     fn();
                     callback = null;
                 };
-                let wc = window['HTMLImports'] && window['HTMLImports'].whenReady;
+                let wc = W['HTMLImports'] && W['HTMLImports'].whenReady;
                 if (wc)
                     return wc(callback);
-                if (document.readyState === "complete") {
+                if (D.readyState === "complete") {
                     setTimeout(callback, 1);
                 }
-                else if (document.addEventListener) {
-                    document.addEventListener("DOMContentLoaded", callback, false);
-                    window.addEventListener("load", callback, false);
+                else if (D.addEventListener) {
+                    D.addEventListener("DOMContentLoaded", callback, false);
+                    W.addEventListener("load", callback, false);
                 }
                 else {
-                    document['attachEvent']("onreadystatechange", callback);
-                    window['attachEvent']("onload", callback);
+                    D['attachEvent']("onreadystatechange", callback);
+                    W['attachEvent']("onload", callback);
                     var top = false;
                     try {
-                        top = (window.frameElement == null && document.documentElement) ? true : false;
+                        top = (W.frameElement == null && D.documentElement) ? true : false;
                     }
                     catch (e) { }
                     if (top && top['doScroll']) {
                         (function doScrollCheck() {
-                            if (!_ready) {
+                            if (!R) {
                                 try {
                                     top['doScroll']('left');
                                 }
@@ -4325,15 +4291,15 @@ var JS;
                 return e['contentDocument'] || e['contentWindow'].document;
             }
             static fullscreen() {
-                let de = document.documentElement;
+                let de = D.documentElement;
                 let fnName = de['mozRequestFullScreen'] ? 'mozRequestFullScreen' : (de['webkitRequestFullScreen'] ? 'webkitRequestFullScreen' : 'requestFullscreen');
                 if (de[fnName])
                     de[fnName]();
             }
             static normalscreen() {
-                let fnName = document['mozCancelFullScreen'] ? 'mozCancelFullScreen' : (document['webkitCancelFullScreen'] ? 'webkitCancelFullScreen' : 'exitFullscreen');
-                if (document[fnName])
-                    document[fnName]();
+                let fnName = D['mozCancelFullScreen'] ? 'mozCancelFullScreen' : (D['webkitCancelFullScreen'] ? 'webkitCancelFullScreen' : 'exitFullscreen');
+                if (D[fnName])
+                    D[fnName]();
             }
         }
         util.Bom = Bom;
@@ -4447,45 +4413,47 @@ var JS;
 var View = JS.view.View;
 var JS;
 (function (JS) {
-    let model;
-    (function (model) {
+    let app;
+    (function (app) {
         let Page = class Page {
             initialize() { }
-            ;
             destroy() { }
-            ;
             static fireEvent(e, args) {
                 this._bus.fire(e, args);
             }
-            static onEvent(e, handler) {
-                this._bus.on(e, handler);
+            static onEvent(e, handler, once) {
+                this._bus.on(e, handler, once);
             }
             static offEvent(e) {
                 this._bus.off(e);
             }
-            static current(page) {
-                if (arguments.length == 0)
-                    return this._page;
-                this._page = Components.get(page);
-                this._bus.context(this._page);
+            static init(page) {
+                let T = this, p = Components.get(page);
+                T._page = p;
+                T._bus.context(T._page);
                 Bom.ready(() => {
-                    this._page.render();
+                    T._page.enter();
                 });
             }
-            static view(view) {
-                return Components.get(view);
+            static currentPage() {
+                return this._page;
             }
-            static uri() {
-                return new URI(window.location.href);
+            static view(v) {
+                return Components.get(v);
             }
-            static load(url) {
-                let u = url ? url : location.href;
-                this.fireEvent('loading', [u]);
-                window.location.href = u;
-                this.fireEvent('loaded', [u]);
+            static redirect(url, query) {
+                let T = this, p = T._page;
+                if (p) {
+                    T.fireEvent('leaving', [p]);
+                    Components.remove(p.className);
+                }
+                let uri = new URI(url);
+                if (query)
+                    Types.isString(query) ? uri.queryString(query) : uri.queryObject(query);
+                location.href = uri.toString();
             }
-            static open(url, target = 'blank', specs) {
-                let args = [url, target];
+            static open(url, specs) {
+                let args = [url, 'blank'];
                 if (specs) {
                     let spe = '';
                     Jsons.forEach(specs, (v, k) => {
@@ -4497,15 +4465,16 @@ var JS;
                 return window.open.apply(window, args);
             }
             static fullscreen(onoff) {
+                let T = this;
                 if (onoff) {
-                    this.fireEvent('fullscreening');
+                    T.fireEvent('fullscreening');
                     Bom.fullscreen();
-                    this.fireEvent('fullscreened');
+                    T.fireEvent('fullscreened');
                 }
                 else {
-                    this.fireEvent('normalscreening');
+                    T.fireEvent('normalscreening');
                     Bom.normalscreen();
-                    this.fireEvent('normalscreened');
+                    T.fireEvent('normalscreened');
                 }
             }
         };
@@ -4513,33 +4482,27 @@ var JS;
         Page = __decorate([
             klass('JS.app.Page')
         ], Page);
-        model.Page = Page;
-    })(model = JS.model || (JS.model = {}));
+        app.Page = Page;
+    })(app = JS.app || (JS.app = {}));
 })(JS || (JS = {}));
-var Page = JS.model.Page;
-window.on('load', () => {
-    Page.fireEvent('loaded', [window.location.href]);
-});
-window.on('beforeunload', () => {
-    Page.fireEvent('unloading', [window.location.href]);
-});
+var Page = JS.app.Page;
 var JS;
 (function (JS) {
-    let model;
-    (function (model) {
+    let app;
+    (function (app) {
         class AppEvent extends CustomEvent {
             constructor(type, initDict) {
                 super(type, initDict);
             }
         }
-        model.AppEvent = AppEvent;
+        app.AppEvent = AppEvent;
         class App {
             static init(settings) {
                 this._sets = settings;
                 this._sets.properties = this._sets.properties || {};
-                this._logger = new Log(this.namespace(), settings.logLevel || LogLevel.INFO);
+                this._logger = new Log(this.NS(), settings.logLevel || LogLevel.INFO);
             }
-            static namespace() {
+            static NS() {
                 return this._sets.name + '/' + this.version();
             }
             static appName() {
@@ -4563,8 +4526,9 @@ var JS;
                 return this.properties({ key: val });
             }
             static fireEvent(e, arg) {
-                LocalStore.remove(e + '.' + App.namespace());
-                LocalStore.set(e + '.' + App.namespace(), arg);
+                let p = app.Page.currentPage(), pn = p && p.className, k = `${e}|${pn ? `${pn}|` : ''}${App.NS()}`;
+                LocalStore.remove(k);
+                LocalStore.set(k, arg);
             }
             static onEvent(e, handler, once) {
                 this._bus.on(e, handler, once);
@@ -4574,33 +4538,29 @@ var JS;
             }
         }
         App._bus = new EventBus(App);
-        model.App = App;
-    })(model = JS.model || (JS.model = {}));
+        app.App = App;
+    })(app = JS.app || (JS.app = {}));
 })(JS || (JS = {}));
-var App = JS.model.App;
-var AppEvent = JS.model.AppEvent;
+var App = JS.app.App;
+var AppEvent = JS.app.AppEvent;
 (function () {
     var oldSetItem = localStorage.setItem;
-    localStorage.setItem = function (key, newValue) {
-        var ev = document.createEvent('CustomEvent');
-        ev.initCustomEvent('AppEvent', false, false, '');
+    localStorage.setItem = function (key, val) {
+        let ev = new CustomEvent('AppEvent');
         ev['key'] = key;
-        ev['newValue'] = newValue;
-        ev['url'] = Page.uri().toString();
+        ev['newValue'] = val;
         window.dispatchEvent(ev);
         oldSetItem.apply(this, arguments);
     };
-    $(window).on('AppEvent storage', (evt) => {
-        let e = evt.originalEvent, name = e.key;
-        if (!name)
-            return;
-        let namespace = '.' + App.namespace();
-        if (!name.endsWith(namespace))
-            return;
+    window.on('AppEvent storage', (e) => {
         if (e.newValue == null)
             return;
-        let ev = new AppEvent(name.slice(0, name.length - namespace.length));
-        ev.url = e.url;
+        let name = e.key;
+        if (!name || name.indexOf('|' + App.NS()) < 0)
+            return;
+        let ps = name.split('|'), ev = new AppEvent(ps[0]);
+        ev.fromUrl = e.url;
+        ev.fromPage = ps.length == 3 ? ps[1] : null;
         App._bus.fire(ev, [StoreHelper.parse(e.newValue)]);
     });
 })();
@@ -4608,6 +4568,7 @@ var JS;
 (function (JS) {
     let model;
     (function (model) {
+        let F = Jsons.find;
         class ResultSet {
             constructor() {
                 this._data = null;
@@ -4674,17 +4635,17 @@ var JS;
             static parseJSON(raw, format) {
                 if (!raw)
                     return null;
-                const fmt = format || this.DEFAULT_FORMAT, root = Jsons.find(raw, fmt.rootProperty);
+                const fmt = format || this.DEFAULT_FORMAT, root = F(raw, fmt.rootProperty);
                 let result = new ResultSet();
-                result.lang(Jsons.find(root, fmt.langProperty));
-                result.message(Jsons.find(root, fmt.messageProperty));
-                result.version(Jsons.find(root, fmt.versionProperty));
+                result.lang(F(root, fmt.langProperty));
+                result.message(F(root, fmt.messageProperty));
+                result.version(F(root, fmt.versionProperty));
                 result.success(fmt.isSuccess ? fmt.isSuccess(root) : (root[fmt.successProperty] === (fmt.successCode || true)));
-                result.data(Jsons.find(root, fmt.recordsProperty));
+                result.data(F(root, fmt.recordsProperty));
                 result.rawObject(root);
-                result.page(Jsons.find(root, fmt.pageProperty));
-                result.pageSize(Jsons.find(root, fmt.pageSizeProperty));
-                result.total(Jsons.find(root, fmt.totalProperty));
+                result.page(F(root, fmt.pageProperty));
+                result.pageSize(F(root, fmt.pageSizeProperty));
+                result.total(F(root, fmt.totalProperty));
                 return result;
             }
         }
@@ -4753,8 +4714,8 @@ var JS;
 var JsonProxy = JS.model.JsonProxy;
 var JS;
 (function (JS) {
-    let model;
-    (function (model_1) {
+    let app;
+    (function (app) {
         var Service_1;
         let Service = Service_1 = class Service {
             initialize() { }
@@ -4773,8 +4734,8 @@ var JS;
                     this._proxy = Class.newInstance(Service_1.DEFAULT_PROXY);
                 return new Promise((resolve, reject) => {
                     return this._proxy.execute(api, params).then((result) => {
-                        let model = Class.newInstance(api.dataKlass || model_1.Model), rds = result.data();
-                        Types.ofKlass(model, model_1.Model) ? model.setData(rds) : model = rds;
+                        let model = Class.newInstance(api.dataKlass || Model), rds = result.data();
+                        Types.ofKlass(model, Model) ? model.setData(rds) : model = rds;
                         resolve(model);
                     }).catch((res) => {
                         reject(res);
@@ -4782,14 +4743,14 @@ var JS;
                 });
             }
         };
-        Service.DEFAULT_PROXY = model_1.JsonProxy;
+        Service.DEFAULT_PROXY = JsonProxy;
         Service = Service_1 = __decorate([
             klass('JS.app.Service')
         ], Service);
-        model_1.Service = Service;
-    })(model = JS.model || (JS.model = {}));
+        app.Service = Service;
+    })(app = JS.app || (JS.app = {}));
 })(JS || (JS = {}));
-var Service = JS.model.Service;
+var Service = JS.app.Service;
 var JS;
 (function (JS) {
     let ds;
@@ -4847,6 +4808,7 @@ var JS;
 (function (JS) {
     let ds;
     (function (ds) {
+        let J = Jsons;
         class LinkedList {
             constructor() {
                 this._s = 0;
@@ -4883,7 +4845,7 @@ var JS;
                 if (this._s > 0) {
                     let node = this._hd;
                     while (node) {
-                        list.add(Jsons.clone(node.data));
+                        list.add(J.clone(node.data));
                         node = node.next;
                     }
                 }
@@ -4969,7 +4931,7 @@ var JS;
                 return this.indexOf(data, eq) > -1;
             }
             _addLast(d) {
-                let node = { data: Jsons.clone(d), prev: null, next: null };
+                let node = { data: J.clone(d), prev: null, next: null };
                 if (this._tl) {
                     node.prev = this._tl;
                     this._tl.next = node;
@@ -4980,7 +4942,7 @@ var JS;
                 this._s += 1;
             }
             _addFirst(d) {
-                let node = { data: Jsons.clone(d), prev: null, next: null };
+                let node = { data: J.clone(d), prev: null, next: null };
                 if (this._hd) {
                     node.next = this._hd;
                     this._hd.prev = node;
@@ -5012,7 +4974,7 @@ var JS;
                 let nextNode = this._findAt(i);
                 if (!nextNode)
                     return;
-                let prevNode = nextNode.prev, newNode = { data: Jsons.clone(a), next: nextNode, prev: prevNode };
+                let prevNode = nextNode.prev, newNode = { data: J.clone(a), next: nextNode, prev: prevNode };
                 prevNode.next = newNode;
                 nextNode.prev = newNode;
                 this._s += 1;
@@ -5242,6 +5204,7 @@ var JS;
     (function (model) {
         let validator;
         (function (validator) {
+            let E = Check.isEmpty, J = Jsons;
             class ValidatorConfig {
             }
             validator.ValidatorConfig = ValidatorConfig;
@@ -5302,11 +5265,11 @@ var JS;
             validator.CustomValidatorConfig = CustomValidatorConfig;
             class CustomValidator extends Validator {
                 constructor(cfg) {
-                    super(Jsons.union(new CustomValidatorConfig(), cfg));
+                    super(J.union(new CustomValidatorConfig(), cfg));
                 }
                 validate(val) {
                     let cfg = this._cfg;
-                    if ((Check.isEmpty(val) && !cfg.allowEmpty) || !cfg.validate(val))
+                    if ((E(val) && !cfg.allowEmpty) || !cfg.validate(val))
                         return cfg.message || false;
                     return true;
                 }
@@ -5320,7 +5283,7 @@ var JS;
                     super(cfg);
                 }
                 validate(val) {
-                    if (val == void 0 || Check.isEmpty(String(val).trim()))
+                    if (val == void 0 || E(String(val).trim()))
                         return this._cfg.message || false;
                     return true;
                 }
@@ -5335,11 +5298,11 @@ var JS;
             validator.RangeValidatorConfig = RangeValidatorConfig;
             class RangeValidator extends Validator {
                 constructor(cfg) {
-                    super(Jsons.union(new RangeValidatorConfig(), cfg));
+                    super(J.union(new RangeValidatorConfig(), cfg));
                 }
                 validate(val) {
                     let cfg = this._cfg;
-                    if ((Check.isEmpty(val) && !cfg.allowEmpty) || !Types.isNumeric(val))
+                    if ((E(val) && !cfg.allowEmpty) || !Types.isNumeric(val))
                         return cfg.nanMessage;
                     let min = cfg.min, max = cfg.max;
                     val = Number(val == void 0 ? 0 : val);
@@ -5360,11 +5323,11 @@ var JS;
             validator.LengthValidatorConfig = LengthValidatorConfig;
             class LengthValidator extends Validator {
                 constructor(cfg) {
-                    super(Jsons.union(new LengthValidatorConfig(), cfg));
+                    super(J.union(new LengthValidatorConfig(), cfg));
                 }
                 validate(val) {
                     let cfg = this._cfg;
-                    if (Check.isEmpty(val)) {
+                    if (E(val)) {
                         return !cfg.allowEmpty ? (cfg.invalidTypeMessage || false) : true;
                     }
                     if (!Types.isString(val) && !Types.isArray(val))
@@ -5387,11 +5350,11 @@ var JS;
             validator.FormatValidatorConfig = FormatValidatorConfig;
             class FormatValidator extends Validator {
                 constructor(cfg) {
-                    super(Jsons.union(new FormatValidatorConfig(), cfg));
+                    super(J.union(new FormatValidatorConfig(), cfg));
                 }
                 validate(val) {
                     let cfg = this._cfg;
-                    return (Check.isEmpty(val) && !cfg.allowEmpty) || !cfg.matcher.test(val) ? (cfg.message || false) : true;
+                    return (E(val) && !cfg.allowEmpty) || !cfg.matcher.test(val) ? (cfg.message || false) : true;
                 }
             }
             validator.FormatValidator = FormatValidator;
@@ -5411,47 +5374,52 @@ var JS;
     (function (model) {
         class Field {
             constructor(config) {
-                this._config = Jsons.union({
+                this._cfg = Jsons.union({
                     type: 'string',
                     isId: false,
                     nullable: true,
                     defaultValue: null
                 }, config);
             }
-            config() {
-                return this._config;
+            config(cfg) {
+                let T = this;
+                if (cfg == void 0)
+                    return T._cfg;
+                T._cfg = Jsons.union(T._cfg, cfg);
+                return T;
             }
             name() {
-                return this._config.name;
+                return this._cfg.name;
             }
             alias() {
-                let nameMapping = this._config.nameMapping;
-                if (!nameMapping)
+                let mp = this._cfg.nameMapping;
+                if (!mp)
                     return this.name();
-                return Types.isString(nameMapping) ? nameMapping : nameMapping.call(this);
+                return Types.isString(mp) ? mp : mp.call(this);
             }
             isId() {
-                return this._config.isId;
+                return this._cfg.isId;
             }
             defaultValue() {
-                return this._config.defaultValue;
+                return this._cfg.defaultValue;
             }
             type() {
-                return this._config.type;
+                return this._cfg.type;
             }
             nullable() {
-                return this._config.nullable;
+                return this._cfg.nullable;
             }
             set(val) {
-                if (!this.nullable() && val == void 0)
-                    throw new TypeError(`This Field<${this.name()}> must be not null`);
-                let fn = this._config.setter, v = fn ? fn.apply(this, [val]) : val;
-                return v === undefined ? this._config.defaultValue : v;
+                let T = this;
+                if (!T.nullable() && val == void 0)
+                    throw new TypeError(`This Field<${T.name()}> must be not null`);
+                let fn = T._cfg.setter, v = fn ? fn.apply(T, [val]) : val;
+                return v === undefined ? T._cfg.defaultValue : v;
             }
             compare(v1, v2) {
                 let ret = 0;
-                if (this._config.comparable) {
-                    ret = this._config.comparable(v1, v2);
+                if (this._cfg.comparable) {
+                    ret = this._cfg.comparable(v1, v2);
                 }
                 else {
                     ret = (v1 === v2) ? 0 : ((v1 < v2) ? -1 : 1);
@@ -5462,7 +5430,7 @@ var JS;
                 return this.compare(v1, v2) === 0;
             }
             validate(value, errors) {
-                let cfg = this._config, vts = cfg.validators, rst, ret = '';
+                let cfg = this._cfg, vts = cfg.validators, rst, ret = '';
                 if (!vts)
                     return true;
                 for (let i = 0, len = vts.length; i < len; ++i) {
@@ -5484,27 +5452,28 @@ var ModelField = JS.model.Field;
 var JS;
 (function (JS) {
     let model;
-    (function (model_2) {
+    (function (model_1) {
+        let E = Check.isEmpty, J = Jsons;
         class ModelConfig {
             constructor() {
                 this.idProperty = 'id';
                 this.iniData = null;
             }
         }
-        model_2.ModelConfig = ModelConfig;
+        model_1.ModelConfig = ModelConfig;
         let Model = class Model {
             constructor(cfg) {
                 this._fields = {};
                 this._eventBus = new EventBus(this);
                 this._data = {};
                 this._isD = false;
-                cfg = Jsons.union(new ModelConfig(), cfg);
+                cfg = J.union(new ModelConfig(), cfg);
                 let defaultFields = this.getClass().getKlass().DEFAULT_FIELDS;
-                this._config = Types.isDefined(defaultFields) ? Jsons.union(cfg, { fields: defaultFields }) : cfg;
+                this._config = Types.isDefined(defaultFields) ? J.union(cfg, { fields: defaultFields }) : cfg;
                 this._addFields(this._config.fields);
                 let listeners = this._config.listeners;
                 if (listeners)
-                    Jsons.forEach(listeners, (v, key) => {
+                    J.forEach(listeners, (v, key) => {
                         this.on(key, v);
                     });
             }
@@ -5516,14 +5485,13 @@ var JS;
                 let tField = null;
                 if (cfg.name in this._fields) {
                     tField = this._fields[cfg.name];
-                    let c = tField.config();
-                    c = Jsons.union(c, cfg);
+                    tField.config(cfg);
                 }
                 else {
                     cfg.isId = cfg.isId || this._config.idProperty === cfg.name;
-                    tField = new model_2.Field(cfg);
-                    this._fields[tField.name()] = tField;
+                    tField = new model_1.Field(cfg);
                 }
+                this._fields[tField.name()] = tField;
                 if (tField.isId())
                     this._config.idProperty = cfg.name;
             }
@@ -5580,7 +5548,7 @@ var JS;
                 return this;
             }
             clone() {
-                let model = Class.newInstance(this.className, Jsons.clone(this._config));
+                let model = Class.newInstance(this.className, J.clone(this._config));
                 model.setData(this.getData());
                 return model;
             }
@@ -5589,10 +5557,10 @@ var JS;
             }
             load(quy, silent) {
                 this._check();
-                let me = this, query = Jsons.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
+                let me = this, query = J.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
-                return new model_2.JsonProxy().execute(query).then(function (result) {
+                return new model_1.JsonProxy().execute(query).then(function (result) {
                     if (result) {
                         let records = result.data();
                         if (!records)
@@ -5609,19 +5577,19 @@ var JS;
             }
             setData(data, silent) {
                 this._check();
-                let oldData = Jsons.clone(this._data), newData = data;
+                let oldData = J.clone(this._data), newData = data;
                 if (!silent)
                     this._fire('dataupdating', [newData, oldData]);
                 this._data = {};
                 if (newData) {
-                    if (Check.isEmpty(this._fields)) {
-                        Jsons.forEach(newData, (v, k) => {
+                    if (E(this._fields)) {
+                        J.forEach(newData, (v, k) => {
                             this._newField({ name: k });
                             this.set(k, v, true);
                         });
                     }
                     else {
-                        Jsons.forEach(this._fields, (f, name) => {
+                        J.forEach(this._fields, (f, name) => {
                             this.set(name, newData[f.alias()], true);
                         });
                     }
@@ -5671,7 +5639,7 @@ var JS;
                 return this;
             }
             isEmpty() {
-                return Check.isEmpty(this._data);
+                return E(this._data);
             }
             destroy() {
                 if (this._isD)
@@ -5694,7 +5662,7 @@ var JS;
                 if (!this._fields)
                     return null;
                 let f = null;
-                Jsons.some(this._fields, field => {
+                J.some(this._fields, field => {
                     let is = field.isId();
                     if (is)
                         f = field;
@@ -5710,10 +5678,10 @@ var JS;
             }
             validate(result) {
                 let vdata = this._data;
-                if (Check.isEmpty(vdata))
+                if (E(vdata))
                     return true;
                 let rst = result || new ValidateResult(), str = '';
-                Jsons.forEach(vdata, (v, k) => {
+                J.forEach(vdata, (v, k) => {
                     let field = this.getField(k);
                     if (field) {
                         let ret = this.validateField(field.name(), v, rst);
@@ -5754,7 +5722,7 @@ var JS;
             klass('JS.model.Model'),
             __metadata("design:paramtypes", [ModelConfig])
         ], Model);
-        model_2.Model = Model;
+        model_1.Model = Model;
     })(model = JS.model || (JS.model = {}));
 })(JS || (JS = {}));
 var Model = JS.model.Model;
@@ -5762,14 +5730,15 @@ var ModelConfig = JS.model.ModelConfig;
 var JS;
 (function (JS) {
     let model;
-    (function (model_3) {
+    (function (model_2) {
+        let J = Jsons;
         ;
         class ListModelConfig {
             constructor() {
                 this.autoLoad = false;
             }
         }
-        model_3.ListModelConfig = ListModelConfig;
+        model_2.ListModelConfig = ListModelConfig;
         let ListModel = class ListModel {
             constructor(cfg) {
                 this._data = [];
@@ -5779,7 +5748,7 @@ var JS;
                 this._config = this._initConfig(cfg);
                 let listeners = this._config.listeners;
                 if (listeners)
-                    Jsons.forEach(listeners, (v, key) => {
+                    J.forEach(listeners, (v, key) => {
                         this.on(key, v);
                     });
                 if (this._config.iniData)
@@ -5788,7 +5757,7 @@ var JS;
                     this.reload();
             }
             _initConfig(cfg) {
-                return Jsons.union(new ListModelConfig(), cfg);
+                return J.union(new ListModelConfig(), cfg);
             }
             _check() {
                 if (this.isDestroyed())
@@ -5869,11 +5838,11 @@ var JS;
             }
             load(quy, silent) {
                 this._check();
-                let me = this, query = Jsons.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
-                query.data = Jsons.union(query.data, this._sortParams());
+                let me = this, query = J.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
+                query.data = J.union(query.data, this._sortParams());
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
-                return new model_3.JsonProxy().execute(query).then(function (result) {
+                return new model_2.JsonProxy().execute(query).then(function (result) {
                     if (result.success()) {
                         me.setData(result.data(), silent);
                         me._fire('loadsuccess', [result]);
@@ -5893,7 +5862,7 @@ var JS;
             }
             setData(data, silent) {
                 this._check();
-                let newData = data, oldData = Jsons.clone(this._data);
+                let newData = data, oldData = J.clone(this._data);
                 if (!silent)
                     this._fire('dataupdating', [newData, oldData]);
                 this._data = data || [];
@@ -5960,7 +5929,7 @@ var JS;
                 if (!id || this.size() == 0)
                     return -1;
                 let idName = 'id';
-                if (this._modelKlass && Types.subKlass(this._modelKlass, model_3.Model)) {
+                if (this._modelKlass && Types.subKlass(this._modelKlass, model_2.Model)) {
                     let model = Class.newInstance(this._modelKlass), field = model.getIdField();
                     if (field)
                         idName = field.alias();
@@ -6016,7 +5985,7 @@ var JS;
                 return this.size() == 0;
             }
             clone() {
-                let model = Class.newInstance(this.className, Jsons.clone(this._config));
+                let model = Class.newInstance(this.className, J.clone(this._config));
                 model.setData(this.getData());
                 return model;
             }
@@ -6049,7 +6018,7 @@ var JS;
             klass('JS.model.ListModel'),
             __metadata("design:paramtypes", [ListModelConfig])
         ], ListModel);
-        model_3.ListModel = ListModel;
+        model_2.ListModel = ListModel;
     })(model = JS.model || (JS.model = {}));
 })(JS || (JS = {}));
 var ListModel = JS.model.ListModel;
@@ -6283,6 +6252,7 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
+        let J = Jsons;
         let Widget = class Widget {
             constructor(cfg) {
                 this._config = null;
@@ -6346,11 +6316,11 @@ var JS;
             _initConfig(cfg) {
                 let defaultCfg = Class.newInstance(this.className + 'Config');
                 cfg.name = cfg.name || this.id;
-                this._config = Jsons.union(defaultCfg, cfg);
-                this._initialConfig = Jsons.clone(this._config);
+                this._config = J.union(defaultCfg, cfg);
+                this._initialConfig = J.clone(this._config);
             }
             initialConfig(key) {
-                return Jsons.clone(key ? this._initialConfig[key] : this._initialConfig);
+                return J.clone(key ? this._initialConfig[key] : this._initialConfig);
             }
             _onBeforeRender() { }
             _onAfterRender() { }
@@ -6363,7 +6333,7 @@ var JS;
                 this.widgetEl.addClass(`jsfx-${this.getClass().shortName.toLowerCase()} ${cfg.colorMode ? 'color-' + cfg.colorMode : ''} size-${cfg.sizeMode} ${cfg.cls || ''}`);
                 let is = this._render();
                 let lts = cfg.listeners || {};
-                Jsons.forEach(lts, function (handler, type) {
+                J.forEach(lts, function (handler, type) {
                     if (handler)
                         this.on(type, handler);
                 }, this);
@@ -6439,7 +6409,7 @@ var JS;
                 if (!this._config.i18n)
                     return defaults;
                 let b = new Bundle(this._config.i18n, this._config.locale);
-                return defaults ? defaults.set(Jsons.union(defaults.get(), b.get())) : b;
+                return defaults ? defaults.set(J.union(defaults.get(), b.get())) : b;
             }
             _i18n(key) {
                 if (!this._i18nBundle)
@@ -6468,6 +6438,7 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
+        let J = Jsons;
         class FormWidgetConfig extends fx.WidgetConfig {
             constructor() {
                 super(...arguments);
@@ -6631,7 +6602,7 @@ var JS;
             validate() {
                 if (Check.isEmpty(this._config.validators))
                     return true;
-                let name = this.name(), rst = new ValidateResult(), val = Jsons.clone(this.value());
+                let name = this.name(), rst = new ValidateResult(), val = J.clone(this.value());
                 this._fire('validating', [rst, val, name]);
                 let vdt = this._validate(name, val, rst);
                 this._fire('validated', [rst, val, name]);
@@ -6655,7 +6626,7 @@ var JS;
                 let cfg = this._config;
                 if (arguments.length == 0)
                     return cfg.data;
-                let newData = Jsons.clone(data), oldData = Jsons.clone(cfg.data);
+                let newData = J.clone(data), oldData = J.clone(cfg.data);
                 if (!silent)
                     this._fire('dataupdating', [newData, oldData]);
                 cfg.data = data;
@@ -6673,7 +6644,7 @@ var JS;
             }
             load(quy, silent) {
                 let cfg = this._config;
-                cfg.dataQuery = Jsons.union(Ajax.toRequest(cfg.dataQuery), Ajax.toRequest(quy));
+                cfg.dataQuery = J.union(Ajax.toRequest(cfg.dataQuery), Ajax.toRequest(quy));
                 return this._dataModel.load(cfg.dataQuery, silent);
             }
             reload() {
@@ -6688,7 +6659,7 @@ var JS;
                 let cfg = this._config, oldVal = this._valueModel.get(this.name());
                 if (arguments.length == 0)
                     return oldVal;
-                this._setValue(val, silent || this._equalValues(val, oldVal));
+                this._setValue(val, silent);
                 this._renderValue();
                 return this;
             }
@@ -7053,6 +7024,7 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
+        let A = Arrays;
         class ChoiceConfig extends fx.FormWidgetConfig {
         }
         fx.ChoiceConfig = ChoiceConfig;
@@ -7068,7 +7040,7 @@ var JS;
                 let cfg = this._config, data = cfg.data;
                 if (!data)
                     return '';
-                let val = Arrays.toArray(this.value()), html = '', textColor = cfg.textColorMode ? 'text-' + cfg.textColorMode : '', mode1 = this._hasFaceMode('round') ? 'round' : 'square', mode2 = this._hasFaceMode('ring') ? 'ring' : 'dot', disable = cfg.disabled ? 'disabled' : '';
+                let val = A.toArray(this.value()), html = '', textColor = cfg.textColorMode ? 'text-' + cfg.textColorMode : '', mode1 = this._hasFaceMode('round') ? 'round' : 'square', mode2 = this._hasFaceMode('ring') ? 'ring' : 'dot', disable = cfg.disabled ? 'disabled' : '';
                 data.forEach((d, i) => {
                     html += `
                     <label class="font-${cfg.sizeMode || 'md'} ${mode1} ${mode2} ${cfg.colorMode || ''} ${textColor} ${disable}">
@@ -7095,8 +7067,8 @@ var JS;
                 }
             }
             _renderValue() {
-                let cVal = this.value(), v = Arrays.toArray(cVal), val = Arrays.toArray(this._getDomValue());
-                if (!Arrays.same(val, v)) {
+                let cVal = this.value(), v = A.toArray(cVal), val = A.toArray(this._getDomValue());
+                if (!A.same(val, v)) {
                     this._setDomValue(cVal);
                 }
             }
@@ -9355,6 +9327,7 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
+        let J = Jsons, Y = Types, E = Check.isEmpty;
         let SelectFaceMode;
         (function (SelectFaceMode) {
             SelectFaceMode["square"] = "square";
@@ -9426,7 +9399,7 @@ var JS;
                     if (data == '_jsfx')
                         return;
                     let nv = $(this).val();
-                    me._setValue(Check.isEmpty(nv) ? null : nv);
+                    me._setValue(E(nv) ? null : nv);
                 });
                 let evts = ['selected', 'unselected'];
                 ['select2:select', 'select2:unselect'].forEach((type, i) => {
@@ -9450,7 +9423,7 @@ var JS;
                 return html;
             }
             _initSelect2() {
-                let cfg = this._config, dataQuery = cfg.dataQuery, url = dataQuery ? (Types.isString(dataQuery) ? dataQuery : dataQuery.url) : null, jsonParams = dataQuery ? (Types.isString(dataQuery) ? null : dataQuery.data) : null, options = {
+                let cfg = this._config, dataQuery = cfg.dataQuery, url = dataQuery ? (Y.isString(dataQuery) ? dataQuery : dataQuery.url) : null, jsonParams = dataQuery ? (Y.isString(dataQuery) ? null : dataQuery.data) : null, options = {
                     disabled: cfg.disabled,
                     allowClear: cfg.allowClear,
                     width: '100%',
@@ -9493,7 +9466,7 @@ var JS;
                         delay: 500,
                         data: function () { return jsonParams ? jsonParams : {}; },
                         processResults: (res, params) => {
-                            let data = Jsons.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
+                            let data = J.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
                             this.data(data);
                             return {
                                 results: data
@@ -9517,7 +9490,7 @@ var JS;
             }
             select(i, silent) {
                 let cfg = this._config;
-                if (i < 0 || Check.isEmpty(cfg.data) || i >= cfg.data.length)
+                if (i < 0 || E(cfg.data) || i >= cfg.data.length)
                     return;
                 this.value('' + cfg.data[i].id, silent);
             }
@@ -9555,25 +9528,25 @@ var JS;
                 let cfg = this._config;
                 if (arguments.length == 0)
                     return cfg.data;
-                let newData, newDataCopy, oldData = Jsons.clone(cfg.data);
+                let newData, newDataCopy, oldData = J.clone(cfg.data);
                 if (mode == 'append') {
-                    let tmp = Jsons.clone(cfg.data) || [];
+                    let tmp = J.clone(cfg.data) || [];
                     newData = tmp.add(data);
-                    newDataCopy = Jsons.clone(newData);
+                    newDataCopy = J.clone(newData);
                 }
                 else if (mode == 'remove') {
-                    let tmp = Jsons.clone(cfg.data) || [];
+                    let tmp = J.clone(cfg.data) || [];
                     data.forEach(id => {
                         tmp.remove(item => {
                             return item.id == id;
                         });
                     });
                     newData = tmp;
-                    newDataCopy = Jsons.clone(newData);
+                    newDataCopy = J.clone(newData);
                 }
                 else {
                     newData = data;
-                    newDataCopy = Jsons.clone(newData);
+                    newDataCopy = J.clone(newData);
                 }
                 if (!silent)
                     this._fire('dataupdating', [newDataCopy, oldData]);
@@ -9619,7 +9592,7 @@ var JS;
                     this._mainEl.val(v).trigger('change', '_jsfx');
             }
             _equalValues(newVal, oldVal) {
-                if (Check.isEmpty(oldVal) && Check.isEmpty(newVal))
+                if (E(oldVal) && E(newVal))
                     return true;
                 let cfg = this._config;
                 return cfg.multiple ? Arrays.equalToString(oldVal, newVal) : oldVal == newVal;
@@ -9628,7 +9601,7 @@ var JS;
                 if (arguments.length == 0)
                     return super.value();
                 let cfg = this._config;
-                if ((cfg.multiple && Types.isString(val)) || (!cfg.multiple && Types.isArray(val)))
+                if ((cfg.multiple && Y.isString(val)) || (!cfg.multiple && Y.isArray(val)))
                     throw new TypeError(`Wrong value type for select<${this.id}>!`);
                 return super.value(val, silent);
             }
@@ -10568,21 +10541,21 @@ var JS;
                 return s * Math.pow(1024, r1 - r2);
             }
             static toSizeString(byte, sizeUnit) {
-                let unit = sizeUnit || FileSizeUnit.B;
+                let unit = sizeUnit || FileSizeUnit.B, TC = this.convertSize;
                 if (!byte)
                     return '0' + unit;
-                let kb = this.convertSize(byte, unit, FileSizeUnit.KB);
+                let kb = TC(byte, unit, FileSizeUnit.KB);
                 if (kb == 0)
                     return '0' + unit;
                 if (kb < 1)
                     return byte + 'B';
-                let mb = this.convertSize(byte, unit, FileSizeUnit.MB);
+                let mb = TC(byte, unit, FileSizeUnit.MB);
                 if (mb < 1)
                     return kb + 'KB';
-                let gb = this.convertSize(byte, unit, FileSizeUnit.GB);
+                let gb = TC(byte, unit, FileSizeUnit.GB);
                 if (gb < 1)
                     return mb + 'MB';
-                let tb = this.convertSize(byte, unit, FileSizeUnit.TB);
+                let tb = TC(byte, unit, FileSizeUnit.TB);
                 return tb < 1 ? (gb + 'GB') : (tb + 'TB');
             }
         }
@@ -10600,6 +10573,7 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
+        let E = Check.isEmpty, A = Arrays;
         let UploaderFaceMode;
         (function (UploaderFaceMode) {
             UploaderFaceMode["list"] = "list";
@@ -10837,7 +10811,7 @@ var JS;
             value(file) {
                 if (arguments.length == 0)
                     return super.value();
-                if (Check.isEmpty(file)) {
+                if (E(file)) {
                     this._uploader.reset();
                     $(`#${this.id} .files-area`).children().remove();
                     this._setValue(null);
@@ -10846,20 +10820,20 @@ var JS;
                 return this.add(file);
             }
             _equalValues(newVal, oldVal) {
-                return Arrays.equal(oldVal, newVal, (file1, file2) => {
+                return A.equal(oldVal, newVal, (file1, file2) => {
                     return file1.id == file2.id;
                 });
             }
             add(file) {
-                if (Check.isEmpty(file))
+                if (E(file))
                     return this;
-                this._addFiles(Arrays.toArray(file));
+                this._addFiles(A.toArray(file));
                 return this;
             }
             remove(id) {
-                if (Check.isEmpty(id))
+                if (E(id))
                     return this;
-                let rms = Arrays.toArray(id);
+                let rms = A.toArray(id);
                 rms.forEach(i => {
                     let el = this.widgetEl.find(`[file-id="${i}"]`);
                     if (el.length == 1)
@@ -11009,7 +10983,7 @@ var JS;
                 });
             }
             _toMimeFiles(wfs) {
-                if (Check.isEmpty(wfs))
+                if (E(wfs))
                     return [];
                 let fs = [];
                 wfs.forEach(file => {
@@ -11059,7 +11033,7 @@ var JS;
                 return this;
             }
             _addFiles(files) {
-                if (Check.isEmpty(files))
+                if (E(files))
                     return this;
                 let wuFiles = [], value = this.value() || [];
                 files.forEach(f => {
@@ -11311,6 +11285,7 @@ var JS;
 (function (JS) {
     let input;
     (function (input) {
+        let J = Jsons;
         class Keyboard {
             constructor(el) {
                 this._mapping = {};
@@ -11335,9 +11310,9 @@ var JS;
                             m._q.add(c);
                         }
                     }
-                    if (!Jsons.hasKey(m._m, c) || !repeat)
+                    if (!J.hasKey(m._m, c) || !repeat)
                         m._m[c] = e.timeStamp;
-                    if (!repeat && Jsons.hasKey(m._m, c)) {
+                    if (!repeat && J.hasKey(m._m, c)) {
                         let types = m._busDown.types();
                         types.forEach(ty => {
                             if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
@@ -11351,7 +11326,7 @@ var JS;
                 });
                 ele.on('keyup', (e) => {
                     let c = e.keyCode;
-                    if (Jsons.hasKey(m._m, c)) {
+                    if (J.hasKey(m._m, c)) {
                         let types = m._busUp.types();
                         types.forEach(ty => {
                             if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
@@ -11378,11 +11353,11 @@ var JS;
                 return k && k.indexOf('+') > 0;
             }
             _on(k, fn, bus) {
-                let m = this, ty = m._keyChar(k);
-                if (!Jsons.hasKey(m._mapping, ty))
-                    m._mapping[ty] = m._numeric(ty, m.isHotKeys(ty) ? '+' : (m.isSeqKeys(ty) ? ',' : ''));
+                let T = this, ty = T._keyChar(k);
+                if (!J.hasKey(T._mapping, ty))
+                    T._mapping[ty] = T._numeric(ty, T.isHotKeys(ty) ? '+' : (T.isSeqKeys(ty) ? ',' : ''));
                 bus.on(ty, fn);
-                return m;
+                return T;
             }
             onKeyDown(k, fn) {
                 return this._on(k, fn, this._busDown);
@@ -11434,13 +11409,13 @@ var JS;
                 return s.replace(/\s*/g, '').toUpperCase();
             }
             _isHotKeysPressing(k) {
-                let m = this, s = m._keyChar(k), a = s.split('\+');
+                let T = this, s = T._keyChar(k), a = s.split('\+');
                 if (a.length == 1)
                     return false;
                 return a.every((b, i) => {
-                    if (i > 0 && !m.beforeKeyDown(a[i - 1], b))
+                    if (i > 0 && !T.beforeKeyDown(a[i - 1], b))
                         return false;
-                    return m.isPressingKey(b);
+                    return T.isPressingKey(b);
                 });
             }
             _numeric(ty, sign) {
@@ -11453,20 +11428,20 @@ var JS;
                 return sk;
             }
             isPressingKeys(keys) {
-                let m = this, k = m._keyChar(keys);
+                let T = this, k = T._keyChar(keys);
                 if (!k)
                     return false;
-                if (m.isSeqKeys(k)) {
-                    return m._isSeqKeysPressing(k);
+                if (T.isSeqKeys(k)) {
+                    return T._isSeqKeysPressing(k);
                 }
-                else if (m.isHotKeys(k)) {
-                    return m._isHotKeysPressing(k);
+                else if (T.isHotKeys(k)) {
+                    return T._isHotKeysPressing(k);
                 }
                 return this.isPressingKey(input.VK[k]);
             }
             isPressingKey(c) {
-                let m = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[m._keyChar(c)]);
-                return Jsons.hasKey(m._m, n);
+                let T = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[T._keyChar(c)]);
+                return J.hasKey(T._m, n);
             }
             getPressingQueue() {
                 return this._q.clone();
@@ -11478,45 +11453,45 @@ var JS;
                 return this;
             }
             getKeyDownTime(c) {
-                let m = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[m._keyChar(c)]);
-                return !Jsons.hasKey(m._m, n) ? 0 : m._m[n];
+                let T = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[T._keyChar(c)]);
+                return !J.hasKey(T._m, n) ? 0 : T._m[n];
             }
             beforeKeyDown(k1, k2) {
                 let d1 = this.getKeyDownTime(k1), d2 = this.getKeyDownTime(k2);
                 return d1 > 0 && d2 > 0 && d1 < d2;
             }
             off() {
-                let m = this;
-                m._check();
-                m._busDown.off();
-                m._busUp.off();
-                return m;
+                let T = this;
+                T._check();
+                T._busDown.off();
+                T._busUp.off();
+                return T;
             }
             clear(c) {
-                let m = this;
+                let T = this;
                 if (c == void 0) {
-                    m._mapping = {};
-                    m._m = {};
-                    m._q.clear();
-                    m._ts = 0;
+                    T._mapping = {};
+                    T._m = {};
+                    T._q.clear();
+                    T._ts = 0;
                     return;
                 }
                 let a = Types.isNumber(c) ? [c] : c;
                 a.forEach(k => {
-                    m._m[k] = null;
+                    T._m[k] = null;
                 });
-                return m;
+                return T;
             }
             _check() {
                 if (this._d)
                     throw new NotHandledError();
             }
             destroy() {
-                let m = this;
-                m._d = true;
-                m.clear();
-                m._busDown.destroy();
-                m._busUp.destroy();
+                let T = this;
+                T._d = true;
+                T.clear();
+                T._busDown.destroy();
+                T._busUp.destroy();
             }
         }
         input.Keyboard = Keyboard;
@@ -11597,7 +11572,7 @@ var JS;
                 handler: (anno, values, obj) => {
                     let className = values[0];
                     Class.register(obj, className);
-                    ioc.Components.get(Class.forName(className).name);
+                    ioc.Components.add(Class.forName(className).name);
                 }
             }, arguments);
         }
@@ -11838,43 +11813,43 @@ var JS;
             constructor(cfg) {
                 this._bus = new EventBus(this);
                 this._d = false;
-                let m = this;
-                m._cfg = Jsons.union({
+                let T = this;
+                T._cfg = Jsons.union({
                     volume: 1,
                     loop: false
                 }, cfg);
-                if (m._cfg.on)
-                    Jsons.forEach(m._cfg.on, (v, k) => { m._bus.on(k, v); });
+                if (T._cfg.on)
+                    Jsons.forEach(T._cfg.on, (v, k) => { T._bus.on(k, v); });
             }
             _check() {
                 if (this._d)
                     throw new StateError('The object was destroyed!');
             }
             load(url) {
-                let m = this;
-                m._check();
+                let T = this;
+                T._check();
                 return new Promise((resolve, reject) => {
                     Ajax.get({
                         url: url,
                         type: 'arraybuffer',
                         onSending: req => {
-                            if (m._cfg.on && m._cfg.on.loading)
-                                m._bus.fire('loading', [req]);
+                            if (T._cfg.on && T._cfg.on.loading)
+                                T._bus.fire('loading', [req]);
                         },
                         onCompleted: res => {
                             AC.decodeAudioData(res.data, (buffer) => {
-                                m._src = url;
-                                m._buffer = buffer;
-                                resolve(m);
+                                T._src = url;
+                                T._buffer = buffer;
+                                resolve(T);
                             }, err => {
-                                if (m._cfg.on && m._cfg.on.decode_error)
-                                    m._bus.fire('decode_error', [err]);
+                                if (T._cfg.on && T._cfg.on.decode_error)
+                                    T._bus.fire('decode_error', [err]);
                                 reject(err);
                             });
                         },
                         onError: res => {
-                            if (m._cfg.on && m._cfg.on.load_error)
-                                m._bus.fire('load_error', [res]);
+                            if (T._cfg.on && T._cfg.on.load_error)
+                                T._bus.fire('load_error', [res]);
                             reject(res);
                         }
                     });
@@ -11889,41 +11864,41 @@ var JS;
                 return this;
             }
             loop(is) {
-                let m = this;
+                let T = this;
                 if (is == void 0)
-                    return m._cfg.loop;
-                m._cfg.loop = is;
-                return m;
+                    return T._cfg.loop;
+                T._cfg.loop = is;
+                return T;
             }
             src() {
                 return this._src;
             }
             play(delay, offset, duration) {
-                let m = this;
-                m._check();
-                m.stop();
-                m._gain = AC.createGain();
-                m._gain.gain.value = m._cfg.volume;
-                m._node = AC.createBufferSource();
-                m._node.buffer = m._buffer;
-                let c = m._cfg;
-                m._node.loop = c.loop;
+                let T = this;
+                T._check();
+                T.stop();
+                T._gain = AC.createGain();
+                T._gain.gain.value = T._cfg.volume;
+                T._node = AC.createBufferSource();
+                T._node.buffer = T._buffer;
+                let c = T._cfg;
+                T._node.loop = c.loop;
                 if (c.on && c.on.ended)
-                    m._node.onended = e => {
-                        m._bus.fire('ended');
+                    T._node.onended = e => {
+                        T._bus.fire('ended');
                     };
-                m._node.connect(m._gain);
+                T._node.connect(T._gain);
                 if (c.handler) {
-                    let node = c.handler.call(m, AC);
-                    m._gain.connect(node);
+                    let node = c.handler.call(T, AC);
+                    T._gain.connect(node);
                     node.connect(AC.destination);
                 }
                 else {
-                    m._gain.connect(AC.destination);
+                    T._gain.connect(AC.destination);
                 }
                 if (c.on && c.on.playing)
-                    m._bus.fire('playing', [AC, m._gain.gain]);
-                m._node.start(delay || 0, offset || 0, duration);
+                    T._bus.fire('playing', [AC, T._gain.gain]);
+                T._node.start(delay || 0, offset || 0, duration);
             }
             stop() {
                 this._check();
@@ -11931,20 +11906,21 @@ var JS;
                     this._node.stop();
             }
             volume(n) {
-                this._check();
-                this._cfg.volume = n;
-                if (this._gain)
-                    this._gain.gain.value = n;
+                let T = this;
+                T._check();
+                T._cfg.volume = n;
+                if (T._gain)
+                    T._gain.gain.value = n;
             }
             destroy() {
-                let m = this;
-                m._d = true;
-                m._cfg = null;
-                m._src = null;
-                m._buffer = null;
-                m._gain.disconnect();
-                m._node.disconnect();
-                m._bus.destroy();
+                let T = this;
+                T._d = true;
+                T._cfg = null;
+                T._src = null;
+                T._buffer = null;
+                T._gain.disconnect();
+                T._node.disconnect();
+                T._bus.destroy();
             }
         }
         media.Sound = Sound;
@@ -11957,49 +11933,49 @@ var JS;
     (function (media) {
         class Video {
             constructor(c) {
-                let m = this;
-                m._c = Jsons.union({
+                let T = this;
+                T._c = Jsons.union({
                     controls: true,
                     autoplay: false,
                     loop: false,
                     muted: false,
                     preload: 'auto'
                 }, c);
-                m._src = m._c.src;
-                let el = $1('#' + m._c.id);
+                T._src = T._c.src;
+                let el = $1('#' + T._c.id);
                 if (el) {
-                    m._el = el;
-                    Jsons.forEach(m._c, (v, k) => {
+                    T._el = el;
+                    Jsons.forEach(T._c, (v, k) => {
                         if (k != 'id' && k != 'ctor' && k != 'on')
-                            m._el.attr(k, v);
+                            T._el.attr(k, v);
                     });
                 }
                 else {
-                    let ctr = (Types.isString(m._c.appendTo) ? $1(m._c.appendTo) : m._c.appendTo) || document.body, id = m._c.id || Random.uuid(4);
+                    let ctr = (Types.isString(T._c.appendTo) ? $1(T._c.appendTo) : T._c.appendTo) || document.body, id = T._c.id || Random.uuid(4);
                     ctr.append(Strings.nodeHTML('video', {
                         id: id,
-                        controls: m._c.controls,
-                        loop: m._c.loop,
-                        muted: m._c.muted,
-                        preload: m._c.preload,
-                        poster: m._c.poster,
-                        width: m._c.width,
-                        height: m._c.height,
-                        src: m._c.src
+                        controls: T._c.controls,
+                        loop: T._c.loop,
+                        muted: T._c.muted,
+                        preload: T._c.preload,
+                        poster: T._c.poster,
+                        width: T._c.width,
+                        height: T._c.height,
+                        src: T._c.src
                     }));
                     this._el = $1(`#${id}`);
                 }
-                if (m._c.on)
-                    Jsons.forEach(m._c.on, (v, k) => { this.on(k, v); });
+                if (T._c.on)
+                    Jsons.forEach(T._c.on, (v, k) => { this.on(k, v); });
             }
             src(src) {
-                let m = this;
+                let T = this;
                 if (!src)
-                    return m._src;
-                m._src = src;
-                m._el.src = src;
-                m._el.load();
-                return m;
+                    return T._src;
+                T._src = src;
+                T._el.src = src;
+                T._el.load();
+                return T;
             }
             currentTime(t) {
                 return this._gs('currentTime', t);
@@ -12071,44 +12047,45 @@ var JS;
 (function (JS) {
     let store;
     (function (store) {
+        let T = Types, J = Jsons, TP = Type, S = J.stringify;
         class StoreHelper {
             static toString(value) {
-                if (Types.isUndefined(value))
+                if (T.isUndefined(value))
                     return 'undefined';
-                if (Types.isNull(value))
+                if (T.isNull(value))
                     return 'null';
-                if (Types.isString(value))
-                    return JSON.stringify(['string', value]);
-                if (Types.isBoolean(value))
-                    return JSON.stringify(['boolean', value]);
-                if (Types.isNumber(value))
-                    return JSON.stringify(['number', value]);
-                if (Types.isDate(value))
-                    return JSON.stringify(['date', '' + value.valueOf()]);
-                if (Types.isArray(value) || Types.isJsonObject(value))
-                    return JSON.stringify(['object', JSON.stringify(value)]);
+                if (T.isString(value))
+                    return S(['string', value]);
+                if (T.isBoolean(value))
+                    return S(['boolean', value]);
+                if (T.isNumber(value))
+                    return S(['number', value]);
+                if (T.isDate(value))
+                    return S(['date', '' + value.valueOf()]);
+                if (T.isArray(value) || T.isJsonObject(value))
+                    return S(['object', S(value)]);
             }
             static parse(data) {
-                if (Type.null == data)
+                if (TP.null == data)
                     return null;
-                if (Type.undefined == data)
+                if (TP.undefined == data)
                     return undefined;
-                let [type, val] = JSON.parse(data), v = val;
+                let [type, val] = J.parse(data), v = val;
                 switch (type) {
-                    case Type.boolean:
+                    case TP.boolean:
                         v = Boolean(val);
                         break;
-                    case Type.number:
+                    case TP.number:
                         v = Number(val);
                         break;
-                    case Type.date:
+                    case TP.date:
                         v = new Date(val);
                         break;
-                    case Type.array:
-                        v = JSON.parse(val);
+                    case TP.array:
+                        v = J.parse(val);
                         break;
-                    case Type.json:
-                        v = JSON.parse(val);
+                    case TP.json:
+                        v = J.parse(val);
                         break;
                 }
                 return v;
@@ -12122,9 +12099,10 @@ var JS;
 (function (JS) {
     let store;
     (function (store) {
+        let D = document;
         class CookieStore {
             static get(key) {
-                let reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)", "gi"), data = reg.exec(document.cookie), str = data ? window['unescape'](data[2]) : null;
+                let reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)", "gi"), data = reg.exec(D.cookie), str = data ? window['unescape'](data[2]) : null;
                 return store.StoreHelper.parse(str);
             }
             ;
@@ -12141,23 +12119,23 @@ var JS;
                 let domain = CookieStore.DOMAIN;
                 if (domain)
                     domain = 'domain=' + domain;
-                document.cookie = key + '=' + window['escape']('' + store.StoreHelper.toString(value)) + '; path=' + p + '; expires=' + exp + domain;
+                D.cookie = key + '=' + window['escape']('' + store.StoreHelper.toString(value)) + '; path=' + p + '; expires=' + exp + domain;
             }
             ;
             static remove(key) {
                 let date = new Date();
                 date.setTime(date.getTime() - 10000);
-                document.cookie = key + "=; expire=" + date.toUTCString();
+                D.cookie = key + "=; expire=" + date.toUTCString();
             }
             ;
             static clear() {
-                document.cookie = '';
+                D.cookie = '';
             }
             ;
         }
         CookieStore.EXPIRES_DATETIME = 'Wed, 15 Apr 2099 00:00:00 GMT';
         CookieStore.PATH = '/';
-        CookieStore.DOMAIN = self.document ? document.domain : null;
+        CookieStore.DOMAIN = self.document ? D.domain : null;
         store.CookieStore = CookieStore;
     })(store = JS.store || (JS.store = {}));
 })(JS || (JS = {}));
@@ -12166,32 +12144,33 @@ var JS;
 (function (JS) {
     let store;
     (function (store) {
+        let L = localStorage;
         class LocalStore {
             static get(key) {
-                let str = localStorage.getItem(key);
+                let str = L.getItem(key);
                 if (!str)
                     return undefined;
                 return store.StoreHelper.parse(str);
             }
             ;
             static set(key, value) {
-                localStorage.setItem(key, store.StoreHelper.toString(value));
+                L.setItem(key, store.StoreHelper.toString(value));
             }
             ;
             static remove(key) {
-                localStorage.removeItem(key);
+                L.removeItem(key);
             }
             ;
             static key(i) {
-                return localStorage.key(i);
+                return L.key(i);
             }
             ;
             static size() {
-                return localStorage.length;
+                return L.length;
             }
             ;
             static clear() {
-                localStorage.clear();
+                L.clear();
             }
             ;
         }
@@ -12203,32 +12182,33 @@ var JS;
 (function (JS) {
     let store;
     (function (store) {
+        let S = sessionStorage;
         class SessionStore {
             static get(key) {
-                let str = sessionStorage.getItem(key);
+                let str = S.getItem(key);
                 if (!str)
                     return undefined;
                 return store.StoreHelper.parse(str);
             }
             ;
             static set(key, value) {
-                sessionStorage.setItem(key, store.StoreHelper.toString(value));
+                S.setItem(key, store.StoreHelper.toString(value));
             }
             ;
             static remove(key) {
-                sessionStorage.removeItem(key);
+                S.removeItem(key);
             }
             ;
             static key(i) {
-                return sessionStorage.key(i);
+                return S.key(i);
             }
             ;
             static size() {
-                return sessionStorage.length;
+                return S.length;
             }
             ;
             static clear() {
-                sessionStorage.clear();
+                S.clear();
             }
             ;
         }
@@ -12527,10 +12507,11 @@ var JS;
     let unit;
     (function (unit) {
         var TestSuite_1;
+        let Y = Types;
         let TestSuite = TestSuite_1 = class TestSuite {
             constructor(name) {
                 this._cases = [];
-                if (Types.isString(name)) {
+                if (Y.isString(name)) {
                     this._name = name;
                 }
                 else {
@@ -12565,7 +12546,7 @@ var JS;
             addTest(test) {
                 if (!test)
                     return;
-                if (Types.isArray(test)) {
+                if (Y.isArray(test)) {
                     test.forEach(clazz => {
                         this._addTest(clazz);
                     });
@@ -12577,17 +12558,18 @@ var JS;
             _addTest(test) {
                 if (!test)
                     return;
-                if (Types.ofKlass(test, TestSuite_1)) {
-                    this._cases = this._cases.concat(test.getTestCases());
+                let T = this;
+                if (Y.ofKlass(test, TestSuite_1)) {
+                    T._cases = T._cases.concat(test.getTestCases());
                 }
-                else if (Types.ofKlass(test, unit.TestCase)) {
-                    this._cases[this._cases.length] = test;
+                else if (Y.ofKlass(test, unit.TestCase)) {
+                    T._cases[T._cases.length] = test;
                 }
-                else if (Types.subClass(test, TestSuite_1.class)) {
-                    this._cases = this._cases.concat(Class.newInstance(test.name).getTestCases());
+                else if (Y.subClass(test, TestSuite_1.class)) {
+                    T._cases = T._cases.concat(Class.newInstance(test.name).getTestCases());
                 }
-                else if (Types.subClass(test, unit.TestCase.class)) {
-                    this._cases[this._cases.length] = Class.newInstance(test.name);
+                else if (Y.subClass(test, unit.TestCase.class)) {
+                    T._cases[T._cases.length] = Class.newInstance(test.name);
                 }
             }
             _addTestMethods() {
@@ -12784,12 +12766,12 @@ var JS;
                 return isInt ? Number(num).toInt() : num;
             }
             static string(len, chars) {
-                return this._string(chars ? chars.split('') : CHARS, len);
+                return this._str(chars ? chars.split('') : CHARS, len);
             }
             static uuid(len, radix) {
-                return this._string(CHARS, len, radix);
+                return this._str(CHARS, len, radix);
             }
-            static _string(chars, len, radix) {
+            static _str(chars, len, radix) {
                 var uuid = [], i;
                 radix = radix || chars.length;
                 if (len) {
@@ -12925,29 +12907,29 @@ var JS;
                 }
             }
             start() {
-                let m = this;
-                if (m._sta == TimerState.RUNNING)
+                let T = this;
+                if (T._sta == TimerState.RUNNING)
                     return;
-                let first = false, wait = m._cfg.delay;
-                if (m._sta == TimerState.PAUSED) {
+                let first = false, wait = T._cfg.delay;
+                if (T._sta == TimerState.PAUSED) {
                     wait = 0;
-                    let t = System.highResTime() - m._pt;
-                    m._pt = 0;
-                    m._ts0 += t;
-                    m._ts += t;
+                    let t = System.highResTime() - T._pt;
+                    T._pt = 0;
+                    T._ts0 += t;
+                    T._ts += t;
                 }
                 else {
                     first = true;
-                    m._reset();
+                    T._reset();
                 }
-                m._sta = TimerState.RUNNING;
-                m._timer = setTimeout(() => {
+                T._sta = TimerState.RUNNING;
+                T._timer = setTimeout(() => {
                     if (first) {
-                        this._ts0 = System.highResTime();
-                        this._ts = this._ts0;
-                        m._bus.fire('starting');
+                        T._ts0 = System.highResTime();
+                        T._ts = T._ts0;
+                        T._bus.fire('starting');
                     }
-                    m._cycle();
+                    T._cycle();
                 }, wait);
             }
         }
@@ -12960,6 +12942,7 @@ var JS;
 (function (JS) {
     let view;
     (function (view) {
+        let J = Jsons;
         class FormView extends view.View {
             reset() {
                 this.eachWidget((w) => {
@@ -12976,9 +12959,10 @@ var JS;
                 return this;
             }
             iniValues(values, render) {
+                let T = this;
                 if (arguments.length == 0) {
                     let vals = {};
-                    this.eachWidget((w) => {
+                    T.eachWidget((w) => {
                         if (w.iniValue)
                             vals[w.id] = w.iniValue();
                     });
@@ -12986,34 +12970,34 @@ var JS;
                 }
                 else {
                     if (values) {
-                        Jsons.forEach(values, (val, id) => {
-                            let w = this._widgets[id];
+                        J.forEach(values, (val, id) => {
+                            let w = T._widgets[id];
                             if (w && w.iniValue)
                                 w.iniValue(val, render);
                         });
                     }
                     else {
-                        this.eachWidget((w) => {
+                        T.eachWidget((w) => {
                             if (w.iniValue)
                                 w.iniValue(null, render);
                         });
                     }
                 }
-                return this;
+                return T;
             }
             validate(id) {
-                let wgts = this._widgets;
+                let T = this, wgts = T._widgets;
                 if (Check.isEmpty(wgts))
                     return true;
                 if (!id) {
                     let ok = true;
-                    Jsons.forEach(wgts, (wgt) => {
-                        if (this._validateWidget(wgt) !== true)
+                    J.forEach(wgts, (wgt) => {
+                        if (T._validateWidget(wgt) !== true)
                             ok = false;
                     });
                     return ok;
                 }
-                return this._validateWidget(this._widgets[id]);
+                return T._validateWidget(T._widgets[id]);
             }
             _validateWidget(wgt) {
                 if (!wgt || !wgt.validate)
@@ -13040,21 +13024,22 @@ var JS;
                 }
             }
             _render() {
-                if (this._config) {
-                    let cfg = this._config;
-                    Jsons.forEach(cfg.widgetConfigs, (config, id) => {
-                        config['valueModel'] = this._model || this._config.valueModel;
-                        let wgt = this._newWidget(id, config, cfg.defaultConfig);
-                        if (wgt && wgt.valueModel && !this._model)
-                            this._model = wgt.valueModel();
-                        this.addWidget(wgt);
+                let T = this;
+                if (T._config) {
+                    let cfg = T._config;
+                    J.forEach(cfg.widgetConfigs, (config, id) => {
+                        config['valueModel'] = T._model || T._config.valueModel;
+                        let wgt = T._newWidget(id, config, cfg.defaultConfig);
+                        if (wgt && wgt.valueModel && !T._model)
+                            T._model = wgt.valueModel();
+                        T.addWidget(wgt);
                     });
-                    if (this._model) {
-                        this._model.on('validated', (e, result, data) => {
-                            this._fire('validated', [result, data]);
+                    if (T._model) {
+                        T._model.on('validated', (e, result, data) => {
+                            T._fire('validated', [result, data]);
                         });
-                        this._model.on('dataupdated', (e, newData, oldData) => {
-                            this._fire('dataupdated', [newData, oldData]);
+                        T._model.on('dataupdated', (e, newData, oldData) => {
+                            T._fire('dataupdated', [newData, oldData]);
                         });
                     }
                 }

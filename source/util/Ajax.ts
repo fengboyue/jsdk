@@ -7,6 +7,8 @@
  * @author Frank.Feng
  */
 /// <reference path="Promises.ts" /> 
+/// <reference path="Types.ts" /> 
+/// <reference path="Jsons.ts" /> 
 
 module JS {
 
@@ -53,7 +55,6 @@ module JS {
             parsers?: {
                 html?: (data: string) => Document,
                 xml?: (data: string) => XMLDocument,
-                json?: (data: string) => JsonObject,
                 text?: (data: string) => string
             };
 
@@ -140,7 +141,8 @@ module JS {
             xhr: XMLHttpRequest
         }
 
-        let ACCEPTS = {
+        let Y = Types, J = Jsons,
+            ACCEPTS = {
                 '*': '*/*',
                 text: 'text/plain',
                 html: 'text/html',
@@ -168,9 +170,6 @@ module JS {
                     let xml = new DOMParser().parseFromString(str, 'text/xml');
                     if (!xml || xml.getElementsByTagName("parsererror").length) throw new NotHandledError();
                     return xml
-                },
-                json: (str): JsonObject => {
-                    return Jsons.parse(str)
                 },
                 text: (str): string => {
                     return str
@@ -257,10 +256,10 @@ module JS {
             },
 
             _queryString = function (data: string|JsonObject) {
-                if (Types.isString(data)) return encodeURI(<string>data);
+                if (Y.isString(data)) return encodeURI(<string>data);
 
                 let str = '';
-                Jsons.forEach(<JsonObject>data, (v, k) => {
+                J.forEach(<JsonObject>data, (v, k) => {
                     str += `&${k}=${encodeURIComponent(v)}`;
                 })
                 return str;
@@ -293,7 +292,7 @@ module JS {
             _send = function (this: PromiseContext<AjaxResponse>, req: AjaxRequest) {
                 if (!req.url) JSLogger.error('Sent an ajax request without URL.')
 
-                req = <AjaxRequest>Jsons.union(<AjaxRequest>{
+                req = <AjaxRequest>J.union(<AjaxRequest>{
                     method: 'GET',
                     crossCookie: false,
                     async: true,
@@ -358,7 +357,7 @@ module JS {
                 }
 
                 //如果请求方法是 GET 或者 HEAD，则应将请求主体设置为 null
-                let data = req.method == 'HEAD' || req.method == 'GET' ? null : (Types.isString(req.data) ? <string>req.data : Jsons.stringify(req.data))
+                let data = req.method == 'HEAD' || req.method == 'GET' ? null : (Y.isString(req.data) ? <string>req.data : J.stringify(req.data))
                 try {
                     //早期浏览器的timeout是无效，自己实现超时取消
                     if (req.async && req.timeout > 0) {
@@ -383,11 +382,11 @@ module JS {
 
             private static _toQuery(q: JsonObject|QueryString): JsonObject{
                 if(!q) return {};
-                return Types.isString(q)?URI.parseQueryString(<QueryString>q):<JsonObject>q
+                return Y.isString(q)?URI.parseQueryString(<QueryString>q):<JsonObject>q
             }
             public static toRequest(quy: string|AjaxRequest, data?: JsonObject|QueryString):AjaxRequest{
-                let req = Types.isString(quy)?<AjaxRequest>{url:<string>quy}:<AjaxRequest>quy;
-                if(quy && data) req.data = <JsonObject>Jsons.union(this._toQuery(req.data),this._toQuery(data));
+                let req = Y.isString(quy)?<AjaxRequest>{url:<string>quy}:<AjaxRequest>quy;
+                if(quy && data) req.data = <JsonObject>J.union(this._toQuery(req.data),this._toQuery(data));
                 return req
             }
 
@@ -411,7 +410,7 @@ module JS {
              * Send a GET request in main thread.
              */
             public static get(req: AjaxRequest | URLString) {
-                let r: AjaxRequest = Types.isString(req) ? { url: <URLString>req } : <AjaxRequest>req;
+                let r: AjaxRequest = Y.isString(req) ? { url: <URLString>req } : <AjaxRequest>req;
                 r.method = 'GET'
                 return this.send(r)
             }
@@ -419,7 +418,7 @@ module JS {
              * Send a POST request in main thread.
              */
             public static post(req: AjaxRequest | URLString) {
-                let r: AjaxRequest = Types.isString(req) ? { url: <URLString>req } : <AjaxRequest>req;
+                let r: AjaxRequest = Y.isString(req) ? { url: <URLString>req } : <AjaxRequest>req;
                 r.method = 'POST'
                 return this.send(r)
             }

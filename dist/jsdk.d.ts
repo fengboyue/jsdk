@@ -1,10 +1,10 @@
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
-/// <reference path="../libs/reflect/2.0.0/reflect.d.ts" />
+/// <reference path="../libs/reflect/2.0.1/Reflect.d.ts" />
 /// <reference path="../libs/ua-parser/0.7.20/ua-parser.d.ts" />
 /// <reference path="../libs/jquery/3.2.1/jquery.d.ts" />
 /// <reference path="../libs/bootstrap/4.0.0/bootstrap.d.ts" />
@@ -372,117 +372,13 @@ import TranslateKeyFrames = JS.an.TranslateKeyFrames;
 import TranslateAnimConfig = JS.an.TranslateAnimConfig;
 import TranslateAnim = JS.an.TranslateAnim;
 declare module JS {
-    namespace model {
+    namespace app {
         interface Api<T> extends AjaxRequest {
             dataKlass?: Klass<T>;
         }
     }
 }
-import Api = JS.model.Api;
-interface Array<T> {
-    add(a: T | T[], from?: number): this;
-    remove(index: number): this;
-    remove(find: (item: T, i: number, array: Array<T>) => boolean): boolean;
-}
-declare module JS {
-    namespace util {
-        class Arrays {
-            static newArray(a: ArrayLike<any>, from?: number): any;
-            static toArray<T>(a: T | T[]): T[];
-            static equal<T, K>(a1: Array<T>, a2: Array<K>, equal?: (item1: T, item2: K, index: number) => boolean): boolean;
-            static equalToString(a1: Array<any>, a2: Array<any>): boolean;
-            static same(a1: Array<any>, a2: Array<any>): boolean;
-            static slice(args: ArrayLike<any>, fromIndex?: number, endIndex?: number): Array<any>;
-        }
-    }
-}
-import Arrays = JS.util.Arrays;
-interface Promise<T> {
-    always(fn: (this: this, v: any, success: boolean) => any | Promise<any>): Promise<T>;
-}
-declare module JS {
-    namespace util {
-        type PromiseContext<T> = {
-            resolve: (value: T) => void;
-            reject: (value: T) => void;
-        };
-        type PromisePlan<T> = (value?: any) => Promise<T>;
-        type PromisePlans<T> = Array<PromisePlan<T>>;
-        class Promises {
-            static create<T>(fn: (this: PromiseContext<T>, ...args: any[]) => void, ...args: any[]): Promise<T>;
-            static createPlan<T>(fn: (this: PromiseContext<T>, ...args: any[]) => void): PromisePlan<T>;
-            static newPlan<T>(p: PromisePlan<T>, args?: any[], ctx?: any): PromisePlan<T>;
-            static resolvePlan<T>(v: any): PromisePlan<T>;
-            static rejectPlan<T>(v: any): PromisePlan<T>;
-            static order<T>(plans: PromisePlans<T>): Promise<void>;
-            static all<T>(plans: PromisePlans<T>): Promise<any[]>;
-            static race<T>(plans: PromisePlans<T>): Promise<any>;
-        }
-    }
-}
-import Promises = JS.util.Promises;
-import PromiseContext = JS.util.PromiseContext;
-import PromisePlan = JS.util.PromisePlan;
-import PromisePlans = JS.util.PromisePlans;
-declare module JS {
-    namespace util {
-        interface AjaxRequest {
-            thread?: boolean | ThreadPreload;
-            url: string;
-            async?: boolean;
-            cache?: boolean;
-            contentType?: string | false;
-            parsers?: {
-                html?: (data: string) => Document;
-                xml?: (data: string) => XMLDocument;
-                json?: (data: string) => JsonObject;
-                text?: (data: string) => string;
-            };
-            data?: JsonObject | string;
-            responseFilter?(data: string, type: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer'): string;
-            type?: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer';
-            headers?: JsonObject<string | null | undefined>;
-            ifModified?: boolean;
-            method?: 'HEAD' | 'GET' | 'POST' | 'OPTIONS' | 'PUT' | 'DELETE';
-            mimeType?: string;
-            username?: string;
-            password?: string;
-            timeout?: number;
-            crossCookie?: boolean;
-            onSending?: ((req: AjaxRequest) => boolean | void);
-            onCompleted?: ((res: AjaxResponse) => void);
-            onError?: ((res: AjaxResponse) => void);
-        }
-        interface AjaxResponse {
-            request: AjaxRequest;
-            url: string;
-            raw: any;
-            type: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer';
-            data: any;
-            status: number;
-            statusText: 'cancel' | 'timeout' | 'abort' | 'parseerror' | 'nocontent' | 'notmodified' | string;
-            headers: JsonObject<string>;
-            xhr: XMLHttpRequest;
-        }
-        class Ajax {
-            private static _toQuery;
-            static toRequest(quy: string | AjaxRequest, data?: JsonObject | QueryString): AjaxRequest;
-            static send(req: AjaxRequest | URLString): Promise<AjaxResponse>;
-            private static _inMain;
-            static get(req: AjaxRequest | URLString): Promise<AjaxResponse>;
-            static post(req: AjaxRequest | URLString): Promise<AjaxResponse>;
-            static _ON: {};
-            static on(ev: 'sending', fn: (req: AjaxRequest) => boolean | void): any;
-            static on(ev: 'completed', fn: (res: AjaxResponse) => void): any;
-            static on(ev: 'error', fn: (res: AjaxResponse) => void): any;
-            static sendBeacon(e: 'beforeunload' | 'unload', fn: (evt: Event) => void, scope?: any): void;
-            private static _inThread;
-        }
-    }
-}
-import Ajax = JS.util.Ajax;
-import AjaxRequest = JS.util.AjaxRequest;
-import AjaxResponse = JS.util.AjaxResponse;
+import Api = JS.app.Api;
 declare module JS {
     namespace lang {
         type PrimitiveType = null | undefined | string | number | boolean | String | Number | Boolean;
@@ -549,6 +445,7 @@ declare module JS {
             static isFunction(fn: any, pure?: boolean): boolean;
             static isRegExp(obj: any): boolean;
             static isArrayBuffer(obj: any): boolean;
+            static isTypedArray(value: any): boolean;
             static isElement(el: any): boolean;
             static isWindow(el: any): boolean;
             static isKlass(obj: any, klass: Klass<any>): boolean;
@@ -557,7 +454,6 @@ declare module JS {
             static subKlass(kls1: Klass<any>, kls2: Klass<any>): boolean;
             static equalClass(cls1: Class<any>, cls2: Class<any>): boolean;
             static subClass(cls1: Class<any>, cls2: Class<any>): boolean;
-            static isTypedArray(value: any): boolean;
             static type(obj: any): Type;
         }
     }
@@ -566,23 +462,12 @@ import Types = JS.util.Types;
 declare module JS {
     namespace util {
         class Check {
-            static EMAIL: RegExp;
-            static EMAIL_DOMAIN: RegExp;
-            static YYYY_MM_DD: RegExp;
-            static HALFWIDTH_CHARS: RegExp;
-            static FULLWIDTH_CHARS: RegExp;
-            static NUMBERS_ONLY: RegExp;
-            static LETTERS_ONLY: RegExp;
-            static LETTERS_OR_NUMBERS: RegExp;
-            static ENGLISH_ONLY: RegExp;
-            static CHINESE_ONLY: RegExp;
-            static IP: RegExp;
-            static isEmpty(obj: any): boolean;
-            static isEmptyObject(obj: any): boolean;
+            static isEmpty(v: any): boolean;
+            static isEmptyObject(v: any): boolean;
             static isBlank(s: string): boolean;
-            static isFormatDate(str: string, format?: RegExp): boolean;
-            static isEmail(str: string, pattern?: RegExp): boolean;
-            static isEmails(str: string, pattern?: RegExp): boolean;
+            static isFormatDate(s: string, format?: RegExp): boolean;
+            static isEmail(s: string, exp?: RegExp): boolean;
+            static isEmails(s: string, exp?: RegExp): boolean;
             static isEmailDomain(str: string): boolean;
             static isOnlyNumber(str: string): boolean;
             static isPositive(n: number | string): boolean;
@@ -597,19 +482,146 @@ declare module JS {
             static less(n1: number | string, n2: number | string): boolean;
             static lessEqual(n1: number | string, n2: number | string): boolean;
             static isBetween(n: number | string, min: number | string, max: number | string): boolean;
-            static shorter(str: string, len: number): boolean;
-            static longer(str: string, len: number): boolean;
-            static equalLength(str: string, len: number): boolean;
-            static isLettersOnly(str: string): boolean;
-            static isLettersOrNumbers(str: string): boolean;
-            static isIP(str: string): boolean;
+            static shorter(s: string, len: number): boolean;
+            static longer(s: string, len: number): boolean;
+            static equalLength(s: string, len: number): boolean;
+            static isLettersOnly(s: string): boolean;
+            static isLettersOrNumbers(s: string): boolean;
+            static isIP(s: string): boolean;
             static isExistUrl(url: string): boolean;
-            static isPattern(str: string, exp: RegExp): boolean;
-            static byServer(settings: string | AjaxRequest, judge: (res: AjaxResponse) => boolean): Promise<boolean>;
+            static isPattern(s: string, exp: RegExp): boolean;
+            static byServer(req: string | AjaxRequest, judge: (res: AjaxResponse) => boolean): Promise<boolean>;
         }
     }
 }
 import Check = JS.util.Check;
+interface Array<T> {
+    add(a: T | T[], from?: number): this;
+    remove(index: number): this;
+    remove(find: (item: T, i: number, array: Array<T>) => boolean): boolean;
+}
+declare module JS {
+    namespace util {
+        class Arrays {
+            static newArray(a: ArrayLike<any>, from?: number): any;
+            static toArray<T>(a: T | T[]): T[];
+            static equal<T, K>(a1: Array<T>, a2: Array<K>, equal?: (item1: T, item2: K, index: number) => boolean): boolean;
+            static equalToString(a1: Array<any>, a2: Array<any>): boolean;
+            static same(a1: Array<any>, a2: Array<any>): boolean;
+            static slice(args: ArrayLike<any>, fromIndex?: number, endIndex?: number): Array<any>;
+        }
+    }
+}
+import Arrays = JS.util.Arrays;
+interface Promise<T> {
+    always(fn: (this: this, v: any, success: boolean) => any | Promise<any>): Promise<T>;
+}
+declare module JS {
+    namespace util {
+        type PromiseContext<T> = {
+            resolve: (value: T) => void;
+            reject: (value: T) => void;
+        };
+        type PromisePlan<T> = (value?: any) => Promise<T>;
+        type PromisePlans<T> = Array<PromisePlan<T>>;
+        class Promises {
+            static create<T>(fn: (this: PromiseContext<T>, ...args: any[]) => void, ...args: any[]): Promise<T>;
+            static createPlan<T>(fn: (this: PromiseContext<T>, ...args: any[]) => void): PromisePlan<T>;
+            static newPlan<T>(p: PromisePlan<T>, args?: any[], ctx?: any): PromisePlan<T>;
+            static resolvePlan<T>(v: any): PromisePlan<T>;
+            static rejectPlan<T>(v: any): PromisePlan<T>;
+            static order<T>(plans: PromisePlans<T>): Promise<void>;
+            static all<T>(plans: PromisePlans<T>): Promise<any[]>;
+            static race<T>(plans: PromisePlans<T>): Promise<any>;
+        }
+    }
+}
+import Promises = JS.util.Promises;
+import PromiseContext = JS.util.PromiseContext;
+import PromisePlan = JS.util.PromisePlan;
+import PromisePlans = JS.util.PromisePlans;
+declare module JS {
+    namespace util {
+        class Jsons {
+            static parse(text: string, reviver?: (key: any, value: any) => any): any;
+            static stringify(value: any, replacer?: (key: string, value: any) => any | (number | string)[] | null, space?: string | number): string;
+            static clone<T>(obj: T): T;
+            static forEach<T>(json: JsonObject<T>, fn: (value: T, key: string) => any, that?: any): void;
+            static some<T>(json: JsonObject<T>, fn: (value: T, key: string) => boolean, that?: any): boolean;
+            static hasKey(json: JsonObject, key: string | number): boolean;
+            static values<T>(json: JsonObject<T>): T[];
+            static keys(json: JsonObject): string[];
+            static equalKeys(json1: JsonObject, json2: JsonObject): boolean;
+            static equal(json1: JsonObject<PrimitiveType>, json2: JsonObject<PrimitiveType>): boolean;
+            static replaceKeys(json: JsonObject, keyMapping: JsonObject<string> | ((this: JsonObject, val: any, key: string) => string), needClone?: boolean): JsonObject;
+            private static _union;
+            static union(...jsons: JsonObject[]): JsonObject;
+            static minus(json1: JsonObject, json2: JsonObject): JsonObject<any>;
+            static intersect(json1: JsonObject, json2: JsonObject): JsonObject<any>;
+            static filter(json: JsonObject, fn: (this: JsonObject, value: object, key: string) => boolean): JsonObject;
+            static find(data: JsonObject, path: string): any;
+        }
+    }
+}
+import Jsons = JS.util.Jsons;
+declare module JS {
+    namespace util {
+        interface AjaxRequest {
+            thread?: boolean | ThreadPreload;
+            url: string;
+            async?: boolean;
+            cache?: boolean;
+            contentType?: string | false;
+            parsers?: {
+                html?: (data: string) => Document;
+                xml?: (data: string) => XMLDocument;
+                text?: (data: string) => string;
+            };
+            data?: JsonObject | string;
+            responseFilter?(data: string, type: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer'): string;
+            type?: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer';
+            headers?: JsonObject<string | null | undefined>;
+            ifModified?: boolean;
+            method?: 'HEAD' | 'GET' | 'POST' | 'OPTIONS' | 'PUT' | 'DELETE';
+            mimeType?: string;
+            username?: string;
+            password?: string;
+            timeout?: number;
+            crossCookie?: boolean;
+            onSending?: ((req: AjaxRequest) => boolean | void);
+            onCompleted?: ((res: AjaxResponse) => void);
+            onError?: ((res: AjaxResponse) => void);
+        }
+        interface AjaxResponse {
+            request: AjaxRequest;
+            url: string;
+            raw: any;
+            type: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer';
+            data: any;
+            status: number;
+            statusText: 'cancel' | 'timeout' | 'abort' | 'parseerror' | 'nocontent' | 'notmodified' | string;
+            headers: JsonObject<string>;
+            xhr: XMLHttpRequest;
+        }
+        class Ajax {
+            private static _toQuery;
+            static toRequest(quy: string | AjaxRequest, data?: JsonObject | QueryString): AjaxRequest;
+            static send(req: AjaxRequest | URLString): Promise<AjaxResponse>;
+            private static _inMain;
+            static get(req: AjaxRequest | URLString): Promise<AjaxResponse>;
+            static post(req: AjaxRequest | URLString): Promise<AjaxResponse>;
+            static _ON: {};
+            static on(ev: 'sending', fn: (req: AjaxRequest) => boolean | void): any;
+            static on(ev: 'completed', fn: (res: AjaxResponse) => void): any;
+            static on(ev: 'error', fn: (res: AjaxResponse) => void): any;
+            static sendBeacon(e: 'beforeunload' | 'unload', fn: (evt: Event) => void, scope?: any): void;
+            private static _inThread;
+        }
+    }
+}
+import Ajax = JS.util.Ajax;
+import AjaxRequest = JS.util.AjaxRequest;
+import AjaxResponse = JS.util.AjaxResponse;
 declare module JS {
     namespace util {
         type EventHandler<T = any> = (this: T, e: Event, ...args: any[]) => boolean | void;
@@ -694,43 +706,19 @@ declare const $1: typeof Dom.$1;
 declare const $L: typeof Dom.$L;
 declare module JS {
     let version: string;
-    type GlobalConfig = {
+    type JSDKConfig = {
         canImport?: boolean;
         minimize?: boolean;
         jsdkRoot?: string;
         libRoot?: string;
         libs?: JsonObject<string | Array<string>>;
     };
-    function config(): GlobalConfig;
-    function config(opts: GlobalConfig): void;
-    function config<T>(key: keyof GlobalConfig): T;
-    function config(key: keyof GlobalConfig, val: any): void;
+    function config(): JSDKConfig;
+    function config(opts: JSDKConfig): void;
+    function config<T>(key: keyof JSDKConfig): T;
+    function config(key: keyof JSDKConfig, val: any): void;
     function imports(url: string | string[]): Promise<any>;
 }
-declare module JS {
-    namespace util {
-        class Jsons {
-            static parse(text: string, reviver?: (key: any, value: any) => any): any;
-            static stringify(value: any, replacer?: (key: string, value: any) => any | (number | string)[] | null, space?: string | number): string;
-            static clone<T>(obj: T): T;
-            static forEach<T>(json: JsonObject<T>, fn: (value: T, key: string) => any, that?: any): void;
-            static some<T>(json: JsonObject<T>, fn: (value: T, key: string) => boolean, that?: any): boolean;
-            static hasKey(json: JsonObject, key: string | number): boolean;
-            static values<T>(json: JsonObject<T>): T[];
-            static keys(json: JsonObject): string[];
-            static equalKeys(json1: JsonObject, json2: JsonObject): boolean;
-            static equal(json1: JsonObject<PrimitiveType>, json2: JsonObject<PrimitiveType>): boolean;
-            static replaceKeys(json: JsonObject, keyMapping: JsonObject<string> | ((this: JsonObject, val: any, key: string) => string), needClone?: boolean): JsonObject;
-            private static _union;
-            static union(...jsons: JsonObject[]): JsonObject;
-            static minus(json1: JsonObject, json2: JsonObject): JsonObject<any>;
-            static intersect(json1: JsonObject, json2: JsonObject): JsonObject<any>;
-            static filter(json: JsonObject, fn: (this: JsonObject, value: object, key: string) => boolean): JsonObject;
-            static find(data: JsonObject, path: string): any;
-        }
-    }
-}
-import Jsons = JS.util.Jsons;
 declare module JS {
     namespace util {
         class Functions {
@@ -846,7 +834,6 @@ declare module JS {
         export function after(fn: (returns: any) => void): any;
         export function around(fn: (fn: Function, ...args: any[]) => any): any;
         export function throws(fn: (e: Error) => void): any;
-        export function aop(advisor: AopAdvisor<any>): any;
         export {};
     }
 }
@@ -859,7 +846,6 @@ import before = JS.lang.before;
 import after = JS.lang.after;
 import around = JS.lang.around;
 import throws = JS.lang.throws;
-import aop = JS.lang.aop;
 declare module JS {
     namespace reflect {
         function klass(fullName: string): any;
@@ -946,58 +932,6 @@ interface Object {
     getClass(): Class<any>;
 }
 declare var __decorate: (decorators: any, target: any, key: any, desc: any) => any;
-declare module JS {
-    namespace lang {
-        class JSError extends Error {
-            cause: Error;
-            constructor(msg?: string, cause?: Error);
-        }
-        class NotHandledError extends JSError {
-        }
-        class NotFoundError extends JSError {
-        }
-        class ArithmeticError extends JSError {
-        }
-        class ArgumentError extends JSError {
-        }
-        class StateError extends JSError {
-        }
-        class NetworkError extends JSError {
-        }
-        class TimeoutError extends JSError {
-        }
-    }
-}
-import JSError = JS.lang.JSError;
-import NotHandledError = JS.lang.NotHandledError;
-import NotFoundError = JS.lang.NotFoundError;
-import ArithmeticError = JS.lang.ArithmeticError;
-import ArgumentError = JS.lang.ArgumentError;
-import StateError = JS.lang.StateError;
-import NetworkError = JS.lang.NetworkError;
-import TimeoutError = JS.lang.TimeoutError;
-declare module JS {
-    namespace lang {
-        let Errors: {
-            Error: ErrorConstructor;
-            JSError: typeof JSError;
-            URIError: URIErrorConstructor;
-            ReferenceError: ReferenceErrorConstructor;
-            TypeError: TypeErrorConstructor;
-            RangeError: RangeErrorConstructor;
-            SyntaxError: SyntaxErrorConstructor;
-            EvalError: EvalErrorConstructor;
-            NotHandledError: typeof NotHandledError;
-            NotFoundError: typeof NotFoundError;
-            ArithmeticError: typeof ArithmeticError;
-            ArgumentError: typeof ArgumentError;
-            StateError: typeof StateError;
-            NetworkError: typeof NetworkError;
-            TimeoutError: typeof TimeoutError;
-        };
-    }
-}
-import Errors = JS.lang.Errors;
 declare module JS {
     namespace util {
         type URLString = string;
@@ -1170,6 +1104,36 @@ declare module JS {
     }
 }
 import Numbers = JS.util.Numbers;
+declare module JS {
+    namespace lang {
+        class JSError extends Error {
+            cause: Error;
+            constructor(msg?: string, cause?: Error);
+        }
+        class NotHandledError extends JSError {
+        }
+        class NotFoundError extends JSError {
+        }
+        class ArithmeticError extends JSError {
+        }
+        class ArgumentError extends JSError {
+        }
+        class StateError extends JSError {
+        }
+        class NetworkError extends JSError {
+        }
+        class TimeoutError extends JSError {
+        }
+    }
+}
+import JSError = JS.lang.JSError;
+import NotHandledError = JS.lang.NotHandledError;
+import NotFoundError = JS.lang.NotFoundError;
+import ArithmeticError = JS.lang.ArithmeticError;
+import ArgumentError = JS.lang.ArgumentError;
+import StateError = JS.lang.StateError;
+import NetworkError = JS.lang.NetworkError;
+import TimeoutError = JS.lang.TimeoutError;
 declare module JS {
     namespace lang {
         class AssertError extends JSError {
@@ -1409,23 +1373,22 @@ import ViewWidgetConfig = JS.view.ViewWidgetConfig;
 import ViewConfig = JS.view.ViewConfig;
 import View = JS.view.View;
 declare module JS {
-    namespace model {
-        type PageEvents = 'fullscreening' | 'fullscreened' | 'normalscreening' | 'normalscreened' | 'loading' | 'loaded' | 'unloading' | 'close';
+    namespace app {
+        type PageEvents = 'fullscreening' | 'fullscreened' | 'normalscreening' | 'normalscreened' | 'leaving' | 'close';
         abstract class Page implements IComponent {
             initialize(): void;
             destroy(): void;
-            abstract render(): any;
+            abstract enter(): any;
             private static _bus;
-            static fireEvent(e: PageEvents, args?: any[]): void;
-            static onEvent<H = EventHandler<Page>>(e: string, handler: H): void;
-            static offEvent(e: PageEvents): void;
+            static fireEvent(e: PageEvents | string, args?: any[]): void;
+            static onEvent(e: PageEvents | string, handler: EventHandler<Page>, once?: boolean): void;
+            static offEvent(e: PageEvents | string): void;
             private static _page;
-            static current(page: Klass<Page>): void;
-            static current<P extends Page>(): P;
-            static view<V extends View>(view: Klass<V>): V;
-            static uri(): URI;
-            static load(url?: string): void;
-            static open(url: any, target?: 'blank' | 'parent' | 'self', specs?: {
+            static init(page: Klass<Page>): void;
+            static currentPage<T extends Page>(): T;
+            static view<V extends View>(v: Klass<V>): V;
+            static redirect(url: string, query?: string | JsonObject<string>): void;
+            static open(url: any, specs?: {
                 width?: number;
                 height?: number;
                 top?: number;
@@ -1442,15 +1405,16 @@ declare module JS {
         }
     }
 }
-import PageEvents = JS.model.PageEvents;
-import Page = JS.model.Page;
+import PageEvents = JS.app.PageEvents;
+import Page = JS.app.Page;
 declare module JS {
-    namespace model {
+    namespace app {
         class AppEvent extends CustomEvent<any> {
-            url: string;
+            fromUrl: string;
+            fromPage: string;
             constructor(type: string, initDict?: any);
         }
-        type AppSettings = {
+        type AppConfig = {
             name: string;
             version?: string;
             logLevel?: LogLevel;
@@ -1459,8 +1423,8 @@ declare module JS {
         class App {
             private static _sets;
             private static _logger;
-            static init(settings: AppSettings): void;
-            static namespace(): string;
+            static init(settings: AppConfig): void;
+            static NS(): string;
             static appName(): string;
             static version(): string;
             static logger(): Log;
@@ -1475,9 +1439,9 @@ declare module JS {
         }
     }
 }
-import App = JS.model.App;
-import AppEvent = JS.model.AppEvent;
-import AppSettings = JS.model.AppSettings;
+import App = JS.app.App;
+import AppEvent = JS.app.AppEvent;
+import AppConfig = JS.app.AppConfig;
 declare module JS {
     namespace model {
         interface ResultSetFormat {
@@ -1548,7 +1512,7 @@ declare module JS {
 }
 import JsonProxy = JS.model.JsonProxy;
 declare module JS {
-    namespace model {
+    namespace app {
         abstract class Service implements IComponent {
             initialize(): void;
             destroy(): void;
@@ -1560,7 +1524,7 @@ declare module JS {
         }
     }
 }
-import Service = JS.model.Service;
+import Service = JS.app.Service;
 declare module JS {
     namespace ds {
         class BiMap<K, V> {
@@ -1782,9 +1746,10 @@ declare module JS {
             readonly validators?: Array<ValidatorSetting>;
         }
         class Field {
-            protected _config: FieldConfig;
+            protected _cfg: FieldConfig;
             constructor(config: FieldConfig);
             config(): FieldConfig;
+            config(cfg: FieldConfig): this;
             name(): string;
             alias(): string;
             isId(): boolean;
@@ -4018,14 +3983,11 @@ import ThreadPreload = JS.lang.ThreadPreload;
 declare module JS {
     namespace media {
         type MediaEvents = 'abort' | 'canplay' | 'canplaythrough' | 'durationchange' | 'emptied' | 'ended' | 'error' | 'loadeddata' | 'loadedmetadata' | 'loadstart' | 'pause' | 'play' | 'playing' | 'progress' | 'ratechange' | 'readystatechange' | 'seeking' | 'seeked' | 'stalled' | 'suspend' | 'timeupdate' | 'volumechange' | 'waiting';
-        type MediaSource = {
-            media?: string;
-            src: string;
-            type: 'video/ogg' | 'video/mp4' | 'video/webm' | 'audio/ogg' | 'audio/mpeg';
-        };
+        type MediaTypes = 'video/ogg' | 'video/mp4' | 'video/webm' | 'audio/ogg' | 'audio/mpeg';
     }
 }
 import MediaEvents = JS.media.MediaEvents;
+import MediaTypes = JS.media.MediaTypes;
 declare module JS {
     namespace media {
         interface SoundConfig {
@@ -4375,7 +4337,7 @@ declare module JS {
             }, isInt?: boolean): number;
             static string(len?: number, chars?: string): string;
             static uuid(len?: number, radix?: number): string;
-            private static _string;
+            private static _str;
         }
     }
 }

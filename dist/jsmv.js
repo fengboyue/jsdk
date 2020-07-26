@@ -1,6 +1,6 @@
 //@ sourceURL=jsmv.js
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -15,7 +15,7 @@ var JS;
                 handler: (anno, values, obj) => {
                     let className = values[0];
                     Class.register(obj, className);
-                    ioc.Components.get(Class.forName(className).name);
+                    ioc.Components.add(Class.forName(className).name);
                 }
             }, arguments);
         }
@@ -120,47 +120,52 @@ var JS;
     (function (model) {
         class Field {
             constructor(config) {
-                this._config = Jsons.union({
+                this._cfg = Jsons.union({
                     type: 'string',
                     isId: false,
                     nullable: true,
                     defaultValue: null
                 }, config);
             }
-            config() {
-                return this._config;
+            config(cfg) {
+                let T = this;
+                if (cfg == void 0)
+                    return T._cfg;
+                T._cfg = Jsons.union(T._cfg, cfg);
+                return T;
             }
             name() {
-                return this._config.name;
+                return this._cfg.name;
             }
             alias() {
-                let nameMapping = this._config.nameMapping;
-                if (!nameMapping)
+                let mp = this._cfg.nameMapping;
+                if (!mp)
                     return this.name();
-                return Types.isString(nameMapping) ? nameMapping : nameMapping.call(this);
+                return Types.isString(mp) ? mp : mp.call(this);
             }
             isId() {
-                return this._config.isId;
+                return this._cfg.isId;
             }
             defaultValue() {
-                return this._config.defaultValue;
+                return this._cfg.defaultValue;
             }
             type() {
-                return this._config.type;
+                return this._cfg.type;
             }
             nullable() {
-                return this._config.nullable;
+                return this._cfg.nullable;
             }
             set(val) {
-                if (!this.nullable() && val == void 0)
-                    throw new TypeError(`This Field<${this.name()}> must be not null`);
-                let fn = this._config.setter, v = fn ? fn.apply(this, [val]) : val;
-                return v === undefined ? this._config.defaultValue : v;
+                let T = this;
+                if (!T.nullable() && val == void 0)
+                    throw new TypeError(`This Field<${T.name()}> must be not null`);
+                let fn = T._cfg.setter, v = fn ? fn.apply(T, [val]) : val;
+                return v === undefined ? T._cfg.defaultValue : v;
             }
             compare(v1, v2) {
                 let ret = 0;
-                if (this._config.comparable) {
-                    ret = this._config.comparable(v1, v2);
+                if (this._cfg.comparable) {
+                    ret = this._cfg.comparable(v1, v2);
                 }
                 else {
                     ret = (v1 === v2) ? 0 : ((v1 < v2) ? -1 : 1);
@@ -171,7 +176,7 @@ var JS;
                 return this.compare(v1, v2) === 0;
             }
             validate(value, errors) {
-                let cfg = this._config, vts = cfg.validators, rst, ret = '';
+                let cfg = this._cfg, vts = cfg.validators, rst, ret = '';
                 if (!vts)
                     return true;
                 for (let i = 0, len = vts.length; i < len; ++i) {
@@ -228,6 +233,7 @@ var JS;
 (function (JS) {
     let model;
     (function (model_1) {
+        let J = Jsons;
         ;
         class ListModelConfig {
             constructor() {
@@ -244,7 +250,7 @@ var JS;
                 this._config = this._initConfig(cfg);
                 let listeners = this._config.listeners;
                 if (listeners)
-                    Jsons.forEach(listeners, (v, key) => {
+                    J.forEach(listeners, (v, key) => {
                         this.on(key, v);
                     });
                 if (this._config.iniData)
@@ -253,7 +259,7 @@ var JS;
                     this.reload();
             }
             _initConfig(cfg) {
-                return Jsons.union(new ListModelConfig(), cfg);
+                return J.union(new ListModelConfig(), cfg);
             }
             _check() {
                 if (this.isDestroyed())
@@ -334,8 +340,8 @@ var JS;
             }
             load(quy, silent) {
                 this._check();
-                let me = this, query = Jsons.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
-                query.data = Jsons.union(query.data, this._sortParams());
+                let me = this, query = J.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
+                query.data = J.union(query.data, this._sortParams());
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
                 return new model_1.JsonProxy().execute(query).then(function (result) {
@@ -358,7 +364,7 @@ var JS;
             }
             setData(data, silent) {
                 this._check();
-                let newData = data, oldData = Jsons.clone(this._data);
+                let newData = data, oldData = J.clone(this._data);
                 if (!silent)
                     this._fire('dataupdating', [newData, oldData]);
                 this._data = data || [];
@@ -481,7 +487,7 @@ var JS;
                 return this.size() == 0;
             }
             clone() {
-                let model = Class.newInstance(this.className, Jsons.clone(this._config));
+                let model = Class.newInstance(this.className, J.clone(this._config));
                 model.setData(this.getData());
                 return model;
             }
@@ -523,6 +529,7 @@ var JS;
 (function (JS) {
     let model;
     (function (model_2) {
+        let E = Check.isEmpty, J = Jsons;
         class ModelConfig {
             constructor() {
                 this.idProperty = 'id';
@@ -536,13 +543,13 @@ var JS;
                 this._eventBus = new EventBus(this);
                 this._data = {};
                 this._isD = false;
-                cfg = Jsons.union(new ModelConfig(), cfg);
+                cfg = J.union(new ModelConfig(), cfg);
                 let defaultFields = this.getClass().getKlass().DEFAULT_FIELDS;
-                this._config = Types.isDefined(defaultFields) ? Jsons.union(cfg, { fields: defaultFields }) : cfg;
+                this._config = Types.isDefined(defaultFields) ? J.union(cfg, { fields: defaultFields }) : cfg;
                 this._addFields(this._config.fields);
                 let listeners = this._config.listeners;
                 if (listeners)
-                    Jsons.forEach(listeners, (v, key) => {
+                    J.forEach(listeners, (v, key) => {
                         this.on(key, v);
                     });
             }
@@ -554,14 +561,13 @@ var JS;
                 let tField = null;
                 if (cfg.name in this._fields) {
                     tField = this._fields[cfg.name];
-                    let c = tField.config();
-                    c = Jsons.union(c, cfg);
+                    tField.config(cfg);
                 }
                 else {
                     cfg.isId = cfg.isId || this._config.idProperty === cfg.name;
                     tField = new model_2.Field(cfg);
-                    this._fields[tField.name()] = tField;
                 }
+                this._fields[tField.name()] = tField;
                 if (tField.isId())
                     this._config.idProperty = cfg.name;
             }
@@ -618,7 +624,7 @@ var JS;
                 return this;
             }
             clone() {
-                let model = Class.newInstance(this.className, Jsons.clone(this._config));
+                let model = Class.newInstance(this.className, J.clone(this._config));
                 model.setData(this.getData());
                 return model;
             }
@@ -627,7 +633,7 @@ var JS;
             }
             load(quy, silent) {
                 this._check();
-                let me = this, query = Jsons.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
+                let me = this, query = J.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
                 return new model_2.JsonProxy().execute(query).then(function (result) {
@@ -647,19 +653,19 @@ var JS;
             }
             setData(data, silent) {
                 this._check();
-                let oldData = Jsons.clone(this._data), newData = data;
+                let oldData = J.clone(this._data), newData = data;
                 if (!silent)
                     this._fire('dataupdating', [newData, oldData]);
                 this._data = {};
                 if (newData) {
-                    if (Check.isEmpty(this._fields)) {
-                        Jsons.forEach(newData, (v, k) => {
+                    if (E(this._fields)) {
+                        J.forEach(newData, (v, k) => {
                             this._newField({ name: k });
                             this.set(k, v, true);
                         });
                     }
                     else {
-                        Jsons.forEach(this._fields, (f, name) => {
+                        J.forEach(this._fields, (f, name) => {
                             this.set(name, newData[f.alias()], true);
                         });
                     }
@@ -709,7 +715,7 @@ var JS;
                 return this;
             }
             isEmpty() {
-                return Check.isEmpty(this._data);
+                return E(this._data);
             }
             destroy() {
                 if (this._isD)
@@ -732,7 +738,7 @@ var JS;
                 if (!this._fields)
                     return null;
                 let f = null;
-                Jsons.some(this._fields, field => {
+                J.some(this._fields, field => {
                     let is = field.isId();
                     if (is)
                         f = field;
@@ -748,10 +754,10 @@ var JS;
             }
             validate(result) {
                 let vdata = this._data;
-                if (Check.isEmpty(vdata))
+                if (E(vdata))
                     return true;
                 let rst = result || new ValidateResult(), str = '';
-                Jsons.forEach(vdata, (v, k) => {
+                J.forEach(vdata, (v, k) => {
                     let field = this.getField(k);
                     if (field) {
                         let ret = this.validateField(field.name(), v, rst);
@@ -935,6 +941,7 @@ var JS;
 (function (JS) {
     let model;
     (function (model) {
+        let F = Jsons.find;
         class ResultSet {
             constructor() {
                 this._data = null;
@@ -1001,17 +1008,17 @@ var JS;
             static parseJSON(raw, format) {
                 if (!raw)
                     return null;
-                const fmt = format || this.DEFAULT_FORMAT, root = Jsons.find(raw, fmt.rootProperty);
+                const fmt = format || this.DEFAULT_FORMAT, root = F(raw, fmt.rootProperty);
                 let result = new ResultSet();
-                result.lang(Jsons.find(root, fmt.langProperty));
-                result.message(Jsons.find(root, fmt.messageProperty));
-                result.version(Jsons.find(root, fmt.versionProperty));
+                result.lang(F(root, fmt.langProperty));
+                result.message(F(root, fmt.messageProperty));
+                result.version(F(root, fmt.versionProperty));
                 result.success(fmt.isSuccess ? fmt.isSuccess(root) : (root[fmt.successProperty] === (fmt.successCode || true)));
-                result.data(Jsons.find(root, fmt.recordsProperty));
+                result.data(F(root, fmt.recordsProperty));
                 result.rawObject(root);
-                result.page(Jsons.find(root, fmt.pageProperty));
-                result.pageSize(Jsons.find(root, fmt.pageSizeProperty));
-                result.total(Jsons.find(root, fmt.totalProperty));
+                result.page(F(root, fmt.pageProperty));
+                result.pageSize(F(root, fmt.pageSizeProperty));
+                result.total(F(root, fmt.totalProperty));
                 return result;
             }
         }
@@ -1037,6 +1044,7 @@ var JS;
     (function (model) {
         let validator;
         (function (validator) {
+            let E = Check.isEmpty, J = Jsons;
             class ValidatorConfig {
             }
             validator.ValidatorConfig = ValidatorConfig;
@@ -1097,11 +1105,11 @@ var JS;
             validator.CustomValidatorConfig = CustomValidatorConfig;
             class CustomValidator extends Validator {
                 constructor(cfg) {
-                    super(Jsons.union(new CustomValidatorConfig(), cfg));
+                    super(J.union(new CustomValidatorConfig(), cfg));
                 }
                 validate(val) {
                     let cfg = this._cfg;
-                    if ((Check.isEmpty(val) && !cfg.allowEmpty) || !cfg.validate(val))
+                    if ((E(val) && !cfg.allowEmpty) || !cfg.validate(val))
                         return cfg.message || false;
                     return true;
                 }
@@ -1115,7 +1123,7 @@ var JS;
                     super(cfg);
                 }
                 validate(val) {
-                    if (val == void 0 || Check.isEmpty(String(val).trim()))
+                    if (val == void 0 || E(String(val).trim()))
                         return this._cfg.message || false;
                     return true;
                 }
@@ -1130,11 +1138,11 @@ var JS;
             validator.RangeValidatorConfig = RangeValidatorConfig;
             class RangeValidator extends Validator {
                 constructor(cfg) {
-                    super(Jsons.union(new RangeValidatorConfig(), cfg));
+                    super(J.union(new RangeValidatorConfig(), cfg));
                 }
                 validate(val) {
                     let cfg = this._cfg;
-                    if ((Check.isEmpty(val) && !cfg.allowEmpty) || !Types.isNumeric(val))
+                    if ((E(val) && !cfg.allowEmpty) || !Types.isNumeric(val))
                         return cfg.nanMessage;
                     let min = cfg.min, max = cfg.max;
                     val = Number(val == void 0 ? 0 : val);
@@ -1155,11 +1163,11 @@ var JS;
             validator.LengthValidatorConfig = LengthValidatorConfig;
             class LengthValidator extends Validator {
                 constructor(cfg) {
-                    super(Jsons.union(new LengthValidatorConfig(), cfg));
+                    super(J.union(new LengthValidatorConfig(), cfg));
                 }
                 validate(val) {
                     let cfg = this._cfg;
-                    if (Check.isEmpty(val)) {
+                    if (E(val)) {
                         return !cfg.allowEmpty ? (cfg.invalidTypeMessage || false) : true;
                     }
                     if (!Types.isString(val) && !Types.isArray(val))
@@ -1182,11 +1190,11 @@ var JS;
             validator.FormatValidatorConfig = FormatValidatorConfig;
             class FormatValidator extends Validator {
                 constructor(cfg) {
-                    super(Jsons.union(new FormatValidatorConfig(), cfg));
+                    super(J.union(new FormatValidatorConfig(), cfg));
                 }
                 validate(val) {
                     let cfg = this._cfg;
-                    return (Check.isEmpty(val) && !cfg.allowEmpty) || !cfg.matcher.test(val) ? (cfg.message || false) : true;
+                    return (E(val) && !cfg.allowEmpty) || !cfg.matcher.test(val) ? (cfg.message || false) : true;
                 }
             }
             validator.FormatValidator = FormatValidator;
@@ -1291,6 +1299,7 @@ var JS;
 (function (JS) {
     let view;
     (function (view) {
+        let J = Jsons;
         class FormView extends view.View {
             reset() {
                 this.eachWidget((w) => {
@@ -1307,9 +1316,10 @@ var JS;
                 return this;
             }
             iniValues(values, render) {
+                let T = this;
                 if (arguments.length == 0) {
                     let vals = {};
-                    this.eachWidget((w) => {
+                    T.eachWidget((w) => {
                         if (w.iniValue)
                             vals[w.id] = w.iniValue();
                     });
@@ -1317,34 +1327,34 @@ var JS;
                 }
                 else {
                     if (values) {
-                        Jsons.forEach(values, (val, id) => {
-                            let w = this._widgets[id];
+                        J.forEach(values, (val, id) => {
+                            let w = T._widgets[id];
                             if (w && w.iniValue)
                                 w.iniValue(val, render);
                         });
                     }
                     else {
-                        this.eachWidget((w) => {
+                        T.eachWidget((w) => {
                             if (w.iniValue)
                                 w.iniValue(null, render);
                         });
                     }
                 }
-                return this;
+                return T;
             }
             validate(id) {
-                let wgts = this._widgets;
+                let T = this, wgts = T._widgets;
                 if (Check.isEmpty(wgts))
                     return true;
                 if (!id) {
                     let ok = true;
-                    Jsons.forEach(wgts, (wgt) => {
-                        if (this._validateWidget(wgt) !== true)
+                    J.forEach(wgts, (wgt) => {
+                        if (T._validateWidget(wgt) !== true)
                             ok = false;
                     });
                     return ok;
                 }
-                return this._validateWidget(this._widgets[id]);
+                return T._validateWidget(T._widgets[id]);
             }
             _validateWidget(wgt) {
                 if (!wgt || !wgt.validate)
@@ -1371,21 +1381,22 @@ var JS;
                 }
             }
             _render() {
-                if (this._config) {
-                    let cfg = this._config;
-                    Jsons.forEach(cfg.widgetConfigs, (config, id) => {
-                        config['valueModel'] = this._model || this._config.valueModel;
-                        let wgt = this._newWidget(id, config, cfg.defaultConfig);
-                        if (wgt && wgt.valueModel && !this._model)
-                            this._model = wgt.valueModel();
-                        this.addWidget(wgt);
+                let T = this;
+                if (T._config) {
+                    let cfg = T._config;
+                    J.forEach(cfg.widgetConfigs, (config, id) => {
+                        config['valueModel'] = T._model || T._config.valueModel;
+                        let wgt = T._newWidget(id, config, cfg.defaultConfig);
+                        if (wgt && wgt.valueModel && !T._model)
+                            T._model = wgt.valueModel();
+                        T.addWidget(wgt);
                     });
-                    if (this._model) {
-                        this._model.on('validated', (e, result, data) => {
-                            this._fire('validated', [result, data]);
+                    if (T._model) {
+                        T._model.on('validated', (e, result, data) => {
+                            T._fire('validated', [result, data]);
                         });
-                        this._model.on('dataupdated', (e, newData, oldData) => {
-                            this._fire('dataupdated', [newData, oldData]);
+                        T._model.on('dataupdated', (e, newData, oldData) => {
+                            T._fire('dataupdated', [newData, oldData]);
                         });
                     }
                 }

@@ -224,6 +224,14 @@ module JS {
             public static isArrayBuffer(obj: any) {
                 return _is(obj, 'ArrayBuffer')
             }
+            
+            /**
+             * Is typed array.<br>
+             * 是不是类型数组 
+             */
+            public static isTypedArray(value) {
+                return value && this.isNumber(value.length) && /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array]$/.test(toString.call(value));
+            }
 
             /**
              * Is an element.<br>
@@ -299,14 +307,6 @@ module JS {
              */
             public static subClass(cls1: Class<any>, cls2: Class<any>) {
                 return cls1.subclassOf(cls2);
-            }
-
-            /**
-             * Is typed array.<br>
-             * 是不是类型数组 
-             */
-            public static isTypedArray(value) {
-                return value && this.isNumber(value.length) && /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array]$/.test(toString.call(value));
             }
 
             /**

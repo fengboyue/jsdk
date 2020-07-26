@@ -28,7 +28,6 @@ JSDK已定义了以下注解函数，可以直接使用：
 @after|system|method
 @around|system|method
 @throws|system|method
-@aop|system|method
 @component|jsvp|class
 @inject|jsvp|field
 @widget|jsfx|class
@@ -372,7 +371,7 @@ new Timer(()=>{
 > 
 > 如果你是高级动画开发者，你可以继承JSAN中Anim类和使用AnimTimer类（是Timer类的子类）来实现自己的动画类。
 
-## Promise助手
+## Promise工具
 HTML5提供了Promise API来更好的支持异步回调式编程。
 例如，我们实例化一个Promise对象：
 ```javascript

@@ -18,7 +18,7 @@ module AppDemo {
                 userService: UserService = null;
 
                 public readCurrentUser() {
-                    let uri = Page.uri();
+                    let uri = new URI(location.href);
                     this.userView.values({
                         phone: uri.query('phone'),
                         email: uri.query('email')
@@ -30,18 +30,25 @@ module AppDemo {
                     });
                 }
                 public read404() {
-                    this.userService.read404().catch((res: AjaxResponse)=>{
+                    this.userService.read404().catch((res: AjaxResponse) => {
                         App.fireEvent('404', res.statusText)
                     })
                 }
 
-                render() {
+                enter() {
                     this.userView.render();
                 }
-                
+
                 initialize() {
+                    App.onEvent('access', (e: AppEvent, phone) => {
+                        Konsole.print(`access phone: ${phone}`, e)
+                    })
+                    App.onEvent('404', (e: AppEvent, errorMsg: string) => {
+                        App.logger().info(`Page<${Page.currentPage().className}> received AppEvent<404>: ${errorMsg}!`,
+                            `From page: ${e.fromPage}`);
+                    })
                     App.logger().info('UserPage was initialized!');
-                };
+                }
             }
         }
     }

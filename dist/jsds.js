@@ -1,6 +1,6 @@
 //@ sourceURL=jsds.js
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -62,6 +62,7 @@ var JS;
 (function (JS) {
     let ds;
     (function (ds) {
+        let J = Jsons;
         class LinkedList {
             constructor() {
                 this._s = 0;
@@ -98,7 +99,7 @@ var JS;
                 if (this._s > 0) {
                     let node = this._hd;
                     while (node) {
-                        list.add(Jsons.clone(node.data));
+                        list.add(J.clone(node.data));
                         node = node.next;
                     }
                 }
@@ -184,7 +185,7 @@ var JS;
                 return this.indexOf(data, eq) > -1;
             }
             _addLast(d) {
-                let node = { data: Jsons.clone(d), prev: null, next: null };
+                let node = { data: J.clone(d), prev: null, next: null };
                 if (this._tl) {
                     node.prev = this._tl;
                     this._tl.next = node;
@@ -195,7 +196,7 @@ var JS;
                 this._s += 1;
             }
             _addFirst(d) {
-                let node = { data: Jsons.clone(d), prev: null, next: null };
+                let node = { data: J.clone(d), prev: null, next: null };
                 if (this._hd) {
                     node.next = this._hd;
                     this._hd.prev = node;
@@ -227,7 +228,7 @@ var JS;
                 let nextNode = this._findAt(i);
                 if (!nextNode)
                     return;
-                let prevNode = nextNode.prev, newNode = { data: Jsons.clone(a), next: nextNode, prev: prevNode };
+                let prevNode = nextNode.prev, newNode = { data: J.clone(a), next: nextNode, prev: prevNode };
                 prevNode.next = newNode;
                 nextNode.prev = newNode;
                 this._s += 1;

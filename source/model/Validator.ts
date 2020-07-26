@@ -15,6 +15,8 @@ module JS {
 
         export namespace validator {
 
+            let E = Check.isEmpty, J = Jsons;
+        
             export type ValidatorType = 'required' | 'format' | 'range' | 'length' | 'custom';
 
             export class ValidatorConfig {
@@ -80,12 +82,12 @@ module JS {
             export class CustomValidator extends Validator {
 
                 constructor(cfg: CustomValidatorConfig) {
-                    super(Jsons.union(new CustomValidatorConfig(), cfg));
+                    super(J.union(new CustomValidatorConfig(), cfg));
                 }
 
                 public validate(val: any): string | boolean {
                     let cfg = <CustomValidatorConfig>this._cfg;
-                    if ((Check.isEmpty(val) && !cfg.allowEmpty) || !cfg.validate(val)) return cfg.message || false;
+                    if ((E(val) && !cfg.allowEmpty) || !cfg.validate(val)) return cfg.message || false;
                     return true;
                 }
             }
@@ -99,7 +101,7 @@ module JS {
                 }
 
                 public validate(val: any): string | boolean {
-                    if (val == void 0 || Check.isEmpty(String(val).trim())) return (<RequiredValidatorConfig>this._cfg).message || false;
+                    if (val == void 0 || E(String(val).trim())) return (<RequiredValidatorConfig>this._cfg).message || false;
                     return true;
                 }
             }
@@ -113,12 +115,12 @@ module JS {
             }
             export class RangeValidator extends Validator {
                 constructor(cfg: RangeValidatorConfig) {
-                    super(Jsons.union(new RangeValidatorConfig(), cfg));
+                    super(J.union(new RangeValidatorConfig(), cfg));
                 }
 
                 public validate(val: string | number): string | boolean {
                     let cfg = <RangeValidatorConfig>this._cfg;
-                    if ((Check.isEmpty(val) && !cfg.allowEmpty) || !Types.isNumeric(val)) return cfg.nanMessage;
+                    if ((E(val) && !cfg.allowEmpty) || !Types.isNumeric(val)) return cfg.nanMessage;
 
                     let min = cfg.min, max = cfg.max;
                     val = Number(val == void 0 ? 0 : val);
@@ -138,12 +140,12 @@ module JS {
             }
             export class LengthValidator extends Validator {
                 constructor(cfg: LengthValidatorConfig) {
-                    super(Jsons.union(new LengthValidatorConfig(), cfg));
+                    super(J.union(new LengthValidatorConfig(), cfg));
                 }
 
                 public validate(val: string | string[]): string | boolean {
                     let cfg = <LengthValidatorConfig>this._cfg;
-                    if (Check.isEmpty(val)) {
+                    if (E(val)) {
                         return !cfg.allowEmpty?(cfg.invalidTypeMessage || false):true;
                     }
 
@@ -165,12 +167,12 @@ module JS {
             }
             export class FormatValidator extends Validator {
                 constructor(cfg: FormatValidatorConfig) {
-                    super(Jsons.union(new FormatValidatorConfig(), cfg));
+                    super(J.union(new FormatValidatorConfig(), cfg));
                 }
 
                 public validate(val: any): string | boolean {
                     let cfg = <FormatValidatorConfig>this._cfg;
-                    return (Check.isEmpty(val) && !cfg.allowEmpty) || !cfg.matcher.test(val) ? (cfg.message || false):true;
+                    return (E(val) && !cfg.allowEmpty) || !cfg.matcher.test(val) ? (cfg.message || false):true;
                 }
             }
         }

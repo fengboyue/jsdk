@@ -13,6 +13,8 @@ module JS {
 
     export namespace fx {
 
+        let J = Jsons;
+
         export type FormWidgetEvents = WidgetEvents |
             'changed' | 'validating' | 'validated' | 'loading' | 'loadsuccess' | 'loadfailure' | 'loaderror' | 'dataupdating' | 'dataupdated';
         /**
@@ -274,7 +276,7 @@ module JS {
 
                 let name = this.name(),
                     rst = new ValidateResult(),
-                    val = Jsons.clone(this.value());
+                    val = J.clone(this.value());
                 this._fire('validating', [rst, val, name]);
                 let vdt = this._validate(name, val, rst);
                 this._fire('validated', [rst, val, name]);
@@ -312,8 +314,8 @@ module JS {
                 let cfg = <FormWidgetConfig<any>>this._config;
                 if (arguments.length == 0) return cfg.data;
 
-                let newData = Jsons.clone(data),
-                    oldData = Jsons.clone(cfg.data);
+                let newData = J.clone(data),
+                    oldData = J.clone(cfg.data);
 
                 if (!silent) this._fire('dataupdating', [newData, oldData]);
                 cfg.data = data;
@@ -338,7 +340,7 @@ module JS {
              */
             public load(quy: string | AjaxRequest, silent?: boolean): Promise<ResultSet<any>> {
                 let cfg = <FormWidgetConfig<any>>this._config;
-                cfg.dataQuery = <AjaxRequest>Jsons.union(Ajax.toRequest(cfg.dataQuery), Ajax.toRequest(quy));
+                cfg.dataQuery = <AjaxRequest>J.union(Ajax.toRequest(cfg.dataQuery), Ajax.toRequest(quy));
                 return this._dataModel.load(cfg.dataQuery, silent);
             }
 
@@ -357,7 +359,7 @@ module JS {
                 let cfg = <FormWidgetConfig<any>>this._config, oldVal = this._valueModel.get(this.name());
                 if (arguments.length == 0) return oldVal;
 
-                this._setValue(val, silent || this._equalValues(val, oldVal));
+                this._setValue(val, silent);
                 this._renderValue();
                 return this
             }

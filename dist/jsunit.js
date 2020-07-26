@@ -1,6 +1,6 @@
 //@ sourceURL=jsunit.js
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -214,10 +214,11 @@ var JS;
     let unit;
     (function (unit) {
         var TestSuite_1;
+        let Y = Types;
         let TestSuite = TestSuite_1 = class TestSuite {
             constructor(name) {
                 this._cases = [];
-                if (Types.isString(name)) {
+                if (Y.isString(name)) {
                     this._name = name;
                 }
                 else {
@@ -252,7 +253,7 @@ var JS;
             addTest(test) {
                 if (!test)
                     return;
-                if (Types.isArray(test)) {
+                if (Y.isArray(test)) {
                     test.forEach(clazz => {
                         this._addTest(clazz);
                     });
@@ -264,17 +265,18 @@ var JS;
             _addTest(test) {
                 if (!test)
                     return;
-                if (Types.ofKlass(test, TestSuite_1)) {
-                    this._cases = this._cases.concat(test.getTestCases());
+                let T = this;
+                if (Y.ofKlass(test, TestSuite_1)) {
+                    T._cases = T._cases.concat(test.getTestCases());
                 }
-                else if (Types.ofKlass(test, unit.TestCase)) {
-                    this._cases[this._cases.length] = test;
+                else if (Y.ofKlass(test, unit.TestCase)) {
+                    T._cases[T._cases.length] = test;
                 }
-                else if (Types.subClass(test, TestSuite_1.class)) {
-                    this._cases = this._cases.concat(Class.newInstance(test.name).getTestCases());
+                else if (Y.subClass(test, TestSuite_1.class)) {
+                    T._cases = T._cases.concat(Class.newInstance(test.name).getTestCases());
                 }
-                else if (Types.subClass(test, unit.TestCase.class)) {
-                    this._cases[this._cases.length] = Class.newInstance(test.name);
+                else if (Y.subClass(test, unit.TestCase.class)) {
+                    T._cases[T._cases.length] = Class.newInstance(test.name);
                 }
             }
             _addTestMethods() {

@@ -11,7 +11,7 @@
 
 module JS {
 
-    export namespace model {
+    export namespace app {
 
         @klass('JS.app.Service')
         export abstract class Service implements IComponent {
@@ -63,4 +63,4 @@ module JS {
     }
 
 }
-import Service = JS.model.Service;
+import Service = JS.app.Service;

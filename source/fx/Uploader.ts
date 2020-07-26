@@ -15,6 +15,8 @@ module JS {
 
     export namespace fx {
 
+        let E = Check.isEmpty, A = Arrays;
+        
         export enum UploaderFaceMode {
             list = 'list',
             image = 'image',
@@ -370,7 +372,7 @@ module JS {
             public value(file?: MimeFile | MimeFile[]): any {
                 if (arguments.length == 0) return super.value();
 
-                if (Check.isEmpty(file)) {
+                if (E(file)) {
                     this._uploader.reset();
                     $(`#${this.id} .files-area`).children().remove();
                     this._setValue(null);
@@ -380,22 +382,22 @@ module JS {
             }
 
             protected _equalValues(newVal: MimeFile[], oldVal: MimeFile[]): boolean {
-                return Arrays.equal(oldVal, newVal, (file1, file2) => {
+                return A.equal(oldVal, newVal, (file1, file2) => {
                     return file1.id == file2.id
                 })
             }
 
             public add(file: MimeFile | MimeFile[]) {
-                if (Check.isEmpty(file)) return this;
+                if (E(file)) return this;
 
-                this._addFiles(Arrays.toArray(file));
+                this._addFiles(A.toArray(file));
                 return this
             }
             //id可以是临时id，也可以是上传成功后的正式id
             public remove(id: string | string[]) {
-                if (Check.isEmpty(id)) return this;
+                if (E(id)) return this;
 
-                let rms: string[] = Arrays.toArray(id);
+                let rms: string[] = A.toArray(id);
                 rms.forEach(i=>{
                     let el = this.widgetEl.find(`[file-id="${i}"]`);
                     if(el.length==1) this._removeFile(el.attr('wu-id'));
@@ -559,7 +561,7 @@ module JS {
             }
 
             private _toMimeFiles(wfs: WebUploader.File[]): MimeFile[] {
-                if (Check.isEmpty(wfs)) return [];
+                if (E(wfs)) return [];
 
                 let fs = [];
                 wfs.forEach(file => {
@@ -608,7 +610,7 @@ module JS {
             }
 
             protected _addFiles(files: MimeFile[]) {
-                if (Check.isEmpty(files)) return this;
+                if (E(files)) return this;
 
                 let wuFiles = [], value = this.value()||[];
                 files.forEach(f => {

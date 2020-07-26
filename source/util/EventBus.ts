@@ -15,7 +15,7 @@ module JS {
 
         //为每个事件监听函数生成uid，方便以后注销
         //这是一个全局计数器
-        let EUID = 1;
+        let EUID = 1, E = Check.isEmpty;
 
         export type EventHandler<T=any> = (this: T, e: Event, ...args:any[]) => boolean | void;
         export type EventHandler1<T, ARG1> = (this: T, e: Event, ARG1) => boolean | void;
@@ -61,7 +61,7 @@ module JS {
                     this._map.set(type, []);
                 } else {
                     let fns = this._map.get(type);
-                    if (!Check.isEmpty(fns)) {
+                    if (!E(fns)) {
                         fns.remove(fn => {
                             return fn['euid'] === h['euid']
                         })
@@ -71,7 +71,7 @@ module JS {
             }
             private _removeByEuid(type: string, euid: number) {
                 let fns = this._map.get(type);
-                if (!Check.isEmpty(fns)) {
+                if (!E(fns)) {
                     fns.remove(fn => {
                         return fn['euid'] === euid
                     })
@@ -102,7 +102,7 @@ module JS {
             public find(type:string, euid?:number):any{
                 let fns = this._map.get(type);
                 if(arguments.length>=1){
-                    if (!Check.isEmpty(fns)) {
+                    if (!E(fns)) {
                         let i = fns.findIndex(fn => {
                             return fn['euid'] === euid
                         })
@@ -140,12 +140,10 @@ module JS {
             public fire(e: string | Event, args?: Array<any>, that?: any) {
                 let is = Types.isString(e),
                     fns = this._map.get(is ? <string>e : (<Event>e).type);
-                if (!Check.isEmpty(fns)) {
+                if (!E(fns)) {
                     let evt = is ? new CustomEvent(<string>e) : (<Event>e);
-                    fns.every(
-                        fn => {
-                            this._call(evt, fn, args, that);
-                        }
+                    fns.forEach(
+                        fn => {this._call(evt, fn, args, that)}
                     )
                 }
             }

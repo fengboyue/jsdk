@@ -1,6 +1,6 @@
 //@ sourceURL=jsfx.js
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -64,6 +64,7 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
+        let J = Jsons;
         let Widget = class Widget {
             constructor(cfg) {
                 this._config = null;
@@ -127,11 +128,11 @@ var JS;
             _initConfig(cfg) {
                 let defaultCfg = Class.newInstance(this.className + 'Config');
                 cfg.name = cfg.name || this.id;
-                this._config = Jsons.union(defaultCfg, cfg);
-                this._initialConfig = Jsons.clone(this._config);
+                this._config = J.union(defaultCfg, cfg);
+                this._initialConfig = J.clone(this._config);
             }
             initialConfig(key) {
-                return Jsons.clone(key ? this._initialConfig[key] : this._initialConfig);
+                return J.clone(key ? this._initialConfig[key] : this._initialConfig);
             }
             _onBeforeRender() { }
             _onAfterRender() { }
@@ -144,7 +145,7 @@ var JS;
                 this.widgetEl.addClass(`jsfx-${this.getClass().shortName.toLowerCase()} ${cfg.colorMode ? 'color-' + cfg.colorMode : ''} size-${cfg.sizeMode} ${cfg.cls || ''}`);
                 let is = this._render();
                 let lts = cfg.listeners || {};
-                Jsons.forEach(lts, function (handler, type) {
+                J.forEach(lts, function (handler, type) {
                     if (handler)
                         this.on(type, handler);
                 }, this);
@@ -220,7 +221,7 @@ var JS;
                 if (!this._config.i18n)
                     return defaults;
                 let b = new Bundle(this._config.i18n, this._config.locale);
-                return defaults ? defaults.set(Jsons.union(defaults.get(), b.get())) : b;
+                return defaults ? defaults.set(J.union(defaults.get(), b.get())) : b;
             }
             _i18n(key) {
                 if (!this._i18nBundle)
@@ -249,6 +250,7 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
+        let J = Jsons;
         class FormWidgetConfig extends fx.WidgetConfig {
             constructor() {
                 super(...arguments);
@@ -412,7 +414,7 @@ var JS;
             validate() {
                 if (Check.isEmpty(this._config.validators))
                     return true;
-                let name = this.name(), rst = new ValidateResult(), val = Jsons.clone(this.value());
+                let name = this.name(), rst = new ValidateResult(), val = J.clone(this.value());
                 this._fire('validating', [rst, val, name]);
                 let vdt = this._validate(name, val, rst);
                 this._fire('validated', [rst, val, name]);
@@ -436,7 +438,7 @@ var JS;
                 let cfg = this._config;
                 if (arguments.length == 0)
                     return cfg.data;
-                let newData = Jsons.clone(data), oldData = Jsons.clone(cfg.data);
+                let newData = J.clone(data), oldData = J.clone(cfg.data);
                 if (!silent)
                     this._fire('dataupdating', [newData, oldData]);
                 cfg.data = data;
@@ -454,7 +456,7 @@ var JS;
             }
             load(quy, silent) {
                 let cfg = this._config;
-                cfg.dataQuery = Jsons.union(Ajax.toRequest(cfg.dataQuery), Ajax.toRequest(quy));
+                cfg.dataQuery = J.union(Ajax.toRequest(cfg.dataQuery), Ajax.toRequest(quy));
                 return this._dataModel.load(cfg.dataQuery, silent);
             }
             reload() {
@@ -469,7 +471,7 @@ var JS;
                 let cfg = this._config, oldVal = this._valueModel.get(this.name());
                 if (arguments.length == 0)
                     return oldVal;
-                this._setValue(val, silent || this._equalValues(val, oldVal));
+                this._setValue(val, silent);
                 this._renderValue();
                 return this;
             }
@@ -672,6 +674,7 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
+        let J = Jsons, Y = Types, E = Check.isEmpty;
         let SelectFaceMode;
         (function (SelectFaceMode) {
             SelectFaceMode["square"] = "square";
@@ -743,7 +746,7 @@ var JS;
                     if (data == '_jsfx')
                         return;
                     let nv = $(this).val();
-                    me._setValue(Check.isEmpty(nv) ? null : nv);
+                    me._setValue(E(nv) ? null : nv);
                 });
                 let evts = ['selected', 'unselected'];
                 ['select2:select', 'select2:unselect'].forEach((type, i) => {
@@ -767,7 +770,7 @@ var JS;
                 return html;
             }
             _initSelect2() {
-                let cfg = this._config, dataQuery = cfg.dataQuery, url = dataQuery ? (Types.isString(dataQuery) ? dataQuery : dataQuery.url) : null, jsonParams = dataQuery ? (Types.isString(dataQuery) ? null : dataQuery.data) : null, options = {
+                let cfg = this._config, dataQuery = cfg.dataQuery, url = dataQuery ? (Y.isString(dataQuery) ? dataQuery : dataQuery.url) : null, jsonParams = dataQuery ? (Y.isString(dataQuery) ? null : dataQuery.data) : null, options = {
                     disabled: cfg.disabled,
                     allowClear: cfg.allowClear,
                     width: '100%',
@@ -810,7 +813,7 @@ var JS;
                         delay: 500,
                         data: function () { return jsonParams ? jsonParams : {}; },
                         processResults: (res, params) => {
-                            let data = Jsons.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
+                            let data = J.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
                             this.data(data);
                             return {
                                 results: data
@@ -834,7 +837,7 @@ var JS;
             }
             select(i, silent) {
                 let cfg = this._config;
-                if (i < 0 || Check.isEmpty(cfg.data) || i >= cfg.data.length)
+                if (i < 0 || E(cfg.data) || i >= cfg.data.length)
                     return;
                 this.value('' + cfg.data[i].id, silent);
             }
@@ -872,25 +875,25 @@ var JS;
                 let cfg = this._config;
                 if (arguments.length == 0)
                     return cfg.data;
-                let newData, newDataCopy, oldData = Jsons.clone(cfg.data);
+                let newData, newDataCopy, oldData = J.clone(cfg.data);
                 if (mode == 'append') {
-                    let tmp = Jsons.clone(cfg.data) || [];
+                    let tmp = J.clone(cfg.data) || [];
                     newData = tmp.add(data);
-                    newDataCopy = Jsons.clone(newData);
+                    newDataCopy = J.clone(newData);
                 }
                 else if (mode == 'remove') {
-                    let tmp = Jsons.clone(cfg.data) || [];
+                    let tmp = J.clone(cfg.data) || [];
                     data.forEach(id => {
                         tmp.remove(item => {
                             return item.id == id;
                         });
                     });
                     newData = tmp;
-                    newDataCopy = Jsons.clone(newData);
+                    newDataCopy = J.clone(newData);
                 }
                 else {
                     newData = data;
-                    newDataCopy = Jsons.clone(newData);
+                    newDataCopy = J.clone(newData);
                 }
                 if (!silent)
                     this._fire('dataupdating', [newDataCopy, oldData]);
@@ -936,7 +939,7 @@ var JS;
                     this._mainEl.val(v).trigger('change', '_jsfx');
             }
             _equalValues(newVal, oldVal) {
-                if (Check.isEmpty(oldVal) && Check.isEmpty(newVal))
+                if (E(oldVal) && E(newVal))
                     return true;
                 let cfg = this._config;
                 return cfg.multiple ? Arrays.equalToString(oldVal, newVal) : oldVal == newVal;
@@ -945,7 +948,7 @@ var JS;
                 if (arguments.length == 0)
                     return super.value();
                 let cfg = this._config;
-                if ((cfg.multiple && Types.isString(val)) || (!cfg.multiple && Types.isArray(val)))
+                if ((cfg.multiple && Y.isString(val)) || (!cfg.multiple && Y.isArray(val)))
                     throw new TypeError(`Wrong value type for select<${this.id}>!`);
                 return super.value(val, silent);
             }
@@ -1030,6 +1033,7 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
+        let E = Check.isEmpty, A = Arrays;
         let UploaderFaceMode;
         (function (UploaderFaceMode) {
             UploaderFaceMode["list"] = "list";
@@ -1267,7 +1271,7 @@ var JS;
             value(file) {
                 if (arguments.length == 0)
                     return super.value();
-                if (Check.isEmpty(file)) {
+                if (E(file)) {
                     this._uploader.reset();
                     $(`#${this.id} .files-area`).children().remove();
                     this._setValue(null);
@@ -1276,20 +1280,20 @@ var JS;
                 return this.add(file);
             }
             _equalValues(newVal, oldVal) {
-                return Arrays.equal(oldVal, newVal, (file1, file2) => {
+                return A.equal(oldVal, newVal, (file1, file2) => {
                     return file1.id == file2.id;
                 });
             }
             add(file) {
-                if (Check.isEmpty(file))
+                if (E(file))
                     return this;
-                this._addFiles(Arrays.toArray(file));
+                this._addFiles(A.toArray(file));
                 return this;
             }
             remove(id) {
-                if (Check.isEmpty(id))
+                if (E(id))
                     return this;
-                let rms = Arrays.toArray(id);
+                let rms = A.toArray(id);
                 rms.forEach(i => {
                     let el = this.widgetEl.find(`[file-id="${i}"]`);
                     if (el.length == 1)
@@ -1439,7 +1443,7 @@ var JS;
                 });
             }
             _toMimeFiles(wfs) {
-                if (Check.isEmpty(wfs))
+                if (E(wfs))
                     return [];
                 let fs = [];
                 wfs.forEach(file => {
@@ -1489,7 +1493,7 @@ var JS;
                 return this;
             }
             _addFiles(files) {
-                if (Check.isEmpty(files))
+                if (E(files))
                     return this;
                 let wuFiles = [], value = this.value() || [];
                 files.forEach(f => {
@@ -1779,6 +1783,7 @@ var JS;
 (function (JS) {
     let fx;
     (function (fx) {
+        let A = Arrays;
         class ChoiceConfig extends fx.FormWidgetConfig {
         }
         fx.ChoiceConfig = ChoiceConfig;
@@ -1794,7 +1799,7 @@ var JS;
                 let cfg = this._config, data = cfg.data;
                 if (!data)
                     return '';
-                let val = Arrays.toArray(this.value()), html = '', textColor = cfg.textColorMode ? 'text-' + cfg.textColorMode : '', mode1 = this._hasFaceMode('round') ? 'round' : 'square', mode2 = this._hasFaceMode('ring') ? 'ring' : 'dot', disable = cfg.disabled ? 'disabled' : '';
+                let val = A.toArray(this.value()), html = '', textColor = cfg.textColorMode ? 'text-' + cfg.textColorMode : '', mode1 = this._hasFaceMode('round') ? 'round' : 'square', mode2 = this._hasFaceMode('ring') ? 'ring' : 'dot', disable = cfg.disabled ? 'disabled' : '';
                 data.forEach((d, i) => {
                     html += `
                     <label class="font-${cfg.sizeMode || 'md'} ${mode1} ${mode2} ${cfg.colorMode || ''} ${textColor} ${disable}">
@@ -1821,8 +1826,8 @@ var JS;
                 }
             }
             _renderValue() {
-                let cVal = this.value(), v = Arrays.toArray(cVal), val = Arrays.toArray(this._getDomValue());
-                if (!Arrays.same(val, v)) {
+                let cVal = this.value(), v = A.toArray(cVal), val = A.toArray(this._getDomValue());
+                if (!A.same(val, v)) {
                     this._setDomValue(cVal);
                 }
             }

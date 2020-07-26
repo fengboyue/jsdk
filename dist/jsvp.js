@@ -1,6 +1,6 @@
 //@ sourceURL=jsvp.js
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -9,9 +9,10 @@ var JS;
 (function (JS) {
     let store;
     (function (store) {
+        let D = document;
         class CookieStore {
             static get(key) {
-                let reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)", "gi"), data = reg.exec(document.cookie), str = data ? window['unescape'](data[2]) : null;
+                let reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)", "gi"), data = reg.exec(D.cookie), str = data ? window['unescape'](data[2]) : null;
                 return store.StoreHelper.parse(str);
             }
             ;
@@ -28,23 +29,23 @@ var JS;
                 let domain = CookieStore.DOMAIN;
                 if (domain)
                     domain = 'domain=' + domain;
-                document.cookie = key + '=' + window['escape']('' + store.StoreHelper.toString(value)) + '; path=' + p + '; expires=' + exp + domain;
+                D.cookie = key + '=' + window['escape']('' + store.StoreHelper.toString(value)) + '; path=' + p + '; expires=' + exp + domain;
             }
             ;
             static remove(key) {
                 let date = new Date();
                 date.setTime(date.getTime() - 10000);
-                document.cookie = key + "=; expire=" + date.toUTCString();
+                D.cookie = key + "=; expire=" + date.toUTCString();
             }
             ;
             static clear() {
-                document.cookie = '';
+                D.cookie = '';
             }
             ;
         }
         CookieStore.EXPIRES_DATETIME = 'Wed, 15 Apr 2099 00:00:00 GMT';
         CookieStore.PATH = '/';
-        CookieStore.DOMAIN = self.document ? document.domain : null;
+        CookieStore.DOMAIN = self.document ? D.domain : null;
         store.CookieStore = CookieStore;
     })(store = JS.store || (JS.store = {}));
 })(JS || (JS = {}));
@@ -53,32 +54,33 @@ var JS;
 (function (JS) {
     let store;
     (function (store) {
+        let L = localStorage;
         class LocalStore {
             static get(key) {
-                let str = localStorage.getItem(key);
+                let str = L.getItem(key);
                 if (!str)
                     return undefined;
                 return store.StoreHelper.parse(str);
             }
             ;
             static set(key, value) {
-                localStorage.setItem(key, store.StoreHelper.toString(value));
+                L.setItem(key, store.StoreHelper.toString(value));
             }
             ;
             static remove(key) {
-                localStorage.removeItem(key);
+                L.removeItem(key);
             }
             ;
             static key(i) {
-                return localStorage.key(i);
+                return L.key(i);
             }
             ;
             static size() {
-                return localStorage.length;
+                return L.length;
             }
             ;
             static clear() {
-                localStorage.clear();
+                L.clear();
             }
             ;
         }
@@ -90,32 +92,33 @@ var JS;
 (function (JS) {
     let store;
     (function (store) {
+        let S = sessionStorage;
         class SessionStore {
             static get(key) {
-                let str = sessionStorage.getItem(key);
+                let str = S.getItem(key);
                 if (!str)
                     return undefined;
                 return store.StoreHelper.parse(str);
             }
             ;
             static set(key, value) {
-                sessionStorage.setItem(key, store.StoreHelper.toString(value));
+                S.setItem(key, store.StoreHelper.toString(value));
             }
             ;
             static remove(key) {
-                sessionStorage.removeItem(key);
+                S.removeItem(key);
             }
             ;
             static key(i) {
-                return sessionStorage.key(i);
+                return S.key(i);
             }
             ;
             static size() {
-                return sessionStorage.length;
+                return S.length;
             }
             ;
             static clear() {
-                sessionStorage.clear();
+                S.clear();
             }
             ;
         }
@@ -127,44 +130,45 @@ var JS;
 (function (JS) {
     let store;
     (function (store) {
+        let T = Types, J = Jsons, TP = Type, S = J.stringify;
         class StoreHelper {
             static toString(value) {
-                if (Types.isUndefined(value))
+                if (T.isUndefined(value))
                     return 'undefined';
-                if (Types.isNull(value))
+                if (T.isNull(value))
                     return 'null';
-                if (Types.isString(value))
-                    return JSON.stringify(['string', value]);
-                if (Types.isBoolean(value))
-                    return JSON.stringify(['boolean', value]);
-                if (Types.isNumber(value))
-                    return JSON.stringify(['number', value]);
-                if (Types.isDate(value))
-                    return JSON.stringify(['date', '' + value.valueOf()]);
-                if (Types.isArray(value) || Types.isJsonObject(value))
-                    return JSON.stringify(['object', JSON.stringify(value)]);
+                if (T.isString(value))
+                    return S(['string', value]);
+                if (T.isBoolean(value))
+                    return S(['boolean', value]);
+                if (T.isNumber(value))
+                    return S(['number', value]);
+                if (T.isDate(value))
+                    return S(['date', '' + value.valueOf()]);
+                if (T.isArray(value) || T.isJsonObject(value))
+                    return S(['object', S(value)]);
             }
             static parse(data) {
-                if (Type.null == data)
+                if (TP.null == data)
                     return null;
-                if (Type.undefined == data)
+                if (TP.undefined == data)
                     return undefined;
-                let [type, val] = JSON.parse(data), v = val;
+                let [type, val] = J.parse(data), v = val;
                 switch (type) {
-                    case Type.boolean:
+                    case TP.boolean:
                         v = Boolean(val);
                         break;
-                    case Type.number:
+                    case TP.number:
                         v = Number(val);
                         break;
-                    case Type.date:
+                    case TP.date:
                         v = new Date(val);
                         break;
-                    case Type.array:
-                        v = JSON.parse(val);
+                    case TP.array:
+                        v = J.parse(val);
                         break;
-                    case Type.json:
-                        v = JSON.parse(val);
+                    case TP.json:
+                        v = J.parse(val);
                         break;
                 }
                 return v;
@@ -176,21 +180,21 @@ var JS;
 var StoreHelper = JS.store.StoreHelper;
 var JS;
 (function (JS) {
-    let model;
-    (function (model) {
+    let app;
+    (function (app) {
         class AppEvent extends CustomEvent {
             constructor(type, initDict) {
                 super(type, initDict);
             }
         }
-        model.AppEvent = AppEvent;
+        app.AppEvent = AppEvent;
         class App {
             static init(settings) {
                 this._sets = settings;
                 this._sets.properties = this._sets.properties || {};
-                this._logger = new Log(this.namespace(), settings.logLevel || LogLevel.INFO);
+                this._logger = new Log(this.NS(), settings.logLevel || LogLevel.INFO);
             }
-            static namespace() {
+            static NS() {
                 return this._sets.name + '/' + this.version();
             }
             static appName() {
@@ -214,8 +218,9 @@ var JS;
                 return this.properties({ key: val });
             }
             static fireEvent(e, arg) {
-                LocalStore.remove(e + '.' + App.namespace());
-                LocalStore.set(e + '.' + App.namespace(), arg);
+                let p = app.Page.currentPage(), pn = p && p.className, k = `${e}|${pn ? `${pn}|` : ''}${App.NS()}`;
+                LocalStore.remove(k);
+                LocalStore.set(k, arg);
             }
             static onEvent(e, handler, once) {
                 this._bus.on(e, handler, once);
@@ -225,33 +230,29 @@ var JS;
             }
         }
         App._bus = new EventBus(App);
-        model.App = App;
-    })(model = JS.model || (JS.model = {}));
+        app.App = App;
+    })(app = JS.app || (JS.app = {}));
 })(JS || (JS = {}));
-var App = JS.model.App;
-var AppEvent = JS.model.AppEvent;
+var App = JS.app.App;
+var AppEvent = JS.app.AppEvent;
 (function () {
     var oldSetItem = localStorage.setItem;
-    localStorage.setItem = function (key, newValue) {
-        var ev = document.createEvent('CustomEvent');
-        ev.initCustomEvent('AppEvent', false, false, '');
+    localStorage.setItem = function (key, val) {
+        let ev = new CustomEvent('AppEvent');
         ev['key'] = key;
-        ev['newValue'] = newValue;
-        ev['url'] = Page.uri().toString();
+        ev['newValue'] = val;
         window.dispatchEvent(ev);
         oldSetItem.apply(this, arguments);
     };
-    $(window).on('AppEvent storage', (evt) => {
-        let e = evt.originalEvent, name = e.key;
-        if (!name)
-            return;
-        let namespace = '.' + App.namespace();
-        if (!name.endsWith(namespace))
-            return;
+    window.on('AppEvent storage', (e) => {
         if (e.newValue == null)
             return;
-        let ev = new AppEvent(name.slice(0, name.length - namespace.length));
-        ev.url = e.url;
+        let name = e.key;
+        if (!name || name.indexOf('|' + App.NS()) < 0)
+            return;
+        let ps = name.split('|'), ev = new AppEvent(ps[0]);
+        ev.fromUrl = e.url;
+        ev.fromPage = ps.length == 3 ? ps[1] : null;
         App._bus.fire(ev, [StoreHelper.parse(e.newValue)]);
     });
 })();
@@ -263,45 +264,47 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var JS;
 (function (JS) {
-    let model;
-    (function (model) {
+    let app;
+    (function (app) {
         let Page = class Page {
             initialize() { }
-            ;
             destroy() { }
-            ;
             static fireEvent(e, args) {
                 this._bus.fire(e, args);
             }
-            static onEvent(e, handler) {
-                this._bus.on(e, handler);
+            static onEvent(e, handler, once) {
+                this._bus.on(e, handler, once);
             }
             static offEvent(e) {
                 this._bus.off(e);
             }
-            static current(page) {
-                if (arguments.length == 0)
-                    return this._page;
-                this._page = Components.get(page);
-                this._bus.context(this._page);
+            static init(page) {
+                let T = this, p = Components.get(page);
+                T._page = p;
+                T._bus.context(T._page);
                 Bom.ready(() => {
-                    this._page.render();
+                    T._page.enter();
                 });
             }
-            static view(view) {
-                return Components.get(view);
+            static currentPage() {
+                return this._page;
             }
-            static uri() {
-                return new URI(window.location.href);
+            static view(v) {
+                return Components.get(v);
             }
-            static load(url) {
-                let u = url ? url : location.href;
-                this.fireEvent('loading', [u]);
-                window.location.href = u;
-                this.fireEvent('loaded', [u]);
+            static redirect(url, query) {
+                let T = this, p = T._page;
+                if (p) {
+                    T.fireEvent('leaving', [p]);
+                    Components.remove(p.className);
+                }
+                let uri = new URI(url);
+                if (query)
+                    Types.isString(query) ? uri.queryString(query) : uri.queryObject(query);
+                location.href = uri.toString();
             }
-            static open(url, target = 'blank', specs) {
-                let args = [url, target];
+            static open(url, specs) {
+                let args = [url, 'blank'];
                 if (specs) {
                     let spe = '';
                     Jsons.forEach(specs, (v, k) => {
@@ -313,15 +316,16 @@ var JS;
                 return window.open.apply(window, args);
             }
             static fullscreen(onoff) {
+                let T = this;
                 if (onoff) {
-                    this.fireEvent('fullscreening');
+                    T.fireEvent('fullscreening');
                     Bom.fullscreen();
-                    this.fireEvent('fullscreened');
+                    T.fireEvent('fullscreened');
                 }
                 else {
-                    this.fireEvent('normalscreening');
+                    T.fireEvent('normalscreening');
                     Bom.normalscreen();
-                    this.fireEvent('normalscreened');
+                    T.fireEvent('normalscreened');
                 }
             }
         };
@@ -329,20 +333,14 @@ var JS;
         Page = __decorate([
             klass('JS.app.Page')
         ], Page);
-        model.Page = Page;
-    })(model = JS.model || (JS.model = {}));
+        app.Page = Page;
+    })(app = JS.app || (JS.app = {}));
 })(JS || (JS = {}));
-var Page = JS.model.Page;
-window.on('load', () => {
-    Page.fireEvent('loaded', [window.location.href]);
-});
-window.on('beforeunload', () => {
-    Page.fireEvent('unloading', [window.location.href]);
-});
+var Page = JS.app.Page;
 var JS;
 (function (JS) {
-    let model;
-    (function (model_1) {
+    let app;
+    (function (app) {
         var Service_1;
         let Service = Service_1 = class Service {
             initialize() { }
@@ -374,7 +372,7 @@ var JS;
         Service = Service_1 = __decorate([
             klass('JS.app.Service')
         ], Service);
-        model_1.Service = Service;
-    })(model = JS.model || (JS.model = {}));
+        app.Service = Service;
+    })(app = JS.app || (JS.app = {}));
 })(JS || (JS = {}));
-var Service = JS.model.Service;
+var Service = JS.app.Service;

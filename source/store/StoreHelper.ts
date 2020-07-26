@@ -15,30 +15,31 @@ module JS {
         type StorePrimitiveType = PrimitiveType | Date | JsonObject<PrimitiveType> | Array<PrimitiveType>;
         export type StoreDataType = StorePrimitiveType | JsonObject<StorePrimitiveType> | Array<StorePrimitiveType>;
 
+        let T = Types, J = Jsons, TP = Type, S = J.stringify;
         export class StoreHelper{
 
             public static toString(value:StoreDataType): string{
-                if(Types.isUndefined(value)) return 'undefined';
-                if(Types.isNull(value)) return 'null';
+                if(T.isUndefined(value)) return 'undefined';
+                if(T.isNull(value)) return 'null';
                 
-                if(Types.isString(value)) return JSON.stringify(['string', value]);
-                if(Types.isBoolean(value)) return JSON.stringify(['boolean', value]);
-                if(Types.isNumber(value)) return JSON.stringify(['number', value]);
-                if(Types.isDate(value)) return JSON.stringify(['date',''+(<Date>value).valueOf()]);
-                if(Types.isArray(value) || Types.isJsonObject(value)) return JSON.stringify(['object', JSON.stringify(value)]);
+                if(T.isString(value)) return S(['string', value]);
+                if(T.isBoolean(value)) return S(['boolean', value]);
+                if(T.isNumber(value)) return S(['number', value]);
+                if(T.isDate(value)) return S(['date',''+(<Date>value).valueOf()]);
+                if(T.isArray(value) || T.isJsonObject(value)) return S(['object', S(value)]);
             }
 
             public static parse<T = StoreDataType>(data:string): T{
-                if(Type.null==data) return null;
-                if(Type.undefined==data) return undefined;
+                if(TP.null==data) return null;
+                if(TP.undefined==data) return undefined;
 
-                let [type, val] = JSON.parse(data), v:any = val;
+                let [type, val] = J.parse(data), v:any = val;
                 switch(type){
-                    case Type.boolean: v = Boolean(val); break;
-                    case Type.number: v = Number(val); break;
-                    case Type.date: v = new Date(val); break;
-                    case Type.array: v = JSON.parse(val); break;
-                    case Type.json: v = JSON.parse(val); break;
+                    case TP.boolean: v = Boolean(val); break;
+                    case TP.number: v = Number(val); break;
+                    case TP.date: v = new Date(val); break;
+                    case TP.array: v = J.parse(val); break;
+                    case TP.json: v = J.parse(val); break;
                 }
                 return v;
             }

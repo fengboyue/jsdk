@@ -13,6 +13,7 @@ module JS {
 
     export namespace store {
 
+        let S = sessionStorage;
 
         /**
          * Session store helper.
@@ -20,25 +21,25 @@ module JS {
         export class SessionStore {
 
             static get<T extends StoreDataType>(key: string): T {
-                let str = sessionStorage.getItem(key);
+                let str = S.getItem(key);
                 if(!str) return undefined;
 
                 return <T>StoreHelper.parse(str);
             };
             static set(key: string, value: StoreDataType): void {
-                sessionStorage.setItem(key, StoreHelper.toString(value));
+                S.setItem(key, StoreHelper.toString(value));
             };
             static remove(key: string): void {
-                sessionStorage.removeItem(key);
+                S.removeItem(key);
             };
             static key(i: number): string {
-                return sessionStorage.key(i);
+                return S.key(i);
             };
             static size(): number {
-                return sessionStorage.length;
+                return S.length;
             };
             static clear() {
-                sessionStorage.clear();
+                S.clear();
             };
 
         }

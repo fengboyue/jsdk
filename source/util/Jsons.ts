@@ -13,6 +13,7 @@ module JS {
 
     export namespace util {
 
+        let A = Array, Y = Types, E = Check.isEmpty;
         /**
          * Json helper class<br>
          * JSON工具类
@@ -55,7 +56,7 @@ module JS {
                 }
 
                 // Handle Array
-                if (obj instanceof Array) {
+                if (obj instanceof A) {
                     copy = [];
                     for (var i = 0, len = obj.length; i < len; ++i) {
                         copy[i] = this.clone(obj[i]);
@@ -64,7 +65,7 @@ module JS {
                 }
 
                 // Handle Json Object
-                if (Types.isJsonObject(obj)) {
+                if (Y.isJsonObject(obj)) {
                     copy = {};
                     var keys = Reflect.ownKeys(<any>obj);
                     keys.forEach(key => {
@@ -95,7 +96,7 @@ module JS {
             public static values<T>(json: JsonObject<T>): T[] {
                 if (!json) return null;
                 let arr: T[] = [];
-                Jsons.forEach(json, v => {
+                this.forEach(json, v => {
                     arr[arr.length] = v;
                 })
                 return arr;
@@ -103,7 +104,7 @@ module JS {
             public static keys(json: JsonObject): string[] {
                 if (!json) return null;
                 let keys = [];
-                Jsons.forEach(json, (v, k) => {
+                this.forEach(json, (v, k) => {
                     keys[keys.length] = k;
                 })
                 return keys;
@@ -113,29 +114,29 @@ module JS {
              * Json1's keys == Json2's keys
              */
             public static equalKeys(json1: JsonObject, json2: JsonObject) {
-                let empty1 = Check.isEmpty(json1), empty2 = Check.isEmpty(json2);
+                let empty1 = E(json1), empty2 = E(json2);
                 if (empty1 && empty2) return true;
                 if (empty1 || empty2) return false;
 
-                let map2 = Jsons.clone(json2);
-                Jsons.forEach(json1, (v, k) => {
+                let map2 = this.clone(json2);
+                this.forEach(json1, (v, k) => {
                     delete map2[k];
                 })
-                return Check.isEmpty(map2);
+                return E(map2);
             }
             /**
              * Compares two simple JSON objects.
              */
             public static equal(json1: JsonObject<PrimitiveType>, json2: JsonObject<PrimitiveType>) {
-                let empty1 = Check.isEmpty(json1), empty2 = Check.isEmpty(json2);
+                let empty1 = E(json1), empty2 = E(json2);
                 if (empty1 && empty2) return true;
                 if (empty1 || empty2) return false;
 
-                let map2 = Jsons.clone(json2);
-                Jsons.forEach(json1, (v, k) => {
+                let map2 = this.clone(json2);
+                this.forEach(json1, (v, k) => {
                     if ((k in map2) && map2[k] === v) delete map2[k];
                 })
-                return Check.isEmpty(map2);
+                return E(map2);
             }
 
             /**
@@ -145,9 +146,9 @@ module JS {
             public static replaceKeys(json: JsonObject, keyMapping: JsonObject<string> | ((this: JsonObject, val: any, key: string) => string), needClone?: boolean): JsonObject {
                 if (!keyMapping) return json;
 
-                let clone = needClone ? Jsons.clone(json) : json;
+                let clone = needClone ? this.clone(json) : json;
                 this.forEach(clone, function (val: any, oldKey: string) {
-                    let newKey = Types.isFunction(keyMapping) ? (<Function>keyMapping).apply(clone, [val, oldKey]) : keyMapping[oldKey];
+                    let newKey = Y.isFunction(keyMapping) ? (<Function>keyMapping).apply(clone, [val, oldKey]) : keyMapping[oldKey];
                     if (newKey != oldKey && clone.hasOwnProperty(oldKey)) {
                         let temp = clone[oldKey];
                         delete clone[oldKey];
@@ -174,7 +175,7 @@ module JS {
                 }
 
                 // Handle case when target is a string or something (possible in deep copy)
-                if (typeof target !== "object" && !Types.isFunction(target)) {
+                if (typeof target !== "object" && !Y.isFunction(target)) {
                     target = {};
                 }
 
@@ -194,19 +195,19 @@ module JS {
                             }
 
                             // Recurse if we're merging plain objects or arrays
-                            if (deep && copy && (Types.isJsonObject(copy) ||
-                                (copyIsArray = Array.isArray(copy)))) {
+                            if (deep && copy && (Y.isJsonObject(copy) ||
+                                (copyIsArray = A.isArray(copy)))) {
 
                                 if (copyIsArray) {
                                     copyIsArray = false;
-                                    clone = src && Array.isArray(src) ? src : [];
+                                    clone = src && A.isArray(src) ? src : [];
 
                                 } else {
-                                    clone = src && Types.isJsonObject(src) ? src : {};
+                                    clone = src && Y.isJsonObject(src) ? src : {};
                                 }
 
                                 // Never move original objects, clone them
-                                target[name] = Jsons._union(deep, clone, copy);
+                                target[name] = this._union(deep, clone, copy);
 
                             } else if (copy !== undefined) {//undefined不符合JSON规范，且name不存在时值也可能是undefined
                                 target[name] = copy;
@@ -234,10 +235,10 @@ module JS {
              * Returns {json1 - json2}
              */
             public static minus(json1: JsonObject, json2: JsonObject) {
-                if (Check.isEmpty(json1) || Check.isEmpty(json2)) return json1;
+                if (E(json1) || E(json2)) return json1;
 
                 let newJson = {};
-                Jsons.forEach(json1, (v, k) => {
+                this.forEach(json1, (v, k) => {
                     if (!(<Object>json2).hasOwnProperty(k)) newJson[k] = v;
                 })
                 return newJson;
@@ -246,10 +247,10 @@ module JS {
              * Returns {json1 ^ json2} 
              */
             public static intersect(json1: JsonObject, json2: JsonObject) {
-                if (Check.isEmpty(json1) || Check.isEmpty(json2)) return json1;
+                if (E(json1) || E(json2)) return json1;
 
                 let newJson = {};
-                Jsons.forEach(json1, (v, k) => {
+                this.forEach(json1, (v, k) => {
                     if ((<Object>json2).hasOwnProperty(k)) newJson[k] = v;
                 })
                 return newJson;
@@ -263,7 +264,7 @@ module JS {
              */
             public static filter(json: JsonObject, fn: (this: JsonObject, value: object, key: string) => boolean): JsonObject {
                 let newJson = {};
-                Jsons.forEach(json, (v, k) => {
+                this.forEach(json, (v, k) => {
                     if (fn.apply(json, [v, k])) newJson[k] = v;
                 })
                 return newJson;

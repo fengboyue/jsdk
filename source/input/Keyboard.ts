@@ -14,6 +14,8 @@ module JS {
 
     export namespace input {
 
+        let J = Jsons;
+
         /** 
          * keychar1 , keychar2 , ... , keycharN-1, keycharN|Hotkeys <br>
          * <br>
@@ -69,9 +71,9 @@ module JS {
                     }
 
                     //没记录或与上一次按键不同的键，则更新的时间戳
-                    if (!Jsons.hasKey(m._m, c) || !repeat) m._m[c] = e.timeStamp;
+                    if (!J.hasKey(m._m, c) || !repeat) m._m[c] = e.timeStamp;
 
-                    if (!repeat && Jsons.hasKey(m._m, c)) {
+                    if (!repeat && J.hasKey(m._m, c)) {
                         let types = m._busDown.types();
                         types.forEach(ty => {
                             if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
@@ -85,7 +87,7 @@ module JS {
                 });
                 ele.on('keyup', (e: KeyboardEvent) => {
                     let c = e.keyCode;
-                    if (Jsons.hasKey(m._m, c)) {
+                    if (J.hasKey(m._m, c)) {
                         let types = m._busUp.types();
                         types.forEach(ty => {
                             if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
@@ -116,11 +118,11 @@ module JS {
             }
 
             private _on(k: string, fn: Function, bus: EventBus) {
-                let m = this, ty = m._keyChar(k);
+                let T = this, ty = T._keyChar(k);
                 //keyChar表达式转换为keyCode表达式并缓存
-                if (!Jsons.hasKey(m._mapping, ty)) m._mapping[ty] = m._numeric(ty, m.isHotKeys(ty) ? '+' : (m.isSeqKeys(ty) ? ',' : ''));
+                if (!J.hasKey(T._mapping, ty)) T._mapping[ty] = T._numeric(ty, T.isHotKeys(ty) ? '+' : (T.isSeqKeys(ty) ? ',' : ''));
                 bus.on(ty, fn);
-                return m
+                return T
             }
             public onKeyDown(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void) {
                 return this._on(k, fn, this._busDown)
@@ -174,11 +176,11 @@ module JS {
             }
 
             private _isHotKeysPressing(k: Hotkeys) {
-                let m = this, s = m._keyChar(k), a = s.split('\+');
+                let T = this, s = T._keyChar(k), a = s.split('\+');
                 if (a.length == 1) return false;
                 return a.every((b, i) => {
-                    if (i > 0 && !m.beforeKeyDown(a[i - 1], b)) return false
-                    return m.isPressingKey(b)
+                    if (i > 0 && !T.beforeKeyDown(a[i - 1], b)) return false
+                    return T.isPressingKey(b)
                 })
             }
 
@@ -196,13 +198,13 @@ module JS {
              * @param keys 
              */
             public isPressingKeys(keys: Hotkeys | Seqkeys | string) {
-                let m = this, k = m._keyChar(keys);
+                let T = this, k = T._keyChar(keys);
                 if (!k) return false;
 
-                if (m.isSeqKeys(k)) {
-                    return m._isSeqKeysPressing(k)
-                } else if (m.isHotKeys(k)) {
-                    return m._isHotKeysPressing(k)
+                if (T.isSeqKeys(k)) {
+                    return T._isSeqKeysPressing(k)
+                } else if (T.isHotKeys(k)) {
+                    return T._isHotKeysPressing(k)
                 }
                 return this.isPressingKey(VK[k])
             }
@@ -212,8 +214,8 @@ module JS {
              * @param c keyCode or keyChar
              */
             public isPressingKey(c: number | string) {
-                let m = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : VK[m._keyChar(<string>c)]);
-                return Jsons.hasKey(m._m, n)
+                let T = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : VK[T._keyChar(<string>c)]);
+                return J.hasKey(T._m, n)
             }
 
             /**
@@ -242,8 +244,8 @@ module JS {
              * @param c keyCode or keyChar
              */
             public getKeyDownTime(c: number | string): number {
-                let m = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : VK[m._keyChar(<string>c)]);
-                return !Jsons.hasKey(m._m, n) ? 0 : m._m[n]
+                let T = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : VK[T._keyChar(<string>c)]);
+                return !J.hasKey(T._m, n) ? 0 : T._m[n]
             }
             /**
              * Returns true if keyCode1's keydown time is before than keyCode2's recently.<br>
@@ -257,41 +259,41 @@ module JS {
             }
 
             public off() {
-                let m = this;
-                m._check();
-                m._busDown.off();
-                m._busUp.off();
-                return m
+                let T = this;
+                T._check();
+                T._busDown.off();
+                T._busUp.off();
+                return T
             }
             /**
              * Clear all records or one keyCode's record.
              * @param c keyCode
              */
             public clear(c?: number | Array<number>) {
-                let m = this;
+                let T = this;
                 if (c == void 0) {
-                    m._mapping = {};
-                    m._m = {};
-                    m._q.clear();
-                    m._ts = 0;
+                    T._mapping = {};
+                    T._m = {};
+                    T._q.clear();
+                    T._ts = 0;
                     return
                 }
                 let a = Types.isNumber(c) ? [c] : <Number[]>c;
                 a.forEach(k => {
-                    m._m[k] = null;
+                    T._m[k] = null;
                 })
-                return m
+                return T
             }
 
             private _check() {
                 if (this._d) throw new NotHandledError()
             }
             public destroy() {
-                let m = this;
-                m._d = true;
-                m.clear();
-                m._busDown.destroy();
-                m._busUp.destroy()
+                let T = this;
+                T._d = true;
+                T.clear();
+                T._busDown.destroy();
+                T._busUp.destroy()
             }
         }
 

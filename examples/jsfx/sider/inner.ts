@@ -10,6 +10,6 @@ JS.imports([
         id: 'btn1',
         text:'Close Me'
     }).on('click', ()=>{
-        Page.fireEvent<PageEvents>('close', ['data from inner.html'])
+        Page.fireEvent('close', ['data from inner.html'])
     })  
 })

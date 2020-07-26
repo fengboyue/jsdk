@@ -13,6 +13,8 @@ module JS {
 
     export namespace model {
 
+        let J = Jsons;
+
         export type ListModelEvents = 'dataupdating'|'dataupdated'|'rowadded'|'rowremoved'|'validated'|'rowvalidated'|'loading'|'loadsuccess'|'loadfailure'|'loaderror';
 
         export interface ListModelListeners<M> {
@@ -87,7 +89,7 @@ module JS {
                 this._config = this._initConfig(cfg);
 
                 let listeners = this._config.listeners;
-                if (listeners) Jsons.forEach(<JsonObject>listeners, (v: EventHandler, key: ListModelEvents) => {
+                if (listeners) J.forEach(<JsonObject>listeners, (v: EventHandler, key: ListModelEvents) => {
                     this.on(key, v);
                 })
 
@@ -96,7 +98,7 @@ module JS {
             }
 
             protected _initConfig(cfg?:ListModelConfig){
-                return Jsons.union(new ListModelConfig(), cfg)
+                return J.union(new ListModelConfig(), cfg)
             }
 
             protected _check() {
@@ -192,8 +194,8 @@ module JS {
                 this._check();
 
                 let me = this,
-                query = <AjaxRequest>Jsons.union(Ajax.toRequest(this._config.dataQuery),Ajax.toRequest(quy));
-                query.data = Jsons.union(<JsonObject>query.data,this._sortParams());
+                query = <AjaxRequest>J.union(Ajax.toRequest(this._config.dataQuery),Ajax.toRequest(quy));
+                query.data = J.union(<JsonObject>query.data,this._sortParams());
                 
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
@@ -221,7 +223,7 @@ module JS {
              */
             public setData(data: JsonObject[], silent?: boolean) {
                 this._check();
-                let newData = data, oldData = Jsons.clone(this._data);
+                let newData = data, oldData = J.clone(this._data);
                 if (!silent) this._fire('dataupdating', [newData, oldData]);
                 this._data = data||[];
                 if (!silent) this._fire('dataupdated', [newData, oldData]);
@@ -363,7 +365,7 @@ module JS {
             }
 
             public clone() {
-                let model = Class.newInstance<this>(this.className, Jsons.clone(this._config));
+                let model = Class.newInstance<this>(this.className, J.clone(this._config));
                 model.setData(this.getData());
                 return model
             }

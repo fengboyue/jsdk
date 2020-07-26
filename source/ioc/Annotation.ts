@@ -20,7 +20,7 @@ module JS {
                     name: 'component', handler: (anno: string, values: Array<any>, obj: Klass<any> | object) => {
                         let className = values[0];
                         Class.register(<Klass<any>>obj, className);
-                        Components.get(Class.forName(className).name);
+                        Components.add(Class.forName(className).name);
                     }
                 }, arguments);
             }

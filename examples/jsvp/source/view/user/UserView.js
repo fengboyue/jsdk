@@ -75,7 +75,7 @@ var AppDemo;
                                 colorMode: ColorMode.success,
                                 listeners: {
                                     click: () => {
-                                        Page.current().readUserById(1);
+                                        Page.currentPage().readUserById(1);
                                     }
                                 }
                             },
@@ -84,14 +84,14 @@ var AppDemo;
                                 colorMode: ColorMode.danger,
                                 listeners: {
                                     click: () => {
-                                        Page.current().read404();
+                                        Page.currentPage().read404();
                                     }
                                 }
                             }
                         }
                     };
                     this.on('rendered', () => {
-                        Page.current().readCurrentUser();
+                        Page.currentPage().readCurrentUser();
                     });
                     super.initialize();
                 }

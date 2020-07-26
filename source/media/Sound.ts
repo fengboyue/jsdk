@@ -59,12 +59,12 @@ module JS {
             private _d: boolean = false;
 
             constructor(cfg?: SoundConfig) {
-                let m = this;
-                m._cfg = Jsons.union({
+                let T = this;
+                T._cfg = Jsons.union({
                     volume: 1,
                     loop: false
                 }, cfg);
-                if (m._cfg.on) Jsons.forEach(m._cfg.on, (v, k) => { m._bus.on(k, v) });
+                if (T._cfg.on) Jsons.forEach(T._cfg.on, (v, k) => { T._bus.on(k, v) });
             }
 
             protected _check() {
@@ -72,27 +72,27 @@ module JS {
             }
 
             public load(url: URLString): Promise<this> {
-                let m = this;
-                m._check();
+                let T = this;
+                T._check();
                 return new Promise<this>((resolve, reject) => {
                     Ajax.get({
                         url: url,
                         type: 'arraybuffer',
                         onSending: req => {
-                            if (m._cfg.on && m._cfg.on.loading) m._bus.fire('loading', [req])
+                            if (T._cfg.on && T._cfg.on.loading) T._bus.fire('loading', [req])
                         },
                         onCompleted: res => {
                             AC.decodeAudioData(res.data, (buffer) => {
-                                m._src = url;
-                                m._buffer = buffer;
-                                resolve(m)
+                                T._src = url;
+                                T._buffer = buffer;
+                                resolve(T)
                             }, err => {
-                                if (m._cfg.on && m._cfg.on.decode_error) m._bus.fire('decode_error', [err]);
+                                if (T._cfg.on && T._cfg.on.decode_error) T._bus.fire('decode_error', [err]);
                                 reject(err)
                             });
                         },
                         onError: res => {
-                            if (m._cfg.on && m._cfg.on.load_error) m._bus.fire('load_error', [res]);
+                            if (T._cfg.on && T._cfg.on.load_error) T._bus.fire('load_error', [res]);
                             reject(res)
                         }
                     })
@@ -111,10 +111,10 @@ module JS {
             public loop(): boolean
             public loop(is: boolean): this
             public loop(is?: boolean): any {
-                let m = this;
-                if (is == void 0) return m._cfg.loop;
-                m._cfg.loop = is;
-                return m
+                let T = this;
+                if (is == void 0) return T._cfg.loop;
+                T._cfg.loop = is;
+                return T
             }
 
             public src() {
@@ -133,34 +133,34 @@ module JS {
              * @param duration The duration of the sound to be played, specified in seconds. If this parameter isn't specified, the sound plays until it reaches its natural conclusion or is stopped using the stop() method. Using this parameter is functionally identical to calling start(when, offset) and then calling stop(when+duration).
              */
             public play(delay?: number, offset?: number, duration?: number) {
-                let m = this;
-                m._check()
-                m.stop();
+                let T = this;
+                T._check()
+                T.stop();
                 // Create a gain node.
-                m._gain = AC.createGain();
-                m._gain.gain.value = m._cfg.volume;
+                T._gain = AC.createGain();
+                T._gain.gain.value = T._cfg.volume;
 
-                m._node = AC.createBufferSource();
-                m._node.buffer = m._buffer;
-                let c = m._cfg;
-                m._node.loop = c.loop;
-                if (c.on && c.on.ended) m._node.onended = e => {
-                    m._bus.fire('ended')
+                T._node = AC.createBufferSource();
+                T._node.buffer = T._buffer;
+                let c = T._cfg;
+                T._node.loop = c.loop;
+                if (c.on && c.on.ended) T._node.onended = e => {
+                    T._bus.fire('ended')
                 };
                 // Connect the source to the gain node.
-                m._node.connect(m._gain);
+                T._node.connect(T._gain);
 
                 if (c.handler) {
-                    let node: AudioNode = c.handler.call(m, AC);
-                    m._gain.connect(node);
+                    let node: AudioNode = c.handler.call(T, AC);
+                    T._gain.connect(node);
                     node.connect(AC.destination)
                 } else {
                     // Connect the gain node to the destination.
-                    m._gain.connect(AC.destination);
+                    T._gain.connect(AC.destination);
                 }
 
-                if (c.on && c.on.playing) m._bus.fire('playing', [AC, m._gain.gain]);
-                m._node.start(delay || 0, offset || 0, duration);
+                if (c.on && c.on.playing) T._bus.fire('playing', [AC, T._gain.gain]);
+                T._node.start(delay || 0, offset || 0, duration);
             }
 
             public stop() {
@@ -173,20 +173,21 @@ module JS {
              * @param n 0~1
              */
             public volume(n: number) {
-                this._check();
-                this._cfg.volume = n;
-                if (this._gain) this._gain.gain.value = n;
+                let T = this;
+                T._check();
+                T._cfg.volume = n;
+                if (T._gain) T._gain.gain.value = n;
             }
 
             public destroy() {
-                let m = this;
-                m._d = true;
-                m._cfg = null;
-                m._src = null;
-                m._buffer = null;
-                m._gain.disconnect();
-                m._node.disconnect();
-                m._bus.destroy();
+                let T = this;
+                T._d = true;
+                T._cfg = null;
+                T._src = null;
+                T._buffer = null;
+                T._gain.disconnect();
+                T._node.disconnect();
+                T._bus.destroy();
             }
 
         }

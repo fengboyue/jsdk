@@ -12,9 +12,20 @@ module JS {
 
     export namespace util {
 
-        let N = Number, _test = function (str: string, pattern: RegExp) {
-            return str && pattern.test(str.trim());
-        }
+        let N = Number, _test = function (s: string, exp: RegExp) {
+            return s && exp.test(s.trim());
+        },
+        EMAIL = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/,//符合RFC规范
+        EMAIL_DOMAIN = /^@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/,//符合RFC规范
+        YYYY_MM_DD = /^(\d{1,4})(-|\/)(\d{1,2})(-|\/)(\d{1,2})$/,
+        HALFWIDTH_CHARS = /^[\u0000-\u00FF]+$/,
+        FULLWIDTH_CHARS = /^[\u0391-\uFFE5]+$/,
+        NUMBERS_ONLY = /^\d+$/,
+        LETTERS_ONLY = /^[A-Za-z]+$/,
+        LETTERS_OR_NUMBERS = /^[A-Za-z\d]+$/,
+        ENGLISH_ONLY = /^[A-Za-z\d\s\`\~\!\@\#\$\%\^\&\*\(\)\_\-\+\=\[\]\{\}\|\:\;\"\'\<\>\,\.\?\\\/]+$/,
+        CHINESE_ONLY = /^[\u4E00-\u9FA5]+$/,
+        IP = /^(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5])$/;
 
         /**
          * Check helper<br>
@@ -22,37 +33,23 @@ module JS {
          */
         export class Check {
 
-            public static EMAIL = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/;//符合RFC规范
-            public static EMAIL_DOMAIN = /^@([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?\.)+[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?$/;//符合RFC规范
-            public static YYYY_MM_DD = /^(\d{1,4})(-|\/)(\d{1,2})(-|\/)(\d{1,2})$/;
-            public static HALFWIDTH_CHARS = /^[\u0000-\u00FF]+$/;
-            public static FULLWIDTH_CHARS = /^[\u0391-\uFFE5]+$/;
-            public static NUMBERS_ONLY = /^\d+$/;
-            public static LETTERS_ONLY = /^[A-Za-z]+$/;
-            public static LETTERS_OR_NUMBERS = /^[A-Za-z\d]+$/;
-            public static ENGLISH_ONLY = /^[A-Za-z\d\s\`\~\!\@\#\$\%\^\&\*\(\)\_\-\+\=\[\]\{\}\|\:\;\"\'\<\>\,\.\?\\\/]+$/;
-            public static CHINESE_ONLY = /^[\u4E00-\u9FA5]+$/;
-            public static IP = /^(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5]).(0|[1-9]\d?|[0-1]\d{2}|2[0-4]\d|25[0-5])$/;
-
             /**
              * Is null or undefined or an empty string|array|JSON|object.<br>
              * 是不是null、undefinded、空字符串、数组、JSON或对象
              */
-            public static isEmpty(obj: any): boolean {
-                return obj == void 0
-                    || obj === ''
-                    || (obj.hasOwnProperty('length') && obj.length == 0)
-                    || this.isEmptyObject(obj)
+            public static isEmpty(v: any): boolean {
+                return v == void 0
+                    || v === ''
+                    || (v.hasOwnProperty('length') && v.length == 0)
+                    || Check.isEmptyObject(v)
             }
             /**
              * Is an empty object without any property.<br>
              * 是不是无属性的空对象
              */
-            public static isEmptyObject(obj: any):boolean {
+            public static isEmptyObject(v: any):boolean {
                 var name;
-                for ( name in obj ) {
-                    return false;
-                }
+                for ( name in v ) {return false}
                 return true;
             }
 
@@ -68,44 +65,41 @@ module JS {
              * Is a date string. The default format is YYYY-MM-DD or YYYY/MM/DD.<br>
              * 是否为日期格式
              */
-            public static isFormatDate(str: string, format?: RegExp): boolean {
-                return _test(str, format||this.YYYY_MM_DD);
+            public static isFormatDate(s: string, format?: RegExp): boolean {
+                return _test(s, format||YYYY_MM_DD);
             }
             /**
              * Is a valid email address with pattern format.<br>
              * 是否为合法的电子邮箱地址
              */
-            public static isEmail(str: string, pattern?:RegExp): boolean {
-                return _test(str, pattern?pattern:this.EMAIL);
+            public static isEmail(s: string, exp?:RegExp): boolean {
+                return _test(s, exp?exp:EMAIL);
             }
             /**
              * Is a valid email addresses splited with space or comma.<br>
              * 是否为合法的多个由空格或分号分隔的电子邮箱地址
              */
-            public static isEmails(str: string, pattern?:RegExp): boolean {
-                str = str || '';
-                if (this.isBlank(str)) return false;
+            public static isEmails(s: string, exp?:RegExp): boolean {
+                s = s || '';
+                if (this.isBlank(s)) return false;
 
-                var arr = str.split(/;|\s+/);
-                for (var i = 0; i < arr.length; i++) {
-                    var str = arr[i];
-                    if (str.length > 0 && !this.isEmail(str, pattern)) return false;
-                }
-                return true;
+                return s.split(/;|\s+/).every(as=>{
+                    return as.length == 0 || this.isEmail(as, exp)
+                })
             }
             /**
              * Is a valid email domain.<br>
              * 是否为合法电子邮箱后缀：英文字母或数字组成
              */
             public static isEmailDomain(str: string): boolean {
-                return _test(str, this.EMAIL_DOMAIN);
+                return _test(str, EMAIL_DOMAIN);
             }
             /**
              * Is only number 0~9.<br>
              * 是否仅数字0-9
              */
             public static isOnlyNumber(str: string): boolean {
-                return _test(str, this.NUMBERS_ONLY);
+                return _test(str, NUMBERS_ONLY);
             }
             /**
              * Is a positive number.<br>
@@ -126,28 +120,28 @@ module JS {
              * 全部是半角字符
              */
             public static isHalfwidthChars(str: string): boolean {
-                return _test(str, this.HALFWIDTH_CHARS);
+                return _test(str, HALFWIDTH_CHARS);
             }
             /**
              * Each character is a full-width character.<br>
              * 全部是全角字符
              */
             public static isFullwidthChars(str): boolean {
-                return _test(str, this.FULLWIDTH_CHARS);
+                return _test(str, FULLWIDTH_CHARS);
             }
             /**
              * Only English letters and its characters.<br> 
              * 仅仅英文字母及其字符
              */
             public static isEnglishOnly(str: string): boolean {
-                return _test(str, this.ENGLISH_ONLY);
+                return _test(str, ENGLISH_ONLY);
             }
             /**
              * Only Chinese letters and its characters.<br> 
              * 仅仅是中文字
              */
             public static isChineseOnly(str: string): boolean {
-                return _test(str, this.CHINESE_ONLY);
+                return _test(str, CHINESE_ONLY);
             }
             /**
              * Is a valid number with valid lengths.<br>
@@ -208,43 +202,43 @@ module JS {
              * True if a string's length < len.<br>
              * 比指定长度短
              */
-            public static shorter(str: string, len: number): boolean {
-                return str && str.length < len;
+            public static shorter(s: string, len: number): boolean {
+                return s && s.length < len;
             }
             /**
              * True if a string's length >= len.<br>
              * 比指定长度长
              */
-            public static longer(str: string, len: number): boolean {
-                return str && str.length > len;
+            public static longer(s: string, len: number): boolean {
+                return s && s.length > len;
             }
             /**
              * True if a string's length == len.<br>
              * 字符串长度是否等于指定长度
              */
-            public static equalLength(str: string, len: number): boolean {
-                return str && str.length == len;
+            public static equalLength(s: string, len: number): boolean {
+                return s && s.length == len;
             }
             /**
              * Is only english letters.<br>
              * 是否仅字母组成
              */
-            public static isLettersOnly(str: string): boolean {
-                return _test(str, this.LETTERS_ONLY);
+            public static isLettersOnly(s: string): boolean {
+                return _test(s, LETTERS_ONLY);
             }
             /**
              * Is only english letters or chars.<br>
              * 是否字母或数字
              */
-            public static isLettersOrNumbers(str: string): boolean {
-                return _test(str, this.LETTERS_OR_NUMBERS);
+            public static isLettersOrNumbers(s: string): boolean {
+                return _test(s, LETTERS_OR_NUMBERS);
             }
             /**
              * Is a valid format IP.<br>
              * 是否合法的IP地址
              */
-            public static isIP(str: string): boolean {
-                return _test(str.trim(), this.IP);
+            public static isIP(s: string): boolean {
+                return _test(s.trim(), IP);
             }
             /**
              * Is a valid URL.<br>
@@ -260,16 +254,16 @@ module JS {
              * Check a string with the pattern.<br>
              * 按正则表达式检查
              */
-            public static isPattern(str: string, exp: RegExp): boolean {
-                return _test(str, exp);
+            public static isPattern(s: string, exp: RegExp): boolean {
+                return _test(s, exp);
             }
             /**
              * Check by server.<br>
              * 服务器端校验
              */
-            public static byServer(settings: string | AjaxRequest, judge: (res: AjaxResponse) => boolean): Promise<boolean> {
+            public static byServer(req: string | AjaxRequest, judge: (res: AjaxResponse) => boolean): Promise<boolean> {
                 return new Promise(function(resolve, reject){
-                    Ajax.send(settings).then(res => {
+                    Ajax.send(req).then(res => {
                         judge.apply(null, [res])?resolve(true):reject(false)
                     })
                 })

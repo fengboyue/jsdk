@@ -21,16 +21,24 @@ var AppDemo;
                 login() {
                     if (this.loginView.validate()) {
                         let phone = this.loginView.getWidget('phone').value(), email = this.loginView.getWidget('email').value();
-                        Page.open(new URI('user.html').query('phone', phone).query('email', email, true).toString());
+                        Page.redirect('user.html', {
+                            phone: phone,
+                            email: encodeURIComponent(email || '')
+                        });
                     }
                 }
-                render() {
+                enter() {
                     this.loginView.render();
                 }
                 initialize() {
+                    Page.onEvent('leaving', () => {
+                        alert('Leaving LoginPage Now!');
+                    });
                     App.logger().info('LoginPage was initialized!');
                 }
-                ;
+                destroy() {
+                    App.logger().info('LoginPage was destroyed!');
+                }
             };
             __decorate([
                 inject(),

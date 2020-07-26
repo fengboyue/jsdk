@@ -12,25 +12,26 @@
 
 module JS {
 
-    export namespace model {
+    export namespace app {
 
         /**
-         * Application-level Event broadcasts to all pages of the app.
-         * 应用级事件，广播到该应用的所有页面
+         * Application-level Event which will be broadcasted to all opening pages of the app.
+         * 应用级事件，广播到该应用的所有打开页面
          */
         export class AppEvent extends CustomEvent<any> {
-            public url: string;
-            
-            constructor(type: string, initDict?:any){
+            public fromUrl: string;
+            public fromPage: string;
+
+            constructor(type: string, initDict?: any) {
                 super(type, initDict)
             }
         }
 
         /**
-         * Application's settings
+         * Application's config
          * 应用的设置
          */
-        export type AppSettings = {
+        export type AppConfig = {
             /**
              * Application's name
              * 应用名称
@@ -59,7 +60,7 @@ module JS {
          */
         export class App {
 
-            private static _sets: AppSettings;
+            private static _sets: AppConfig;
             private static _logger: Log;
 
             /**
@@ -67,17 +68,17 @@ module JS {
              * 应用需要先初始化
              * @param settings 
              */
-            public static init(settings: AppSettings) {
+            public static init(settings: AppConfig) {
                 this._sets = settings;
                 this._sets.properties = this._sets.properties || {};
-                this._logger = new Log(this.namespace(), settings.logLevel || LogLevel.INFO);
+                this._logger = new Log(this.NS(), settings.logLevel || LogLevel.INFO);
             }
 
             /**
-             * Application's namespace: {appName}/{appVersion}
+             * Application's namespace: {appName}/{version}
              * 应用的名称空间：{应用名}/{版本号}
              */
-            public static namespace() {
+            public static NS() {
                 return this._sets.name + '/' + this.version()
             }
             /**
@@ -141,14 +142,16 @@ module JS {
              * @param arg 
              */
             public static fireEvent<E>(e: E, arg?: StoreDataType) {
-                LocalStore.remove(e + '.' + App.namespace());
-                LocalStore.set(e + '.' + App.namespace(), arg);
+                let p = Page.currentPage(), pn = p && (<Object>p).className,
+                    k = `${e}|${pn ? `${pn}|` : ''}${App.NS()}`;
+                LocalStore.remove(k);
+                LocalStore.set(k, arg);
             }
             /**
              * Listen an applition-level event.
              * 监听一个应用事件
              */
-            public static onEvent<H = EventHandler<App>>(e: string, handler: H, once?:boolean) {
+            public static onEvent<H = EventHandler<App>>(e: string, handler: H, once?: boolean) {
                 this._bus.on(<any>e, handler, once)
             }
             /**
@@ -162,33 +165,30 @@ module JS {
 
     }
 }
-import App = JS.model.App;
-import AppEvent = JS.model.AppEvent;
-import AppSettings = JS.model.AppSettings;
+import App = JS.app.App;
+import AppEvent = JS.app.AppEvent;
+import AppConfig = JS.app.AppConfig;
 
 //////////////////////////////////////////////////
-(function(){
+(function () {
     var oldSetItem = localStorage.setItem;
-    localStorage.setItem = function (key, newValue) {
-        var ev = document.createEvent('CustomEvent');
-        ev.initCustomEvent('AppEvent', false, false, '');
+    localStorage.setItem = function (key, val) {
+        let ev = new CustomEvent('AppEvent');
         ev['key'] = key;
-        ev['newValue'] = newValue;
-        ev['url'] = Page.uri().toString();
+        ev['newValue'] = val;
         window.dispatchEvent(ev);
         oldSetItem.apply(this, arguments);
     }
-    $(window).on('AppEvent storage', (evt: JQuery.Event) => {
-        let e = <StorageEvent>evt.originalEvent, name = e.key;
-        if (!name) return;
-    
-        let namespace = '.' + App.namespace();
-        if (!name.endsWith(namespace)) return;//非APP事件则忽略
-    
-        if (e.newValue == null) return;//删除数据项则忽略
-    
-        let ev = new AppEvent(name.slice(0, name.length - namespace.length));
-        ev.url = e.url;
+    window.on('AppEvent storage', (e: StorageEvent) => {//第一个事件名是为了自页面也同时监听
+        if (e.newValue == null) return;//如果是storage事件在删除数据项则忽略
+
+        let name = e.key;
+        if (!name || name.indexOf('|' + App.NS()) < 0) return; //非本应用的APP事件则忽略
+        
+        let ps = name.split('|'),
+            ev = new AppEvent(ps[0]);//取事件名
+        ev.fromUrl = e.url;
+        ev.fromPage = ps.length==3?ps[1]:null;
         App._bus.fire(ev, [StoreHelper.parse(e.newValue)]);
     });
 })()

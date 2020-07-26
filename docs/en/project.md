@@ -45,22 +45,17 @@ JS.config({
 ```
 * *For details of global configuration, please refer to the "Library Management" section*
 
-### Import Library
-
-1. Load kernel library of JSDK.
-
+### Loading Core library
 JSDK kernel library <code>system</code> and the global configuration file <code>jsdk-config.js</code> must be loaded in HTML first: 
-
 ```html
 <!--JSDK's necessary kernel file-->
-<script src="http://mydomain/myproject/libs/jsdk/{JSDK-VERSION}/system.min.js"></script>
+<script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/system.min.js"></script>
 <!--JSDK's global config file-->
-<script src="http://mydomain/myproject/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script>
+<script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script>
 ```
 
-2. Load configured libraries in JSDK.
-
-There are two ways to load a library: dynamic loading and static loading. <br>
+### Loading Non-Core libraries
+There are two ways to load a library configured in JSDK: dynamic loading and static loading. <br>
 
 <b>[Dynamic loading]</b><br>
 Load a library in TS/JS code, which is recommended:
@@ -76,7 +71,7 @@ JS.imports([
 Load a library in HTML code:
 ```html
 <!-- you need to load a library named jsunit -->
-<script src="http://mydomain/myproject/libs/jsdk/{JSDK-VERSION}/jsunit.min.js"></script>
+<script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/jsunit.min.js"></script>
 ```
 
 ### TS Project Compilation

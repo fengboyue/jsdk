@@ -34,40 +34,40 @@ module JS {
             protected _src: URLString;
 
             constructor(c: VideoConfig) {
-                let m = this;
-                m._c = Jsons.union({
+                let T = this;
+                T._c = Jsons.union({
                     controls:true,
                     autoplay:false,
                     loop: false,
                     muted: false, 
                     preload: 'auto'
                 }, c);
-                m._src = m._c.src;
+                T._src = T._c.src;
 
-                let el = <HTMLMediaElement>$1('#'+m._c.id);
+                let el = <HTMLMediaElement>$1('#'+T._c.id);
                 if (el) { 
-                    m._el = el;
-                    Jsons.forEach(m._c, (v,k)=>{
-                        if(k!='id' && k!='ctor' && k!='on') m._el.attr(k, <any>v)
+                    T._el = el;
+                    Jsons.forEach(T._c, (v,k)=>{
+                        if(k!='id' && k!='ctor' && k!='on') T._el.attr(k, <any>v)
                     })
                 } else {
-                    let ctr = (Types.isString(m._c.appendTo) ? $1(<string>m._c.appendTo) : <HTMLElement>m._c.appendTo) || document.body,
-                        id = m._c.id || Random.uuid(4);
+                    let ctr = (Types.isString(T._c.appendTo) ? $1(<string>T._c.appendTo) : <HTMLElement>T._c.appendTo) || document.body,
+                        id = T._c.id || Random.uuid(4);
                     
                     ctr.append(Strings.nodeHTML('video', {
                         id: id,
-                        controls: m._c.controls,
-                        loop: m._c.loop,
-                        muted: m._c.muted,
-                        preload: m._c.preload,
-                        poster: m._c.poster,
-                        width: m._c.width,
-                        height: m._c.height,
-                        src: m._c.src
+                        controls: T._c.controls,
+                        loop: T._c.loop,
+                        muted: T._c.muted,
+                        preload: T._c.preload,
+                        poster: T._c.poster,
+                        width: T._c.width,
+                        height: T._c.height,
+                        src: T._c.src
                     }));
                     this._el = <HTMLMediaElement>$1(`#${id}`)
                 }
-                if (m._c.on) Jsons.forEach(m._c.on, (v, k) => { this.on(<MediaEvents>k, v) })
+                if (T._c.on) Jsons.forEach(T._c.on, (v, k) => { this.on(<MediaEvents>k, v) })
             }
 
             /**
@@ -76,13 +76,13 @@ module JS {
             public src(): URLString
             public src(src: URLString): this
             public src(src?: URLString): any {
-                let m = this;
-                if (!src) return m._src;
+                let T = this;
+                if (!src) return T._src;
 
-                m._src = src;
-                m._el.src = src;
-                m._el.load();
-                return m
+                T._src = src;
+                T._el.src = src;
+                T._el.load();
+                return T
             }
             /**
              * Gets or sets the current playback position, in seconds.

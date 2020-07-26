@@ -88,7 +88,7 @@ JS.imports([
     '/source/page/LoginUserPage.js', //load current page class
     ...
 ]).then(()=>{
-    Page.current(LoginUserPage);
+    Page.init(LoginUserPage);
 })
 ```
 

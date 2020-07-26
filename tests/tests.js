@@ -985,17 +985,17 @@ var JS;
         let ErrorsTest = class ErrorsTest extends TestCase {
             test1() {
                 Assert.equalError(TypeError, () => {
-                    throw new Errors.TypeError();
+                    throw new TypeError();
                 });
             }
             test2() {
                 Assert.equalError(TypeError, () => {
-                    throw new Errors.TypeError('xxx');
+                    throw new TypeError('xxx');
                 });
             }
             test3() {
                 Assert.equalError(JSError, () => {
-                    throw new Errors.JSError('xxx', new TypeError());
+                    throw new JSError('xxx', new TypeError());
                 });
             }
         };

@@ -13,6 +13,7 @@ module JS {
 
     export namespace store {
 
+        let D = document;
         /**
          * Cookie helper.
          */
@@ -29,11 +30,11 @@ module JS {
             /**
              * 缺省的数值存取域名
              */
-            public static DOMAIN = self.document?document.domain:null;//在线程中引用时没有window／document对象
+            public static DOMAIN = self.document?D.domain:null;//在线程中引用时没有window／document对象
 
             static get<T = StoreDataType>(key: string): T {
                 let reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)", "gi"),
-                    data = reg.exec(document.cookie),
+                    data = reg.exec(D.cookie),
                     str = data ? window['unescape'](data[2]) : null;
                 
                 return <T>StoreHelper.parse(str);
@@ -50,15 +51,15 @@ module JS {
                 let p = path ? path : CookieStore.PATH;
                 let domain = CookieStore.DOMAIN;
                 if (domain) domain = 'domain=' + domain;
-                document.cookie = key + '=' + window['escape']('' + StoreHelper.toString(value)) + '; path=' + p + '; expires=' + exp + domain;
+                D.cookie = key + '=' + window['escape']('' + StoreHelper.toString(value)) + '; path=' + p + '; expires=' + exp + domain;
             };
             static remove(key: string): void {
                 let date = new Date();
                 date.setTime(date.getTime() - 10000);
-                document.cookie = key + "=; expire=" + date.toUTCString();
+                D.cookie = key + "=; expire=" + date.toUTCString();
             };
             static clear() {
-                document.cookie = '';
+                D.cookie = '';
             };
 
         }

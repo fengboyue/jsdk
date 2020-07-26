@@ -12,6 +12,7 @@ module JS {
 
     export namespace model {
 
+        let F = Jsons.find;
 
         export interface ResultSetFormat {
             rootProperty?: string;
@@ -125,18 +126,18 @@ module JS {
             public static parseJSON<T>(raw: JsonObject, format?: ResultSetFormat): ResultSet<T> {
                 if (!raw) return null;
 
-                const fmt = format||this.DEFAULT_FORMAT, root = Jsons.find(raw, fmt.rootProperty);
+                const fmt = format||this.DEFAULT_FORMAT, root = F(raw, fmt.rootProperty);
                 let result = new ResultSet<T>();
-                result.lang(Jsons.find(root, fmt.langProperty));
-                result.message(Jsons.find(root, fmt.messageProperty));
-                result.version(Jsons.find(root, fmt.versionProperty));
+                result.lang(F(root, fmt.langProperty));
+                result.message(F(root, fmt.messageProperty));
+                result.version(F(root, fmt.versionProperty));
                 result.success(fmt.isSuccess ? fmt.isSuccess(root) : (root[fmt.successProperty] === (fmt.successCode || true)));
 
-                result.data(Jsons.find(root, fmt.recordsProperty));
+                result.data(F(root, fmt.recordsProperty));
                 result.rawObject(root);
-                result.page(Jsons.find(root, fmt.pageProperty));
-                result.pageSize(Jsons.find(root, fmt.pageSizeProperty));
-                result.total(Jsons.find(root, fmt.totalProperty));
+                result.page(F(root, fmt.pageProperty));
+                result.pageSize(F(root, fmt.pageSizeProperty));
+                result.total(F(root, fmt.totalProperty));
 
                 return result;
             }

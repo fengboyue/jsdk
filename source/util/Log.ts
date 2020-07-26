@@ -22,8 +22,8 @@ module JS {
             OFF = 0
         }
 
-        let LogLevels = ['OFF','ERROR','WARN','INFO','DEBUG','TRACE','ALL'],
-        LogLevelStyles = [
+        let LEVELS = ['OFF','ERROR','WARN','INFO','DEBUG','TRACE','ALL'],
+        STYLES = [
             '',
             'color:red;background-color:#fff0f0;',//error
             'color:orange;background-color:#fffbe6;',//warn
@@ -44,7 +44,7 @@ module JS {
                 this.name = name;
             }
             public log(level: LogLevel.TRACE | LogLevel.DEBUG | LogLevel.INFO | LogLevel.WARN | LogLevel.ERROR, ...data: any[]) {
-                this._log(LogLevels[level], LogLevelStyles[level], data)
+                this._log(LEVELS[level], STYLES[level], data)
             }
             private _log(cmd: string, css: string, data: any[]) {
                 console.group(`%c${cmd} ${this.name?'['+this.name+'] ':''}${new Date().toISOString()}`, css);

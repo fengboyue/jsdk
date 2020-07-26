@@ -8,7 +8,6 @@
  */
 
 /// <reference path="../util/EventBus.ts"/>
-/// <reference path="../util/Jsons.ts"/>
 /// <reference path="../util/URI.ts"/>
 
 module JS {

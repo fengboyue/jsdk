@@ -6,8 +6,8 @@
         alt="License: MIT"></a>
     <a href="#">
         <img
-        src="https://img.shields.io/badge/version-v2.2.0-brightgreen"
-        alt="Version: 2.2.0"></a>
+        src="https://img.shields.io/badge/version-v2.3.1-brightgreen"
+        alt="Version: 2.3.1"></a>
 </p>
 
 JSDK 2.0+ is the most comprehensive TS/JS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.
@@ -64,7 +64,21 @@ You can launch a http server on your PC to visit these resources quickly.
 JSDK is licensed under the MIT license since version 2.0.
 * *Other open source libraries include in JSDK's releases are licensed under their stated licenses*
 
-## Changelogs
+## Updates
+
+### v2.3.1 - 2020/7/26
+[Bugfix] 
+- fix a bug of EventBus's _call method caused by the last refactoring.
+- fix a bug after Bom.ready() has been called many times.
+
+[Removed] 
+- remove redundancy @aop annotation.
+
+[Changed] 
+- refactor some methods of Page class.
+- refactor App Event.
+- minify size of source code.
+- minify Reflect.js.
 
 ### v2.3.0 - 2020/7/24
 [Added] 

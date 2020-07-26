@@ -6,6 +6,9 @@
  * @author Frank.Feng
  * @email boyue.feng@foxmail.com
  * 
+ * @version 2.3.1
+ * @date 2020/7/25
+ * 
  * @version 2.3.0
  * @date 2020/7/19
  * @update create new module "jsmedia"" for audio and video
@@ -41,14 +44,14 @@
  * @version 0.1
  * @date 2007/8/30
  */
-/// <reference path="../../libs/reflect/2.0.0/reflect.d.ts" />
+/// <reference path="../../libs/reflect/2.0.1/Reflect.d.ts" />
 /// <reference path="../util/Dom.ts" />
 
 module JS {
 
-    export let version = '2.3.0';
+    export let version = '2.3.1';
 
-    export type GlobalConfig = {
+    export type JSDKConfig = {
         canImport?: boolean;
         minimize?: boolean;
         jsdkRoot?: string;
@@ -59,23 +62,23 @@ module JS {
     /**
      * Gets JSDK's global configuration.
      */
-    export function config(): GlobalConfig
+    export function config(): JSDKConfig
     /**
      * Sets JSDK's global configuration.
      */
-    export function config(opts: GlobalConfig): void
+    export function config(opts: JSDKConfig): void
     /**
      * Gets the value of a key in global configuration.
      * @param key 
      */
-    export function config<T>(key: keyof GlobalConfig): T
+    export function config<T>(key: keyof JSDKConfig): T
     /**
      * Sets the value of a key in global configuration.
      * @param key 
      * @param val 
      */
-    export function config(key: keyof GlobalConfig, val: any): void
-    export function config(d?: GlobalConfig | keyof GlobalConfig, v?: any): GlobalConfig | void {
+    export function config(key: keyof JSDKConfig, val: any): void
+    export function config(d?: JSDKConfig | keyof JSDKConfig, v?: any): JSDKConfig | void {
         let l = arguments.length;
         if (l == 0) return _cfg;
         if (!d) return;
@@ -94,7 +97,7 @@ module JS {
         }
     }
 
-    let _cfg: GlobalConfig = {},
+    let _cfg: JSDKConfig = {},
         _ldd = {},//loaded URLs
 
         _min = (uri: string, type: 'js' | 'css') => {

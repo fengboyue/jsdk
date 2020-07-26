@@ -18,6 +18,8 @@ module JS {
 
     export namespace reflect {
 
+        let Y = Types, J = Jsons;
+
         /**
          * The @klass annotation.
          */
@@ -153,10 +155,10 @@ module JS {
              * Returns a new instance of a class constructor or its fullname.
              */
             public static newInstance<T>(ctor: string | Klass<T>, ...args): T {
-                let tar = Types.isString(ctor) ? Class.byName(<string>ctor) : <Function>ctor;
+                let tar = Y.isString(ctor) ? Class.byName(<string>ctor) : <Function>ctor;
                 if (!tar) throw new NotFoundError(`The class<${ctor}> is not found!`);
 
-                return <T>Reflect.construct(tar, Jsons.clone(args))
+                return <T>Reflect.construct(tar, J.clone(args))
             }
 
             /**
@@ -178,7 +180,7 @@ module JS {
             public static aop<T>(klass: Klass<any>, method: string, advisor: AopAdvisor<T>) {
                 let isStatic = klass.hasOwnProperty(method),
                     m: Function = isStatic ? klass[method] : klass.prototype[method];
-                if (!Types.isFunction(m)) return;
+                if (!Y.isFunction(m)) return;
 
                 let obj = isStatic ? klass : klass.prototype;
                 if (!obj.hasOwnProperty('__' + method)) obj['__' + method] = m;
@@ -195,7 +197,7 @@ module JS {
             public static cancelAop(klass: Klass<any>, method: string) {
                 let isStatic = klass.hasOwnProperty(method),
                     m: Function = isStatic ? klass[method] : klass.prototype[method];
-                if (!Types.isFunction(m)) return;
+                if (!Y.isFunction(m)) return;
 
                 let obj = isStatic ? klass : klass.prototype;
                 obj[method] = obj['__' + method];
@@ -241,7 +243,7 @@ module JS {
              */
             public subclassOf(cls: Class<any> | Klass<any>): boolean {
                 let klass: Klass<any> = (cls.constructor && cls.constructor === <any>Class) ? (<Class<any>>cls).getKlass() : <any>cls;
-                return Types.subKlass(this.getKlass(), klass);
+                return Y.subKlass(this.getKlass(), klass);
             }
 
             /**
@@ -274,10 +276,10 @@ module JS {
                     const key = mKeys[i].toString();
                     if (!this._isValidStatic(key)) continue;
                     const obj = ctor[key];
-                    if (Types.isFunction(obj)) {
+                    if (Y.isFunction(obj)) {
                         this._methods[key] = new Method(this, key, true, <Function>obj, null, null);
                     } else {
-                        this._fields[key] = new Field(this, key, true, Types.type(obj));
+                        this._fields[key] = new Field(this, key, true, Y.type(obj));
                     }
                 }
             }
@@ -287,10 +289,10 @@ module JS {
                     const key = protoKeys[i].toString();
                     if (!this._isValidInstance(key)) continue;
                     const obj = this._forceProto(proto, key);
-                    if (Types.isFunction(obj)) {
+                    if (Y.isFunction(obj)) {
                         this._methods[key] = new Method(this, key, false, <Function>obj, null, null);
                     } else {
-                        this._fields[key] = new Field(this, key, false, Types.type(obj));
+                        this._fields[key] = new Field(this, key, false, Y.type(obj));
                     }
                 }
             }
@@ -331,7 +333,7 @@ module JS {
 
             private _toArray(json: JsonObject): any[] {
                 let arr = [];
-                Jsons.forEach(json, v => {
+                J.forEach(json, v => {
                     arr[arr.length] = v;
                 });
                 return arr;
@@ -366,17 +368,16 @@ module JS {
             }
 
             private _instanceFields(instance: object) {
-                let instanceFields = {};
-                let keys = Reflect.ownKeys(instance);
+                let fs = {}, keys = Reflect.ownKeys(instance);
                 //获取所有实例属性
                 for (let i = 0; i < keys.length; i++) {
                     const key = keys[i].toString();
                     if (this._isValidInstance(key)) {
                         const obj = instance[key];
-                        if (!Types.isFunction(obj)) instanceFields[key] = new Field(this, key, false, Types.type(obj));
+                        if (!Y.isFunction(obj)) fs[key] = new Field(this, key, false, Y.type(obj));
                     }
                 }
-                this._fields = Jsons.union(instanceFields, this._fields);
+                this._fields = J.union(fs, this._fields);
             }    
 
             /**
@@ -387,16 +388,16 @@ module JS {
             public fieldsMap(instance?: object, anno?: Annotation): JsonObject<Field> {
                 if (instance) this._instanceFields(instance);
 
-                let fields = {};
+                let fs = {};
                 if (anno && instance) {
-                    Jsons.forEach(this._fields, (field: Field, key: string) => {
-                        if (Annotations.hasAnnotation(anno, instance, key)) fields[key] = field;
+                    J.forEach(this._fields, (field: Field, key: string) => {
+                        if (Annotations.hasAnnotation(anno, instance, key)) fs[key] = field;
                     })
                 } else {
-                    fields = this._fields;
+                    fs = this._fields;
                 }
 
-                return fields;
+                return fs;
             }
             /**
              * Returns an array of all static-fields and instance-fields.
@@ -420,7 +421,7 @@ module JS {
             public static forName<T>(name: string | Klass<T>, isAlias?: boolean): Class<T> {
                 if (!name) return null;
 
-                let isStr = Types.isString(name)
+                let isStr = Y.isString(name)
                 if (!isStr && (<Klass<T>>name).class) return (<Klass<T>>name).class;
 
                 let classname: string = isStr ? <string>name : (<Klass<T>>name).name;
@@ -465,7 +466,7 @@ module JS {
                 if(ns.endsWith('.*')) ns = ns.slice(0, ns.length-2);
 
                 let a = [];
-                Jsons.forEach(this._MAP, (cls, name)=>{
+                J.forEach(this._MAP, (cls, name)=>{
                     if(name.startsWith(ns)) a.push(cls)
                 })
 

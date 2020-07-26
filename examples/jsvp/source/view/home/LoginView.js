@@ -55,7 +55,16 @@ var AppDemo;
                                 colorMode: ColorMode.primary,
                                 listeners: {
                                     click: () => {
-                                        Page.current().login();
+                                        Page.currentPage().login();
+                                    }
+                                }
+                            },
+                            'btnEvent': {
+                                text: 'Fire App Event',
+                                colorMode: ColorMode.info,
+                                listeners: {
+                                    click: () => {
+                                        App.fireEvent('access', this.getWidget('phone').value());
                                     }
                                 }
                             }

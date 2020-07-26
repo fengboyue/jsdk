@@ -13,31 +13,32 @@ module JS {
 
     export namespace store {
 
+        let L = localStorage;
         /**
          * Local store helper.
          */
         export class LocalStore {
 
             static get<T extends StoreDataType>(key: string): T {
-                let str = localStorage.getItem(key);
+                let str = L.getItem(key);
                 if(!str) return undefined;
 
                 return <T>StoreHelper.parse(str);
             };
             static set(key: string, value: StoreDataType): void {
-                localStorage.setItem(key, StoreHelper.toString(value));
+                L.setItem(key, StoreHelper.toString(value));
             };
             static remove(key: string): void {
-                localStorage.removeItem(key);
+                L.removeItem(key);
             };
             static key(i: number): string {
-                return localStorage.key(i);
+                return L.key(i);
             };
             static size(): number {
-                return localStorage.length;
+                return L.length;
             };
             static clear() {
-                localStorage.clear();
+                L.clear();
             };
 
         }

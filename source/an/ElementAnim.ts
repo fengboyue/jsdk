@@ -10,6 +10,7 @@ module JS {
 
     export namespace an {
 
+        let J = Jsons;
         export class ElementAnimConfig extends AnimConfig {
             el: HTMLElement|string;
             frames: KeyFrames;
@@ -31,14 +32,14 @@ module JS {
             protected abstract _onUpdate(newFrame: KeyFrame) :void;
             
             private _parseFrames(frames) {
-                let m = this;
-                Jsons.some(frames, (v, k) => {
+                let T = this;
+                J.some(frames, (v, k) => {
                     if (k == 'from' || k == '0%') {
-                        m._from = this._convertFrame(v)
+                        T._from = this._convertFrame(v)
                     } else if (k == 'to' || k == '100%') {
-                        m._to = this._convertFrame(v)
+                        T._to = this._convertFrame(v)
                     }
-                    return m._from!=void 0 && m._to!=void 0
+                    return T._from!=void 0 && T._to!=void 0
                 })
             }
 
@@ -62,7 +63,7 @@ module JS {
                     return this._newVal(t, d, from, to, e, this._frame);
                 }else{
                     let json = {};
-                    Jsons.forEach(<JsonObject>from, (v, k) => {
+                    J.forEach(<JsonObject>from, (v, k) => {
                         json[k] = this._newVal(t, d, from[k], to[k], e, this._frame==void 0?null:this._frame[k])
                     })
                     return json
@@ -75,42 +76,42 @@ module JS {
                 return Math[tx](n, base)
             }
             private _calc(d: number, t: number, e: EasingFunction): KeyFrame {
-                let m = this,
-                    fwd = m._dir == 'forward';
+                let T = this,
+                    fwd = T._dir == 'forward';
 
-                if(!Check.isEmpty(this._frames)) {
+                if(!Check.isEmpty(T._frames)) {
                     let n = Number(t * 100 / d).round(2), key, delKeys=[];
-                    Jsons.forEach(this._frames, (v, k) => {
-                        let nk = this._num(k);
+                    J.forEach(T._frames, (v, k) => {
+                        let nk = T._num(k);
                         if (!nk.isNaN() && nk.round(2) <= n) {
                             delKeys.push(k);
-                            if(nk > this._num(key)) key = k
+                            if(nk > T._num(key)) key = k
                         }
                     })
                     if (key) {
-                        m._frame = this._convertFrame(this._frames[key]);
-                        delKeys.forEach((v)=>{delete this._frames[v]});
-                        return m._frame
+                        T._frame = T._convertFrame(T._frames[key]);
+                        delKeys.forEach((v)=>{delete T._frames[v]});
+                        return T._frame
                     }
                 }
 
-                let from = fwd ? m._from : m._to, to = fwd ? m._to : m._from;
-                return this._newFrame(from, to, t, d, e)
+                let from = fwd ? T._from : T._to, to = fwd ? T._to : T._from;
+                return T._newFrame(from, to, t, d, e)
             }
 
             private _reset4loop(){
-                let m = this;
-                m._frame = null;
-                m._frames = Jsons.clone(m._cfg.frames);
-                delete m._frames.from;
-                delete m._frames.to;
-                delete m._frames['0%'];
-                delete m._frames['100%'];
+                let T = this;
+                T._frame = null;
+                T._frames = J.clone(T._cfg.frames);
+                delete T._frames.from;
+                delete T._frames.to;
+                delete T._frames['0%'];
+                delete T._frames['100%'];
             }
             protected _reset(){
-                let m = this;
-                m._frame = null;
-                m._frames = null;
+                let T = this;
+                T._frame = null;
+                T._frames = null;
                 super._reset()
             }
 
@@ -120,47 +121,47 @@ module JS {
             protected _resetInitial(){}
 
             public play() {
-                let m = this, r = m._timer, c = m._cfg;
+                let T = this, r = T._timer, c = T._cfg;
                 if (!r) {
-                    m._reset();
+                    T._reset();
                 
                     r = new AnimTimer((et) => {
-                        m._onUpdate.call(m, m._calc(c.duration, et, c.easing));
+                        T._onUpdate.call(T, T._calc(c.duration, et, c.easing));
                     }, {
                         delay: c.delay,
                         duration: c.duration,
                         loop: c.loop
                     });
                     if (c.onStarting) r.on(<AnimTimerEvents>'starting', () => {
-                        c.onStarting.call(m);
-                        m._resetFrame()
+                        c.onStarting.call(T);
+                        T._resetFrame()
                     });
                     r.on(<AnimTimerEvents>'looping', (e, ct: number) => {
-                        m._loop = ct;
-                        m._reset4loop();
-                        if (ct>1 && c.autoReverse) m.direction(m._dir == 'backward' ? 'forward' : 'backward');
-                        if(!c.autoReverse) m._resetFrame()
+                        T._loop = ct;
+                        T._reset4loop();
+                        if (ct>1 && c.autoReverse) T.direction(T._dir == 'backward' ? 'forward' : 'backward');
+                        if(!c.autoReverse) T._resetFrame()
                     });
                     r.on(<AnimTimerEvents>'finished', () => {
-                        if(c.autoReset) m._resetInitial()
-                        if (c.onFinished) c.onFinished.call(m);
-                        m._reset();
+                        if(c.autoReset) T._resetInitial()
+                        if (c.onFinished) c.onFinished.call(T);
+                        T._reset();
                     });
 
-                    m._timer = r;
+                    T._timer = r;
                 }
-                if(m.getState()==AnimState.RUNNING) return m; 
+                if(T.getState()==AnimState.RUNNING) return T; 
 
-                if(m._from==void 0||m._to==void 0) throw new NotFoundError('Not found "from" or "to"!');
+                if(T._from==void 0||T._to==void 0) throw new NotFoundError('Not found "from" or "to"!');
                 r.start();
-                return m
+                return T
             }
 
             public stop() {
                 super.stop()
-                let m = this, c = m._cfg;
-                if(c.autoReset) m._resetInitial()
-                return m
+                let T = this, c = T._cfg;
+                if(c.autoReset) T._resetInitial()
+                return T
             }
 
         }

@@ -154,20 +154,20 @@ module JS {
             }
 
             public static toSizeString(byte: string | number, sizeUnit?: FileSizeUnit): string {
-                let unit = sizeUnit || FileSizeUnit.B;
+                let unit = sizeUnit || FileSizeUnit.B, TC = this.convertSize;
                 if (!byte) return '0' + unit;
 
-                let kb = this.convertSize(byte, unit, FileSizeUnit.KB);
+                let kb = TC(byte, unit, FileSizeUnit.KB);
                 if (kb == 0) return '0' + unit;
                 if (kb < 1) return byte + 'B';
 
-                let mb = this.convertSize(byte, unit, FileSizeUnit.MB);
+                let mb = TC(byte, unit, FileSizeUnit.MB);
                 if (mb < 1) return kb + 'KB';
 
-                let gb = this.convertSize(byte, unit, FileSizeUnit.GB);
+                let gb = TC(byte, unit, FileSizeUnit.GB);
                 if (gb < 1) return mb + 'MB';
 
-                let tb = this.convertSize(byte, unit, FileSizeUnit.TB);
+                let tb = TC(byte, unit, FileSizeUnit.TB);
                 return tb < 1?(gb + 'GB'):(tb + 'TB')
             }
 

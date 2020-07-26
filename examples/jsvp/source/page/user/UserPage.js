@@ -20,7 +20,7 @@ var AppDemo;
                     this.userService = null;
                 }
                 readCurrentUser() {
-                    let uri = Page.uri();
+                    let uri = new URI(location.href);
                     this.userView.values({
                         phone: uri.query('phone'),
                         email: uri.query('email')
@@ -36,13 +36,18 @@ var AppDemo;
                         App.fireEvent('404', res.statusText);
                     });
                 }
-                render() {
+                enter() {
                     this.userView.render();
                 }
                 initialize() {
+                    App.onEvent('access', (e, phone) => {
+                        Konsole.print(`access phone: ${phone}`, e);
+                    });
+                    App.onEvent('404', (e, errorMsg) => {
+                        App.logger().info(`Page<${Page.currentPage().className}> received AppEvent<404>: ${errorMsg}!`, `From page: ${e.fromPage}`);
+                    });
                     App.logger().info('UserPage was initialized!');
                 }
-                ;
             };
             __decorate([
                 inject(),

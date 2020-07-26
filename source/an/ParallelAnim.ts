@@ -15,6 +15,7 @@ module JS {
             el?: HTMLElement|string
         }
 
+        let E = Check.isEmpty;
         export class ParallelAnim extends Anim {
             protected _cfg: ParallelAnimConfig;
             private _plans: PromisePlans<void>;
@@ -31,15 +32,16 @@ module JS {
             public config(): ParallelAnimConfig
             public config(cfg: ParallelAnimConfig): this
             public config(cfg?: ParallelAnimConfig): any {
-                if (!cfg) return this._cfg;
+                let T = this;
+                if (!cfg) return T._cfg;
 
                 super.config(cfg);
-                let c = this._cfg, as = c.anims;
-                if (!Check.isEmpty(as)) {
-                    this._plans = [];
-                    as.forEach((a, i) => {
+                let c = T._cfg, as = c.anims;
+                if (!E(as)) {
+                    T._plans = [];
+                    as.forEach(a => {
                         a.config(Jsons.union(c, a.config()));//based on ParallelAnim's config
-                        this._plans.push(Promises.createPlan(function () {
+                        T._plans.push(Promises.createPlan(function () {
                             a.config({
                                 onFinished: () => { this.resolve() }
                             });
@@ -47,48 +49,48 @@ module JS {
                         }))
                     })
                 }
-                return this
+                return T
             }
 
             public play(): this {
-                let m = this, c = m._cfg;
-                if (Check.isEmpty(c.anims) || m.getState() == AnimState.RUNNING) return m;
+                let T = this, c = T._cfg;
+                if (E(c.anims) || T.getState() == AnimState.RUNNING) return T;
                 
-                m._sta = AnimState.RUNNING;
-                Promises.all(m._plans).always(() => {
-                    if (c.onFinished) c.onFinished.call(this)
+                T._sta = AnimState.RUNNING;
+                Promises.all(T._plans).always(() => {
+                    if (c.onFinished) c.onFinished.call(T)
                 })
-                return m
+                return T
             }
 
             /**
              * Pauses the animation.
              */
             public pause() {
-                let m = this, c = m._cfg;
-                if(m._sta != AnimState.RUNNING) return m;
-                m._sta = AnimState.PAUSED;
+                let T = this, c = T._cfg;
+                if(T._sta != AnimState.RUNNING) return T;
+                T._sta = AnimState.PAUSED;
                 
-                if (!Check.isEmpty(c.anims)) {
+                if (!E(c.anims)) {
                     c.anims.forEach(a=>{
                         a.pause()
                     })
                 }
-                return m
+                return T
             }
             /**
              * Stops the animation and resets the play head to its initial position.
              */
             public stop() {
-                let m = this, c = m._cfg;
-                m._sta = AnimState.STOPPED;
+                let T = this, c = T._cfg;
+                T._sta = AnimState.STOPPED;
                 
-                if (!Check.isEmpty(c.anims)) {
+                if (!E(c.anims)) {
                     c.anims.forEach(a=>{
                         a.stop()
                     })
                 }
-                return m
+                return T
             }
         }
     }

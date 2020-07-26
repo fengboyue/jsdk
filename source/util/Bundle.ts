@@ -51,8 +51,9 @@ module JS {
             }
 
             constructor(res: Resource, locale?: Locale) {
-                let lc = <Locale>(locale == void 0 ? System.info().locale : locale);
-                this._d = {};
+                let T = this,
+                lc = <Locale>(locale == void 0 ? System.info().locale : locale);
+                T._d = {};
 
                 if (res) {
                     if (Types.isString(res)) {
@@ -60,18 +61,18 @@ module JS {
                             suffix = pos < 0 ? '' : (<string>res).slice(pos + 1),
                             prefix = pos < 0 ? (<string>res) : (<string>res).slice(0, pos);
 
-                        if (!this._load(lc, prefix, suffix)) JSLogger.error('Bundle can\'t load resource file:'+res)
+                        if (!T._load(lc, prefix, suffix)) JSLogger.error('Bundle can\'t load resource file:'+res)
                     } else {
                         if (res.hasOwnProperty(lc)) {
-                            this._d = res[lc]
+                            T._d = res[lc]
                         } else {
                             let lang = Locales.lang(lc);
-                            this._d = res.hasOwnProperty(lang)?res[lang]:<JsonObject>res;
+                            T._d = res.hasOwnProperty(lang)?res[lang]:<JsonObject>res;
                         } 
                     }
                 }
 
-                this._lc = lc;
+                T._lc = lc;
             }
 
             public get(): JsonObject

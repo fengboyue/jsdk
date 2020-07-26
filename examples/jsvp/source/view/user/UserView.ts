@@ -70,7 +70,7 @@ module AppDemo {
                                 colorMode: ColorMode.success,
                                 listeners: {
                                     click: () => {
-                                        Page.current<UserPage>().readUserById(1);
+                                        Page.currentPage<UserPage>().readUserById(1);
                                     }
                                 }
                             },
@@ -79,14 +79,14 @@ module AppDemo {
                                 colorMode: ColorMode.danger,
                                 listeners: {
                                     click: () => {
-                                        Page.current<UserPage>().read404();
+                                        Page.currentPage<UserPage>().read404();
                                     }
                                 }
                             }
                         }
                     };
                     this.on('rendered', () => {
-                        Page.current<UserPage>().readCurrentUser();
+                        Page.currentPage<UserPage>().readCurrentUser();
                     });
                     super.initialize();
                 }

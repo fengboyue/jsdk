@@ -10,7 +10,7 @@ module JS {
 
     export namespace util {
 
-        let _ready = false;
+        let R = false, D = document, W = window; //isReady
         /**
          * Window Helper
          */
@@ -21,43 +21,46 @@ module JS {
              * DOM加载完成后执行
              */
             public static ready(fn: Function): void {
-                if(_ready) fn();
+                if (R) {
+                    fn();
+                    return
+                }
 
-                let callback = function(){
-                    _ready = true;
+                let callback = function () {
+                    R = true;
                     fn();
                     callback = null;
                 }
-                let wc = window['HTMLImports'] && window['HTMLImports'].whenReady;//判断是否已引入：webcomponents-lite.js
+                let wc = W['HTMLImports'] && W['HTMLImports'].whenReady;//判断是否已引入：webcomponents-lite.js
                 if (wc) return wc(callback);
-                
-                if (document.readyState === "complete") {
+
+                if (D.readyState === "complete") {
                     // Handle it asynchronously to allow scripts the opportunity to delay ready
                     setTimeout(callback, 1);
-                } else if (document.addEventListener) {
+                } else if (D.addEventListener) {
                     // Use the handy event callback
-                    document.addEventListener("DOMContentLoaded", <any>callback, false);
+                    D.addEventListener("DOMContentLoaded", <any>callback, false);
 
                     // A fallback to window.onload, that will always work
-                    window.addEventListener("load", <any>callback, false);
+                    W.addEventListener("load", <any>callback, false);
                 } else {//For IE
                     // Ensure firing before onload, maybe late but safe also for iframes
-                    document['attachEvent']("onreadystatechange", callback);
+                    D['attachEvent']("onreadystatechange", callback);
 
                     // A fallback to window.onload, that will always work
-                    window['attachEvent']("onload", callback);
+                    W['attachEvent']("onload", callback);
 
                     // If IE and not a frame
                     // continually check to see if the document is ready
                     var top = false;
                     try {
-                        top = (window.frameElement == null && document.documentElement)?true:false;
+                        top = (W.frameElement == null && D.documentElement) ? true : false;
                     } catch (e) { }
 
                     //如果是IE并且不是iframe
                     if (top && top['doScroll']) {
                         (function doScrollCheck() {
-                            if (!_ready) {
+                            if (!R) {
 
                                 try {
                                     //一直调用doScroll滚动，因为DOM渲染结束前，DOM节点是没有doScroll方法的，所以一直会异常
@@ -79,7 +82,7 @@ module JS {
              */
             public static iframeWindow(el: string | Element): Window {
                 let e = Dom.$1(<string>el);
-                if(!e) return null;
+                if (!e) return null;
                 return e['contentWindow']
             }
 
@@ -88,7 +91,7 @@ module JS {
              */
             public static iframeDocument(el: string | Element): Document {
                 let e = Dom.$1(<string>el);
-                if(!e) return null;
+                if (!e) return null;
                 return e['contentDocument'] || e['contentWindow'].document
             }
 
@@ -96,7 +99,7 @@ module JS {
              * Full screen
              */
             public static fullscreen() {
-                let de = document.documentElement;
+                let de = D.documentElement;
                 let fnName = de['mozRequestFullScreen'] ? 'mozRequestFullScreen' : (de['webkitRequestFullScreen'] ? 'webkitRequestFullScreen' : 'requestFullscreen');
                 if (de[fnName]) de[fnName]();
             }
@@ -105,8 +108,8 @@ module JS {
              * Normal screen
              */
             public static normalscreen() {
-                let fnName = document['mozCancelFullScreen'] ? 'mozCancelFullScreen' : (document['webkitCancelFullScreen'] ? 'webkitCancelFullScreen' : 'exitFullscreen');
-                if (document[fnName]) document[fnName]();
+                let fnName = D['mozCancelFullScreen'] ? 'mozCancelFullScreen' : (D['webkitCancelFullScreen'] ? 'webkitCancelFullScreen' : 'exitFullscreen');
+                if (D[fnName]) D[fnName]();
             }
 
         }

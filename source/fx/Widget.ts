@@ -12,6 +12,8 @@ module JS {
 
     export namespace fx {
 
+        let J = Jsons;
+
         @klass('JS.fx.Widget')
         export abstract class Widget implements IWidget {
 
@@ -89,11 +91,11 @@ module JS {
             private _initConfig(cfg: WidgetConfig<Widget>) {
                 let defaultCfg = Class.newInstance<WidgetConfig<Widget>>(this.className + 'Config');
                 cfg.name = cfg.name||this.id;
-                this._config = Jsons.union(defaultCfg, cfg);
-                this._initialConfig = Jsons.clone(this._config);
+                this._config = J.union(defaultCfg, cfg);
+                this._initialConfig = J.clone(this._config);
             }
             public initialConfig<V>(key?: string): V {
-                return <V>Jsons.clone(key ? this._initialConfig[key] : this._initialConfig);
+                return <V>J.clone(key ? this._initialConfig[key] : this._initialConfig);
             }
 
             protected _onBeforeRender() { }
@@ -112,7 +114,7 @@ module JS {
                 
                 //渲染后重新注册事件监听
                 let lts = cfg.listeners || {};
-                Jsons.forEach(<any>lts, function (handler: EventHandler<Widget>, type: string) {
+                J.forEach(<any>lts, function (handler: EventHandler<Widget>, type: string) {
                     if (handler) this.on(type, handler);
                 }, this);
                 this._onAfterRender();
@@ -212,7 +214,7 @@ module JS {
                 let defaults = new Bundle((<Object>this).getClass().getKlass<Widget>()['I18N'], this._config.locale);
                 if(!this._config.i18n) return defaults;
                 let b = new Bundle(this._config.i18n, this._config.locale);
-                return defaults? defaults.set(Jsons.union(defaults.get(), b.get())):b
+                return defaults? defaults.set(J.union(defaults.get(), b.get())):b
             }
             
             protected _i18n(): JsonObject

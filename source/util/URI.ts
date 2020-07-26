@@ -6,14 +6,14 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
-/// <reference path="../util/JSONs.ts" /> 
-
+/// <reference path="../util/Jsons.ts" /> 
 module JS {
 
     export namespace util {
 
-        let _URI_REG = /^(([^\:\/\?\#]+)\:)?(\/\/([^\/\?\#]*))?([^\?\#]*)(\\?([^\#]*))?(\#(.*))?/;
-        let _AUTH_REG = /^(([^\:@]*)(\:([^\:@]*))?@)?([^\:@]*)(\:(\d{1,3}))?/;
+        let Y = Types, J = Jsons,
+            _URI_REG = /^(([^\:\/\?\#]+)\:)?(\/\/([^\/\?\#]*))?([^\?\#]*)(\\?([^\#]*))?(\#(.*))?/,
+            _AUTH_REG = /^(([^\:@]*)(\:([^\:@]*))?@)?([^\:@]*)(\:(\d{1,3}))?/;
 
         /**
          * A string of URL<br>
@@ -66,7 +66,7 @@ module JS {
              * 解析
              */
             private _parse(cfg: string | URL | URIData) {
-                if (Types.isString(cfg)) {
+                if (Y.isString(cfg)) {
                     this._parseStr(<string>cfg);
                 } else if (cfg && (<URL>cfg).href) {
                     this._parseStr((<URL>cfg).href);
@@ -76,7 +76,7 @@ module JS {
                     this.user(uri.user);
                     this.password(uri.password);
                     this.host(uri.host);
-                    this.port(Types.isDefined(uri.port) ? uri.port : 80);
+                    this.port(Y.isDefined(uri.port) ? uri.port : 80);
                     this.path(uri.path);
                     this._params = uri.params;
                     this.fragment(uri.fragment);
@@ -98,7 +98,7 @@ module JS {
                     if (authArr[2]) this._user = authArr[2];
                     if (authArr[4]) this._pwd = authArr[4];
                     if (authArr[5]) this._host = authArr[5];
-                    if (Types.isDefined(authArr[7])) this._port = parseInt(authArr[7]);
+                    if (Y.isDefined(authArr[7])) this._port = parseInt(authArr[7]);
                 }
 
                 let path = array[5];
@@ -151,7 +151,7 @@ module JS {
                     if (!this._params) return null;
 
                     let query = '';
-                    Jsons.forEach(this._params, (v, k) => {
+                    J.forEach(this._params, (v, k) => {
                         query += `${query ? '&' : ''}${k}=${v}`;
                     })
                     return query;
@@ -290,7 +290,7 @@ module JS {
             public queryObject(params?: JsonObject<string>, encode?: boolean): any {
                 if (arguments.length == 0) return this._params;
 
-                Jsons.forEach(params, (value: string, key: string) => {
+                J.forEach(params, (value: string, key: string) => {
                     this.query(key, value, encode);
                 })
                 return this;
@@ -309,7 +309,7 @@ module JS {
              */
             public toAbsolute(): string {
                 let userinfo = this.userinfo(),
-                    port = Types.isDefined(this._port) ? ':' + this._port : '',
+                    port = Y.isDefined(this._port) ? ':' + this._port : '',
                     path = this.path() || '',
                     query = this.queryString() || '',
                     fragment = this._frag ? '#' + this._frag : '';
@@ -365,7 +365,7 @@ module JS {
                 if(!json) return '';
 
                 let q = '';
-                Jsons.forEach(<JsonObject>json, (v, k) => {
+                J.forEach(<JsonObject>json, (v, k) => {
                     q += `&${k}=${encode?encodeURIComponent(v):v}`;
                 })
                 return q

@@ -15,6 +15,8 @@ module JS {
             el?: HTMLElement|string
         }
 
+        let E = Check.isEmpty;
+        
         export class SequentialAnim extends Anim {
             protected _cfg: SequentialAnimConfig;
             private _i: number = 0;
@@ -31,7 +33,7 @@ module JS {
 
                 super.config(cfg);
                 let c = this._cfg, as = c.anims;
-                if(!Check.isEmpty(as)) {
+                if(!E(as)) {
                     as.forEach((a, i)=>{
                         a.config(Jsons.union(c, a.config()));//based on SequentialAnim's config
                         if(i<as.length-1){
@@ -56,33 +58,33 @@ module JS {
             }
 
             public play(): this {
-                let m = this, c = m._cfg;
-                if(Check.isEmpty(c.anims) || m.getState()==AnimState.RUNNING) return m; 
-                c.anims[m._i].play();
-                return m
+                let T = this, c = T._cfg;
+                if(E(c.anims) || T.getState()==AnimState.RUNNING) return T; 
+                c.anims[T._i].play();
+                return T
             }
 
             /**
              * Pauses the animation.
              */
             public pause() {
-                let m = this, c = m._cfg;
-                if(m._sta != AnimState.RUNNING) return m;
-                m._sta = AnimState.PAUSED;
+                let T = this, c = T._cfg;
+                if(T._sta != AnimState.RUNNING) return T;
+                T._sta = AnimState.PAUSED;
                 
-                if (!Check.isEmpty(c.anims)) c.anims[m._i].pause();
-                return m
+                if (!E(c.anims)) c.anims[T._i].pause();
+                return T
             }
             /**
              * Stops the animation and resets the play head to its initial position.
              */
             public stop() {
-                let m = this, c = m._cfg;
-                m._sta = AnimState.STOPPED;
+                let T = this, c = T._cfg;
+                T._sta = AnimState.STOPPED;
                 
-                if (!Check.isEmpty(c.anims)) c.anims[m._i].stop();
-                m._i = 0;
-                return m
+                if (!E(c.anims)) c.anims[T._i].stop();
+                T._i = 0;
+                return T
             }
         }
     }

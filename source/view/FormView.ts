@@ -11,6 +11,8 @@
 module JS {
     export namespace view {
 
+        let J = Jsons;
+
         export interface FormViewConfig extends ViewConfig {
             valueModel?: Klass<Model>;
              /**
@@ -56,42 +58,43 @@ module JS {
             public iniValues(): JsonObject<any>
             public iniValues(values: JsonObject<any>, render?:boolean): this
             public iniValues(values?: JsonObject<any>, render?:boolean): any {
+                let T = this;
                 if (arguments.length == 0) {
                     let vals = {};
-                    this.eachWidget((w: IValueWidget) => {
+                    T.eachWidget((w: IValueWidget) => {
                         if(w.iniValue) vals[w.id] = w.iniValue();
                     })
                     return vals;
                 } else {
                     if (values) {
-                        Jsons.forEach(values, (val: any, id: string) => {
-                            let w = <IValueWidget>this._widgets[id];
+                        J.forEach(values, (val: any, id: string) => {
+                            let w = <IValueWidget>T._widgets[id];
                             if (w && w.iniValue) w.iniValue(val, render);
                         })
                     } else {
-                        this.eachWidget((w: IValueWidget) => {
+                        T.eachWidget((w: IValueWidget) => {
                             if(w.iniValue) w.iniValue(null, render);
                         })
                     }
                 }
-                return this
+                return T
             }
 
             /**
              * True when all widgets are right.
              */
             public validate(id?: string): boolean {
-                let wgts = this._widgets;
+                let T = this, wgts = T._widgets;
                 if (Check.isEmpty(wgts)) return true;
 
                 if (!id) {
                     let ok = true;
-                    Jsons.forEach(wgts, (wgt: IValueWidget) => {
-                        if (this._validateWidget(wgt) !== true) ok = false;
+                    J.forEach(wgts, (wgt: IValueWidget) => {
+                        if (T._validateWidget(wgt) !== true) ok = false;
                     })
                     return ok
                 }
-                return this._validateWidget(<any>this._widgets[id]);
+                return T._validateWidget(<any>T._widgets[id]);
             }
 
             /**
@@ -127,21 +130,22 @@ module JS {
             }
 
             protected _render() {
-                if (this._config) {
-                    let cfg = this._config;
-                    Jsons.forEach(cfg.widgetConfigs, (config: ViewWidgetConfig, id: string) => {
-                        config['valueModel'] = this._model || this._config.valueModel;
-                        let wgt = this._newWidget(id, config, cfg.defaultConfig);
-                        if (wgt && (<IValueWidget>wgt).valueModel && !this._model) this._model = (<IValueWidget>wgt).valueModel();
-                        this.addWidget(wgt);
+                let T = this;
+                if (T._config) {
+                    let cfg = T._config;
+                    J.forEach(cfg.widgetConfigs, (config: ViewWidgetConfig, id: string) => {
+                        config['valueModel'] = T._model || T._config.valueModel;
+                        let wgt = T._newWidget(id, config, cfg.defaultConfig);
+                        if (wgt && (<IValueWidget>wgt).valueModel && !T._model) T._model = (<IValueWidget>wgt).valueModel();
+                        T.addWidget(wgt);
                     })
 
-                    if (this._model) {
-                        this._model.on('validated', (e, result, data) => {
-                            this._fire('validated', [result, data]);
+                    if (T._model) {
+                        T._model.on('validated', (e, result, data) => {
+                            T._fire('validated', [result, data]);
                         });
-                        this._model.on('dataupdated', (e, newData, oldData) => {
-                            this._fire('dataupdated', [newData, oldData]);
+                        T._model.on('dataupdated', (e, newData, oldData) => {
+                            T._fire('dataupdated', [newData, oldData]);
                         });
                     }
                 }

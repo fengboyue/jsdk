@@ -11,6 +11,8 @@ module JS {
 
     export namespace lang {
 
+        let Y = Types, R = Reflect;
+
         /**
          * Advisor interface for AOP.
          * AOP切入通知接口
@@ -51,7 +53,7 @@ module JS {
              * @param propertyKey 
              */
             public static getPropertyType(obj: object, propertyKey: string): any {
-                return Reflect.getMetadata('design:type', obj, propertyKey);
+                return R.getMetadata('design:type', obj, propertyKey);
             }
 
             /**
@@ -65,7 +67,7 @@ module JS {
              */
             public static getValue(anno: Annotation, obj: object, propertyKey: string)
             public static getValue(anno: Annotation, obj: object | Klass<any>, propertyKey?: string) {
-                return Reflect.getMetadata(anno.name, obj, propertyKey);
+                return R.getMetadata(anno.name, obj, propertyKey);
             }
             /**
              * Sets the value of an annotation on a class. 
@@ -78,7 +80,7 @@ module JS {
              */
             public static setValue(annoName: string | Annotation, metaValue: any, obj: object, propertyKey: string): void;
             public static setValue(annoName: string | Annotation, metaValue: any, obj: object | Klass<any>, propertyKey?: string) {
-                Reflect.defineMetadata(typeof annoName == 'string' ? annoName : annoName.name, metaValue, obj, propertyKey);
+                R.defineMetadata(typeof annoName == 'string' ? annoName : annoName.name, metaValue, obj, propertyKey);
             }
 
             /**
@@ -89,7 +91,7 @@ module JS {
              * @param propertyKey 
              */
             public static hasAnnotation(anno: Annotation, obj: object | Klass<any>, propertyKey?: string): boolean {
-                return Reflect.hasMetadata(anno.name, obj, propertyKey);
+                return R.hasMetadata(anno.name, obj, propertyKey);
             }
 
             /**
@@ -97,7 +99,7 @@ module JS {
              * 返回类或实例的所有注解名
              */
             public static getAnnotations(obj: object | Klass<any>): string[] {
-                return Reflect.getMetadataKeys(obj);
+                return R.getMetadataKeys(obj);
             }
 
             /**
@@ -106,17 +108,17 @@ module JS {
              */
             public static define(definition: string | AnnotationDefinition, params?: ArrayLike<any>) {
                 let args = Arrays.newArray(params),
-                    isStr = Types.isString(definition),
+                    isStr = Y.isString(definition),
                     annoName = isStr ? <string>definition : (<AnnotationDefinition>definition).name,
                     handler = isStr ? null : (<AnnotationDefinition>definition).handler,
                     target = (isStr ? AnnotationTarget.ANY : (<AnnotationDefinition>definition).target) || AnnotationTarget.ANY,
 
                     fn = function (anno, values, obj, key, d) {
                         if (0 == (target & AnnotationTarget.ANY)) {
-                            if (Types.equalKlass(obj)) {
+                            if (Y.equalKlass(obj)) {
                                 if (0 == (target & AnnotationTarget.CLASS)) return _wrongTarget(anno, (<Klass<any>>obj).name)
                             } else if (key) {
-                                if (Types.isFunction(obj[key])) {
+                                if (Y.isFunction(obj[key])) {
                                     if (0 == (target & AnnotationTarget.METHOD)) return _wrongTarget(anno, (<object>obj).constructor.name, key, 'method')
                                 } else {
                                     if (0 == (target & AnnotationTarget.FIELD)) return _wrongTarget(anno, (<object>obj).constructor.name, key, 'field')
@@ -127,18 +129,18 @@ module JS {
                         if (handler) handler.apply(null, [anno, values, obj, key, d]);
                     }
 
-                if (Types.equalKlass(args[0])) {//无参数的类注解：特殊处理
+                if (Y.equalKlass(args[0])) {//无参数的类注解：特殊处理
                     let obj = args[0];
                     let detor: ClassDecorator = function (tar: Klass<any>) {
                         fn.call(null, annoName, undefined, tar);
                     }
-                    return Reflect.decorate([detor], obj);
+                    return R.decorate([detor], obj);
                 } else if (args.length == 3 && args[0]['constructor']) {//无参数的属性注解：特殊处理
                     let obj = args[0], key = args[1], desc = args[2];
                     let detor: PropertyDecorator = function (tar: object, k: string) {
                         fn.call(null, annoName, undefined, tar, k, desc);
                     }
-                    return Reflect.decorate([detor], obj, key);
+                    return R.decorate([detor], obj, key);
                 }
                 //带参数的注解 
                 let values = args;
@@ -171,12 +173,12 @@ module JS {
                 name: 'deprecated',
                 handler: (anno: string, values: Array<any>, obj: Klass<any> | object, propertyKey?: string) => {
                     let info = values ? (values[0] || '') : '', text = null;
-                    if (Types.equalKlass(obj)) {
+                    if (Y.equalKlass(obj)) {
                         let name = _getClassName(<Klass<any>>obj);
                         text = `The [${name}] class`;
                     } else {
                         let klass = <Klass<any>>obj.constructor, name = _getClassName(klass);
-                        text = `The [${propertyKey}] ${Types.isFunction(obj[propertyKey]) ? 'method' : 'field'} of ${name}`;
+                        text = `The [${propertyKey}] ${Y.isFunction(obj[propertyKey]) ? 'method' : 'field'} of ${name}`;
                     }
 
                     JSLogger.warn(text + ' has been deprecated. ' + info);
@@ -189,7 +191,7 @@ module JS {
                 name: anno,
                 handler: (anno: string, values: Array<any>, obj: object, methodName?: string) => {
                     let adv = {};
-                    if (Types.isFunction(values[0])) {
+                    if (Y.isFunction(values[0])) {
                         adv[anno] = values[0];
                     } else {
                         adv = values[0];
@@ -224,12 +226,6 @@ module JS {
         export function throws(fn: (e: Error) => void): any {
             return _aop(arguments, fn, 'throws');
         }
-        /**
-         * The @aop annotation.
-         */
-        export function aop(advisor: AopAdvisor<any>): any {
-            return _aop(arguments, advisor);
-        }
 
     }
 
@@ -246,4 +242,3 @@ import before = JS.lang.before;
 import after = JS.lang.after;
 import around = JS.lang.around;
 import throws = JS.lang.throws;
-import aop = JS.lang.aop;

@@ -1,6 +1,6 @@
 //@ sourceURL=jsinput.js
 /**
-* JSDK 2.3.0 
+* JSDK 2.3.1 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -38,6 +38,7 @@ var JS;
 (function (JS) {
     let input;
     (function (input) {
+        let J = Jsons;
         class Keyboard {
             constructor(el) {
                 this._mapping = {};
@@ -62,9 +63,9 @@ var JS;
                             m._q.add(c);
                         }
                     }
-                    if (!Jsons.hasKey(m._m, c) || !repeat)
+                    if (!J.hasKey(m._m, c) || !repeat)
                         m._m[c] = e.timeStamp;
-                    if (!repeat && Jsons.hasKey(m._m, c)) {
+                    if (!repeat && J.hasKey(m._m, c)) {
                         let types = m._busDown.types();
                         types.forEach(ty => {
                             if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
@@ -78,7 +79,7 @@ var JS;
                 });
                 ele.on('keyup', (e) => {
                     let c = e.keyCode;
-                    if (Jsons.hasKey(m._m, c)) {
+                    if (J.hasKey(m._m, c)) {
                         let types = m._busUp.types();
                         types.forEach(ty => {
                             if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
@@ -105,11 +106,11 @@ var JS;
                 return k && k.indexOf('+') > 0;
             }
             _on(k, fn, bus) {
-                let m = this, ty = m._keyChar(k);
-                if (!Jsons.hasKey(m._mapping, ty))
-                    m._mapping[ty] = m._numeric(ty, m.isHotKeys(ty) ? '+' : (m.isSeqKeys(ty) ? ',' : ''));
+                let T = this, ty = T._keyChar(k);
+                if (!J.hasKey(T._mapping, ty))
+                    T._mapping[ty] = T._numeric(ty, T.isHotKeys(ty) ? '+' : (T.isSeqKeys(ty) ? ',' : ''));
                 bus.on(ty, fn);
-                return m;
+                return T;
             }
             onKeyDown(k, fn) {
                 return this._on(k, fn, this._busDown);
@@ -161,13 +162,13 @@ var JS;
                 return s.replace(/\s*/g, '').toUpperCase();
             }
             _isHotKeysPressing(k) {
-                let m = this, s = m._keyChar(k), a = s.split('\+');
+                let T = this, s = T._keyChar(k), a = s.split('\+');
                 if (a.length == 1)
                     return false;
                 return a.every((b, i) => {
-                    if (i > 0 && !m.beforeKeyDown(a[i - 1], b))
+                    if (i > 0 && !T.beforeKeyDown(a[i - 1], b))
                         return false;
-                    return m.isPressingKey(b);
+                    return T.isPressingKey(b);
                 });
             }
             _numeric(ty, sign) {
@@ -180,20 +181,20 @@ var JS;
                 return sk;
             }
             isPressingKeys(keys) {
-                let m = this, k = m._keyChar(keys);
+                let T = this, k = T._keyChar(keys);
                 if (!k)
                     return false;
-                if (m.isSeqKeys(k)) {
-                    return m._isSeqKeysPressing(k);
+                if (T.isSeqKeys(k)) {
+                    return T._isSeqKeysPressing(k);
                 }
-                else if (m.isHotKeys(k)) {
-                    return m._isHotKeysPressing(k);
+                else if (T.isHotKeys(k)) {
+                    return T._isHotKeysPressing(k);
                 }
                 return this.isPressingKey(input.VK[k]);
             }
             isPressingKey(c) {
-                let m = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[m._keyChar(c)]);
-                return Jsons.hasKey(m._m, n);
+                let T = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[T._keyChar(c)]);
+                return J.hasKey(T._m, n);
             }
             getPressingQueue() {
                 return this._q.clone();
@@ -205,45 +206,45 @@ var JS;
                 return this;
             }
             getKeyDownTime(c) {
-                let m = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[m._keyChar(c)]);
-                return !Jsons.hasKey(m._m, n) ? 0 : m._m[n];
+                let T = this, n = c == void 0 ? null : (Types.isNumber(c) ? c : input.VK[T._keyChar(c)]);
+                return !J.hasKey(T._m, n) ? 0 : T._m[n];
             }
             beforeKeyDown(k1, k2) {
                 let d1 = this.getKeyDownTime(k1), d2 = this.getKeyDownTime(k2);
                 return d1 > 0 && d2 > 0 && d1 < d2;
             }
             off() {
-                let m = this;
-                m._check();
-                m._busDown.off();
-                m._busUp.off();
-                return m;
+                let T = this;
+                T._check();
+                T._busDown.off();
+                T._busUp.off();
+                return T;
             }
             clear(c) {
-                let m = this;
+                let T = this;
                 if (c == void 0) {
-                    m._mapping = {};
-                    m._m = {};
-                    m._q.clear();
-                    m._ts = 0;
+                    T._mapping = {};
+                    T._m = {};
+                    T._q.clear();
+                    T._ts = 0;
                     return;
                 }
                 let a = Types.isNumber(c) ? [c] : c;
                 a.forEach(k => {
-                    m._m[k] = null;
+                    T._m[k] = null;
                 });
-                return m;
+                return T;
             }
             _check() {
                 if (this._d)
                     throw new NotHandledError();
             }
             destroy() {
-                let m = this;
-                m._d = true;
-                m.clear();
-                m._busDown.destroy();
-                m._busUp.destroy();
+                let T = this;
+                T._d = true;
+                T.clear();
+                T._busDown.destroy();
+                T._busUp.destroy();
             }
         }
         input.Keyboard = Keyboard;
