@@ -1,7 +1,7 @@
 JS.imports([
     '$jsinput'
 ]).then(() => {
-    let kb1 = new Keyboard(), isON = true, on = () => {
+    let kb1 = new Keys(), isON = true, on = () => {
         isON = true;
         kb1.onKeyDown('a , d , enter', function (e, kb) {
             $1('#info').innerHTML += `<div>You press A,D,ENTER</div>`;
@@ -17,6 +17,7 @@ JS.imports([
         kb1.off();
         $1('#info').innerHTML += `<div>You set OFF!</div>`;
     };
+    kb1.seqInterval(2000);
     $1('#switch').on('click', (ev) => {
         isON ? off() : on();
     });

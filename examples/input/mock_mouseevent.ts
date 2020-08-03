@@ -13,13 +13,9 @@ JS.imports([
         alert('click window, mouse button:'+e.button)
     })
 
-    UIMocker.fireMouseEvent('click', {
-        button: MouseButton.RIGHT
-    })
-
     $L('ul button').forEach(b=>{
         b.on('click', ()=>{
-            UIMocker.fireMouseEvent('click', {
+            Mouses.fireEvent('click', {
                 target: $1('#btn'),
                 button: Number(b.attr('data-button'))
             })

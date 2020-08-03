@@ -1,6 +1,6 @@
 JS.imports([
     '$handlebars',
-    '$jsmv',
+    '$jsmvc',
     'ColorsTemplateView.js'
 ]).then(() => {
     $1('#btn1').on('click', () => {

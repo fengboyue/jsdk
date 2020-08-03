@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>UIMocker | JSDK 2.3.1 API</title>
-	<meta name="description" content="Documentation for JSDK 2.3.1 API">
+	<title>Mouses | JSDK 2.4.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.4.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.3.1 API</a>
+					<a href="../index.html" class="title">JSDK 2.4.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -62,10 +62,10 @@
 					<a href="../modules/js.input.html">input</a>
 				</li>
 				<li>
-					<a href="js.input.uimocker.html">UIMocker</a>
+					<a href="js.input.mouses.html">Mouses</a>
 				</li>
 			</ul>
-			<h1>Class UIMocker</h1>
+			<h1>Class Mouses</h1>
 		</div>
 	</div>
 </header>
@@ -75,7 +75,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A UI events Mocker.</p>
+						<p>Mouse events helper.</p>
 					</div>
 				</div>
 			</section>
@@ -83,7 +83,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">UIMocker</span>
+						<span class="target">Mouses</span>
 					</li>
 				</ul>
 			</section>
@@ -94,10 +94,8 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.input.uimocker.html#firekeyevent" class="tsd-kind-icon">fire<wbr>Key<wbr>Event</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.input.uimocker.html#firemouseevent" class="tsd-kind-icon">fire<wbr>Mouse<wbr>Event</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.input.uimocker.html#newkeyevent" class="tsd-kind-icon">new<wbr>Key<wbr>Event</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.input.uimocker.html#newmouseevent" class="tsd-kind-icon">new<wbr>Mouse<wbr>Event</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.input.mouses.html#fireevent" class="tsd-kind-icon">fire<wbr>Event</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.input.mouses.html#newevent" class="tsd-kind-icon">new<wbr>Event</a></li>
 							</ul>
 						</section>
 					</div>
@@ -106,42 +104,10 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="firekeyevent" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> fire<wbr>Key<wbr>Event</h3>
+					<a name="fireevent" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> fire<wbr>Event</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">fire<wbr>Key<wbr>Event<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../modules/js.ui.html#keyboardevents" class="tsd-signature-type">KeyboardEvents</a>, keyCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, args<span class="tsd-signature-symbol">?: </span><a href="js.input.keyeventinit.html" class="tsd-signature-type">KeyEventInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Fires a keyboard event.<br>
-									Note: not support keypress event because special keys has not this event.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>type: <a href="../modules/js.ui.html#keyboardevents" class="tsd-signature-type">KeyboardEvents</a></h5>
-								</li>
-								<li>
-									<h5>keyCode: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> args: <a href="js.input.keyeventinit.html" class="tsd-signature-type">KeyEventInit</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="firemouseevent" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> fire<wbr>Mouse<wbr>Event</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">fire<wbr>Mouse<wbr>Event<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../modules/js.ui.html#mouseevents" class="tsd-signature-type">MouseEvents</a>, args<span class="tsd-signature-symbol">?: </span><a href="js.input.mouseeventinit.html" class="tsd-signature-type">MouseEventInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">fire<wbr>Event<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../modules/js.input.html#mouseevents" class="tsd-signature-type">MouseEvents</a>, args<span class="tsd-signature-symbol">?: </span><a href="js.input.mouseeventinits.html" class="tsd-signature-type">MouseEventInits</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -155,10 +121,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>type: <a href="../modules/js.ui.html#mouseevents" class="tsd-signature-type">MouseEvents</a></h5>
+									<h5>type: <a href="../modules/js.input.html#mouseevents" class="tsd-signature-type">MouseEvents</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> args: <a href="js.input.mouseeventinit.html" class="tsd-signature-type">MouseEventInit</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> args: <a href="js.input.mouseeventinits.html" class="tsd-signature-type">MouseEventInits</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -166,10 +132,10 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="newkeyevent" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> new<wbr>Key<wbr>Event</h3>
+					<a name="newevent" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> new<wbr>Event</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">new<wbr>Key<wbr>Event<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../modules/js.ui.html#keyboardevents" class="tsd-signature-type">KeyboardEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, keyCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, args<span class="tsd-signature-symbol">?: </span><a href="js.input.keyeventinit.html" class="tsd-signature-type">KeyEventInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">KeyboardEvent</span></li>
+						<li class="tsd-signature tsd-kind-icon">new<wbr>Event<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../modules/js.input.html#mouseevents" class="tsd-signature-type">MouseEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">?: </span><a href="js.input.mouseeventinits.html" class="tsd-signature-type">MouseEventInits</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MouseEvent</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -178,36 +144,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>type: <a href="../modules/js.ui.html#keyboardevents" class="tsd-signature-type">KeyboardEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+									<h5>type: <a href="../modules/js.input.html#mouseevents" class="tsd-signature-type">MouseEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>keyCode: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> args: <a href="js.input.keyeventinit.html" class="tsd-signature-type">KeyEventInit</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">KeyboardEvent</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="newmouseevent" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> new<wbr>Mouse<wbr>Event</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">new<wbr>Mouse<wbr>Event<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../modules/js.ui.html#mouseevents" class="tsd-signature-type">MouseEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">?: </span><a href="js.input.mouseeventinit.html" class="tsd-signature-type">MouseEventInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MouseEvent</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>type: <a href="../modules/js.ui.html#mouseevents" class="tsd-signature-type">MouseEvents</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> args: <a href="js.input.mouseeventinit.html" class="tsd-signature-type">MouseEventInit</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> args: <a href="js.input.mouseeventinits.html" class="tsd-signature-type">MouseEventInits</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MouseEvent</span></h4>
@@ -276,53 +216,104 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-enum tsd-parent-kind-namespace">
+						<a href="../enums/js.input.mousebutton.html" class="tsd-kind-icon">Mouse<wbr>Button</a>
+					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
 						<a href="js.input.cursors.html" class="tsd-kind-icon">Cursors</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.input.keyeventinit.html" class="tsd-kind-icon">Key<wbr>Event<wbr>Init</a>
+						<a href="js.input.keyboards.html" class="tsd-kind-icon">Keyboards</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.input.keyboard.html" class="tsd-kind-icon">Keyboard</a>
+						<a href="js.input.keys.html" class="tsd-kind-icon">Keys</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.input.mouseeventinit.html" class="tsd-kind-icon">Mouse<wbr>Event<wbr>Init</a>
+						<a href="js.input.mouseeventinits.html" class="tsd-kind-icon">Mouse<wbr>Event<wbr>Inits</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-namespace">
-						<a href="js.input.uimocker.html" class="tsd-kind-icon">UIMocker</a>
+						<a href="js.input.mouses.html" class="tsd-kind-icon">Mouses</a>
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="js.input.uimocker.html#firekeyevent" class="tsd-kind-icon">fire<wbr>Key<wbr>Event</a>
+								<a href="js.input.mouses.html#fireevent" class="tsd-kind-icon">fire<wbr>Event</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="js.input.uimocker.html#firemouseevent" class="tsd-kind-icon">fire<wbr>Mouse<wbr>Event</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="js.input.uimocker.html#newkeyevent" class="tsd-kind-icon">new<wbr>Key<wbr>Event</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="js.input.uimocker.html#newmouseevent" class="tsd-kind-icon">new<wbr>Mouse<wbr>Event</a>
+								<a href="js.input.mouses.html#newevent" class="tsd-kind-icon">new<wbr>Event</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-class tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="js.input.touchdelegate.html" class="tsd-kind-icon">Touch<wbr>Delegate</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="../modules/js.input.html#cursorstyles" class="tsd-kind-icon">Cursor<wbr>Styles</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.input.html#dragevents" class="tsd-kind-icon">Drag<wbr>Events</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="../modules/js.input.html#hotkeys" class="tsd-kind-icon">Hotkeys</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.input.html#keyeventinits" class="tsd-kind-icon">Key<wbr>Event<wbr>Inits</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.input.html#keyboardevents" class="tsd-kind-icon">Keyboard<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.input.html#mouseevents" class="tsd-kind-icon">Mouse<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="../modules/js.input.html#seqkeys" class="tsd-kind-icon">Seqkeys</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.input.html#swipeevents" class="tsd-kind-icon">Swipe<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.input.html#tapevents" class="tsd-kind-icon">Tap<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/js.input.html#touchevents" class="tsd-kind-icon">Touch<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="../modules/js.input.html#ctxmenu" class="tsd-kind-icon">CTXMENU</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
 						<a href="../modules/js.input.html#d" class="tsd-kind-icon">D</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="../modules/js.input.html#dbl_tap_interval" class="tsd-kind-icon">DBL_<wbr>TAP_<wbr>INTERVAL</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="../modules/js.input.html#drag_image_opacity" class="tsd-kind-icon">DRAG_<wbr>IMAGE_<wbr>OPACITY</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="../modules/js.input.html#drag_move_px" class="tsd-kind-icon">DRAG_<wbr>MOVE_<wbr>PX</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="../modules/js.input.html#datatransfer" class="tsd-kind-icon">Data<wbr>Transfer</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
 						<a href="../modules/js.input.html#j" class="tsd-kind-icon">J</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="../modules/js.input.html#kb_props" class="tsd-kind-icon">KB_<wbr>PROPS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="../modules/js.input.html#long_tap_interval" class="tsd-kind-icon">LONG_<wbr>TAP_<wbr>INTERVAL</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="../modules/js.input.html#pt_props" class="tsd-kind-icon">PT_<wbr>PROPS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="../modules/js.input.html#rm_atts" class="tsd-kind-icon">RM_<wbr>ATTS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="../modules/js.input.html#instance" class="tsd-kind-icon">instance</a>
 					</li>
 					<li class=" tsd-kind-object-literal tsd-parent-kind-namespace">
 						<a href="../modules/js.input.html#vk" class="tsd-kind-icon">VK</a>

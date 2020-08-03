@@ -43,8 +43,7 @@ JS.imports('$xyz').then(()=>{ //$xyz is JLU format
 You can modify this file directly or dynamically override its configuration items in JS code:
 ```javascript
 JS.config({
-    canImport: true|false,    //True indicates JSDK can loads library dynamically now;
-                              //False indicates JSDK can not loads library dynamically now because next library maybe was loaded statically in HTML.
+    closeImport: true|false,  //True indicates JSDK does not loads library dynamically now because library maybe was loaded statically in HTML.
     minimize: true|false,     //Whether to load minimized files of JS or CSS(load their ".min" file automatically)
     jsdkRoot: null,           //The root url of JSDK self-library. The default is null that indicates JSDK self-library be deployed under libRoot: {libsRoot}/jsdk/{JSDK-VERSION}/. 
                               //Note: The config item means JSDK self-library is allowed to be deployed outside the "libRoot".
@@ -94,24 +93,24 @@ JS.imports([
 
 ## Modules of JSDK
 JSDK is divided into several modules(libraries).
-The most bottom core module is <b>system</b>, includes all keys features and tools;
+The most bottom core module is <b>jscore</b>, includes all keys features and tools;
 The toppest modules are <b>jsvp</b> and <b>jsfx</b>. 
 In real development, you don't have to load the entire <code>jsdk.js</code>, but just load the modules you need.
 
 ### JSDK Modules List
 Module Name|Remarks|Includes|Depends|Min Sizes
 ---|---|---|---|---
-system|core module|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||99kb
-jsds|data structures|JS.ds.* |system |6kb
-jsmedia|audio+video|JS.media.* |system |4kb
-jsinput|key&mouse events|JS.input.* |jsds |7kb
-jsui|ui module|JS.ui.* |system |5kb
-jsmv|models+views+ioc|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
+jscore|core module|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||98kb
+jsds|data structures|JS.ds.* |jscore |6kb
+jsmedia|audio+video|JS.media.* |jscore |4kb
+jsinput|key&mouse events|JS.input.* |jsds |14kb
+jsui|ui module|JS.ui.* |jscore |5kb
+jsmvc|model&views&component|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
 jsan|animations|JS.an.* |jsui |16kb
 jsfx|widgets |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
 jsvp|app framework|JS.store.*<br>JS.app.* |jsmv|8kb
-jsunit|unit-test framework|JS.unit.* |system|js: 9kb<br>css: 669b
-jsdk|all above modules|JS.* ||js: 276kb
+jsunit|unit-test framework|JS.unit.* |jscore|js: 9kb<br>css: 669b
+jsdk|all above modules|JS.* ||js: 281kb
 
 ### Custom JSDK Module 
 When you need smaller module files, you can modify the build scripts in <code>build/</code> directory. 

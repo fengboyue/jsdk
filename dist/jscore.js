@@ -1,6 +1,6 @@
-//@ sourceURL=system.js
+//# sourceURL=jscore.js
 /**
-* JSDK 2.3.1 
+* JSDK 2.4.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -960,10 +960,15 @@ var JS;
                 return _test(s.trim(), IP);
             }
             static isExistUrl(url) {
-                let xhr = self.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-                xhr.open('HEAD', url, false);
-                xhr.send();
-                return xhr.status == 200;
+                let xhr = new XMLHttpRequest();
+                return new Promise(function (resolve, reject) {
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState == 4)
+                            xhr.status == 200 ? resolve(true) : reject(false);
+                    };
+                    xhr.open('HEAD', url, true);
+                    xhr.send();
+                });
             }
             static isPattern(s, exp) {
                 return _test(s, exp);
@@ -1583,7 +1588,7 @@ var JS;
         }, _uncacheURL = (url, cache) => {
             url = url.replace(/([?&])_=[^&]*/, '$1');
             if (!cache)
-                url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
+                url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${Date.now()}`;
             return url;
         }, _sending = function (fn, req) {
             if (fn) {
@@ -1602,8 +1607,7 @@ var JS;
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 cache: true
             }, req);
-            let xhr = self.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP'), queryURL = _queryURL(req), url = _uncacheURL(queryURL, req.cache), headers = req.headers || {};
-            xhr.responseType = (req.type == 'html' || req.type == 'xml') ? 'document' : req.type;
+            let xhr = new XMLHttpRequest(), queryURL = _queryURL(req), url = _uncacheURL(queryURL, req.cache), headers = req.headers || {};
             xhr.open(req.method, url, req.async, req.username, req.password);
             xhr.setRequestHeader('Accept', req.type && ACCEPTS[req.type] ? ACCEPTS[req.type] + ',' + ACCEPTS['*'] + ';q=0.01' : ACCEPTS['*']);
             if (req.data && req.contentType)
@@ -1626,6 +1630,7 @@ var JS;
             xhr.onabort = () => { _rejectError.call(this, req, xhr, xhr['_isTimeout'] ? 'timeout' : 'abort'); };
             xhr.withCredentials = req.crossCookie;
             if (req.async) {
+                xhr.responseType = (req.type == 'html' || req.type == 'xml') ? 'document' : req.type;
                 xhr.timeout = req.timeout || 0;
                 xhr.ontimeout = () => {
                     _rejectError.call(this, req, xhr, 'timeout');
@@ -1794,7 +1799,7 @@ var JS;
                 });
                 return true;
             }
-            find(type, euid) {
+            original(type, euid) {
                 let fns = this._map.get(type);
                 if (arguments.length >= 1) {
                     if (!E(fns)) {
@@ -1898,67 +1903,20 @@ if (self['HTMLElement'])
             this.setAttribute(key, val);
             return this;
         };
-        HP.html = function (html) {
-            if (arguments.length == 0)
-                return this.innerHTML;
-            this.innerHTML = html;
-            return this;
-        };
-        HP.addClass = function (cls) {
-            if (!cls)
-                return this;
-            let cs = this.attr('class');
-            return this.attr('class', cs + ' ' + cls);
-        };
-        HP.removeClass = function (cls) {
-            if (!cls)
-                return this;
-            let cs = this.attr('class').trim();
-            if (!cs)
-                return this;
-            let clss = cls.split(' ');
-            cs += ' ';
-            clss.forEach(c => {
-                cs = cs.replace(new RegExp(c + ' ', 'g'), '');
-            });
-            return this.attr('class', cs);
-        };
-        HP.hasClass = function (cls) {
-            if (!cls)
-                return this;
-            let cs = this.attr('class').trim();
-            if (!cs)
-                return this;
-            return (cs + ' ').indexOf(cls + ' ') >= 0;
-        };
-        HP.toggleClass = function (cls, isAdd) {
-            if (!cls)
-                return this;
-            if (isAdd === true)
-                return this.addClass(cls);
-            if (isAdd === false)
-                return this.removeClass(cls);
-            let clss = cls.split(' ');
-            return this.hasClass(clss[0]) ? this.removeClass(cls) : this.addClass(cls);
-        };
-        let _on = function (type, fn, once) {
+        let _on = function (type, fn, opts) {
             if (!this['_bus'])
                 this['_bus'] = new EventBus(this);
             let bus = this['_bus'], cb = e => {
                 bus.fire(e);
-            };
+            }, once = (opts && opts['once']) ? true : false;
             bus.on(type, fn, once);
-            if (this.addEventListener) {
-                this.addEventListener(type, cb);
-            }
-            else if (this['attachEvent']) {
-                this['attachEvent']('on' + type, cb);
-            }
+            if (this.addEventListener)
+                this.addEventListener(type, cb, opts);
         };
-        HP.on = function (type, fn, once) {
+        HP.on = function (type, fn, opts) {
             let types = type.split(' ');
             types.forEach(t => {
-                _on.call(this, t, fn, once);
+                _on.call(this, t, fn, opts);
             });
             return this;
         };
@@ -1966,10 +1924,8 @@ if (self['HTMLElement'])
             if (!fn)
                 return;
             if (this.removeEventListener) {
-                this.removeEventListener(type, fn);
-            }
-            else if (this['detachEvent']) {
-                this['detachEvent']('on' + type, fn);
+                this.removeEventListener(type, fn, true);
+                this.removeEventListener(type, fn, false);
             }
         }, _rms = function (type, fns) {
             if (fns)
@@ -1977,9 +1933,9 @@ if (self['HTMLElement'])
         }, _off = function (type, fn) {
             let bus = this['_bus'];
             if (bus) {
-                let obj = fn ? bus.find(type, fn['euid']) : undefined;
-                bus.off(type, obj);
-                _rm.call(this, type, obj);
+                let oFn = fn ? bus.original(type, fn['euid']) : undefined;
+                bus.off(type, oFn);
+                _rm.call(this, type, oFn);
             }
             else {
                 _rm.call(this, type, fn);
@@ -1992,7 +1948,7 @@ if (self['HTMLElement'])
                     let types = bus.types();
                     for (let i = 0, len = types.length; i < len; i++) {
                         let ty = types[i];
-                        _rms.call(this, ty, bus.find(ty));
+                        _rms.call(this, ty, bus.original(ty));
                     }
                     bus.off();
                 }
@@ -2010,9 +1966,12 @@ if (self['HTMLElement'])
         HP.computedStyle = function (p) {
             return document.defaultView.getComputedStyle(this, p || null);
         };
+        let DP = Document.prototype;
+        DP.on = HP.addEventListener;
+        DP.off = HP.removeEventListener;
         let WP = Window.prototype;
-        WP.on = HP.on;
-        WP.off = HP.off;
+        WP.on = HP.addEventListener;
+        WP.off = HP.removeEventListener;
     })();
 var JS;
 (function (JS) {
@@ -2100,7 +2059,7 @@ var JS;
                     }
                 });
             }
-            static loadCSS(url, async = false, uncache) {
+            static loadCSS(url, async = false, uncached) {
                 if (!url)
                     return Promise.reject(null);
                 return util.Promises.create(function () {
@@ -2118,13 +2077,13 @@ var JS;
                         };
                         k.onload = k.onerror = back;
                     }
-                    k.href = uncache ? _uncached(url) : url;
+                    k.href = uncached ? _uncached(url) : url;
                     _head().appendChild(k);
                     if (async)
                         back();
                 });
             }
-            static loadJS(url, async = false, uncache) {
+            static loadJS(url, async = false, uncached) {
                 if (!url)
                     return Promise.reject(null);
                 return util.Promises.create(function () {
@@ -2142,7 +2101,7 @@ var JS;
                         };
                         s.onload = s.onerror = back;
                     }
-                    s.src = uncache ? _uncached(url) : url;
+                    s.src = uncached ? _uncached(url) : url;
                     _head().appendChild(s);
                     if (async)
                         back();
@@ -2173,7 +2132,7 @@ const $1 = Dom.$1;
 const $L = Dom.$L;
 var JS;
 (function (JS) {
-    JS.version = '2.3.1';
+    JS.version = '2.4.0';
     function config(d, v) {
         let l = arguments.length;
         if (l == 0)
@@ -2197,8 +2156,10 @@ var JS;
         }
     }
     JS.config = config;
-    let _cfg = {}, _ldd = {}, _min = (uri, type) => {
-        if (JS.config('minimize')) {
+    let _cfg = {}, _ldd = {}, _ts = (uri) => {
+        return JS.config('cachedImport') ? uri : (uri.indexOf('?') > 0 ? `${uri}&_=${Date.now()}` : `${uri}?_=${Date.now()}`);
+    }, _min = (uri, type) => {
+        if (JS.config('minImport')) {
             if (uri.endsWith('.min.' + type))
                 return uri;
             if (uri.endsWith('.' + type))
@@ -2239,17 +2200,17 @@ var JS;
             return Promises.resolvePlan(null);
         _ldd[u0] = 1;
         if (u0.endsWith('.js')) {
-            return Promises.newPlan(Dom.loadJS, [_min(u0, 'js'), ayc]);
+            return Promises.newPlan(Dom.loadJS, [_ts(_min(u0, 'js')), ayc]);
         }
         else if (u0.endsWith('.css')) {
-            return Promises.newPlan(Dom.loadCSS, [_min(u0, 'css'), ayc]);
+            return Promises.newPlan(Dom.loadCSS, [_ts(_min(u0, 'css')), ayc]);
         }
         else {
-            return Promises.newPlan(Dom.loadHTML, [u0, ayc]);
+            return Promises.newPlan(Dom.loadHTML, [_ts(u0), ayc]);
         }
     };
     function imports(url) {
-        if (!JS.config('canImport'))
+        if (JS.config('closeImport'))
             return Promise.resolve();
         let uris = typeof url === 'string' ? [url] : url, tasks = [];
         uris.forEach(uri => {
@@ -3253,8 +3214,7 @@ var JS;
                 }
                 paths.push('');
                 return paths.some(p => {
-                    let path = `${prefix}${p}.${suffix}`;
-                    let xhr = self.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+                    let path = `${prefix}${p}.${suffix}`, xhr = new XMLHttpRequest();
                     xhr.open('GET', path, false);
                     xhr.send();
                     if (xhr.status != 200)
@@ -4425,7 +4385,7 @@ var JS;
         })(ThreadState = lang.ThreadState || (lang.ThreadState = {}));
         let SYS_URL = null, _system = (srt) => {
             let src = srt.src.replace(/\?.*/, '');
-            return src.endsWith('/system.js') || src.endsWith('/system.min.js') ? src : null;
+            return src.endsWith('/jscore.js') || src.endsWith('/jscore.min.js') ? src : null;
         }, _docSystem = function (doc) {
             let scripts = doc.getElementsByTagName('script');
             if (scripts) {

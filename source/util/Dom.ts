@@ -18,21 +18,13 @@ interface HTMLElement {
     attr(key: string): string;
     attr(key: string, val: string): this;
 
-    html(): string;
-    html(html: string): this;
-
-    addClass(cls: string): this;
-    removeClass(cls: string): this;
-    hasClass(cls: string): boolean;
-    /**
-     * 
-     * @param cls 
-     * @param isAdd the second parameter for determining whether the class should be added or removed. If this parameter's value is true, then the class is added; if false, the class is removed.
-     */
-    toggleClass(cls: string, isAdd?: boolean): this;
-
-    on(type: string, fn: (this: HTMLElement, e: Event, ...args:any[]) => boolean | void, once?: boolean): this;
-    off(type?: string, fn?: (this: HTMLElement, e: Event, ...args:any[]) => boolean | void): this;
+    on(type: string, listener: (this: HTMLElement, e: Event) => boolean | void, useCapture?: boolean): this;
+    on(type: string, listener: (this: HTMLElement, e: Event) => boolean | void, options?: {
+        capture?: boolean,
+        once?: boolean,
+        passive?: boolean
+    }): this;
+    off(type?: string, listener?: (this: HTMLElement, e: Event) => boolean | void): this;
 
     find(selector: string): HTMLElement;
     findAll(selector: string): NodeListOf<HTMLElement>;
@@ -44,11 +36,28 @@ interface HTMLElement {
     computedStyle(pseudo?:string):CSSStyleDeclaration;
 }
 /**
+ * Add methods for document object
+ */
+interface Document {
+    on(type: string, listener: (this: Document, e: Event) => boolean | void, useCapture?: boolean): this;
+    on(type: string, listener: (this: Document, e: Event) => boolean | void, options?: {
+        capture?: boolean,
+        once?: boolean,
+        passive?: boolean
+    }): this;
+    off(type?: string, listener?: (this: Document, e: Event) => boolean | void): this;
+}
+/**
  * Add methods for window object
  */
 interface Window {
-    on(type: string, fn: (this: Window, e: Event, ...args:any[]) => boolean | void, once?: boolean): this;
-    off(type?: string, fn?: (this: Window, e: Event, ...args:any[]) => boolean | void): this;
+    on(type: string, listener: (this: Window, e: Event) => boolean | void, useCapture?: boolean): this;
+    on(type: string, listener: (this: Window, e: Event) => boolean | void, options?: {
+        capture?: boolean,
+        once?: boolean,
+        passive?: boolean
+    }): this;
+    off(type?: string, listener?: (this: Window, e: Event) => boolean | void): this;
 }
 
 if (self['HTMLElement']) //当前不在worker线程中
@@ -112,83 +121,51 @@ if (self['HTMLElement']) //当前不在worker线程中
             this.setAttribute(key, val);
             return this
         }
-        HP.html = function (html?: string) {
-            if (arguments.length == 0) return this.innerHTML;
-            this.innerHTML = html;
-            return this
-        }
-        HP.addClass = function (cls: string) {
-            if (!cls) return this;
-            let cs = this.attr('class');
-            return this.attr('class', cs + ' ' + cls)
-        }
-        HP.removeClass = function (cls: string) {
-            if (!cls) return this;
-
-            let cs: string = this.attr('class').trim();
-            if (!cs) return this;
-
-            let clss = cls.split(' '); cs += ' ';
-            clss.forEach(c => {
-                cs = cs.replace(new RegExp(c + ' ', 'g'), '')
-            })
-            return this.attr('class', cs)
-        }
-        HP.hasClass = function (cls: string) {
-            if (!cls) return this;
-
-            let cs: string = this.attr('class').trim();
-            if (!cs) return this;
-            return (cs + ' ').indexOf(cls + ' ') >= 0
-        }
-        HP.toggleClass = function (cls: string, isAdd?: boolean) {
-            if (!cls) return this;
-            if (isAdd === true) return this.addClass(cls);
-            if (isAdd === false) return this.removeClass(cls);
-
-            let clss = cls.split(' ');
-            return this.hasClass(clss[0]) ? this.removeClass(cls) : this.addClass(cls)
-        }
 
         //event functions
-        let _on = function (this: HTMLElement, type: string, fn: Function, once: boolean) {
+        let _on = function (this: EventTarget, type: string, fn: Function, opts?: boolean|{
+            capture?: boolean,
+            once?: boolean,
+            passive?: boolean
+        }) {
             if (!this['_bus']) this['_bus'] = new EventBus(this);
 
             let bus = <EventBus>this['_bus'], cb = e=>{
                 bus.fire(e)
-            };
+            }, once = (opts && opts['once'])?true:false;
             bus.on(type, <any>fn, once);
 
-            if (this.addEventListener) {                    //所有主流浏览器，除了IE8及更早IE版本
-                this.addEventListener(type, cb);
-            } else if (this['attachEvent']) {               //IE8及更早IE版本
-                this['attachEvent']('on' + type, cb);
-            }
+            //所有主流浏览器，除了IE8及更早IE版本
+            if (this.addEventListener) this.addEventListener(type, cb, opts)
         }
-        HP.on = function (type: string, fn: Function, once: boolean) {
+        HP.on = function (type: string, fn: Function, opts?: boolean|{
+            capture?: boolean,
+            once?: boolean,
+            passive?: boolean
+        }) {
             let types = type.split(' ');
             types.forEach(t => {
-                _on.call(this, t, fn, once)
+                _on.call(this, t, fn, opts)
             })
             return this
         }
-        let _rm = function (this: HTMLElement | Window, type, fn?: Function) {
+        let _rm = function (this: EventTarget, type, fn?: Function) {
                 if (!fn) return;
-                if (this.removeEventListener) {                    //所有主流浏览器，除了IE8及更早IE版本
-                    this.removeEventListener(type, <any>fn);
-                } else if (this['detachEvent']) {                  //IE8及更早IE 版本
-                    this['detachEvent']('on' + type, fn);
+                //所有主流浏览器，除了IE8及更早IE版本
+                if (this.removeEventListener) {
+                    this.removeEventListener(type, <any>fn, true);
+                    this.removeEventListener(type, <any>fn, false)
                 }
             },
-            _rms = function (this: HTMLElement | Window, type, fns: Function[]) {
+            _rms = function (this: EventTarget, type, fns: Function[]) {
                 if (fns) fns.forEach(f => { _rm.call(this, type, f) })
             },
-            _off = function (this: HTMLElement, type: string, fn) {
+            _off = function (this: EventTarget, type: string, fn) {
                 let bus = <EventBus>this['_bus'];
                 if (bus) {
-                    let obj = fn ? bus.find(type, fn['euid']) : undefined;
-                    bus.off(type, obj);
-                    _rm.call(this, type, obj);
+                    let oFn = fn ? bus.original(type, fn['euid']) : undefined;
+                    bus.off(type, oFn);
+                    _rm.call(this, type, oFn);
                 } else {
                     _rm.call(this, type, fn);
                 }
@@ -200,7 +177,7 @@ if (self['HTMLElement']) //当前不在worker线程中
                     let types = bus.types();
                     for (let i = 0, len = types.length; i < len; i++) {
                         let ty = types[i];
-                        _rms.call(this, ty, bus.find(ty));
+                        _rms.call(this, ty, bus.original(ty));
                     }
                     bus.off();
                 }
@@ -220,9 +197,13 @@ if (self['HTMLElement']) //当前不在worker线程中
             return document.defaultView.getComputedStyle(this, p||null)
         }
 
+        let DP = Document.prototype;
+        DP.on = <any>HP.addEventListener;
+        DP.off = <any>HP.removeEventListener;
+
         let WP = Window.prototype;
-        WP.on = <any>HP.on;
-        WP.off = <any>HP.off;
+        WP.on = <any>HP.addEventListener;
+        WP.off = <any>HP.removeEventListener;
     })()
 
 module JS {
@@ -335,7 +316,7 @@ module JS {
                 })
             }
 
-            public static loadCSS(url: string, async: boolean = false, uncache?: boolean) {
+            public static loadCSS(url: string, async: boolean = false, uncached?: boolean) {
                 if (!url) return Promise.reject(null);
                 return Promises.create<string>(function () {
                     let k = D.createElement('link'), back = () => {
@@ -351,12 +332,12 @@ module JS {
                         }
                         k.onload = k.onerror = back
                     }
-                    k.href = uncache ? _uncached(url) : url;
+                    k.href = uncached ? _uncached(url) : url;
                     _head().appendChild(k);
                     if (async) back();
                 })
             }
-            public static loadJS(url: string, async: boolean = false, uncache?: boolean) {
+            public static loadJS(url: string, async: boolean = false, uncached?: boolean) {
                 if (!url) return Promise.reject(null);
                 return Promises.create<string>(function () {
                     let s = D.createElement('script'), back = () => {
@@ -372,7 +353,7 @@ module JS {
                         }
                         s.onload = s.onerror = back
                     }
-                    s.src = uncache ? _uncached(url) : url;
+                    s.src = uncached ? _uncached(url) : url;
                     _head().appendChild(s);
                     if (async) back();
                 })

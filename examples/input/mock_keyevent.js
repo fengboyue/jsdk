@@ -12,7 +12,7 @@ JS.imports([
         fn('keyup', e);
     });
     let fire = function (type, el) {
-        UIMocker.fireKeyEvent(type, VK[el.attr('data-key')]);
+        Keyboards.fireEvent(type, VK[el.attr('data-key')]);
     };
     $L('button').forEach(b => {
         b.on('mousedown', () => {

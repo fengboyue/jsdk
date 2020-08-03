@@ -2,8 +2,8 @@
 JS.imports([
     '$jsinput'
 ]).then(() => {
-    let kb1 = new Keyboard(),
-        kb2 = new Keyboard($1('#tt')),
+    let kb1 = new Keys(),
+        kb2 = new Keys($1('#tt')),
         isON = true,
         on = () => {
             isON = true;
@@ -11,7 +11,7 @@ JS.imports([
                 $1('#info').innerHTML += `<div>You press ${e.type}</div>`;
                 return false
             })
-            kb1.onKeyUp('a', function(e: KeyboardEvent, kb:Keyboard) {
+            kb1.onKeyUp('a', function(e: KeyboardEvent, kb:Keys) {
                 $1('#info').innerHTML += `<div>You hold ${e.type} for ${e.timeStamp-kb.getKeyDownTime(e.keyCode)}ms</div>`;
                 return false
             })

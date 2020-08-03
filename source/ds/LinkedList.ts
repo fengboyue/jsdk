@@ -14,7 +14,7 @@ module JS {
 
         let J = Jsons;
 
-        type LinkedNode<T> = {
+        export type LinkedNode<T> = {
             data: T,
             next: LinkedNode<T>,
             prev: LinkedNode<T>
@@ -90,12 +90,8 @@ module JS {
                 return this._tl ? this._tl.data : null
             }
 
-            private _check(i: number) {
-                if (i > this._s || i < 0) throw new RangeError();
-            }
-
             public get(i: number): T {
-                this._check(i);
+                if (i > this._s || i < 0) return null;
                 if (i == 0) return this._hd ? this._hd.data : null;
                 if (i == this._s - 1) return this._tl ? this._tl.data : null;
 
@@ -269,15 +265,12 @@ module JS {
             }
 
             public removeAt(i: number) {
-                if (this.isEmpty()) return null;
-                this._check(i);
+                if (this.isEmpty() || i > this._s || i < 0) return null;
 
                 if (i == 0) {
-                    this.removeFirst();
-                    return
+                    return this.removeFirst()
                 } else if (i == this.size() - 1) {
-                    this.removeLast();
-                    return
+                    return this.removeLast()
                 }
 
                 let node = this._findAt(i);
@@ -319,3 +312,4 @@ module JS {
 
 //预定义短类名
 import LinkedList = JS.ds.LinkedList;
+import LinkedNode = JS.ds.LinkedNode;

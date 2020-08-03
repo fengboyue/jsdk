@@ -15,7 +15,7 @@ var JS;
                 numbers.forEach(n => {
                     html += `${n}<br/>`;
                 });
-                $1('#sorted1').html(html);
+                $1('#sorted1').innerHTML = html;
             }
             sort(numbers) {
                 this.start();

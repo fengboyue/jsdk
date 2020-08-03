@@ -11,19 +11,20 @@
     <title>JSDK Self Tests</title>
     <link rel="shortcut icon" href="#" />
     <link href="jsunit.css" rel="stylesheet" type="text/css" />
-    <script src="../dist/system.js"></script>
+    <script src="../dist/jscore.js"></script>
     <script src="../dist/jsdk-config.js"></script>
 
     <script>
         JS.config({
-            'minimize': false,
-            'jsdkRoot': '/jsdk/dist'
+            cachedImport: true,
+            minImport: true,
+            jsdkRoot: '/jsdk/dist'
         });
         JS.imports([
-            '$jsds',
-            '$jsmv',
+            '$jsds#async',
+            '$jsmvc#async',
             '$jsunit',
-            'tests.js'
+            '../dist/tests.js'
         ]).then(() => {
             TestRunner.addTests(Class.classesOf('JS.test'));
             TestRunner.run();

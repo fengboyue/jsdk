@@ -1,23 +1,23 @@
-//@ sourceURL=jsinput.js
+//# sourceURL=jsinput.js
 /**
-* JSDK 2.3.1 
+* JSDK 2.4.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
 var JS;
 (function (JS) {
-    let ui;
-    (function (ui) {
+    let input;
+    (function (input) {
         let MouseButton;
         (function (MouseButton) {
             MouseButton[MouseButton["LEFT"] = 0] = "LEFT";
             MouseButton[MouseButton["MIDDLE"] = 1] = "MIDDLE";
             MouseButton[MouseButton["RIGHT"] = 2] = "RIGHT";
-        })(MouseButton = ui.MouseButton || (ui.MouseButton = {}));
-    })(ui = JS.ui || (JS.ui = {}));
+        })(MouseButton = input.MouseButton || (input.MouseButton = {}));
+    })(input = JS.input || (JS.input = {}));
 })(JS || (JS = {}));
-var MouseButton = JS.ui.MouseButton;
+var MouseButton = JS.input.MouseButton;
 var JS;
 (function (JS) {
     let input;
@@ -38,63 +38,89 @@ var JS;
 (function (JS) {
     let input;
     (function (input) {
+        class Keyboards {
+            static newEvent(type, args) {
+                let a = Jsons.union({
+                    bubbles: false,
+                    cancelable: false,
+                    view: null,
+                    ctrlKey: false,
+                    altKey: false,
+                    shiftKey: false,
+                    metaKey: false
+                }, args), doc = a.target ? a.target.ownerDocument : document;
+                a.view = a.view || doc.defaultView;
+                let eo = new KeyboardEvent(type, a);
+                Object.defineProperty(eo, 'keyCode', {
+                    value: a.keyCode,
+                    writable: true
+                });
+                if (a.target)
+                    Object.defineProperty(eo, 'target', {
+                        value: a.target,
+                        writable: true
+                    });
+                return eo;
+            }
+            static fireEvent(type, args) {
+                let n = (args && args.target) || window;
+                n.dispatchEvent(this.newEvent(type, args));
+            }
+        }
+        input.Keyboards = Keyboards;
+    })(input = JS.input || (JS.input = {}));
+})(JS || (JS = {}));
+var Keyboards = JS.input.Keyboards;
+var JS;
+(function (JS) {
+    let input;
+    (function (input) {
         let J = Jsons;
-        class Keyboard {
+        class Keys {
             constructor(el) {
                 this._mapping = {};
                 this._d = false;
-                this._i = 300;
+                this._i = Infinity;
                 this._ts = 0;
-                let ele = el || window, m = this;
-                m._m = {};
-                m._q = new Queue(16);
-                m._busDown = new EventBus(ele);
-                m._busUp = new EventBus(ele);
+                let ele = el || window, T = this;
+                T._m = {};
+                T._q = new Queue(16);
+                T._busDown = new EventBus(ele);
+                T._busUp = new EventBus(ele);
                 ele.on('keydown', (e) => {
-                    let c = e.keyCode, sz = m._q.size(), repeat = sz > 0 && c == m._q.get(sz - 1);
-                    if (m._q.isFull())
-                        m._q.remove();
+                    let c = e.keyCode, sz = T._q.size(), lastC = T._q.get(sz - 1), repeat = sz > 0 && c === lastC;
+                    if (T._q.isFull())
+                        T._q.remove();
                     if (!repeat) {
-                        let p = sz > 0 ? m._q.get(sz - 1) : null;
-                        if (m._ts === 0)
-                            m._ts = e.timeStamp;
-                        if (p == void 0 || (p != void 0 && e.timeStamp - m._ts <= m._i)) {
-                            m._ts = e.timeStamp;
-                            m._q.add(c);
-                        }
+                        if (lastC == null)
+                            T._ts = e.timeStamp;
+                        if (e.timeStamp - T._ts <= T._i)
+                            T._q.add(c);
                     }
-                    if (!J.hasKey(m._m, c) || !repeat)
-                        m._m[c] = e.timeStamp;
-                    if (!repeat && J.hasKey(m._m, c)) {
-                        let types = m._busDown.types();
-                        types.forEach(ty => {
-                            if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
-                                m._fireKeys(ty, c, m._busDown);
-                            if (m.isSeqKeys(ty) && m._endsWithCode(c, ty, ',') && m._isSeqKeysPressing(ty))
-                                m._fireKeys(ty, c, m._busDown);
-                            if (input.VK[ty] == c && m.isPressingKey(c))
-                                m._fireKeys(ty, c, m._busDown);
-                        });
-                    }
+                    T._ts = e.timeStamp;
+                    if (!J.hasKey(T._m, c) || !repeat)
+                        T._m[c] = e.timeStamp;
+                    if (!repeat && J.hasKey(T._m, c))
+                        T._fireCheck(c, T._busDown);
                 });
                 ele.on('keyup', (e) => {
                     let c = e.keyCode;
-                    if (J.hasKey(m._m, c)) {
-                        let types = m._busUp.types();
-                        types.forEach(ty => {
-                            if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
-                                m._fireKeys(ty, c, m._busUp);
-                            if (m.isSeqKeys(ty) && m._endsWithCode(c, ty, ',') && m._isSeqKeysPressing(ty))
-                                m._fireKeys(ty, c, m._busUp);
-                            if (input.VK[ty] == c && m.isPressingKey(c))
-                                m._fireKeys(ty, c, m._busUp);
-                        });
-                        delete m._m[e.keyCode];
+                    if (J.hasKey(T._m, c)) {
+                        T._fireCheck(c, T._busUp);
+                        delete T._m[e.keyCode];
                     }
                 });
             }
-            _fireKeys(ty, c, bus) {
-                bus.fire(input.UIMocker.newKeyEvent(ty, c), [this]);
+            _fireCheck(c, bus) {
+                let T = this, types = bus.types();
+                types.forEach(ty => {
+                    if (T.isHotKeys(ty) && T._endsWithCode(c, ty, '+') && T._isHotKeysPressing(ty))
+                        bus.fire(input.Keyboards.newEvent(ty, { keyCode: c }), [this]);
+                    if (T.isSeqKeys(ty) && T._endsWithCode(c, ty, ',') && T._isSeqKeysPressing(ty))
+                        bus.fire(input.Keyboards.newEvent(ty, { keyCode: c }), [this]);
+                    if (input.VK[ty] == c && T.isPressingKey(c))
+                        bus.fire(input.Keyboards.newEvent(ty, { keyCode: c }), [this]);
+                });
             }
             _endsWithCode(c, ty, sn) {
                 return (this._mapping[ty] + sn).endsWith(c + sn);
@@ -247,29 +273,15 @@ var JS;
                 T._busUp.destroy();
             }
         }
-        input.Keyboard = Keyboard;
+        input.Keys = Keys;
     })(input = JS.input || (JS.input = {}));
 })(JS || (JS = {}));
-var Keyboard = JS.input.Keyboard;
+var Keys = JS.input.Keys;
 var JS;
 (function (JS) {
     let input;
     (function (input) {
-        let D = document;
-        class KeyEventInit {
-            constructor() {
-                this.target = null;
-                this.bubbles = false;
-                this.cancelable = false;
-                this.view = null;
-                this.ctrlKey = false;
-                this.altKey = false;
-                this.shiftKey = false;
-                this.metaKey = false;
-            }
-        }
-        input.KeyEventInit = KeyEventInit;
-        class MouseEventInit {
+        class MouseEventInits {
             constructor() {
                 this.target = null;
                 this.bubbles = false;
@@ -288,43 +300,331 @@ var JS;
                 this.relatedTarget = null;
             }
         }
-        input.MouseEventInit = MouseEventInit;
-        class UIMocker {
-            static newKeyEvent(type, keyCode, args) {
-                let a = Jsons.union(new KeyEventInit(), args), doc = a.target ? a.target.ownerDocument : document;
-                a.view = a.view || doc.defaultView;
-                let eo = new KeyboardEvent(type, a);
-                Object.defineProperty(eo, 'keyCode', {
-                    value: keyCode,
-                    writable: true
-                });
-                if (a.target)
-                    Object.defineProperty(eo, 'target', {
-                        value: a.target,
-                        writable: true
-                    });
-                return eo;
-            }
-            static fireKeyEvent(type, keyCode, args) {
-                let n = (args && args.target) || window;
-                n.dispatchEvent(this.newKeyEvent(type, keyCode, args));
-            }
-            static newMouseEvent(type, args) {
-                let m = Jsons.union(new MouseEventInit(), args), doc = m.target ? m.target.ownerDocument : document, et = doc.createEvent('MouseEvents');
+        input.MouseEventInits = MouseEventInits;
+        class Mouses {
+            static newEvent(type, args) {
+                let m = Jsons.union(new MouseEventInits(), args), doc = m.target ? m.target.ownerDocument : document, et = doc.createEvent('MouseEvents');
                 m.view = m.view || doc.defaultView;
                 let detail = type == 'click' || type == 'mousedown' || type == 'mouseup' ? 1 : (type == 'dblclick' ? 2 : 0);
                 et.initMouseEvent(type, m.bubbles, m.cancelable, m.view, detail, m.screenX, m.screenY, m.clientX, m.clientY, m.ctrlKey, m.altKey, m.shiftKey, m.metaKey, m.button, m.relatedTarget);
                 return et;
             }
-            static fireMouseEvent(type, args) {
+            static fireEvent(type, args) {
                 let n = (args && args.target) || window;
-                n.dispatchEvent(this.newMouseEvent(type, args));
+                n.dispatchEvent(this.newEvent(type, args));
             }
         }
-        input.UIMocker = UIMocker;
+        input.Mouses = Mouses;
     })(input = JS.input || (JS.input = {}));
 })(JS || (JS = {}));
-var UIMocker = JS.input.UIMocker;
+var Mouses = JS.input.Mouses;
+var MouseEventInits = JS.input.MouseEventInits;
+var JS;
+(function (JS) {
+    let input;
+    (function (input) {
+        const D = document, DRAG_MOVE_PX = 5, DRAG_IMAGE_OPACITY = 0.5, DBL_TAP_INTERVAL = 300, LONG_TAP_INTERVAL = 750, CTXMENU = 900, RM_ATTS = ['id', 'class', 'style', 'draggable'], KB_PROPS = ['altKey', 'ctrlKey', 'metaKey', 'shiftKey'], PT_PROPS = ['pageX', 'pageY', 'clientX', 'clientY', 'screenX', 'screenY'];
+        var DataTransfer = (function () {
+            function DataTransfer() {
+                this._dropEffect = 'move';
+                this._effectAllowed = 'all';
+                this._data = {};
+            }
+            Object.defineProperty(DataTransfer.prototype, "dropEffect", {
+                get: function () {
+                    return this._dropEffect;
+                },
+                set: function (value) {
+                    this._dropEffect = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(DataTransfer.prototype, "effectAllowed", {
+                get: function () {
+                    return this._effectAllowed;
+                },
+                set: function (value) {
+                    this._effectAllowed = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(DataTransfer.prototype, "types", {
+                get: function () {
+                    return Object.keys(this._data);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            DataTransfer.prototype.clearData = function (type) {
+                if (type != null) {
+                    delete this._data[type];
+                }
+                else {
+                    this._data = null;
+                }
+            };
+            DataTransfer.prototype.getData = function (type) {
+                return this._data[type] || '';
+            };
+            DataTransfer.prototype.setData = function (type, value) {
+                this._data[type] = value;
+            };
+            DataTransfer.prototype.setDragImage = function (img, offsetX, offsetY) {
+                instance.setDragImage(img, offsetX, offsetY);
+            };
+            return DataTransfer;
+        }());
+        class TouchDelegate {
+            constructor() {
+                this._tapStart = 0;
+                this._tapTimer = null;
+                this._lastTapEnd = 0;
+                var supportsPassive = false;
+                D.addEventListener('test', null, {
+                    get passive() {
+                        supportsPassive = true;
+                        return true;
+                    }
+                });
+                if ('ontouchstart' in D) {
+                    let T = this, ts = T._touchstart.bind(T), tm = T._touchmove.bind(T), te = T._touchend.bind(T), opt = supportsPassive ? { passive: false, capture: false } : false;
+                    D.addEventListener('touchstart', ts, opt);
+                    D.addEventListener('touchmove', tm, opt);
+                    D.addEventListener('touchend', te);
+                    D.addEventListener('touchcancel', te);
+                }
+            }
+            setDragImage(img, offsetX, offsetY) {
+                this._imgCustom = img;
+                this._imgOffset = { x: offsetX, y: offsetY };
+            }
+            _touchstart(e) {
+                var T = this;
+                if (T._shouldHandle(e)) {
+                    T._reset();
+                    T._tapStart = System.highResTime();
+                    T._tapEvent = e;
+                    T._fireEvent(e, 'tap', e.target);
+                    if (!T._tapTimer)
+                        T._tapTimer = setTimeout(() => {
+                            T._fireEvent(e, 'singletap', e.target);
+                        }, DBL_TAP_INTERVAL);
+                    if (T._tapStart - T._lastTapEnd < DBL_TAP_INTERVAL) {
+                        if (T._tapTimer)
+                            clearTimeout(T._tapTimer);
+                        T._fireEvent(e, 'doubletap', e.target);
+                    }
+                    var src = T._closestDraggable(e.target);
+                    if (src) {
+                        T._dragSource = src;
+                        T._ptDown = T._getPoint(e);
+                        T._lastDragEvent = e;
+                        e.preventDefault();
+                        setTimeout(function () {
+                            if (T._dragSource == src && T._img == null) {
+                                if (T._fireEvent(e, 'contextmenu', src)) {
+                                    T._reset();
+                                }
+                            }
+                        }, CTXMENU);
+                    }
+                }
+            }
+            ;
+            _touchmove(e) {
+                let T = this;
+                if (T._shouldHandle(e)) {
+                    var target = T._getTarget(e);
+                    if (T._dragSource && !T._img) {
+                        var delta = T._getDelta(e);
+                        if (delta > DRAG_MOVE_PX) {
+                            T._fireEvent(e, 'dragstart', T._dragSource);
+                            T._createImage(e);
+                            T._fireEvent(e, 'dragenter', target);
+                        }
+                    }
+                    if (T._img) {
+                        T._lastDragEvent = e;
+                        e.preventDefault();
+                        if (target != T._lastDragTarget) {
+                            T._fireEvent(e, 'dragleave', T._lastDragTarget);
+                            T._fireEvent(e, 'dragenter', target);
+                            T._lastDragTarget = target;
+                        }
+                        T._moveImage(e);
+                        T._fireEvent(e, 'dragover', target);
+                    }
+                }
+            }
+            ;
+            _touchend(e) {
+                let T = this;
+                if (T._shouldHandle(e)) {
+                    if (!T._img) {
+                        T._dragSource = null;
+                        if (e.type == 'touchend') {
+                            T._lastTapEnd = System.highResTime();
+                            let t = T._tapEvent.touches && T._tapEvent.touches[0];
+                            if ((T._lastTapEnd - T._tapStart) >= LONG_TAP_INTERVAL)
+                                T._fireEvent(T._tapEvent, 'longtap', T._tapEvent.target);
+                        }
+                    }
+                    T._destroyImage();
+                    if (T._dragSource) {
+                        if (e.type == 'touchend') {
+                            T._fireEvent(T._lastDragEvent, 'drop', T._lastDragTarget);
+                        }
+                        T._fireEvent(T._lastDragEvent, 'dragend', T._dragSource);
+                        T._reset();
+                    }
+                    e.preventDefault();
+                }
+            }
+            ;
+            _shouldHandle(e) {
+                return e && e.touches && e.touches.length < 2;
+            }
+            ;
+            _reset() {
+                let T = this;
+                if (T._tapTimer)
+                    clearTimeout(T._tapTimer);
+                T._tapTimer = null;
+                T._destroyImage();
+                T._tapStart = 0;
+                T._tapEvent = null;
+                T._dragSource = null;
+                T._lastDragEvent = null;
+                T._lastDragTarget = null;
+                T._ptDown = null;
+                T._dataTransfer = new DataTransfer();
+            }
+            ;
+            _getPoint(e, page) {
+                if (e && e.touches) {
+                    e = e.touches[0];
+                }
+                return { x: page ? e.pageX : e.clientX, y: page ? e.pageY : e.clientY };
+            }
+            ;
+            _getDelta(e) {
+                var p = this._getPoint(e);
+                return Math.abs(p.x - this._ptDown.x) + Math.abs(p.y - this._ptDown.y);
+            }
+            ;
+            _getTarget(e) {
+                var pt = this._getPoint(e), el = D.elementFromPoint(pt.x, pt.y);
+                while (el && getComputedStyle(el).pointerEvents == 'none') {
+                    el = el.parentElement;
+                }
+                return el;
+            }
+            ;
+            _createImage(e) {
+                let T = this;
+                if (T._img) {
+                    T._destroyImage();
+                }
+                var src = T._imgCustom || T._dragSource;
+                T._img = src.cloneNode(true);
+                T._copyStyle(src, T._img);
+                T._img.style.top = T._img.style.left = '-9999px';
+                if (!T._imgCustom) {
+                    var rc = src.getBoundingClientRect(), pt = T._getPoint(e);
+                    T._imgOffset = { x: pt.x - rc.left, y: pt.y - rc.top };
+                    T._img.style.opacity = DRAG_IMAGE_OPACITY.toString();
+                }
+                T._moveImage(e);
+                D.body.appendChild(T._img);
+            }
+            ;
+            _destroyImage() {
+                let T = this;
+                if (T._img && T._img.parentElement) {
+                    T._img.parentElement.removeChild(T._img);
+                }
+                T._img = null;
+                T._imgCustom = null;
+            }
+            ;
+            _moveImage(e) {
+                var T = this;
+                if (T._img) {
+                    requestAnimationFrame(function () {
+                        var pt = T._getPoint(e, true), s = T._img.style;
+                        s.position = 'absolute';
+                        s.pointerEvents = 'none';
+                        s.zIndex = '999999';
+                        s.left = Math.round(pt.x - T._imgOffset.x) + 'px';
+                        s.top = Math.round(pt.y - T._imgOffset.y) + 'px';
+                    });
+                }
+            }
+            ;
+            _copyProps(dst, src, props) {
+                for (var i = 0; i < props.length; i++) {
+                    var p = props[i];
+                    dst[p] = src[p];
+                }
+            }
+            ;
+            _copyStyle(src, dst) {
+                RM_ATTS.forEach(function (att) {
+                    dst.removeAttribute(att);
+                });
+                if (src instanceof HTMLCanvasElement) {
+                    var cSrc = src, cDst = dst;
+                    cDst.width = cSrc.width;
+                    cDst.height = cSrc.height;
+                    cDst.getContext('2d').drawImage(cSrc, 0, 0);
+                }
+                var cs = getComputedStyle(src);
+                for (var i = 0; i < cs.length; i++) {
+                    var key = cs[i];
+                    dst.style[key] = cs[key];
+                }
+                dst.style.pointerEvents = 'none';
+                for (var i = 0; i < src.children.length; i++) {
+                    this._copyStyle(src.children[i], dst.children[i]);
+                }
+            }
+            ;
+            _fireEvent(e, type, target) {
+                if (e && target) {
+                    let T = this, evt = D.createEvent('Event'), t = e.touches ? e.touches[0] : e;
+                    evt.initEvent(type, true, true);
+                    evt['button'] = 0;
+                    evt['which'] = evt['buttons'] = 1;
+                    T._copyProps(evt, e, KB_PROPS);
+                    T._copyProps(evt, t, PT_PROPS);
+                    if (T._dragSource)
+                        evt['dataTransfer'] = T._dataTransfer;
+                    target.dispatchEvent(evt);
+                    return evt.defaultPrevented;
+                }
+                return false;
+            }
+            ;
+            _closestDraggable(e) {
+                for (; e; e = e.parentElement) {
+                    if (e.hasAttribute('draggable') && e.draggable) {
+                        return e;
+                    }
+                }
+                return null;
+            }
+            ;
+        }
+        let instance = new TouchDelegate();
+        D.body.ondrop = function (e) {
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            e.preventDefault();
+        };
+    })(input = JS.input || (JS.input = {}));
+})(JS || (JS = {}));
 var JS;
 (function (JS) {
     let input;

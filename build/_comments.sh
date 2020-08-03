@@ -2,7 +2,7 @@
 sed -i '' "1i\ 
 /**
 1i\ 
- * JSDK 2.3.1 
+ * JSDK 2.4.0 
 1i\ 
  * https://github.com/fengboyue/jsdk/
 1i\ 

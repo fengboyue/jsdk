@@ -45,7 +45,7 @@ For example, you need an application to read login user information. You can fin
 Remember to load JSDK core library statically in <code>login_user.html</code>:
 
 ```html
-<script src="/libs/jsdk/{JSDK-VERSION}/system.js"></script>
+<script src="/libs/jsdk/{JSDK-VERSION}/jscore.js"></script>
 <script src="/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script>
 ```
 

@@ -97,9 +97,18 @@ module JS {
                 })
                 return true
             }
-            public find(type:string):EventHandler[]
-            public find(type:string, euid:number):EventHandler
-            public find(type:string, euid?:number):any{
+            /**
+             * Returns original event listeners of the type.
+             * @param type 
+             */
+            public original(type:string):EventHandler[]
+            /**
+             * Returns original event listener of the type and euid.
+             * @param type 
+             * @param euid Wrapped listener's uuid
+             */
+            public original(type:string, euid:number):EventHandler
+            public original(type:string, euid?:number):any{
                 let fns = this._map.get(type);
                 if(arguments.length>=1){
                     if (!E(fns)) {

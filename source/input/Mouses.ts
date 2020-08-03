@@ -12,29 +12,7 @@ module JS {
 
     export namespace input {
 
-        let D = document;
-
-        export class KeyEventInit {
-            target?: HTMLElement = null;
-            /** A Boolean indicating whether the event bubbles. The default is false. */
-            bubbles?: boolean = false;
-            /** A Boolean indicating whether the event can be cancelled. The default is false. */
-            cancelable?: boolean = false;
-            /** Optional and defaulting to document.defaultView, of type WindowProxy, that is the Window associated with the event. */
-            view?: WindowProxy = null;
-            /** Optional and defaulting to false, that indicates if the ctrl key was simultaneously pressed. */
-            ctrlKey?: boolean = false;
-            /** Optional and defaulting to false, that indicates if the alt key was simultaneously pressed. */
-            altKey?: boolean = false;
-            /** Optional and defaulting to false, that indicates if the shift key was simultaneously pressed. */
-            shiftKey?: boolean = false;
-            /** Optional and defaulting to false, that indicates if the meta key was simultaneously pressed. */
-            metaKey?: boolean = false;
-            /** Whatever data the event was initialized with. */
-            detail?:any;
-        }
-
-        export class MouseEventInit {
+        export class MouseEventInits {
             target?: HTMLElement = null;
             /** A Boolean indicating whether the event bubbles. The default is false. */
             bubbles?: boolean = false;
@@ -74,45 +52,12 @@ module JS {
         }
 
         /**
-         * A UI events Mocker.
+         * Mouse events helper.
          */
-        export class UIMocker {
+        export class Mouses {
 
-            public static newKeyEvent(type: KeyboardEvents|string, keyCode: number, args?: KeyEventInit): KeyboardEvent {
-                let a: KeyEventInit = Jsons.union(new KeyEventInit(), args),
-                    doc = a.target?(<HTMLElement>a.target).ownerDocument:document;
-                a.view = a.view || doc.defaultView;
-
-                let eo = new KeyboardEvent(type, a);
-                Object.defineProperty(eo, 'keyCode', {
-                    value: keyCode,
-                    writable: true
-                });
-                if(a.target) Object.defineProperty(eo, 'target', {
-                    value: a.target,
-                    writable: true
-                });
-                return eo
-                //old api:
-                // eo = D.createEvent('KeyboardEvent');
-                // let mList = '';
-                // if(a.ctrlKey) mList+=' Control';
-                // if(a.altKey) mList+=' Alt';
-                // if(a.shiftKey) mList+=' Shift';
-                // if(a.metaKey) mList+=' Meta';
-                // eo['initKeyboardEvent'](type, a.bubbles, a.cancelable, a.view, a.code, a.key, a.location, mList, a.repeat);
-            }
-            /**
-             * Fires a keyboard event.<br>
-             * Note: not support keypress event because special keys has not this event.
-             */
-            public static fireKeyEvent(type: KeyboardEvents, keyCode: number, args?: KeyEventInit) {
-                let n = (args && args.target) || window;
-                n.dispatchEvent(this.newKeyEvent(type, keyCode, args))
-            }
-
-            public static newMouseEvent(type: MouseEvents|string, args?: MouseEventInit): MouseEvent {
-                let m: MouseEventInit = Jsons.union(new MouseEventInit(), args),
+            public static newEvent(type: MouseEvents|string, args?: MouseEventInits): MouseEvent {
+                let m: MouseEventInits = Jsons.union(new MouseEventInits(), args),
                 doc = m.target?(<HTMLElement>m.target).ownerDocument:document,
                 et: MouseEvent = doc.createEvent('MouseEvents');
                 m.view = m.view || doc.defaultView;
@@ -129,12 +74,13 @@ module JS {
             /**
              * Fires a mouse event.
              */
-            public static fireMouseEvent(type: MouseEvents, args?: MouseEventInit) {
+            public static fireEvent(type: MouseEvents, args?: MouseEventInits) {
                 let n = (args && args.target) || window;
-                n.dispatchEvent(this.newMouseEvent(type, args));
+                n.dispatchEvent(this.newEvent(type, args));
             }
         }
 
     }
 }
-import UIMocker = JS.input.UIMocker;
+import Mouses = JS.input.Mouses;
+import MouseEventInits = JS.input.MouseEventInits;

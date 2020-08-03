@@ -1,5 +1,5 @@
 /**
-* JSDK 2.3.1 
+* JSDK 2.4.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -488,7 +488,7 @@ declare module JS {
             static isLettersOnly(s: string): boolean;
             static isLettersOrNumbers(s: string): boolean;
             static isIP(s: string): boolean;
-            static isExistUrl(url: string): boolean;
+            static isExistUrl(url: string): Promise<boolean>;
             static isPattern(s: string, exp: RegExp): boolean;
             static byServer(req: string | AjaxRequest, judge: (res: AjaxResponse) => boolean): Promise<boolean>;
         }
@@ -642,8 +642,8 @@ declare module JS {
             private _removeByEuid;
             private _euid;
             on<H = EventHandler>(types: string, handler: H, once?: boolean): boolean;
-            find(type: string): EventHandler[];
-            find(type: string, euid: number): EventHandler;
+            original(type: string): EventHandler[];
+            original(type: string, euid: number): EventHandler;
             types(): string[];
             off(types?: string, handler?: EventHandler): boolean;
             private _call;
@@ -665,21 +665,34 @@ interface HTMLElement {
     };
     attr(key: string): string;
     attr(key: string, val: string): this;
-    html(): string;
-    html(html: string): this;
-    addClass(cls: string): this;
-    removeClass(cls: string): this;
-    hasClass(cls: string): boolean;
-    toggleClass(cls: string, isAdd?: boolean): this;
-    on(type: string, fn: (this: HTMLElement, e: Event, ...args: any[]) => boolean | void, once?: boolean): this;
-    off(type?: string, fn?: (this: HTMLElement, e: Event, ...args: any[]) => boolean | void): this;
+    on(type: string, listener: (this: HTMLElement, e: Event) => boolean | void, useCapture?: boolean): this;
+    on(type: string, listener: (this: HTMLElement, e: Event) => boolean | void, options?: {
+        capture?: boolean;
+        once?: boolean;
+        passive?: boolean;
+    }): this;
+    off(type?: string, listener?: (this: HTMLElement, e: Event) => boolean | void): this;
     find(selector: string): HTMLElement;
     findAll(selector: string): NodeListOf<HTMLElement>;
     computedStyle(pseudo?: string): CSSStyleDeclaration;
 }
+interface Document {
+    on(type: string, listener: (this: Document, e: Event) => boolean | void, useCapture?: boolean): this;
+    on(type: string, listener: (this: Document, e: Event) => boolean | void, options?: {
+        capture?: boolean;
+        once?: boolean;
+        passive?: boolean;
+    }): this;
+    off(type?: string, listener?: (this: Document, e: Event) => boolean | void): this;
+}
 interface Window {
-    on(type: string, fn: (this: Window, e: Event, ...args: any[]) => boolean | void, once?: boolean): this;
-    off(type?: string, fn?: (this: Window, e: Event, ...args: any[]) => boolean | void): this;
+    on(type: string, listener: (this: Window, e: Event) => boolean | void, useCapture?: boolean): this;
+    on(type: string, listener: (this: Window, e: Event) => boolean | void, options?: {
+        capture?: boolean;
+        once?: boolean;
+        passive?: boolean;
+    }): this;
+    off(type?: string, listener?: (this: Window, e: Event) => boolean | void): this;
 }
 declare module JS {
     namespace util {
@@ -692,8 +705,8 @@ declare module JS {
                 script?: boolean;
                 css?: boolean;
             } | boolean): Promise<string>;
-            static loadCSS(url: string, async?: boolean, uncache?: boolean): Promise<string>;
-            static loadJS(url: string, async?: boolean, uncache?: boolean): Promise<string>;
+            static loadCSS(url: string, async?: boolean, uncached?: boolean): Promise<string>;
+            static loadJS(url: string, async?: boolean, uncached?: boolean): Promise<string>;
             static loadHTML(url: string, async?: boolean, appendTo?: string | HTMLElement, ignore?: {
                 script?: boolean;
                 css?: boolean;
@@ -707,8 +720,9 @@ declare const $L: typeof Dom.$L;
 declare module JS {
     let version: string;
     type JSDKConfig = {
-        canImport?: boolean;
-        minimize?: boolean;
+        closeImport?: boolean;
+        cachedImport?: boolean;
+        minImport?: boolean;
         jsdkRoot?: string;
         libRoot?: string;
         libs?: JsonObject<string | Array<string>>;
@@ -1421,9 +1435,9 @@ declare module JS {
             properties?: JsonObject;
         };
         class App {
-            private static _sets;
+            private static _cfg;
             private static _logger;
-            static init(settings: AppConfig): void;
+            static init(cfg: AppConfig): void;
             static NS(): string;
             static appName(): string;
             static version(): string;
@@ -1546,6 +1560,11 @@ declare module JS {
 import BiMap = JS.ds.BiMap;
 declare module JS {
     namespace ds {
+        type LinkedNode<T> = {
+            data: T;
+            next: LinkedNode<T>;
+            prev: LinkedNode<T>;
+        };
         class LinkedList<T> implements Iterware<T> {
             private _s;
             private _hd;
@@ -1559,7 +1578,6 @@ declare module JS {
             toArray(): Array<T>;
             getFirst(): T;
             getLast(): T;
-            private _check;
             get(i: number): T;
             private _findAt;
             private _fromFirst;
@@ -1586,11 +1604,12 @@ declare module JS {
     }
 }
 import LinkedList = JS.ds.LinkedList;
+import LinkedNode = JS.ds.LinkedNode;
 declare module JS {
     namespace ds {
         class Queue<T> implements Iterware<T> {
             protected _list: LinkedList<T>;
-            private _maxSize;
+            private _ms;
             constructor(maxSize?: number);
             each(fn: (item: T, index: number, iter: Queue<T>) => boolean, thisArg?: any): boolean;
             maxSize(): number;
@@ -3681,21 +3700,27 @@ import UploaderConfig = JS.fx.UploaderConfig;
 import UploaderFaceMode = JS.fx.UploaderFaceMode;
 import UploaderResource = JS.fx.UploaderResource;
 declare module JS {
-    namespace ui {
-        type MouseEvents = 'click' | 'dblclick' | 'mouseleave' | 'mouseenter' | 'mouseout' | 'mouseover' | 'mousedown' | 'mouseup' | 'mousemove' | 'mousewheel' | 'drag' | 'drop' | 'dragend' | 'dragstart' | 'dragenter' | 'dragleave' | 'dragover';
+    namespace input {
+        type DragEvents = 'drag' | 'drop' | 'dragend' | 'dragstart' | 'dragenter' | 'dragleave' | 'dragover';
         type KeyboardEvents = 'keyup' | 'keydown' | 'keypress';
-        type TouchEvents = 'touchstart' | 'touchend' | 'touchmove' | 'touchcancel';
+        type MouseEvents = 'click' | 'dblclick' | 'mouseleave' | 'mouseenter' | 'mouseout' | 'mouseover' | 'mousedown' | 'mouseup' | 'mousemove' | 'mousewheel';
         enum MouseButton {
             LEFT = 0,
             MIDDLE = 1,
             RIGHT = 2
         }
+        type TouchEvents = 'touchstart' | 'touchend' | 'touchmove' | 'touchcancel';
+        type TapEvents = 'tap' | 'singletap' | 'doubletap' | 'longtap';
+        type SwipeEvents = 'swipe' | 'swipeleft' | 'swiperight' | 'swipeup' | 'swipedown';
     }
 }
-import MouseEvents = JS.ui.MouseEvents;
-import KeyboardEvents = JS.ui.KeyboardEvents;
-import TouchEvents = JS.ui.TouchEvents;
-import MouseButton = JS.ui.MouseButton;
+import DragEvents = JS.input.DragEvents;
+import MouseEvents = JS.input.MouseEvents;
+import MouseButton = JS.input.MouseButton;
+import KeyboardEvents = JS.input.KeyboardEvents;
+import TouchEvents = JS.input.TouchEvents;
+import TapEvents = JS.input.TapEvents;
+import SwipeEvents = JS.input.SwipeEvents;
 declare module JS {
     namespace input {
         type CursorStyles = 'default' | 'text' | 'auto' | 'pointer' | 'move' | 'not-allowed' | 'no-drop' | 'wait' | 'help' | 'crosshair' | 'n-resize' | 's-resize' | 'w-resize' | 'e-resize' | 'nw-resize' | 'sw-resize' | 'ne-resize' | 'se-resize';
@@ -3706,6 +3731,31 @@ declare module JS {
     }
 }
 import Cursors = JS.input.Cursors;
+interface HTMLElement {
+    fire(type: string): this;
+}
+declare module JS {
+    namespace input {
+        type KeyEventInits = {
+            target?: HTMLElement;
+            keyCode: number;
+            bubbles?: boolean;
+            cancelable?: boolean;
+            view?: WindowProxy;
+            ctrlKey?: boolean;
+            altKey?: boolean;
+            shiftKey?: boolean;
+            metaKey?: boolean;
+            detail?: any;
+        };
+        class Keyboards {
+            static newEvent(type: KeyboardEvents | string, args: KeyEventInits): KeyboardEvent;
+            static fireEvent(type: KeyboardEvents, args?: KeyEventInits): void;
+        }
+    }
+}
+import Keyboards = JS.input.Keyboards;
+import KeyEventInits = JS.input.KeyEventInits;
 declare module JS {
     namespace input {
         let VK: {
@@ -3814,48 +3864,9 @@ declare module JS {
 import VK = JS.input.VK;
 declare module JS {
     namespace input {
-        class KeyEventInit {
-            target?: HTMLElement;
-            bubbles?: boolean;
-            cancelable?: boolean;
-            view?: WindowProxy;
-            ctrlKey?: boolean;
-            altKey?: boolean;
-            shiftKey?: boolean;
-            metaKey?: boolean;
-            detail?: any;
-        }
-        class MouseEventInit {
-            target?: HTMLElement;
-            bubbles?: boolean;
-            cancelable?: boolean;
-            view?: WindowProxy;
-            screenX?: number;
-            screenY?: number;
-            clientX?: number;
-            clientY?: number;
-            ctrlKey?: boolean;
-            altKey?: boolean;
-            shiftKey?: boolean;
-            metaKey?: boolean;
-            button?: MouseButton;
-            buttons?: 0 | 1 | 2 | 4;
-            relatedTarget?: EventTarget;
-        }
-        class UIMocker {
-            static newKeyEvent(type: KeyboardEvents | string, keyCode: number, args?: KeyEventInit): KeyboardEvent;
-            static fireKeyEvent(type: KeyboardEvents, keyCode: number, args?: KeyEventInit): void;
-            static newMouseEvent(type: MouseEvents | string, args?: MouseEventInit): MouseEvent;
-            static fireMouseEvent(type: MouseEvents, args?: MouseEventInit): void;
-        }
-    }
-}
-import UIMocker = JS.input.UIMocker;
-declare module JS {
-    namespace input {
         type Seqkeys = string;
         type Hotkeys = string;
-        class Keyboard {
+        class Keys {
             private _m;
             private _q;
             private _mapping;
@@ -3865,13 +3876,13 @@ declare module JS {
             private _i;
             private _ts;
             constructor(el?: HTMLElement);
-            private _fireKeys;
+            private _fireCheck;
             private _endsWithCode;
             isSeqKeys(k: string): boolean;
             isHotKeys(k: string): boolean;
             private _on;
-            onKeyDown(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void): this;
-            onKeyUp(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void): this;
+            onKeyDown(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keys) => void): this;
+            onKeyUp(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keys) => void): this;
             private _off;
             offKeyDown(k?: Hotkeys | Seqkeys): this;
             offKeyUp(k?: Hotkeys | Seqkeys): this;
@@ -3894,7 +3905,38 @@ declare module JS {
         }
     }
 }
-import Keyboard = JS.input.Keyboard;
+import Keys = JS.input.Keys;
+declare module JS {
+    namespace input {
+        class MouseEventInits {
+            target?: HTMLElement;
+            bubbles?: boolean;
+            cancelable?: boolean;
+            view?: WindowProxy;
+            screenX?: number;
+            screenY?: number;
+            clientX?: number;
+            clientY?: number;
+            ctrlKey?: boolean;
+            altKey?: boolean;
+            shiftKey?: boolean;
+            metaKey?: boolean;
+            button?: MouseButton;
+            buttons?: 0 | 1 | 2 | 4;
+            relatedTarget?: EventTarget;
+        }
+        class Mouses {
+            static newEvent(type: MouseEvents | string, args?: MouseEventInits): MouseEvent;
+            static fireEvent(type: MouseEvents, args?: MouseEventInits): void;
+        }
+    }
+}
+import Mouses = JS.input.Mouses;
+import MouseEventInits = JS.input.MouseEventInits;
+declare module JS {
+    namespace input {
+    }
+}
 declare module JS {
     namespace ioc {
         interface IComponent {

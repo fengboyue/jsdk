@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>JS | JSDK 2.3.1 API</title>
-	<meta name="description" content="Documentation for JSDK 2.3.1 API">
+	<title>JS | JSDK 2.4.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.4.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.3.1 API</a>
+					<a href="../index.html" class="title">JSDK 2.4.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -82,7 +82,16 @@
 						<dd><p>Frank.Feng</p>
 						</dd>
 						<dt>email</dt>
-						<dd><p><a href="mailto:&#98;&#111;&#121;&#x75;&#x65;&#x2e;&#102;&#101;&#x6e;&#103;&#x40;&#x66;&#x6f;&#120;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#109;">&#98;&#111;&#121;&#x75;&#x65;&#x2e;&#102;&#101;&#x6e;&#103;&#x40;&#x66;&#x6f;&#120;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#109;</a></p>
+						<dd><p><a href="mailto:&#98;&#111;&#121;&#x75;&#x65;&#x2e;&#x66;&#x65;&#x6e;&#103;&#64;&#102;&#x6f;&#120;&#x6d;&#x61;&#105;&#x6c;&#46;&#99;&#111;&#x6d;">&#98;&#111;&#121;&#x75;&#x65;&#x2e;&#x66;&#x65;&#x6e;&#103;&#64;&#102;&#x6f;&#120;&#x6d;&#x61;&#105;&#x6c;&#46;&#99;&#111;&#x6d;</a></p>
+						</dd>
+						<dt>version</dt>
+						<dd><p>2.4.0</p>
+						</dd>
+						<dt>date</dt>
+						<dd><p>2020/7/27</p>
+						</dd>
+						<dt>update</dt>
+						<dd><p>support drag/tap events for mobile browser in input module</p>
 						</dd>
 						<dt>version</dt>
 						<dd><p>2.3.1</p>
@@ -97,7 +106,7 @@
 						<dd><p>2020/7/19</p>
 						</dd>
 						<dt>update</dt>
-						<dd><p>create new module &quot;jsmedia&quot;&quot; for audio and video</p>
+						<dd><p>create new media module for audio and video</p>
 						</dd>
 						<dt>version</dt>
 						<dd><p>2.2.0</p>
@@ -106,7 +115,7 @@
 						<dd><p>2020/7/12</p>
 						</dd>
 						<dt>update</dt>
-						<dd><p>create new module &quot;jsinput&quot; for ui-input-devices</p>
+						<dd><p>create new input module for input-devices</p>
 						</dd>
 						<dt>version</dt>
 						<dd><p>2.1.1</p>
@@ -124,7 +133,7 @@
 						<dd><p>2020/7/1</p>
 						</dd>
 						<dt>update</dt>
-						<dd><p>create new module &quot;jsan&quot; for anmimation</p>
+						<dd><p>create new animation module</p>
 						</dd>
 						<dt>update</dt>
 						<dd><p>reduce size of system</p>
@@ -212,6 +221,7 @@
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.html#_impfile" class="tsd-kind-icon">_imp<wbr>File</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.html#_implib" class="tsd-kind-icon">_imp<wbr>Lib</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.html#_min" class="tsd-kind-icon">_min</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.html#_ts" class="tsd-kind-icon">_ts</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-has-type-parameter"><a href="js.html#config" class="tsd-kind-icon">config</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="js.html#imports" class="tsd-kind-icon">imports</a></li>
 							</ul>
@@ -224,14 +234,17 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
 					<a name="jsdkconfig" class="tsd-anchor"></a>
 					<h3>JSDKConfig</h3>
-					<div class="tsd-signature tsd-kind-icon">JSDKConfig<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>canImport<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>jsdkRoot<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>libRoot<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>libs<span class="tsd-signature-symbol">?: </span><a href="js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/array.html" class="tsd-signature-type">Array</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>minimize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">JSDKConfig<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>cachedImport<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>closeImport<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>jsdkRoot<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>libRoot<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>libs<span class="tsd-signature-symbol">?: </span><a href="js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/array.html" class="tsd-signature-type">Array</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>minImport<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> can<wbr>Import<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> cached<wbr>Import<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> close<wbr>Import<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> jsdk<wbr>Root<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
@@ -243,7 +256,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> libs<span class="tsd-signature-symbol">?: </span><a href="js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/array.html" class="tsd-signature-type">Array</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> minimize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> min<wbr>Import<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
 							</li>
 						</ul>
 					</div>
@@ -273,7 +286,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-namespace">
 					<a name="version" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagLet">Let</span> version</h3>
-					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;2.3.1&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;2.4.0&quot;</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
@@ -361,6 +374,26 @@
 								</li>
 								<li>
 									<h5>type: <span class="tsd-signature-type">"js"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"css"</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
+					<a name="_ts" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagLet">Let</span> _ts</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">_ts<span class="tsd-signature-symbol">(</span>uri<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>uri: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -473,7 +506,7 @@ JLU Format 3:
 </pre>
 									<p>Example Urls:</p>
 									<pre>
-https://mycdn.net/jsdk/1.0.0/system.js
+https://mycdn.net/jsdk/2.0.0/jscore.js
 http://mycom.net/myapp/1.0.0/home.js
 http://mycom.net/myapp/1.0.0/home.css
 http://mycom.net/myapp/1.0.0/model.js#async
@@ -573,6 +606,9 @@ http://mycom.net/myapp/1.0.0/template.html
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
 						<a href="js.html#_min" class="tsd-kind-icon">_min</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="js.html#_ts" class="tsd-kind-icon">_ts</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-has-type-parameter">
 						<a href="js.html#config" class="tsd-kind-icon">config</a>

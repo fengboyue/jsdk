@@ -1,4 +1,4 @@
-importScripts('/jsdk/dist/system.min.js');
+importScripts('/jsdk/dist/jscore.js');
 importScripts('/jsdk/examples/lang/QuickSorter.js');
 const me = Thread.initContext();
 me.onposted((numbers) => {

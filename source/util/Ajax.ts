@@ -272,7 +272,7 @@ module JS {
             _uncacheURL = (url: string, cache: boolean) => {
                 //uncached url
                 url = url.replace(/([?&])_=[^&]*/, '$1');
-                if (!cache) url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
+                if (!cache) url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${Date.now()}`;
                 return url
             },
 
@@ -301,11 +301,10 @@ module JS {
                     cache: true
                 }, req);
 
-                let xhr: XMLHttpRequest = (<any>self).XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP'),
+                let xhr: XMLHttpRequest = new XMLHttpRequest(),
                     queryURL = _queryURL(req), url = _uncacheURL(queryURL, req.cache),
                     headers = req.headers || {};
-                xhr.responseType = (req.type=='html'||req.type=='xml')?'document':req.type;
-
+                
                 xhr.open(req.method, url, req.async, req.username, req.password);
 
                 //Accept header
@@ -334,12 +333,15 @@ module JS {
                 xhr.withCredentials = req.crossCookie;
 
                 if (req.async) {
+                    //同步下不可以设置responseType,否则浏览器抛出异常    
+                    xhr.responseType = (req.type=='html'||req.type=='xml')?'document':req.type;
+
                     xhr.timeout = req.timeout || 0;
                     xhr.ontimeout = () => {
                         _rejectError.call(this, req, xhr, 'timeout')
                     };
                     xhr.onreadystatechange = () => {
-                        //4 is DONE, used for compatible with IE
+                        //4 is DONE, compatible with IE
                         if (xhr.readyState == 4 && xhr.status > 0) _done.call(this, queryURL, req, xhr)
                     }
                 }

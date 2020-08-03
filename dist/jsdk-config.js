@@ -5,8 +5,9 @@
 * MIT license
 */
 JS.config({
-    canImport: true,
-    minimize: true,
+    closeImport: false,
+    cachedImport: true,
+    minImport: true,
     jsdkRoot: null,
     libRoot: '/jsdk/libs',        
     libs: {
@@ -23,20 +24,20 @@ JS.config({
         'jsui': [
             '!/jsui.js'
         ],
-        'jsmv': [
+        'jsmvc': [
             '$jsui',
-            '!/jsmv.js'
+            '!/jsmvc.js'
         ],
         'jsan': [
             '$jsui',
             '!/jsan.js'
         ],
         'jsvp': [
-            '$jsmv',
+            '$jsmvc',
             '!/jsvp.js'
         ],
         'jsunit': [
-            '$ua-parser',
+            '$ua-parser#async',
             '!/jsunit.js'
         ],
         //3rd library maybe required by the system
@@ -47,14 +48,14 @@ JS.config({
         'polymer': '~/polymer/1.0.17/webcomponents-lite.js',
         //jsfx
         'jsfx.only': [
-            '$jsmv',
-            '!/jsfx.css',
+            '$jsmvc',
+            '!/jsfx.css#async',
             '!/jsfx.js'
         ],
         'jsfx.depend': [
-            '$font-awesome',
-            '$line-awesome',
-            '$jquery#async',
+            '$font-awesome#async',
+            '$line-awesome#async',
+            '$jquery',
             '$bootstrap'
         ],
         'jsfx': [

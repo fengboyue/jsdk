@@ -49,11 +49,11 @@ JS.config({
 
 ### 加载核心库
 
-必须在HTML中先加载JSDK核心库<code>system</code>及全局配置文件<code>jsdk-config.js</code>：
+必须在HTML中先加载JSDK核心库<code>jscore</code>及全局配置文件<code>jsdk-config.js</code>：
 
 ```html
 <!--JSDK's necessary kernel file-->
-<script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/system.min.js"></script>
+<script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/jscore.min.js"></script>
 <!--JSDK's global config file-->
 <script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script>
 ```

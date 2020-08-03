@@ -1,6 +1,6 @@
-//@ sourceURL=jsunit.js
+//# sourceURL=jsunit.js
 /**
-* JSDK 2.3.1 
+* JSDK 2.4.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -367,10 +367,10 @@ var JS;
                 });
             }
             addError() {
-                $1('#errors').html(this._result.errorCount() + '');
+                $1('#errors').innerHTML = this._result.errorCount() + '';
             }
             addFailure() {
-                $1('#failures').html(this._result.failureCount() + '');
+                $1('#failures').innerHTML = this._result.failureCount() + '';
             }
             endTest(method, test) {
                 let p = this._result.runCount() / this._suite.countTests() * 100, pro = $1('#progress');
@@ -380,12 +380,12 @@ var JS;
                 this._renderOption(`${test.getName()}.${method.name}`, this._result.isSuccessTestMethod(method.name, test.getName()) ? 'green' : 'red');
             }
             startTest(method, test) {
-                $1('#runs').html(this._result.runCount() + '/' + this._suite.countTests());
+                $1('#runs').innerHTML = this._result.runCount() + '/' + this._suite.countTests();
                 this._renderOption(`${test.getName()}.${method.name}`, 'current');
             }
             endSuite() {
                 let time = Number((System.highResTime() - this._startTime) / 1000).round(6);
-                $1('#info').html(`All tests was completed in ${time} seconds.`);
+                $1('#info').innerHTML = `All tests was completed in ${time} seconds.`;
                 $1('#progress').style.backgroundColor = this._result.wasSuccessful() ? 'forestgreen' : 'firebrick';
                 $1('#btnRun').removeAttribute('disabled');
             }
@@ -406,7 +406,7 @@ var JS;
                 optgroup['append'](`<option rawText="${txt}" value="${value ? value : ''}">${txt}</option>`);
             }
             _printTrace(testName) {
-                $1('#trace').off().html('');
+                $1('#trace').off().innerHTML = '';
                 let failure = this._result.errors()[testName] || this._result.failures()[testName];
                 if (!failure)
                     return;
@@ -429,18 +429,18 @@ var JS;
             }
             _init(suite) {
                 let sys = System.info();
-                $1('#env').html(`${sys.browser.name} ${sys.browser.version || ''} / ${sys.os.name} ${sys.os.version || ''} / ${sys.device.type}`);
-                $1('#info').html('');
+                $1('#env').innerHTML = `${sys.browser.name} ${sys.browser.version || ''} / ${sys.os.name} ${sys.os.version || ''} / ${sys.device.type}`;
+                $1('#info').innerHTML = '';
                 let pro = $1('#progress'), sty = pro.style;
                 sty.width = '0%';
                 sty.backgroundColor = 'forestgreen';
                 pro.attr('title', '');
-                $1('#runs').html('0/0');
-                $1('#errors').html('0');
-                $1('#failures').html('0');
-                $1('#trace').off().html('');
+                $1('#runs').innerHTML = '0/0';
+                $1('#errors').innerHTML = '0';
+                $1('#failures').innerHTML = '0';
+                $1('#trace').off().innerHTML = '';
                 let tests = $1('#tests'), cases = suite.getTestCases();
-                tests.off().html('');
+                tests.off().innerHTML = '';
                 cases.forEach(tc => {
                     this._printTestCase(tc);
                 });

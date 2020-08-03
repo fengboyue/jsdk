@@ -60,18 +60,18 @@ module JS {
          */
         export class App {
 
-            private static _sets: AppConfig;
+            private static _cfg: AppConfig;
             private static _logger: Log;
 
             /**
              * Application needs to be initialized first. 
              * 应用需要先初始化
-             * @param settings 
+             * @param cfg 
              */
-            public static init(settings: AppConfig) {
-                this._sets = settings;
-                this._sets.properties = this._sets.properties || {};
-                this._logger = new Log(this.NS(), settings.logLevel || LogLevel.INFO);
+            public static init(cfg: AppConfig) {
+                this._cfg = cfg;
+                this._cfg.properties = this._cfg.properties || {};
+                this._logger = new Log(this.NS(), cfg.logLevel || LogLevel.INFO);
             }
 
             /**
@@ -79,21 +79,21 @@ module JS {
              * 应用的名称空间：{应用名}/{版本号}
              */
             public static NS() {
-                return this._sets.name + '/' + this.version()
+                return this._cfg.name + '/' + this.version()
             }
             /**
              * Application's name
              * 应用名称
              */
             public static appName() {
-                return this._sets.name
+                return this._cfg.name
             }
             /**
              * Application's version: {x}.{y}.{z}
              * 版本号: {x}.{y}.{z}
              */
             public static version() {
-                return this._sets.version
+                return this._cfg.version
             }
             /**
              * Returns the logger of application.
@@ -113,8 +113,8 @@ module JS {
              */
             public static properties(properties: JsonObject): App
             public static properties(properties?: JsonObject): any {
-                if (arguments.length == 0) return this._sets.properties;
-                this._sets.properties = Jsons.union(this._sets.properties, properties);
+                if (arguments.length == 0) return this._cfg.properties;
+                this._cfg.properties = Jsons.union(this._cfg.properties, properties);
                 return this
             }
 

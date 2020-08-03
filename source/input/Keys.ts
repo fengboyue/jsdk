@@ -8,7 +8,7 @@
  */
 /// <reference path="../ds/Queue.ts"/>
 /// <reference path="VK.ts"/>
-/// <reference path="UIMocker.ts"/>
+/// <reference path="Keyboards.ts"/>
 
 module JS {
 
@@ -36,7 +36,7 @@ module JS {
          */
         export type Hotkeys = string;
 
-        export class Keyboard {
+        export class Keys {
             private _m: JsonObject<number>;//用于记录所有当前正在按住的键的按下时间戳；
             private _q: Queue<number>;//Queue<keyCode> 用于记录16个最近按下的键
             private _mapping: JsonObject<string> = {}; //<keyChars, keyCodes>
@@ -44,66 +44,60 @@ module JS {
             private _busDown: EventBus;
             private _busUp: EventBus;
             private _d: boolean = false;
-            private _i: number = 300; //unit is ms, max interval time of Seqkeys
-            private _ts: number = 0; //上一次的有效按键时刻for seqKeys
+            private _i: number = Infinity; //unit is ms, max interval time of Seqkeys
+            private _ts: number = 0; //上一次的按键时刻for seqKeys
 
             constructor(el?: HTMLElement) {
-                let ele = el || window, m = this;
-                m._m = {};
-                m._q = new Queue(16);
-                m._busDown = new EventBus(ele);
-                m._busUp = new EventBus(ele);
+                let ele = <any>el || window, T = this;
+                T._m = {};
+                T._q = new Queue(16);
+                T._busDown = new EventBus(ele);
+                T._busUp = new EventBus(ele);
 
                 ele.on('keydown', (e: KeyboardEvent) => {
                     let c = e.keyCode,
-                        sz = m._q.size(),
-                        repeat = sz > 0 && c == m._q.get(sz - 1);
+                        sz = T._q.size(),
+                        lastC = T._q.get(sz - 1),
+                        repeat = sz > 0 && c === lastC;
 
-                    if (m._q.isFull()) m._q.remove();
+                    if (T._q.isFull()) T._q.remove();
                     //不记录重复按键
                     if (!repeat) {
-                        let p = sz > 0 ? m._q.get(sz - 1) : null;
-                        if(m._ts===0) m._ts = e.timeStamp;
-                        if (p == void 0 || (p != void 0 && e.timeStamp - m._ts <= m._i)) {//必须小于最大间隔时间才被记录
-                            m._ts = e.timeStamp;
-                            m._q.add(c)
-                        }
+                        //第一次则认为上次按键即现在
+                        if(lastC == null) T._ts = e.timeStamp;
+                        //小于最大间隔时间才被记录
+                        if (e.timeStamp - T._ts <= T._i) 
+                        T._q.add(c)
                     }
+                    //记录按键时间
+                    T._ts = e.timeStamp;
 
                     //没记录或与上一次按键不同的键，则更新的时间戳
-                    if (!J.hasKey(m._m, c) || !repeat) m._m[c] = e.timeStamp;
+                    if (!J.hasKey(T._m, c) || !repeat) T._m[c] = e.timeStamp;
 
-                    if (!repeat && J.hasKey(m._m, c)) {
-                        let types = m._busDown.types();
-                        types.forEach(ty => {
-                            if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
-                                m._fireKeys(ty, c, m._busDown);
-                            if (m.isSeqKeys(ty) && m._endsWithCode(c, ty, ',') && m._isSeqKeysPressing(ty))
-                                m._fireKeys(ty, c, m._busDown);
-                            if (VK[ty] == c && m.isPressingKey(c))
-                                m._fireKeys(ty, c, m._busDown);
-                        })
-                    }
+                    //不重复且有记录时，作事件触发检查
+                    if (!repeat && J.hasKey(T._m, c)) T._fireCheck(c, T._busDown)
                 });
                 ele.on('keyup', (e: KeyboardEvent) => {
                     let c = e.keyCode;
-                    if (J.hasKey(m._m, c)) {
-                        let types = m._busUp.types();
-                        types.forEach(ty => {
-                            if (m.isHotKeys(ty) && m._endsWithCode(c, ty, '+') && m._isHotKeysPressing(ty))
-                                m._fireKeys(ty, c, m._busUp);
-                            if (m.isSeqKeys(ty) && m._endsWithCode(c, ty, ',') && m._isSeqKeysPressing(ty))
-                                m._fireKeys(ty, c, m._busUp);
-                            if (VK[ty] == c && m.isPressingKey(c))
-                                m._fireKeys(ty, c, m._busUp);
-                        })
-                        delete m._m[e.keyCode];
+                    if (J.hasKey(T._m, c)) {
+                        T._fireCheck(c, T._busUp);
+                        //按键释放后删除记录
+                        delete T._m[e.keyCode];
                     }
                 })
             }
 
-            private _fireKeys(ty: string, c: number, bus: EventBus) {
-                bus.fire(UIMocker.newKeyEvent(ty, c), [this])
+            private _fireCheck(c: number, bus: EventBus){
+                let T = this, types = bus.types();
+                types.forEach(ty => {
+                    if (T.isHotKeys(ty) && T._endsWithCode(c, ty, '+') && T._isHotKeysPressing(ty))
+                        bus.fire(Keyboards.newEvent(ty, {keyCode: c}), [this]);
+                    if (T.isSeqKeys(ty) && T._endsWithCode(c, ty, ',') && T._isSeqKeysPressing(ty))
+                        bus.fire(Keyboards.newEvent(ty, {keyCode: c}), [this]);
+                    if (VK[ty] == c && T.isPressingKey(c))
+                        bus.fire(Keyboards.newEvent(ty, {keyCode: c}), [this]);
+                })
             }
 
             private _endsWithCode(c: number, ty: string, sn: string) {
@@ -124,10 +118,10 @@ module JS {
                 bus.on(ty, fn);
                 return T
             }
-            public onKeyDown(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void) {
+            public onKeyDown(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keys) => void) {
                 return this._on(k, fn, this._busDown)
             }
-            public onKeyUp(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keyboard) => void) {
+            public onKeyUp(k: Hotkeys | Seqkeys, fn: (this: Window | HTMLElement, e: KeyboardEvent, kb: Keys) => void) {
                 return this._on(k, fn, this._busUp)
             }
 
@@ -299,4 +293,4 @@ module JS {
 
     }
 }
-import Keyboard = JS.input.Keyboard;
+import Keys = JS.input.Keys;

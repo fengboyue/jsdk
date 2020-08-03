@@ -2,7 +2,7 @@
 /// <reference path='ColorsTemplateView.ts' /> 
 JS.imports([
     '$handlebars',
-    '$jsmv',
+    '$jsmvc',
     'ColorsTemplateView.js'
 ]).then(()=>{
 

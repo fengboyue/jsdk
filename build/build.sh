@@ -1,13 +1,13 @@
 #!/bin/bash
 echo '开始构建'
 ./build-module.sh jsdk
-./build-module.sh system
+./build-module.sh jscore
 ./build-module.sh jsmedia
 ./build-module.sh jsds
 ./build-module.sh jsinput
 ./build-module.sh jsui
 ./build-module.sh jsan
-./build-module.sh jsmv
+./build-module.sh jsmvc
 ./build-module.sh jsfx
 ./build-module.sh jsvp
 ./build-module.sh jsunit

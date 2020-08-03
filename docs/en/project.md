@@ -46,10 +46,10 @@ JS.config({
 * *For details of global configuration, please refer to the "Library Management" section*
 
 ### Loading Core library
-JSDK kernel library <code>system</code> and the global configuration file <code>jsdk-config.js</code> must be loaded in HTML first: 
+JSDK kernel library <code>jscore</code> and the global configuration file <code>jsdk-config.js</code> must be loaded in HTML first: 
 ```html
 <!--JSDK's necessary kernel file-->
-<script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/system.min.js"></script>
+<script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/jscore.min.js"></script>
 <!--JSDK's global config file-->
 <script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script>
 ```

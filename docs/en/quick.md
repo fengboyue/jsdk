@@ -1,3 +1,4 @@
+
 JSDK 2.0+ is the most comprehensive TS/JS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.
 
 It supports such following features:
@@ -54,6 +55,18 @@ JSDK is licensed under the MIT license since version 2.0.
 
 ## Updates
 
+### v2.4.0 - 2020/8/3
+[Added] 
+- Supports drag/tap events for mobile browsers.
+
+[Changed] 
+- rename the system module to jscore.
+- rename the jsmv module to jsmvc.
+- refactor some class of the input module.
+- set the default interval time of SeqKeys to Infinity.
+- change "canImport" to "closeImport" in global configuration.
+- add "cachedImport" item in global configuration.
+
 ### v2.3.1 - 2020/7/26
 [Bugfix] 
 - fix a bug of EventBus's _call method caused by the last refactoring.
@@ -70,13 +83,13 @@ JSDK is licensed under the MIT license since version 2.0.
 
 ### v2.3.0 - 2020/7/24
 [Added] 
-- create new module named jsmedia with advanced audio and video players.
+- create new media module with advanced audio and video players.
 - add interval time for Seqkeys in Keyboard class.
 - Ajax class supports new response type: arraybuffer.
 
 ### v2.2.0 - 2020/7/17
 [Added] 
-- create new module named jsinput for complex key and mouse events.
+- create new input module for complex key and mouse events.
 - generate index.html for every directory of examples automatically.
 
 [Changed] 
@@ -87,7 +100,7 @@ JSDK is licensed under the MIT license since version 2.0.
 
 ### v2.1.0 - 2020/7/11
 [Added] 
-- create new animation module named jsan.
+- create new animation module.
 - add computedStyle method on HTMLElement.prototype.
 - add some useful methods to Colors class.
 - add Type.json from Type.object which only presents class instance now.
@@ -100,8 +113,8 @@ JSDK is licensed under the MIT license since version 2.0.
 [Changed] 
 - redesign new stronger Timer class for constant interval time and calculation of FPS.
 - move all Model and View classes to new "jsmv" module from old "jsui" module.
-- rename the package of "JS.data.*" to "JS.ds.*" and create new "jsds" module for keeping system module size smaller.
-- move the package of "JS.store.*" to "jsvp" module for keeping system module size smaller.
+- rename the package of "JS.data.*" to "JS.ds.*" and create new "jsds" module for keeping core module size smaller.
+- move the package of "JS.store.*" to "jsvp" module for keeping core module size smaller.
 
 ## Old Versions
 The <a href="https://sourceforge.net/projects/jsdk2/" target="_blank">

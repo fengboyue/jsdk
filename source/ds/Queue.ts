@@ -18,10 +18,10 @@ module JS {
         export class Queue<T> implements Iterware<T>{
 
             protected _list: LinkedList<T> = new LinkedList<T>();
-            private _maxSize = Infinity;
+            private _ms = Infinity;//max size
 
             constructor(maxSize?: number) {
-                this._maxSize = maxSize;
+                this._ms = maxSize;
             }
 
             public each(fn: (item: T, index: number, iter: Queue<T>) => boolean, thisArg?: any): boolean {
@@ -31,13 +31,13 @@ module JS {
             }
 
             public maxSize() {
-                return this._maxSize
+                return this._ms
             }
             public size() {
                 return this._list.size()
             }
             public isFull() {
-                return this.size()==this._maxSize
+                return this.size()==this._ms
             }
             public isEmpty() {
                 return this.size() == 0

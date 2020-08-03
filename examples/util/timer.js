@@ -16,7 +16,7 @@ let timer1 = new Timer(function () {
         arr[i] = Random.number(10000, true);
     }
     bubbleSort(arr);
-    $1('#div1').html('Counter:' + this.count() + ' MaxFPS:' + this.maxFPS() + ' FPS:' + this.fps());
+    $1('#div1').innerHTML = 'Counter:' + this.count() + ' MaxFPS:' + this.maxFPS() + ' FPS:' + this.fps();
 }, {
     loop: true,
     interval: 50,

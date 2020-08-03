@@ -1,7 +1,7 @@
 {
     "extends":"../build/base",
     "compilerOptions": {
-        "outFile": "../dist/system.js",
+        "outFile": "../dist/jscore.js",
         "allowJs": true,
         "skipLibCheck": true
     },

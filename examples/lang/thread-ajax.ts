@@ -5,6 +5,6 @@ $1('#ajax').on('click',() => {
         url: '/jsdk/examples/lang/thread-ajax.js',
         type: 'text'
     }).then((res)=>{
-        $1('#txt').html(res.data);
+        $1('#txt').innerHTML = res.data;
     })
 });

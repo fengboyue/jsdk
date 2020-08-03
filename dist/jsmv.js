@@ -1,6 +1,6 @@
-//@ sourceURL=jsmv.js
+//# sourceURL=jsmv.js
 /**
-* JSDK 2.3.1 
+* JSDK 2.4.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -1481,7 +1481,7 @@ var JS;
                 let cfg = this._config;
                 if (cfg && cfg.data && cfg.container && cfg.tpl) {
                     let html = this._engine.compile(cfg.tpl)(cfg.data), ctr = $1(cfg.container);
-                    ctr.off().html('').html(html);
+                    ctr.off().innerHTML = html;
                     let wConfigs = cfg.widgetConfigs;
                     if (!Check.isEmpty(wConfigs))
                         ctr.findAll('[jsfx-alias]').forEach((el) => {

@@ -1,4 +1,10 @@
-//@ sourceURL=tests.js
+//# sourceURL=tests.js
+/**
+* JSDK 2.4.0 
+* https://github.com/fengboyue/jsdk/
+* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
+* MIT license
+*/
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);

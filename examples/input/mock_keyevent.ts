@@ -14,7 +14,7 @@ JS.imports([
     })
 
     let fire = function(type:string, el:HTMLElement){
-        UIMocker.fireKeyEvent(<any>type, VK[el.attr('data-key')])
+        Keyboards.fireEvent(<any>type, VK[el.attr('data-key')])
     }
     $L('button').forEach(b=>{
         b.on('mousedown', ()=>{

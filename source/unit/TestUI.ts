@@ -31,14 +31,14 @@ module JS {
              * An error occurred.
              */
             addError() {
-                $1('#errors').html(this._result.errorCount() + '');
+                $1('#errors').innerHTML = this._result.errorCount() + '';
             }
 
             /**
              * A failure occurred.
              */
             addFailure() {
-                $1('#failures').html(this._result.failureCount() + '');
+                $1('#failures').innerHTML = this._result.failureCount() + '';
             }
 
             /**
@@ -58,7 +58,7 @@ module JS {
              * A test started.
              */
             startTest(method: Method, test: TestCase) {
-                $1('#runs').html(this._result.runCount() + '/' + this._suite.countTests());
+                $1('#runs').innerHTML = this._result.runCount() + '/' + this._suite.countTests();
                 this._renderOption(`${test.getName()}.${method.name}`, 'current');
             }
 
@@ -67,7 +67,7 @@ module JS {
              */
             endSuite() {
                 let time = Number((System.highResTime() - this._startTime) / 1000).round(6);
-                $1('#info').html(`All tests was completed in ${time} seconds.`);
+                $1('#info').innerHTML = `All tests was completed in ${time} seconds.`;
                 $1('#progress').style.backgroundColor = this._result.wasSuccessful() ? 'forestgreen' : 'firebrick';
                 $1('#btnRun').removeAttribute('disabled');
             }
@@ -102,7 +102,7 @@ module JS {
                 optgroup['append'](`<option rawText="${txt}" value="${value ? value : ''}">${txt}</option>`);
             }
             private _printTrace(testName: string) {
-                $1('#trace').off().html('');
+                $1('#trace').off().innerHTML = '';
 
                 let failure: TestFailure = this._result.errors()[testName] || this._result.failures()[testName];
                 if (!failure) return;
@@ -126,24 +126,24 @@ module JS {
             }
             private _init(suite: TestSuite) {
                 let sys = System.info();
-                $1('#env').html(`${sys.browser.name} ${sys.browser.version||''} / ${sys.os.name} ${sys.os.version||''} / ${sys.device.type}`);
+                $1('#env').innerHTML = `${sys.browser.name} ${sys.browser.version||''} / ${sys.os.name} ${sys.os.version||''} / ${sys.device.type}`;
                 //init info
-                $1('#info').html('');
+                $1('#info').innerHTML = '';
                 //init progress
                 let pro =$1('#progress'),sty = pro.style;
                 sty.width = '0%';
                 sty.backgroundColor = 'forestgreen';
                 pro.attr('title', '');
                 //init numbers
-                $1('#runs').html('0/0');
-                $1('#errors').html('0');
-                $1('#failures').html('0');
+                $1('#runs').innerHTML = '0/0';
+                $1('#errors').innerHTML = '0';
+                $1('#failures').innerHTML = '0';
 
                 //init trace
-                $1('#trace').off().html('');
+                $1('#trace').off().innerHTML = '';
                 //init tests
                 let tests = $1('#tests'), cases = suite.getTestCases();
-                tests.off().html('');
+                tests.off().innerHTML = '';
 
                 cases.forEach(tc => {
                     this._printTestCase(tc);

@@ -65,7 +65,7 @@ module JS {
                 let cfg = this._config;
                 if (cfg && cfg.data && cfg.container && cfg.tpl) {
                     let html = this._engine.compile(cfg.tpl)(cfg.data), ctr = $1(cfg.container);
-                    ctr.off().html('').html(html);
+                    ctr.off().innerHTML = html;
 
                     let wConfigs = cfg.widgetConfigs;
                     if (!Check.isEmpty(wConfigs)) ctr.findAll('[jsfx-alias]').forEach((el: HTMLElement) => {

@@ -21,7 +21,7 @@ let timer1 = new Timer(function(){
     }
     bubbleSort(arr);
 
-    $1('#div1').html('Counter:'+this.count()+' MaxFPS:'+this.maxFPS()+' FPS:'+this.fps())
+    $1('#div1').innerHTML = 'Counter:'+this.count()+' MaxFPS:'+this.maxFPS()+' FPS:'+this.fps()
 }, {
     loop: true,
     interval: 50, //fps = 1000/50 = 20

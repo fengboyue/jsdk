@@ -10,7 +10,7 @@ let numbers = [],
             numbers.forEach(n => {
                 html += `${n}<br/>`;
             });
-            $1('#sorted2').html(html);
+            $1('#sorted2').innerHTML = html;
         }
     }),
     random = function () {
@@ -22,7 +22,7 @@ let numbers = [],
         numbers.forEach(n => {
             html += `${n}<br/>`
         })
-        $1('#unsort').html(html);
+        $1('#unsort').innerHTML = html;
     };
 
 $1('#random').on('click',() => {

@@ -6,7 +6,7 @@ let numbers = [], thread1 = new SortThread(), thread2 = new SortThread({
         numbers.forEach(n => {
             html += `${n}<br/>`;
         });
-        $1('#sorted2').html(html);
+        $1('#sorted2').innerHTML = html;
     }
 }), random = function () {
     let max = 10000;
@@ -17,7 +17,7 @@ let numbers = [], thread1 = new SortThread(), thread2 = new SortThread({
     numbers.forEach(n => {
         html += `${n}<br/>`;
     });
-    $1('#unsort').html(html);
+    $1('#unsort').innerHTML = html;
 };
 $1('#random').on('click', () => {
     random();

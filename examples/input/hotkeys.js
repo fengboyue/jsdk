@@ -1,7 +1,7 @@
 JS.imports([
     '$jsinput'
 ]).then(() => {
-    let kb1 = new Keyboard(), kb2 = new Keyboard($1('#tt')), isON = true, on = () => {
+    let kb1 = new Keys(), kb2 = new Keys($1('#tt')), isON = true, on = () => {
         isON = true;
         kb1.onKeyDown('a + d + enter', function (e) {
             $1('#info').innerHTML += `<div>You press ${e.type}</div>`;

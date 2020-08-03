@@ -22,12 +22,12 @@ JSDK已定义了以下注解函数，可以直接使用：
 
 注解函数|所属模块|作用域
 ---|---|---
-@klass|system|class
-@deprecated|system|class/method/field
-@before|system|method
-@after|system|method
-@around|system|method
-@throws|system|method
+@klass|jscore|class
+@deprecated|jscore|class/method/field
+@before|jscore|method
+@after|jscore|method
+@around|jscore|method
+@throws|jscore|method
 @component|jsvp|class
 @inject|jsvp|field
 @widget|jsfx|class
@@ -258,7 +258,7 @@ JSDK提供了全新的线程类<b>JS.lang.Thread</b>来取代直接使用WebWork
 > 两种运行模式：既支持运行线程代码（run方法代码），也支持运行线程脚本（外部独立文件）。
 >
 > 当Thread类运行线程代码时，会创建并运行一个临时的子线程脚本。
-> 此临时子线程文件创建时会自动查找主线程中的system.js或system.min.js的URL地址，找到后会自动加载：以保证和主线程运行在同一JSDK版本环境下。
+> 此临时子线程文件创建时会自动查找主线程中的jscore.js或jscore.min.js的URL地址，找到后会自动加载：以保证和主线程运行在同一JSDK版本环境下。
 >
 > Thread类的线程方法（run方法）中可以：调用类的其他非线程方法；或向主线程发送消息；或中止本线程执行。
 >

@@ -86,8 +86,8 @@ JSDK自2.0版开始支持MIT许可协议。
 [修改] 
 - 重新设计了更强大的Timer类，支持稳定间隔时间和FPS帧率计算。
 - 从旧模块"jsui"中移出所有的Model类和View类到新建的模块"jsmv"。
-- 重命名"JS.data.*"包为"JS.ds.*"并创建新模块"jsds"，为了让system模块尺寸更小。
-- 移动"JS.store.*"包到"jsvp"模块，为了让system模块尺寸更小。
+- 重命名"JS.data.*"包为"JS.ds.*"并创建新模块"jsds"，为了让核心模块尺寸更小。
+- 移动"JS.store.*"包到"jsvp"模块，为了让核心模块尺寸更小。
 
 ## 旧版本
 <a href="https://sourceforge.net/projects/jsdk2/" target="_blank">

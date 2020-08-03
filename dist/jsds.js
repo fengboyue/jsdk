@@ -1,6 +1,6 @@
-//@ sourceURL=jsds.js
+//# sourceURL=jsds.js
 /**
-* JSDK 2.3.1 
+* JSDK 2.4.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -119,12 +119,9 @@ var JS;
             getLast() {
                 return this._tl ? this._tl.data : null;
             }
-            _check(i) {
-                if (i > this._s || i < 0)
-                    throw new RangeError();
-            }
             get(i) {
-                this._check(i);
+                if (i > this._s || i < 0)
+                    return null;
                 if (i == 0)
                     return this._hd ? this._hd.data : null;
                 if (i == this._s - 1)
@@ -295,16 +292,13 @@ var JS;
                 return data;
             }
             removeAt(i) {
-                if (this.isEmpty())
+                if (this.isEmpty() || i > this._s || i < 0)
                     return null;
-                this._check(i);
                 if (i == 0) {
-                    this.removeFirst();
-                    return;
+                    return this.removeFirst();
                 }
                 else if (i == this.size() - 1) {
-                    this.removeLast();
-                    return;
+                    return this.removeLast();
                 }
                 let node = this._findAt(i);
                 if (!node)
@@ -341,8 +335,8 @@ var JS;
         class Queue {
             constructor(maxSize) {
                 this._list = new ds.LinkedList();
-                this._maxSize = Infinity;
-                this._maxSize = maxSize;
+                this._ms = Infinity;
+                this._ms = maxSize;
             }
             each(fn, thisArg) {
                 return this._list.each((item, i) => {
@@ -350,13 +344,13 @@ var JS;
                 }, thisArg);
             }
             maxSize() {
-                return this._maxSize;
+                return this._ms;
             }
             size() {
                 return this._list.size();
             }
             isFull() {
-                return this.size() == this._maxSize;
+                return this.size() == this._ms;
             }
             isEmpty() {
                 return this.size() == 0;

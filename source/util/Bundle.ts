@@ -37,10 +37,8 @@ module JS {
                 }
                 paths.push('');
                 return paths.some(p => {
-                    let path = `${prefix}${p}.${suffix}`;
-                    // if (!Check.isExistUrl(path)) return false;
-
-                    let xhr: XMLHttpRequest = (<any>self).XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+                    let path = `${prefix}${p}.${suffix}`,
+                        xhr: XMLHttpRequest = new XMLHttpRequest();
                     xhr.open('GET', path, false);
                     xhr.send();
                     if (xhr.status != 200) return false;

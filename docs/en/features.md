@@ -22,12 +22,12 @@ JSDK has defined the following annotation functions, which can be used directly:
 
 Annotation|Module|Scope
 ---|---|---
-@klass|system|class
-@deprecated|system|class/method/field
-@before|system|method
-@after|system|method
-@around|system|method
-@throws|system|method
+@klass|jscore|class
+@deprecated|jscore|class/method/field
+@before|jscore|method
+@after|jscore|method
+@around|jscore|method
+@throws|jscore|method
 @component|jsvp|class
 @inject|jsvp|field
 @widget|jsfx|class
@@ -262,7 +262,7 @@ Its key features are as follows:
 > Two running modes: supports both running thread code and running thread file.
 >
 > When Thread class runs thread code, a temporary thread file will is created automatically.
-> When this temporary thread file is created, it will automatically find the URL of system.js or system.min.js in main thread. If the system file be found, its URL will be loaded automatically, so as to ensure that sub thread runs in same version of JSDK with main thread.
+> When this temporary thread file is created, it will automatically find the URL of jscore.js or jscore.min.js in main thread. If the jscore file be found, its URL will be loaded automatically, so as to ensure that sub thread runs in same version of JSDK with main thread.
 >
 > In threaded method (the "run" method) of Thread class, you can: call other non threaded methods of this thread class; or send a message to main thread; or stop this thread.
 >

@@ -6,16 +6,20 @@
  * @author Frank.Feng
  * @email boyue.feng@foxmail.com
  * 
+ * @version 2.4.0
+ * @date 2020/7/27
+ * @update support drag/tap events for mobile browser in input module
+ *
  * @version 2.3.1
  * @date 2020/7/25
  * 
  * @version 2.3.0
  * @date 2020/7/19
- * @update create new module "jsmedia"" for audio and video
+ * @update create new media module for audio and video
  *
  * @version 2.2.0
  * @date 2020/7/12
- * @update create new module "jsinput" for ui-input-devices
+ * @update create new input module for input-devices
  * 
  * @version 2.1.1
  * @date 2020/7/11
@@ -23,7 +27,7 @@
  * 
  * @version 2.1.0
  * @date 2020/7/1
- * @update create new module "jsan" for anmimation
+ * @update create new animation module
  * @update reduce size of system
  * 
  * @version 2.0.0
@@ -49,11 +53,12 @@
 
 module JS {
 
-    export let version = '2.3.1';
+    export let version = '2.4.0';
 
     export type JSDKConfig = {
-        canImport?: boolean;
-        minimize?: boolean;
+        closeImport?: boolean;
+        cachedImport?: boolean;
+        minImport?: boolean;
         jsdkRoot?: string;
         libRoot?: string;
         libs?: JsonObject<string | Array<string>>;
@@ -100,8 +105,12 @@ module JS {
     let _cfg: JSDKConfig = {},
         _ldd = {},//loaded URLs
 
+        //cached url
+        _ts = (uri: string)=>{
+            return JS.config<boolean>('cachedImport')?uri:(uri.indexOf('?')>0?`${uri}&_=${Date.now()}`:`${uri}?_=${Date.now()}`)
+        },
         _min = (uri: string, type: 'js' | 'css') => {
-            if (JS.config<boolean>('minimize')) {
+            if (JS.config<boolean>('minImport')) {
                 if (uri.endsWith('.min.' + type)) return uri;
                 if (uri.endsWith('.' + type)) return uri.slice(0, uri.length - type.length - 1) + '.min.' + type;
             } else return uri
@@ -143,11 +152,11 @@ module JS {
             _ldd[u0] = 1;
 
             if (u0.endsWith('.js')) {
-                return Promises.newPlan(Dom.loadJS, [_min(u0, 'js'), ayc])
+                return Promises.newPlan(Dom.loadJS, [_ts(_min(u0, 'js')), ayc])
             } else if (u0.endsWith('.css')) {
-                return Promises.newPlan(Dom.loadCSS, [_min(u0, 'css'), ayc])
+                return Promises.newPlan(Dom.loadCSS, [_ts(_min(u0, 'css')), ayc])
             } else {
-                return Promises.newPlan(Dom.loadHTML, [u0, ayc])
+                return Promises.newPlan(Dom.loadHTML, [_ts(u0), ayc])
             }
         }
 
@@ -163,7 +172,7 @@ module JS {
      * </pre>
      * Example Urls:
      * <pre>
-     * https://mycdn.net/jsdk/1.0.0/system.js
+     * https://mycdn.net/jsdk/2.0.0/jscore.js
      * http://mycom.net/myapp/1.0.0/home.js
      * http://mycom.net/myapp/1.0.0/home.css
      * http://mycom.net/myapp/1.0.0/model.js#async
@@ -171,7 +180,7 @@ module JS {
      * </pre>
      */    
     export function imports(url: string | string[]): Promise<any> {
-        if (!JS.config('canImport')) return Promise.resolve();
+        if (JS.config('closeImport')) return Promise.resolve();
 
         let uris: any[] = typeof url === 'string' ? [<string>url] : <string[]>url, tasks: PromisePlans<any> = [];
         uris.forEach(uri => {

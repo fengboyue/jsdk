@@ -1,6 +1,6 @@
-//@ sourceURL=jsvp.js
+//# sourceURL=jsvp.js
 /**
-* JSDK 2.3.1 
+* JSDK 2.4.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -189,27 +189,27 @@ var JS;
         }
         app.AppEvent = AppEvent;
         class App {
-            static init(settings) {
-                this._sets = settings;
-                this._sets.properties = this._sets.properties || {};
-                this._logger = new Log(this.NS(), settings.logLevel || LogLevel.INFO);
+            static init(cfg) {
+                this._cfg = cfg;
+                this._cfg.properties = this._cfg.properties || {};
+                this._logger = new Log(this.NS(), cfg.logLevel || LogLevel.INFO);
             }
             static NS() {
-                return this._sets.name + '/' + this.version();
+                return this._cfg.name + '/' + this.version();
             }
             static appName() {
-                return this._sets.name;
+                return this._cfg.name;
             }
             static version() {
-                return this._sets.version;
+                return this._cfg.version;
             }
             static logger() {
                 return this._logger;
             }
             static properties(properties) {
                 if (arguments.length == 0)
-                    return this._sets.properties;
-                this._sets.properties = Jsons.union(this._sets.properties, properties);
+                    return this._cfg.properties;
+                this._cfg.properties = Jsons.union(this._cfg.properties, properties);
                 return this;
             }
             static property(key, val) {

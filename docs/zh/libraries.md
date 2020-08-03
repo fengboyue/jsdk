@@ -42,7 +42,7 @@ JS.imports('$xyz').then(()=>{ //$xyz is JLU format
 
 ```javascript
 JS.config({
-    canImport: true|false,         //True表示JSDK将启用动态加载；False表示JSDK将关闭动态加载因后续类库可能已在html中静态加载过。
+    closeImport: true|false,       //True表示JSDK将关闭动态加载因后续，因类库可能已在html中静态加载过。
     minimize: true|false,          //是否加载JS或CSS资源的最小化文件(自动加载.min文件)。
     jsdkRoot: null,                //JSDK自库的根网址。缺省为null时表示JSDK库部署在{libsRoot}/jsdk/{JSDK-VERSION}下；其他网址时表示部署在该网址。
     libRoot: '/libs',              //第三方类库的根网址。     
@@ -90,21 +90,21 @@ JS.imports([
 ```
 
 ## JSDK模块
-JSDK被划分成多个模块（类库）。最底层的核心模块是<b>system</b>，包含了全部的工具类、反射、注解、线程、切面、容器等基础功能；最上层的模块是<b>jsvp</b>和<b>jsfx</b>。在实际开发中，你可以不必加载整个<code>jsdk.js</code>，而是仅仅加载你需要的模块。
+JSDK被划分成多个模块（类库）。最底层的核心模块是<b>jscore</b>，包含了全部的工具类、反射、注解、线程、切面、容器等基础功能；最上层的模块是<b>jsvp</b>和<b>jsfx</b>。在实际开发中，你可以不必加载整个<code>jsdk.js</code>，而是仅仅加载你需要的模块。
 ### 模块清单
 模块名|备注|所含包|依赖模块|最小尺寸
 ---|---|---|---|---
-system|核心库|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||99kb
-jsds|数据结构库|JS.ds.* |system |6kb
-jsmedia|音视频播放器|JS.media.* |system |4kb
-jsinput|外设事件库|JS.input.* |jsds |7kb
-jsui|UI基础库|JS.ui.* |system |5kb
-jsmv|模型、视图及IOC库|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
+jscore|核心库|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||98kb
+jsds|数据结构库|JS.ds.* |jscore |6kb
+jsmedia|音视频播放器|JS.media.* |jscore |4kb
+jsinput|外设事件库|JS.input.* |jsds |14kb
+jsui|UI基础库|JS.ui.* |jscore |5kb
+jsmvc|Model&View&Component|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
 jsan|动画库|JS.an.* |jsui |16kb
 jsfx|Widget组件库 |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
 jsvp|应用层框架|JS.store.*<br>JS.app.* |jsmv|8kb
-jsunit|单元测试框架|JS.unit.* |system|js: 9kb<br>css: 669b
-jsdk|包含上述全部模块|JS.* ||js: 276kb
+jsunit|单元测试框架|JS.unit.* |jscore|js: 9kb<br>css: 669b
+jsdk|包含上述全部模块|JS.* ||js: 281kb
 
 ### 自定义模块
 当你需要更小尺寸的模块文件，你可以修改build/目录下的构建脚本，去掉不需要用到的类或包，重新构建出自定义的模块文件。

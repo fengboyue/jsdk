@@ -244,11 +244,16 @@ module JS {
              * Is a valid URL.<br>
              * @param url 
              */
-            public static isExistUrl(url: string): boolean {
-                let xhr: XMLHttpRequest = (<any>self).XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-                xhr.open('HEAD', url, false);
-                xhr.send();
-                return xhr.status == 200
+            public static isExistUrl(url: string): Promise<boolean> {
+                let xhr: XMLHttpRequest = new XMLHttpRequest();
+                return new Promise(function(resolve, reject){
+                    xhr.onreadystatechange=()=>{
+                        //4 is DONE, compatible with IE
+                        if (xhr.readyState == 4) xhr.status == 200? resolve(true):reject(false)
+                    };
+                    xhr.open('HEAD', url, true);
+                    xhr.send();
+                })
             }
             /**
              * Check a string with the pattern.<br>

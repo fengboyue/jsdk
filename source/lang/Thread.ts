@@ -59,7 +59,7 @@ module JS {
         let SYS_URL = null,
             _system = (srt: HTMLScriptElement)=>{
                 let src = srt.src.replace(/\?.*/, '');
-                return src.endsWith('/system.js')||src.endsWith('/system.min.js')?src:null
+                return src.endsWith('/jscore.js')||src.endsWith('/jscore.min.js')?src:null
             }, _docSystem = function(doc: Document){
                 let scripts = doc.getElementsByTagName('script');
                 if(scripts) {

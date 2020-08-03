@@ -41,7 +41,7 @@ JSVP推荐的工程目录如下：
 记得在<code>login_user.html</code>中静态加载JSDK核心库：
 
 ```html
-<script src="/libs/jsdk/{JSDK-VERSION}/system.js"></script>
+<script src="/libs/jsdk/{JSDK-VERSION}/jscore.js"></script>
 <script src="/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script>
 ```
 
