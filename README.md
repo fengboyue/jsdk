@@ -14,7 +14,7 @@ JSDK 2.0+ is the most comprehensive TS/JS framework, including lots of features,
 
 It supports such following features:
 <p class="warn">
-Annotation, Reflection, AOP, IOC & Component, Dependency Injection, Thread, Timer, Unit Test, Event Bus, Animations, Application Framework. A group of advanced widgets and more powerful toolboxes are also provided.
+Annotation, Reflection, AOP, Component & Dependency Injection, Thread, Timer, Unit Test, Event Bus, Animations, Application Framework. A group of advanced widgets and more powerful toolboxes are also provided.
 </p>
 
 JSDK will greatly help you to develop libraries, components, widgets, applications and even games.
@@ -129,5 +129,5 @@ JSDK is licensed under the MIT license since version 2.0.
 - move the package of "JS.store.*" to "jsvp" module for keeping core module size smaller.
 
 ## Old Versions
-The <a href="https://sourceforge.net/projects/jsdk2/" target="_blank">
-0.x versions</a> of JSDK was no longer upgraded and maintained. Please use the latest version.
+The <a href="https://github.com/fengboyue/jsdk-0.x" target="_blank">
+0.X versions</a> of JSDK was no longer upgraded and maintained. Please use the latest version.
