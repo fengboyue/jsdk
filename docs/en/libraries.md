@@ -43,8 +43,10 @@ JS.imports('$xyz').then(()=>{ //$xyz is JLU format
 You can modify this file directly or dynamically override its configuration items in JS code:
 ```javascript
 JS.config({
-    closeImport: true|false,  //True indicates JSDK does not loads library dynamically now because library maybe was loaded statically in HTML.
-    minimize: true|false,     //Whether to load minimized files of JS or CSS(load their ".min" file automatically)
+    closeImport: true|false,  //True indicates JSDK will not loads library dynamically. For example: current library maybe was loaded statically in HTML.
+    cachedImport: true|false, //False indicates JSDK will automatically add a time stamp("_=") after every file URL to block caching.
+    
+    minImport: true|false,    //True indicates JSDK will load the minimized file(its ".min" file) of JS or CSS
     jsdkRoot: null,           //The root url of JSDK self-library. The default is null that indicates JSDK self-library be deployed under libRoot: {libsRoot}/jsdk/{JSDK-VERSION}/. 
                               //Note: The config item means JSDK self-library is allowed to be deployed outside the "libRoot".
     libRoot: '/libs',         //The root url of 3rd-party libraries using by JSDK. 

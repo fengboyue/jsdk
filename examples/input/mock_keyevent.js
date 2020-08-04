@@ -12,7 +12,7 @@ JS.imports([
         fn('keyup', e);
     });
     let fire = function (type, el) {
-        Keyboards.fireEvent(type, VK[el.attr('data-key')]);
+        Keyboards.fireEvent(type, { keyCode: VK[el.attr('data-key')] });
     };
     $L('button').forEach(b => {
         b.on('mousedown', () => {

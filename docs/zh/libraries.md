@@ -42,8 +42,9 @@ JS.imports('$xyz').then(()=>{ //$xyz is JLU format
 
 ```javascript
 JS.config({
-    closeImport: true|false,       //True表示JSDK将关闭动态加载因后续，因类库可能已在html中静态加载过。
-    minimize: true|false,          //是否加载JS或CSS资源的最小化文件(自动加载.min文件)。
+    closeImport: true|false,       //True指示JSDK将关闭动态加载。比如：类库可能已在html中静态加载过。
+    cachedImport: true|false,      //False指示JSDK将会自动在每个文件的URL后添加时间戳"_="以阻止缓存。
+    minImport: true|false,         //True指示JSDK将加载JS或CSS资源的最小化文件(.min结尾的文件)。
     jsdkRoot: null,                //JSDK自库的根网址。缺省为null时表示JSDK库部署在{libsRoot}/jsdk/{JSDK-VERSION}下；其他网址时表示部署在该网址。
     libRoot: '/libs',              //第三方类库的根网址。     
     libs: {
