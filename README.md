@@ -76,7 +76,8 @@ JSDK is licensed under the MIT license since version 2.0.
 - refactor some class of the input module.
 - set the default interval time of SeqKeys to Infinity.
 - change "canImport" to "closeImport" in global configuration.
-- add "cachedImport" item in global configuration.
+- rename "minimize" to "minImport" in global configuration.
+- add new "cachedImport" item in global configuration.
 
 ### v2.3.1 - 2020/7/26
 [Bugfix] 

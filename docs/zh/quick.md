@@ -54,6 +54,33 @@ JSDK自2.0版开始支持MIT许可协议。
 
 ## 更新日志
 
+### v2.4.0 - 2020/8/3
+[新增] 
+- 针对移动浏览器支持拖放和Tap事件。
+
+[修改] 
+- 重命名system模块为jscore。
+- 重命名jsmv模块为jsmvc.
+- 重构jsinput模块的某些类。
+- 设置SeqKeys的缺省间隔时间为Infinity（无限大）。
+- 修改全局配置项"canImport"为"closeImport"。
+- 重命名全局配置项"minimize"为"minImport"。
+- 新增全局配置项"cachedImport"。
+
+### v2.3.1 - 2020/7/26
+[缺陷修复] 
+- 修复EventBus's _call方法的一个bug，因最近重构导致。
+- 修复Bom.ready()的一个bug：多次调用后多执行了不该执行的代码段。
+
+[删除] 
+- 删除冗余的@aop注解。
+
+[修改] 
+- 重构Page类的部分方法。
+- 重构App Event。
+- 最小化源码文件尺寸。
+- 最小化Reflect.js库文件尺寸。
+
 ### v2.3.0 - 2020/7/24
 [新增] 
 - 创建新模块"jsmedia"包含高级音频和视频播放器。
