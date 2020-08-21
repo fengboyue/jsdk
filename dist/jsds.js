@@ -1,10 +1,399 @@
-//# sourceURL=jsds.js
+//# sourceURL=../dist/jsds.js
 /**
-* JSDK 2.4.0 
+* JSDK 2.5.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
+        let D = document;
+        class CookieStore {
+            static get(key) {
+                let reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)", "gi"), data = reg.exec(D.cookie), str = data ? window['unescape'](data[2]) : null;
+                return store.StoreHelper.parse(str);
+            }
+            ;
+            static set(key, value, expireHours, path) {
+                if (!key)
+                    return;
+                let exp = CookieStore.EXPIRES_DATETIME;
+                if (Types.isDefined(expireHours) && expireHours > 0) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + expireHours * 3600 * 1000);
+                    exp = date.toUTCString();
+                }
+                let p = path ? path : CookieStore.PATH;
+                let domain = CookieStore.DOMAIN;
+                if (domain)
+                    domain = 'domain=' + domain;
+                D.cookie = key + '=' + window['escape']('' + store.StoreHelper.toString(value)) + '; path=' + p + '; expires=' + exp + domain;
+            }
+            ;
+            static remove(key) {
+                let date = new Date();
+                date.setTime(date.getTime() - 10000);
+                D.cookie = key + "=; expire=" + date.toUTCString();
+            }
+            ;
+            static clear() {
+                D.cookie = '';
+            }
+            ;
+        }
+        CookieStore.EXPIRES_DATETIME = 'Wed, 15 Apr 2099 00:00:00 GMT';
+        CookieStore.PATH = '/';
+        CookieStore.DOMAIN = self.document ? D.domain : null;
+        store.CookieStore = CookieStore;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var CookieStore = JS.store.CookieStore;
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
+        class DataCache {
+            constructor(init) {
+                this._init = init;
+                this._tName = init.name;
+            }
+            destroy() {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        db.deleteObjectStore(me._tName);
+                        this.resolve();
+                    });
+                });
+            }
+            _open() {
+                let me = this;
+                return Promises.create(function () {
+                    let dbReq = window.indexedDB.open(me._tName, 1);
+                    dbReq.onupgradeneeded = (e) => {
+                        let db = dbReq.result;
+                        db.onerror = () => { this.reject(null); };
+                        if (!db.objectStoreNames.contains(me._tName))
+                            db.createObjectStore(me._tName, { keyPath: 'id', autoIncrement: false });
+                    };
+                    dbReq.onsuccess = (e) => {
+                        let db = e.target['result'];
+                        this.resolve(db);
+                    };
+                });
+            }
+            keys() {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let tx = db.transaction(me._tName, 'readonly'), table = tx.objectStore(me._tName), req = table.getAllKeys();
+                        req.onsuccess = (e) => {
+                            let rst = e.target['result'];
+                            db.close();
+                            this.resolve(rst);
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                        };
+                    });
+                });
+            }
+            hasKey(id) {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let tx = db.transaction(me._tName, 'readonly'), table = tx.objectStore(me._tName), req = table.getKey(id);
+                        req.onsuccess = (e) => {
+                            let rst = e.target['result'];
+                            db.close();
+                            this.resolve(rst !== undefined);
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                        };
+                    });
+                });
+            }
+            write(d) {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let tx = db.transaction(me._tName, 'readwrite'), table = tx.objectStore(me._tName), req = table.put(d);
+                        req.onsuccess = (e) => {
+                            db.close();
+                            this.resolve();
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                            if (me._init.onWriteFail)
+                                me._init.onWriteFail.call(me, e);
+                        };
+                    });
+                });
+            }
+            delete(id) {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let table = db.transaction(me._tName, 'readwrite').objectStore(me._tName), req = table.delete(id);
+                        req.onsuccess = (e) => {
+                            db.close();
+                            this.resolve();
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                            if (me._init.onWriteFail)
+                                me._init.onWriteFail.call(me, e);
+                            this.reject();
+                        };
+                    }).catch(() => {
+                        this.reject();
+                    });
+                });
+            }
+            clear() {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let table = db.transaction(me._tName, 'readwrite').objectStore(me._tName), req = table.clear();
+                        req.onsuccess = (e) => {
+                            db.close();
+                            this.resolve();
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                            if (me._init.onWriteFail)
+                                me._init.onWriteFail.call(me, e);
+                        };
+                    });
+                });
+            }
+            read(id) {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let table = db.transaction(me._tName, 'readonly').objectStore(me._tName), req = table.get(id);
+                        req.onsuccess = (e) => {
+                            let file = e.target['result'];
+                            db.close();
+                            if (file) {
+                                this.resolve(file.data);
+                            }
+                            else {
+                                if (me._init.onReadFail)
+                                    me._init.onReadFail.call(me, e);
+                            }
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                            if (me._init.onReadFail)
+                                me._init.onReadFail.call(me, e);
+                        };
+                    });
+                });
+            }
+            load(d) {
+                let me = this;
+                return Promises.create(function () {
+                    Http.get({
+                        url: d.url,
+                        responseType: d.type,
+                        error: res => {
+                            if (me._init.onLoadFail)
+                                me._init.onLoadFail.call(me, res);
+                            this.reject(me);
+                        },
+                        success: res => {
+                            me.write({
+                                id: d.id,
+                                data: res.raw
+                            }).then(() => {
+                                this.resolve(me);
+                            }).catch(() => {
+                                this.reject(me);
+                            });
+                        }
+                    });
+                });
+            }
+        }
+        store.DataCache = DataCache;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var DataCache = JS.store.DataCache;
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
+        class ImageCache {
+            constructor() {
+                this._map = {};
+            }
+            _load(id, url) {
+                let m = this;
+                return Promises.create(function () {
+                    let img = new Image();
+                    img.onload = () => {
+                        m.set(id, img);
+                        this.resolve();
+                    };
+                    img.src = url;
+                });
+            }
+            load(imgs) {
+                let ms = Types.isArray(imgs) ? imgs : [imgs], plans = [];
+                ms.forEach(img => {
+                    plans.push(Promises.newPlan(this._load, [img.id, img.url], this));
+                });
+                return Promises.all(plans);
+            }
+            set(id, img) {
+                this._map[id] = img;
+            }
+            get(id) {
+                return this._map[id];
+            }
+            has(id) {
+                return this._map.hasOwnProperty(id);
+            }
+            clear() {
+                this._map = {};
+            }
+        }
+        store.ImageCache = ImageCache;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var ImageCache = JS.store.ImageCache;
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
+        let L = localStorage;
+        class LocalStore {
+            static get(key) {
+                let str = L.getItem(key);
+                if (!str)
+                    return undefined;
+                return store.StoreHelper.parse(str);
+            }
+            ;
+            static set(key, value) {
+                L.setItem(key, store.StoreHelper.toString(value));
+            }
+            ;
+            static remove(key) {
+                L.removeItem(key);
+            }
+            ;
+            static key(i) {
+                return L.key(i);
+            }
+            ;
+            static size() {
+                return L.length;
+            }
+            ;
+            static clear() {
+                L.clear();
+            }
+            ;
+        }
+        store.LocalStore = LocalStore;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var LocalStore = JS.store.LocalStore;
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
+        let S = sessionStorage;
+        class SessionStore {
+            static get(key) {
+                let str = S.getItem(key);
+                if (!str)
+                    return undefined;
+                return store.StoreHelper.parse(str);
+            }
+            ;
+            static set(key, value) {
+                S.setItem(key, store.StoreHelper.toString(value));
+            }
+            ;
+            static remove(key) {
+                S.removeItem(key);
+            }
+            ;
+            static key(i) {
+                return S.key(i);
+            }
+            ;
+            static size() {
+                return S.length;
+            }
+            ;
+            static clear() {
+                S.clear();
+            }
+            ;
+        }
+        store.SessionStore = SessionStore;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var SessionStore = JS.store.SessionStore;
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
+        let T = Types, J = Jsons, TP = Type, S = J.stringify;
+        class StoreHelper {
+            static toString(value) {
+                if (T.isUndefined(value))
+                    return 'undefined';
+                if (T.isNull(value))
+                    return 'null';
+                if (T.isString(value))
+                    return S(['string', value]);
+                if (T.isBoolean(value))
+                    return S(['boolean', value]);
+                if (T.isNumber(value))
+                    return S(['number', value]);
+                if (T.isDate(value))
+                    return S(['date', '' + value.valueOf()]);
+                if (T.isArray(value) || T.isJsonObject(value))
+                    return S(['object', S(value)]);
+            }
+            static parse(data) {
+                if (TP.null == data)
+                    return null;
+                if (TP.undefined == data)
+                    return undefined;
+                let [type, val] = J.parse(data), v = val;
+                switch (type) {
+                    case TP.boolean:
+                        v = Boolean(val);
+                        break;
+                    case TP.number:
+                        v = Number(val);
+                        break;
+                    case TP.date:
+                        v = new Date(val);
+                        break;
+                    case TP.array:
+                        v = J.parse(val);
+                        break;
+                    case TP.json:
+                        v = J.parse(val);
+                        break;
+                }
+                return v;
+            }
+        }
+        store.StoreHelper = StoreHelper;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var StoreHelper = JS.store.StoreHelper;
 var JS;
 (function (JS) {
     let ds;

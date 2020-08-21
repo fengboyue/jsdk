@@ -13,7 +13,7 @@ module JS {
                 this.a.clear();
             }
 
-            public test1() {
+            test1() {
                 this.a.put('k1',1);
                 this.a.put('k2',2);
                 this.a.put('k3',3);
@@ -26,7 +26,7 @@ module JS {
                 Assert.equal(2, this.a.get('k2'));
                 Assert.equal(3, this.a.size());
             }
-            public test2() {
+            test2() {
                 this.a = new BiMap<string, number>([
                     ['k1',1],['k2',2],['k3',3]
                 ]);
@@ -40,7 +40,7 @@ module JS {
                 Assert.equal(undefined, this.a.get('k1'));
                 Assert.false(this.a.has('k1'));
             }
-            public test3() {
+            test3() {
                 this.a = new BiMap<string, number>([
                     ['k1',1],['k2',2],['k3',3]
                 ]);

@@ -6,7 +6,7 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
-/// <reference path="Ajax.ts"/>
+/// <reference path="../net/Http.ts"/>
 /// <reference path="EventBus.ts"/>
 /**
  * Add methods for Dom object
@@ -33,7 +33,7 @@ interface HTMLElement {
      * Returns the computed style of this element.
      * @param pseudo 
      */
-    computedStyle(pseudo?:string):CSSStyleDeclaration;
+    computedStyle(pseudo?: string): CSSStyleDeclaration;
 }
 /**
  * Add methods for document object
@@ -62,11 +62,11 @@ interface Window {
 
 if (self['HTMLElement']) //当前不在worker线程中
     (function () {
-        const D = document, 
+        const D = document,
             HP = HTMLElement.prototype,
             oa = HP.append,
             op = HP.prepend,
-            _ad = function (html: string) {
+            _ad = function (this: HTMLElement, html: string) {
                 if (!html) return;
                 let div = D.createElement('div'),
                     nodes = null,
@@ -80,7 +80,7 @@ if (self['HTMLElement']) //当前不在worker线程中
                 nodes = null;
                 fg = null;
             },
-            _pd = function (html: string) {
+            _pd = function (this: HTMLElement, html: string) {
                 if (!html) return;
                 let div = D.createElement('div'),
                     nodes = null,
@@ -95,6 +95,9 @@ if (self['HTMLElement']) //当前不在worker线程中
                 fg = null;
             };
 
+        /**
+         * 原生方法只能添加text；改造后的方法能够添加html
+         */
         HP.append = function (...nodes: (Node | string)[]) {
             nodes.forEach(n => {
                 typeof n == 'string' ? _ad.call(this, n) : oa.call(this, n.cloneNode(true))
@@ -102,7 +105,7 @@ if (self['HTMLElement']) //当前不在worker线程中
         }
         HP.prepend = function (...nodes: (Node | string)[]) {
             nodes.forEach(n => {
-                typeof n == 'string' ? _pd.call(this, n) : op.call(this, n.cloneNode(true))
+                typeof n == 'string' ? _pd.call(this, n) : op.call(this, n)
             })
         }
 
@@ -123,22 +126,22 @@ if (self['HTMLElement']) //当前不在worker线程中
         }
 
         //event functions
-        let _on = function (this: EventTarget, type: string, fn: Function, opts?: boolean|{
+        let _on = function (this: EventTarget, type: string, fn: Function, opts?: boolean | {
             capture?: boolean,
             once?: boolean,
             passive?: boolean
         }) {
             if (!this['_bus']) this['_bus'] = new EventBus(this);
 
-            let bus = <EventBus>this['_bus'], cb = e=>{
+            let bus = <EventBus>this['_bus'], cb = e => {
                 bus.fire(e)
-            }, once = (opts && opts['once'])?true:false;
+            }, once = (opts && opts['once']) ? true : false;
             bus.on(type, <any>fn, once);
 
             //所有主流浏览器，除了IE8及更早IE版本
             if (this.addEventListener) this.addEventListener(type, cb, opts)
         }
-        HP.on = function (type: string, fn: Function, opts?: boolean|{
+        HP.on = function (type: string, fn: Function, opts?: boolean | {
             capture?: boolean,
             once?: boolean,
             passive?: boolean
@@ -150,13 +153,13 @@ if (self['HTMLElement']) //当前不在worker线程中
             return this
         }
         let _rm = function (this: EventTarget, type, fn?: Function) {
-                if (!fn) return;
-                //所有主流浏览器，除了IE8及更早IE版本
-                if (this.removeEventListener) {
-                    this.removeEventListener(type, <any>fn, true);
-                    this.removeEventListener(type, <any>fn, false)
-                }
-            },
+            if (!fn) return;
+            //所有主流浏览器，除了IE8及更早IE版本
+            if (this.removeEventListener) {
+                this.removeEventListener(type, <any>fn, true);
+                this.removeEventListener(type, <any>fn, false)
+            }
+        },
             _rms = function (this: EventTarget, type, fns: Function[]) {
                 if (fns) fns.forEach(f => { _rm.call(this, type, f) })
             },
@@ -194,7 +197,7 @@ if (self['HTMLElement']) //当前不在worker线程中
         HP.findAll = HP.querySelectorAll;
 
         HP.computedStyle = function (p?: string) {
-            return document.defaultView.getComputedStyle(this, p||null)
+            return document.defaultView.getComputedStyle(this, p || null)
         }
 
         let DP = Document.prototype;
@@ -210,7 +213,7 @@ module JS {
 
     export namespace util {
 
-        let D:Document,
+        let D: Document,
             _head = () => { return D.querySelector('head') },
             _uncached = (url: string) => {
                 return `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`
@@ -259,15 +262,13 @@ module JS {
             /**
              * Insert and apply a new HTML fragment in current page.
              */
-            public static applyHtml(html: string | Document, appendTo?: string | HTMLElement, ignore?: { script?: boolean, css?: boolean } | boolean): Promise<string> {
+            public static applyHtml(html: string | HTMLDocument, appendTo?: string | HTMLElement, ignore?: { script?: boolean, css?: boolean } | boolean): Promise<string> {
                 if (!html) return Promise.reject(null);
                 return Promises.create<string>(function () {
-                    let doc = typeof html == 'string' ? new DOMParser().parseFromString(html, 'text/html') : <Document>html,
+                    let doc: HTMLDocument = typeof html == 'string' ? new DOMParser().parseFromString(html, 'text/html') : html,
                         url = doc.URL,
                         el = Dom.$1(appendTo || D.body);
-
                     (<any>el).append.apply(el, doc.body.childNodes);
-                    el = null;
 
                     let ignoreCss = ignore === true || (ignore && ignore.css) ? true : false;
                     if (!ignoreCss) {
@@ -276,13 +277,7 @@ module JS {
                         if (cssFiles) {
                             for (let i = 0, len = cssFiles.length; i < len; i++) {
                                 let css = cssFiles[i], href = css.getAttribute('href');
-                                if (href) Dom.loadCSS(href, true)
-                            }
-                        }
-                        let styles = doc.querySelectorAll('style');
-                        if (styles) {
-                            for (let i = 0, len = styles.length; i < len; i++) {
-                                Dom.applyStyle(styles[i].textContent)
+                                if (href) Dom.loadCSS(href, false)
                             }
                         }
                     }
@@ -303,7 +298,7 @@ module JS {
                             Promises.order(syncs).then(() => {
                                 back()
                             }).catch((u) => {
-                                JSLogger.error('Load inner script error in loading html!\nscript url=' + u + '\nhtml url=' + url);
+                                JSLogger.error('Load inner script fail: ' + u + '\n; parent html:' + url);
                                 back()
                             })
                         } else {
@@ -326,6 +321,7 @@ module JS {
                     };
                     k.type = 'text/css';
                     k.rel = 'stylesheet';
+                    k.charset = 'utf-8';
                     if (!async) {
                         k['onreadystatechange'] = () => {//兼容IE
                             if (k['readyState'] == 'loaded' || k['readyState'] == 'complete') back()
@@ -361,18 +357,24 @@ module JS {
 
             public static loadHTML(
                 url: string, async?: boolean,
-                appendTo?: string | HTMLElement,
-                ignore?: { script?: boolean, css?: boolean } | boolean,
-                preHandler?: (doc: Document) => Document): Promise<string> {
+                opts?: {
+                    appendTo?: string | HTMLElement,
+                    ignore?: { script?: boolean, css?: boolean } | boolean,
+                    prehandle?: (doc: HTMLDocument) => HTMLDocument
+                }
+            ): Promise<string> {
                 if (!url) return Promise.reject(null);
                 return Promises.create<string>(function () {
-                    Ajax.get({
-                        type: 'html',
+                    Http.get({
+                        responseType: 'html',
                         url: url,
                         cache: false,
                         async: async
                     }).then((res) => {
-                        Dom.applyHtml(preHandler ? preHandler(res.data) : res.data, appendTo, ignore).then(() => {
+                        let appendTo = opts && opts.appendTo,
+                            ignore = opts && opts.ignore,
+                            prehandle = opts && opts.prehandle;
+                        Dom.applyHtml(prehandle ? prehandle(res.data) : res.data, appendTo, ignore).then(() => {
                             this.resolve(url)
                         })
                     })

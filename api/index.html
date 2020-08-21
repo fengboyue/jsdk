@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>JSDK 2.4.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.4.0 API">
+	<title>JSDK 2.5.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.5.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">JSDK 2.4.0 API</a>
+					<a href="index.html" class="title">JSDK 2.5.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -56,7 +56,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1>JSDK 2.4.0 API</h1>
+			<h1>JSDK 2.5.0 API</h1>
 		</div>
 	</div>
 </header>
@@ -74,13 +74,13 @@
 					alt="License: MIT"></a>
 					<a href="#">
 						<img
-						src="https://img.shields.io/badge/version-v2.4.0-brightgreen"
-					alt="Version: 2.4.0"></a>
+						src="https://img.shields.io/badge/version-v2.5.0-brightgreen"
+					alt="Version: 2.5.0"></a>
 				</p>
-				<p>JSDK 2.0+ is the most comprehensive TS/JS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.</p>
+				<p>JSDK 2.0+ is the most comprehensive TS/JS framework, including lots of features, frameworks and tools from the bottom to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.</p>
 				<p>It supports such following features:</p>
 				<p class="warn">
-					Annotation, Reflection, AOP, Component & Dependency Injection, Thread, Timer, Unit Test, Event Bus, Animations, Application Framework. A group of advanced widgets and more powerful toolboxes are also provided.
+					Annotation, Reflection, AOP, Component & Dependency Injection, Thread, Timer, Unit-Test, Event-Bus, Animations, Application Framework. A group of advanced widgets and more powerful tools are also provided.
 				</p>
 				<p>JSDK will greatly help you to develop libraries, components, widgets, applications and even games.</p>
 				<a href="#download" id="download" style="color: inherit; text-decoration: none;">
@@ -105,8 +105,8 @@
 					<li><em>It is <b>strongly recommended to use JSDK in TS projects</b>, which will make all features of JSDK effective.</em></li>
 					<li><em>If you need to run JSDK on a browser that does not support ES6, please use <a href="https://babeljs.io/docs/en/">Babel</a>.</em></li>
 				</ul>
-				<a href="#resources-online" id="resources-online" style="color: inherit; text-decoration: none;">
-					<h2>Resources Online</h2>
+				<a href="#online-resources" id="online-resources" style="color: inherit; text-decoration: none;">
+					<h2>Online Resources</h2>
 				</a>
 				<p>You can visit the following online resources on Github to know more:</p>
 				<p class="warn">
@@ -118,8 +118,8 @@
 					<br>
 					<a href="https://fengboyue.github.io/jsdk/api" target="_blank">JSDK API Docs</a>
 				</p>
-				<a href="#launch-local-resources" id="launch-local-resources" style="color: inherit; text-decoration: none;">
-					<h2>Launch Local Resources</h2>
+				<a href="#local-resources" id="local-resources" style="color: inherit; text-decoration: none;">
+					<h2>Local Resources</h2>
 				</a>
 				<p>You can launch a http server on your PC to visit these resources quickly.</p>
 				<ol>
@@ -137,88 +137,84 @@
 				<a href="#updates" id="updates" style="color: inherit; text-decoration: none;">
 					<h2>Updates</h2>
 				</a>
+				<a href="#v250-milestone---2020821" id="v250-milestone---2020821" style="color: inherit; text-decoration: none;">
+					<h3>v2.5.0 Milestone - 2020/8/21</h3>
+				</a>
+				<ul>
+					<li>Now &quot;cachedImport&quot; of global configuration supports custom timestamp string.</li>
+					<li>New &quot;math&quot; module for vector and geometry calculations.</li>
+					<li>New &quot;jsugar&quot; module for containing advanced syntax featues that already exists.</li>
+					<li>New &quot;JS.net&quot; package and Http class insteading of old Ajax class.</li>
+					<li>Rename NotHandleError class to RefusedError.</li>
+					<li>Rename Bundle class to I18N.</li>
+					<li>New DataCache class for binary files.</li>
+					<li>New ImageCache class for preload images.</li>
+				</ul>
 				<a href="#v240---202083" id="v240---202083" style="color: inherit; text-decoration: none;">
 					<h3>v2.4.0 - 2020/8/3</h3>
 				</a>
-				<p>[Added] </p>
 				<ul>
-					<li>Supports drag/tap events for mobile browsers.</li>
-				</ul>
-				<p>[Changed] </p>
-				<ul>
-					<li>rename the system module to jscore.</li>
-					<li>rename the jsmv module to jsmvc.</li>
-					<li>refactor some class of the input module.</li>
-					<li>set the default interval time of SeqKeys to Infinity.</li>
-					<li>change &quot;canImport&quot; to &quot;closeImport&quot; in global configuration.</li>
-					<li>rename &quot;minimize&quot; to &quot;minImport&quot; in global configuration.</li>
-					<li>add new &quot;cachedImport&quot; item in global configuration.</li>
+					<li>Support drag/tap events for mobile browsers.</li>
+					<li>Rename system module to jscore.</li>
+					<li>Rename jsmv module to jsmvc.</li>
+					<li>Refactor some class of the input module.</li>
+					<li>Set the default interval time of SeqKeys to Infinity.</li>
+					<li>Change &quot;canImport&quot; to &quot;closeImport&quot; in global configuration.</li>
+					<li>Rename &quot;minimize&quot; to &quot;minImport&quot; in global configuration.</li>
+					<li>Add new &quot;cachedImport&quot; item in global configuration.</li>
 				</ul>
 				<a href="#v231---2020726" id="v231---2020726" style="color: inherit; text-decoration: none;">
 					<h3>v2.3.1 - 2020/7/26</h3>
 				</a>
-				<p>[Bugfix] </p>
 				<ul>
-					<li>fix a bug of EventBus&#39;s _call method caused by the last refactoring.</li>
-					<li>fix a bug after Bom.ready() has been called many times.</li>
-				</ul>
-				<p>[Removed] </p>
-				<ul>
-					<li>remove redundancy @aop annotation.</li>
-				</ul>
-				<p>[Changed] </p>
-				<ul>
-					<li>refactor some methods of Page class.</li>
-					<li>refactor App Event.</li>
-					<li>minify size of source code.</li>
-					<li>minify Reflect.js.</li>
+					<li>Fix a bug of EventBus&#39;s _call method caused by the last refactoring.</li>
+					<li>Fix a bug when Bom.ready() had been called many times.</li>
+					<li>Remove redundancy @aop annotation.</li>
+					<li>Refactor some methods of Page class.</li>
+					<li>Refactor App Event.</li>
+					<li>Minify size of source code.</li>
+					<li>Minify Reflect.js.</li>
 				</ul>
 				<a href="#v230---2020724" id="v230---2020724" style="color: inherit; text-decoration: none;">
 					<h3>v2.3.0 - 2020/7/24</h3>
 				</a>
-				<p>[Added] </p>
 				<ul>
-					<li>create new media module with advanced audio and video players.</li>
-					<li>add interval time for Seqkeys in Keyboard class.</li>
+					<li>New &quot;media&quot; module supports advanced audio and video players.</li>
+					<li>Add interval time for Seqkeys in Keyboard class.</li>
 					<li>Ajax class supports new response type: arraybuffer.</li>
 				</ul>
 				<a href="#v220---2020717" id="v220---2020717" style="color: inherit; text-decoration: none;">
 					<h3>v2.2.0 - 2020/7/17</h3>
 				</a>
-				<p>[Added] </p>
 				<ul>
-					<li>create new input module for complex key and mouse events.</li>
-					<li>generate index.html for every directory of examples automatically.</li>
-				</ul>
-				<p>[Changed] </p>
-				<ul>
-					<li>rename &quot;importMode&quot; to &quot;canImport&quot; in global configuration.</li>
-					<li>if EventHandler function renturn false means that: evt.stopPropagation();evt.preventDefault().</li>
-					<li>revise parts of contents in the guides.</li>
-					<li>lightweight bugfixes &amp; optimizes.</li>
+					<li>New &quot;input&quot; module for complex key and mouse events.</li>
+					<li>Generate index.html for every directory of examples automatically.</li>
+					<li>Rename &quot;importMode&quot; to &quot;canImport&quot; in global configuration.</li>
+					<li>Now, if EventHandler function renturn false means that: evt.stopPropagation();evt.preventDefault().</li>
+					<li>Revise parts of contents in the guides.</li>
+					<li>Lightweight bugfixes &amp; optimizes.</li>
 				</ul>
 				<a href="#v210---2020711" id="v210---2020711" style="color: inherit; text-decoration: none;">
 					<h3>v2.1.0 - 2020/7/11</h3>
 				</a>
-				<p>[Added] </p>
 				<ul>
-					<li>create new animation module.</li>
-					<li>add computedStyle method on HTMLElement.prototype.</li>
-					<li>add some useful methods to Colors class.</li>
-					<li>add Type.json from Type.object which only presents class instance now.</li>
+					<li>New &quot;animation&quot; module.</li>
+					<li>Add computedStyle method on HTMLElement.prototype.</li>
+					<li>Add some useful methods to Colors class.</li>
+					<li>Add Type.json from Type.object which only presents class instance now.</li>
+					<li>Remove and modified some unused methods of Dates class and Date.prototye.</li>
+					<li>Remove some unused type definitions on Model classes.</li>
+					<li>Remove some unused jsdocs.</li>
+					<li>Redesign new stronger Timer class for constant interval time and calculation of FPS.</li>
+					<li>Move all Model and View classes to new &quot;jsmv&quot; module from old &quot;jsui&quot; module.</li>
+					<li>Rename the package of &quot;JS.data.*&quot; to &quot;JS.ds.*&quot; and create separated &quot;jsds&quot; module for keeping core module smaller.</li>
+					<li>Move the package of &quot;JS.store.*&quot; to &quot;jsvp&quot; module for keeping core module smaller.</li>
 				</ul>
-				<p>[Removed] </p>
+				<a href="#v200-milestone---2020616" id="v200-milestone---2020616" style="color: inherit; text-decoration: none;">
+					<h3>v2.0.0 Milestone - 2020/6/16</h3>
+				</a>
 				<ul>
-					<li>remove and modified some unused methods of Dates class and Date.prototye.</li>
-					<li>remove some unused type definitions on Model classes.</li>
-					<li>remove some unused jsdocs.</li>
-				</ul>
-				<p>[Changed] </p>
-				<ul>
-					<li>redesign new stronger Timer class for constant interval time and calculation of FPS.</li>
-					<li>move all Model and View classes to new &quot;jsmv&quot; module from old &quot;jsui&quot; module.</li>
-					<li>rename the package of &quot;JS.data.*&quot; to &quot;JS.ds.*&quot; and create new &quot;jsds&quot; module for keeping core module size smaller.</li>
-					<li>move the package of &quot;JS.store.*&quot; to &quot;jsvp&quot; module for keeping core module size smaller.</li>
+					<li>Release all-new JDSK 2.0!</li>
 				</ul>
 				<a href="#old-versions" id="old-versions" style="color: inherit; text-decoration: none;">
 					<h2>Old Versions</h2>
@@ -274,28 +270,28 @@
 						<a href="globals.html#_l" class="tsd-kind-icon">$L</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#ajax" class="tsd-kind-icon">Ajax</a>
-					</li>
-					<li class=" tsd-kind-variable">
 						<a href="globals.html#ajaxproxy" class="tsd-kind-icon">Ajax<wbr>Proxy</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#ajaxrequest" class="tsd-kind-icon">Ajax<wbr>Request</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#ajaxresponse" class="tsd-kind-icon">Ajax<wbr>Response</a>
+						<a href="globals.html#angletype" class="tsd-kind-icon">Angle<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#anim" class="tsd-kind-icon">Anim</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#animconfig" class="tsd-kind-icon">Anim<wbr>Config</a>
+						<a href="globals.html#animinit" class="tsd-kind-icon">Anim<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#animstate" class="tsd-kind-icon">Anim<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#animtimer" class="tsd-kind-icon">Anim<wbr>Timer</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#animtimerevents" class="tsd-kind-icon">Anim<wbr>Timer<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#animtimerinit" class="tsd-kind-icon">Anim<wbr>Timer<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#annotation" class="tsd-kind-icon">Annotation</a>
@@ -322,10 +318,19 @@
 						<a href="globals.html#appevent" class="tsd-kind-icon">App<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#arctype" class="tsd-kind-icon">Arc<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#argumenterror" class="tsd-kind-icon">Argument<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#arithmeticerror" class="tsd-kind-icon">Arithmetic<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#arraypoint2" class="tsd-kind-icon">Array<wbr>Point2</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#arraypoint3" class="tsd-kind-icon">Array<wbr>Point3</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#arrays" class="tsd-kind-icon">Arrays</a>
@@ -335,6 +340,15 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#asserterror" class="tsd-kind-icon">Assert<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#audiocache" class="tsd-kind-icon">Audio<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#audiopro" class="tsd-kind-icon">Audio<wbr>Pro</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#audioproinit" class="tsd-kind-icon">Audio<wbr>Pro<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#bimap" class="tsd-kind-icon">Bi<wbr>Map</a>
@@ -347,9 +361,6 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#browserwindow" class="tsd-kind-icon">Browser<wbr>Window</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#bundle" class="tsd-kind-icon">Bundle</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#button" class="tsd-kind-icon">Button</a>
@@ -365,6 +376,9 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#buttonlisteners" class="tsd-kind-icon">Button<wbr>Listeners</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#cachedatatype" class="tsd-kind-icon">Cache<wbr>Data<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#callback" class="tsd-kind-icon">Callback</a>
@@ -400,10 +414,19 @@
 						<a href="globals.html#choice" class="tsd-kind-icon">Choice</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#cirarc" class="tsd-kind-icon">Cir<wbr>Arc</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#circle" class="tsd-kind-icon">Circle</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#class" class="tsd-kind-icon">Class</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#clipboard" class="tsd-kind-icon">Clip<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#color" class="tsd-kind-icon">Color</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#colormode" class="tsd-kind-icon">Color<wbr>Mode</a>
@@ -416,6 +439,9 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#cookiestore" class="tsd-kind-icon">Cookie<wbr>Store</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#coords2" class="tsd-kind-icon">Coords2</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#cursors" class="tsd-kind-icon">Cursors</a>
@@ -431,6 +457,9 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#customvalidatorsetting" class="tsd-kind-icon">Custom<wbr>Validator<wbr>Setting</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#datacache" class="tsd-kind-icon">Data<wbr>Cache</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#datepicker" class="tsd-kind-icon">Date<wbr>Picker</a>
@@ -496,10 +525,7 @@
 						<a href="globals.html#easings" class="tsd-kind-icon">Easings</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#elementanim" class="tsd-kind-icon">Element<wbr>Anim</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#elementanimconfig" class="tsd-kind-icon">Element<wbr>Anim<wbr>Config</a>
+						<a href="globals.html#ellipse" class="tsd-kind-icon">Ellipse</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#emailinput" class="tsd-kind-icon">Email<wbr>Input</a>
@@ -526,7 +552,7 @@
 						<a href="globals.html#fadeanim" class="tsd-kind-icon">Fade<wbr>Anim</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#fadeanimconfig" class="tsd-kind-icon">Fade<wbr>Anim<wbr>Config</a>
+						<a href="globals.html#fadeaniminit" class="tsd-kind-icon">Fade<wbr>Anim<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#fadekeyframe" class="tsd-kind-icon">Fade<wbr>Key<wbr>Frame</a>
@@ -544,13 +570,19 @@
 						<a href="globals.html#fieldconfig" class="tsd-kind-icon">Field<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#fileexts" class="tsd-kind-icon">File<wbr>Exts</a>
+						<a href="globals.html#fileaccepts" class="tsd-kind-icon">File<wbr>Accepts</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#filesizeunit" class="tsd-kind-icon">File<wbr>Size<wbr>Unit</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#filetypes" class="tsd-kind-icon">File<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#files" class="tsd-kind-icon">Files</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#floats" class="tsd-kind-icon">Floats</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#formview" class="tsd-kind-icon">Form<wbr>View</a>
@@ -574,13 +606,19 @@
 						<a href="globals.html#formatvalidatorsetting" class="tsd-kind-icon">Format<wbr>Validator<wbr>Setting</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#frameanim" class="tsd-kind-icon">Frame<wbr>Anim</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#frameaniminit" class="tsd-kind-icon">Frame<wbr>Anim<wbr>Init</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#functions" class="tsd-kind-icon">Functions</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#gradientanim" class="tsd-kind-icon">Gradient<wbr>Anim</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#gradientanimconfig" class="tsd-kind-icon">Gradient<wbr>Anim<wbr>Config</a>
+						<a href="globals.html#gradientaniminit" class="tsd-kind-icon">Gradient<wbr>Anim<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#gradientkeyframe" class="tsd-kind-icon">Gradient<wbr>Key<wbr>Frame</a>
@@ -622,7 +660,19 @@
 						<a href="globals.html#hsla" class="tsd-kind-icon">HSLA</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#hslastring" class="tsd-kind-icon">HSLAString</a>
+						<a href="globals.html#http" class="tsd-kind-icon">Http</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#httprequest" class="tsd-kind-icon">Http<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#httpresponse" class="tsd-kind-icon">Http<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#i18n" class="tsd-kind-icon">I18N</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#i18nresource" class="tsd-kind-icon">I18NResource</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#icrudwidget" class="tsd-kind-icon">ICRUDWidget</a>
@@ -641,6 +691,9 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#iwidgetconfig" class="tsd-kind-icon">IWidget<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#imagecache" class="tsd-kind-icon">Image<wbr>Cache</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#input" class="tsd-kind-icon">Input</a>
@@ -671,9 +724,6 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#jsonproxy" class="tsd-kind-icon">Json<wbr>Proxy</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#jsonresource" class="tsd-kind-icon">Json<wbr>Resource</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#jsons" class="tsd-kind-icon">Jsons</a>
@@ -715,6 +765,9 @@
 						<a href="globals.html#lrtb" class="tsd-kind-icon">LRTB</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#lengthunit" class="tsd-kind-icon">Length<wbr>Unit</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#lengthvalidator" class="tsd-kind-icon">Length<wbr>Validator</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -722,6 +775,9 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#lengths" class="tsd-kind-icon">Lengths</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#line" class="tsd-kind-icon">Line</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#lineinput" class="tsd-kind-icon">Line<wbr>Input</a>
@@ -766,6 +822,9 @@
 						<a href="globals.html#loadingfacemode" class="tsd-kind-icon">Loading<wbr>Face<wbr>Mode</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#localcacheddata" class="tsd-kind-icon">Local<wbr>Cached<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#localstore" class="tsd-kind-icon">Local<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -784,6 +843,9 @@
 						<a href="globals.html#loglevel" class="tsd-kind-icon">Log<wbr>Level</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#mime" class="tsd-kind-icon">MIME</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#mediaevents" class="tsd-kind-icon">Media<wbr>Events</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -800,9 +862,6 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#mimefile" class="tsd-kind-icon">Mime<wbr>File</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#mimefiles" class="tsd-kind-icon">Mime<wbr>Files</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#model" class="tsd-kind-icon">Model</a>
@@ -835,7 +894,7 @@
 						<a href="globals.html#moveanim" class="tsd-kind-icon">Move<wbr>Anim</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#moveanimconfig" class="tsd-kind-icon">Move<wbr>Anim<wbr>Config</a>
+						<a href="globals.html#moveaniminit" class="tsd-kind-icon">Move<wbr>Anim<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#movekeyframe" class="tsd-kind-icon">Move<wbr>Key<wbr>Frame</a>
@@ -848,9 +907,6 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#notfounderror" class="tsd-kind-icon">Not<wbr>Found<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#nothandlederror" class="tsd-kind-icon">Not<wbr>Handled<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#numberinput" class="tsd-kind-icon">Number<wbr>Input</a>
@@ -883,22 +939,37 @@
 						<a href="globals.html#pagequery" class="tsd-kind-icon">Page<wbr>Query</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#pageview" class="tsd-kind-icon">Page<wbr>View</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#pageviewconfig" class="tsd-kind-icon">Page<wbr>View<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-variable">
 						<a href="globals.html#parallelanim" class="tsd-kind-icon">Parallel<wbr>Anim</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#parallelanimconfig" class="tsd-kind-icon">Parallel<wbr>Anim<wbr>Config</a>
+						<a href="globals.html#parallelaniminit" class="tsd-kind-icon">Parallel<wbr>Anim<wbr>Init</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#parseerror" class="tsd-kind-icon">Parse<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#password" class="tsd-kind-icon">Password</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#passwordconfig" class="tsd-kind-icon">Password<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#point2" class="tsd-kind-icon">Point2</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#point3" class="tsd-kind-icon">Point3</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#polarpoint2" class="tsd-kind-icon">Polar<wbr>Point2</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#polarpoint3" class="tsd-kind-icon">Polar<wbr>Point3</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#polygon" class="tsd-kind-icon">Polygon</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#polyline" class="tsd-kind-icon">Polyline</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#popup" class="tsd-kind-icon">Popup</a>
@@ -943,7 +1014,7 @@
 						<a href="globals.html#rgba" class="tsd-kind-icon">RGBA</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#rgbastring" class="tsd-kind-icon">RGBAString</a>
+						<a href="globals.html#radians" class="tsd-kind-icon">Radians</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#radio" class="tsd-kind-icon">Radio</a>
@@ -979,13 +1050,19 @@
 						<a href="globals.html#rangevalidatorsetting" class="tsd-kind-icon">Range<wbr>Validator<wbr>Setting</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#rect" class="tsd-kind-icon">Rect</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#refusederror" class="tsd-kind-icon">Refused<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#remotecacheddata" class="tsd-kind-icon">Remote<wbr>Cached<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#requiredvalidator" class="tsd-kind-icon">Required<wbr>Validator</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#requiredvalidatorsetting" class="tsd-kind-icon">Required<wbr>Validator<wbr>Setting</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#resource" class="tsd-kind-icon">Resource</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#resultset" class="tsd-kind-icon">Result<wbr>Set</a>
@@ -997,7 +1074,7 @@
 						<a href="globals.html#rotateanim" class="tsd-kind-icon">Rotate<wbr>Anim</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#rotateanimconfig" class="tsd-kind-icon">Rotate<wbr>Anim<wbr>Config</a>
+						<a href="globals.html#rotateaniminit" class="tsd-kind-icon">Rotate<wbr>Anim<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#rotatekeyframe" class="tsd-kind-icon">Rotate<wbr>Key<wbr>Frame</a>
@@ -1021,13 +1098,16 @@
 						<a href="globals.html#scaleanim" class="tsd-kind-icon">Scale<wbr>Anim</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#scaleanimconfig" class="tsd-kind-icon">Scale<wbr>Anim<wbr>Config</a>
+						<a href="globals.html#scaleaniminit" class="tsd-kind-icon">Scale<wbr>Anim<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#scalekeyframe" class="tsd-kind-icon">Scale<wbr>Key<wbr>Frame</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#scalekeyframes" class="tsd-kind-icon">Scale<wbr>Key<wbr>Frames</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#segment" class="tsd-kind-icon">Segment</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#select" class="tsd-kind-icon">Select</a>
@@ -1048,13 +1128,19 @@
 						<a href="globals.html#sequentialanim" class="tsd-kind-icon">Sequential<wbr>Anim</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#sequentialanimconfig" class="tsd-kind-icon">Sequential<wbr>Anim<wbr>Config</a>
+						<a href="globals.html#sequentialaniminit" class="tsd-kind-icon">Sequential<wbr>Anim<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#service" class="tsd-kind-icon">Service</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#sessionstore" class="tsd-kind-icon">Session<wbr>Store</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#shape" class="tsd-kind-icon">Shape</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#shapes" class="tsd-kind-icon">Shapes</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#sider" class="tsd-kind-icon">Sider</a>
@@ -1084,19 +1170,13 @@
 						<a href="globals.html#skewanim" class="tsd-kind-icon">Skew<wbr>Anim</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#skewanimconfig" class="tsd-kind-icon">Skew<wbr>Anim<wbr>Config</a>
+						<a href="globals.html#skewaniminit" class="tsd-kind-icon">Skew<wbr>Anim<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#skewkeyframe" class="tsd-kind-icon">Skew<wbr>Key<wbr>Frame</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#skewkeyframes" class="tsd-kind-icon">Skew<wbr>Key<wbr>Frames</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#sound" class="tsd-kind-icon">Sound</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#soundconfig" class="tsd-kind-icon">Sound<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#stack" class="tsd-kind-icon">Stack</a>
@@ -1133,6 +1213,12 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#systeminfo" class="tsd-kind-icon">System<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#thsla" class="tsd-kind-icon">THSLA</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#trgba" class="tsd-kind-icon">TRGBA</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#tab" class="tsd-kind-icon">Tab</a>
@@ -1234,7 +1320,7 @@
 						<a href="globals.html#timerevents" class="tsd-kind-icon">Timer<wbr>Events</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#timeroptions" class="tsd-kind-icon">Timer<wbr>Options</a>
+						<a href="globals.html#timerinit" class="tsd-kind-icon">Timer<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#timerstate" class="tsd-kind-icon">Timer<wbr>State</a>
@@ -1258,13 +1344,16 @@
 						<a href="globals.html#translateanim" class="tsd-kind-icon">Translate<wbr>Anim</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#translateanimconfig" class="tsd-kind-icon">Translate<wbr>Anim<wbr>Config</a>
+						<a href="globals.html#translateaniminit" class="tsd-kind-icon">Translate<wbr>Anim<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#translatekeyframe" class="tsd-kind-icon">Translate<wbr>Key<wbr>Frame</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#translatekeyframes" class="tsd-kind-icon">Translate<wbr>Key<wbr>Frames</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#triangle" class="tsd-kind-icon">Triangle</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#type" class="tsd-kind-icon">Type</a>
@@ -1309,10 +1398,16 @@
 						<a href="globals.html#validatortype" class="tsd-kind-icon">Validator<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#video" class="tsd-kind-icon">Video</a>
+						<a href="globals.html#vector2" class="tsd-kind-icon">Vector2</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#videoconfig" class="tsd-kind-icon">Video<wbr>Config</a>
+						<a href="globals.html#vector3" class="tsd-kind-icon">Vector3</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#videoplayer" class="tsd-kind-icon">Video<wbr>Player</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#videoplayerinit" class="tsd-kind-icon">Video<wbr>Player<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#view" class="tsd-kind-icon">View</a>

@@ -7,40 +7,40 @@ module JS {
         @klass('JS.test.NumbersTest')
         export class NumbersTest extends TestCase {
 
-            public test1() {
+            test1() {
                 Assert.equal(Number(-1e-7).stringify(), '-0.0000001');
                 Assert.equal(Number(2/3).stringify(), '0.6666666666666666');
             }
-            public test2() {
+            test2() {
                 Assert.equal(Number(-1e-7).format(), '-0.0000001');
                 Assert.equal(Number(-1e-7).format(10), '-0.0000001000');
                 Assert.equal(Number(123456).format(3), '123,456.000');
                 Assert.equal(Number(-123456.785).format(2), '-123,456.78');
                 Assert.equal(Number(123456.785).format(2), '123,456.79');
             }
-            public test3() {
+            test3() {
                 let n1 = Number(0.5), n2 = Number(78.1112223335), n3 = Number(535);
                 Assert.equal(n1.round(0).stringify(), '1');
                 Assert.equal(n2.round(9).stringify(), '78.111222334');
                 Assert.equal(n3.round(2).stringify(), '535');
             }
-            public test4() {
+            test4() {
                 let n1 = Number(0.5), n2 = Number(78.5112223335), n3 = Number(-535);
                 Assert.equal(n1.toInt().stringify(), '1');
                 Assert.equal(n2.toInt().stringify(), '79');
                 Assert.equal(n3.toInt().stringify(), '-535');
             }
-            public test5() {
+            test5() {
                 Assert.true(Number(78.567).equals(78.567));
                 Assert.true(Number(78.5675).equals(78.568, 3));
             }
-            public test6() {
+            test6() {
                 Assert.equal(Number(0.1).add(0.2).stringify(), '0.3');
                 Assert.equal(Number(0.15).sub(0.1).stringify(), '0.05');
                 Assert.equal(Number(0.1).mul(0.2).stringify(), '0.02');
                 Assert.equal(Number(0.15).div(0.2).stringify(), '0.75');
             }
-            public test7() {
+            test7() {
                 Assert.true(Number(undefined).isNaN());
                 Assert.false(Number(78.123).isNaN());
 
@@ -77,7 +77,7 @@ module JS {
                 Assert.false(Number(0.2).isEven());
                 Assert.true(Number(2.0).isEven());
             }
-            public test8() {
+            test8() {
                 Assert.equal(Number(123456.00000789).integerLength(), 6);
                 Assert.equal(Number(123456.00000789).fractionLength(), 8);
                 Assert.equal(Number(-0.00000789).integerLength(), 1);
@@ -85,15 +85,15 @@ module JS {
                 Assert.equal(Number(0).integerLength(), 1);
                 Assert.equal(Number(0).fractionLength(), 0);
             }
-            public test9() {
+            test9() {
                 Assert.true(Numbers.min(1.01, Number(1), -1) === -1);
                 Assert.true(Numbers.max(1.01, Number(1), -1) === 1.01);
             }
-            public test10() {
+            test10() {
                 Assert.equal(Numbers.termwise(1.01, '+', Number(1)), 2.01);
                 Assert.equal(Numbers.termwise(0.15, '/', 0.2, '+', Number(0.3)), 1.05);
             }
-            public test11() {
+            test11() {
                 Assert.equal(Numbers.algebra(' - 2.01*(0.3894567-1.5908+7.9999)/(+3.1-9.9)'), 2.0095733775);
                 Assert.equal(Numbers.algebra(' a*(0.3894567-1.5908+d)/(+b-c)', {
                     a: -2.01,

@@ -1,138 +1,177 @@
-//# sourceURL=jsmedia.js
+//# sourceURL=../dist/jsmedia.js
 /**
-* JSDK 2.4.0 
+* JSDK 2.5.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var JS;
+(function (JS) {
+    let media;
+    (function (media) {
+        class AudioCache {
+            constructor(init) {
+                this._init = init;
+                this._cache = new DataCache({
+                    name: init.name
+                });
+            }
+            _load(id, url) {
+                let m = this;
+                return Promises.create(function () {
+                    Http.get({
+                        url: url,
+                        responseType: 'arraybuffer',
+                        success: res => {
+                            m.set(id, res.data).then(() => {
+                                this.resolve();
+                            });
+                        }
+                    }).catch(res => {
+                        if (m._init.loaderror)
+                            m._init.loaderror.call(m, res);
+                    });
+                });
+            }
+            load(imgs) {
+                let ms = Types.isArray(imgs) ? imgs : [imgs], plans = [];
+                ms.forEach(img => {
+                    plans.push(Promises.newPlan(this._load, [img.id, img.url], this));
+                });
+                return Promises.order(plans);
+            }
+            get(id) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    return yield this._cache.read(id);
+                });
+            }
+            set(id, data) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    return yield this._cache.write({
+                        id: id,
+                        data: data
+                    });
+                });
+            }
+            has(id) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    return yield this._cache.hasKey(id);
+                });
+            }
+            clear() {
+                return __awaiter(this, void 0, void 0, function* () {
+                    yield this._cache.clear();
+                });
+            }
+            destroy() {
+                return __awaiter(this, void 0, void 0, function* () {
+                    yield this._cache.destroy();
+                });
+            }
+        }
+        media.AudioCache = AudioCache;
+    })(media = JS.media || (JS.media = {}));
+})(JS || (JS = {}));
+var AudioCache = JS.media.AudioCache;
 var JS;
 (function (JS) {
     let media;
     (function (media) {
         let W = window, A = W.AudioContext || W['msAudioContext'], AC = new A();
-        class Sound {
-            constructor(cfg) {
-                this._bus = new EventBus(this);
-                this._d = false;
-                let T = this;
-                T._cfg = Jsons.union({
+        class AudioPro {
+            constructor(init) {
+                this._init = Jsons.union({
                     volume: 1,
                     loop: false
-                }, cfg);
-                if (T._cfg.on)
-                    Jsons.forEach(T._cfg.on, (v, k) => { T._bus.on(k, v); });
+                }, init);
             }
-            _check() {
-                if (this._d)
-                    throw new StateError('The object was destroyed!');
-            }
-            load(url) {
-                let T = this;
-                T._check();
-                return new Promise((resolve, reject) => {
-                    Ajax.get({
-                        url: url,
-                        type: 'arraybuffer',
-                        onSending: req => {
-                            if (T._cfg.on && T._cfg.on.loading)
-                                T._bus.fire('loading', [req]);
-                        },
-                        onCompleted: res => {
-                            AC.decodeAudioData(res.data, (buffer) => {
-                                T._src = url;
-                                T._buffer = buffer;
-                                resolve(T);
-                            }, err => {
-                                if (T._cfg.on && T._cfg.on.decode_error)
-                                    T._bus.fire('decode_error', [err]);
-                                reject(err);
-                            });
-                        },
-                        onError: res => {
-                            if (T._cfg.on && T._cfg.on.load_error)
-                                T._bus.fire('load_error', [res]);
-                            reject(res);
-                        }
-                    });
-                });
-            }
-            on(type, fn, once) {
-                this._bus.on(type, fn, once);
-                return this;
-            }
-            off(type, fn) {
-                this._bus.off(type, fn);
-                return this;
+            static play(id, cache) {
+                new AudioPro().play(id, cache);
             }
             loop(is) {
-                let T = this;
+                let m = this;
                 if (is == void 0)
-                    return T._cfg.loop;
-                T._cfg.loop = is;
-                return T;
+                    return m._init.loop;
+                m._init.loop = is;
+                m._node.loop = is;
+                return m;
             }
-            src() {
-                return this._src;
-            }
-            play(delay, offset, duration) {
-                let T = this;
-                T._check();
-                T.stop();
-                T._gain = AC.createGain();
-                T._gain.gain.value = T._cfg.volume;
-                T._node = AC.createBufferSource();
-                T._node.buffer = T._buffer;
-                let c = T._cfg;
-                T._node.loop = c.loop;
-                if (c.on && c.on.ended)
-                    T._node.onended = e => {
-                        T._bus.fire('ended');
+            _play(a) {
+                let m = this;
+                m.stop();
+                m._gain = AC.createGain();
+                m._gain.gain.value = m._init.volume;
+                m._node = AC.createBufferSource();
+                m._node.buffer = a;
+                let c = m._init;
+                m._node.loop = c.loop;
+                if (c.played)
+                    m._node.onended = e => {
+                        m._dispose();
+                        c.played.call(m);
                     };
-                T._node.connect(T._gain);
+                m._node.connect(m._gain);
                 if (c.handler) {
-                    let node = c.handler.call(T, AC);
-                    T._gain.connect(node);
+                    let node = c.handler.call(m, AC);
+                    m._gain.connect(node);
                     node.connect(AC.destination);
                 }
                 else {
-                    T._gain.connect(AC.destination);
+                    m._gain.connect(AC.destination);
                 }
-                if (c.on && c.on.playing)
-                    T._bus.fire('playing', [AC, T._gain.gain]);
-                T._node.start(delay || 0, offset || 0, duration);
+                if (c.playing)
+                    c.playing.call(m);
+                m._node.start();
+            }
+            play(a, cache) {
+                if (typeof a == 'string') {
+                    cache.get(a).then(buf => {
+                        this.play(buf);
+                    });
+                }
+                else {
+                    if (a)
+                        AC.decodeAudioData(a, (buffer) => {
+                            this._play(buffer);
+                        }, err => {
+                            JSLogger.error('Decode audio buffer fail!');
+                        });
+                }
             }
             stop() {
-                this._check();
                 if (this._node)
                     this._node.stop();
             }
             volume(n) {
-                let T = this;
-                T._check();
-                T._cfg.volume = n;
-                if (T._gain)
-                    T._gain.gain.value = n;
+                let m = this;
+                m._init.volume = n;
+                if (m._gain)
+                    m._gain.gain.value = n;
             }
-            destroy() {
-                let T = this;
-                T._d = true;
-                T._cfg = null;
-                T._src = null;
-                T._buffer = null;
-                T._gain.disconnect();
-                T._node.disconnect();
-                T._bus.destroy();
+            _dispose() {
+                let m = this;
+                m._gain.disconnect();
+                m._node.disconnect();
             }
         }
-        media.Sound = Sound;
+        media.AudioPro = AudioPro;
     })(media = JS.media || (JS.media = {}));
 })(JS || (JS = {}));
-var Sound = JS.media.Sound;
+var AudioPro = JS.media.AudioPro;
 var JS;
 (function (JS) {
     let media;
     (function (media) {
-        class Video {
+        class VideoPlayer {
             constructor(c) {
                 let T = this;
                 T._c = Jsons.union({
@@ -240,7 +279,7 @@ var JS;
                 this._el['on' + e] = fn;
             }
         }
-        media.Video = Video;
+        media.VideoPlayer = VideoPlayer;
     })(media = JS.media || (JS.media = {}));
 })(JS || (JS = {}));
-var Video = JS.media.Video;
+var VideoPlayer = JS.media.VideoPlayer;

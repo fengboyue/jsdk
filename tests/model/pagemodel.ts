@@ -18,12 +18,12 @@ module JS {
                 })
             }
 
-            public test1() {
+            test1() {
                 this.persons.on('loadsuccess', function () {
                     let me = <PageModel>this; 
                     Assert.equal(10, me.getCurrentPage())
                     Assert.equal(3, me.getData().length);
-                    Assert.equal('Smith', this.getRowModel<Person>(2, Person).get('name'));
+                    Assert.equal('Smith', me.getRowModel<Person>(2, Person).get('name'));
                 });
                 this.persons.pageSize(100);
                 this.persons.loadPage(10);

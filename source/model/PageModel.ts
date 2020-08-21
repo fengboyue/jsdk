@@ -18,12 +18,12 @@ module JS {
 
         export interface PageModelListeners<M = PageModel> extends ListModelListeners<M> {
             /**
-             * @event (e, newPage, oldPage)
+             * @event (this:PageModel, e:CustomEvent, newPage:number, oldPage:number)
              */
             pagechanged: EventHandler2<M, number, number>
         };
 
-        export interface PageQuery extends AjaxRequest {
+        export interface PageQuery extends HttpRequest {
             pageSize?: number;
             page?: number;
         }
@@ -87,15 +87,16 @@ module JS {
                 this._check();
 
                 let me = this,
-                query = <PageQuery>Jsons.union(Ajax.toRequest(this._config.dataQuery),Ajax.toRequest(quy));
+                query = <PageQuery>Jsons.union(Http.toRequest(this._config.dataQuery),Http.toRequest(quy));
                 
                 this._fire('loading', [query]);
                 me._config.dataQuery = query;//save for reload
                         
                 return new JsonProxy().execute<R>({
                     method: query.method,
-                    url: query.url
-                }, me._newParams(query)).then(function (result: ResultSet<R>) {
+                    url: query.url,
+                    data: me._newParams(query)
+                }).then(function (result: ResultSet<R>) {
                     if (result.success()) {
                         me.total(result.total());
                         me.setData(<any>result.data(), silent);
@@ -107,7 +108,7 @@ module JS {
                         me._fire('loadfailure', [result]);
                     }
                     return Promise.resolve(<any>result);
-                }).catch(function (err: AjaxResponse | Error) {
+                }).catch(function (err: HttpResponse | Error) {
                     me._fire('loaderror', [err]);
                 });
             }

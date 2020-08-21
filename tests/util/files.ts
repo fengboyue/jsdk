@@ -7,17 +7,17 @@ module JS {
         @klass('JS.test.FilesTest')
         export class FilesTest extends TestCase {
 
-            public test1() {
-                Assert.true(Files.isFileExt('/a.log','.log'));
-                Assert.false(Files.isFileExt('/a.lg','.log'));
-                Assert.false(Files.isFileExt('/a.log.','.log'));
+            test1() {
+                Assert.true(Files.isFileType('/a.log','.log'));
+                Assert.false(Files.isFileType('/a.lg','.log'));
+                Assert.false(Files.isFileType('/a.log.','.log'));
             }
-            public test2() {
-                Assert.true(Files.isCompressedFile('/a.zip'));
-                Assert.true(Files.isCompressedFile('http://.com/a.rar'));
-                Assert.true(Files.isImageFile('http://a.com/b.png'));
+            test2() {
+                Assert.true(Files.isFileType('/a.zip', FileTypes.ZIPS));
+                Assert.true(Files.isFileType('http://.com/a.rar', FileTypes.ZIPS));
+                Assert.true(Files.isFileType('http://a.com/b.png',FileTypes.IMAGES));
             }
-            public test3() {
+            test3() {
                 Assert.equal(0, Files.convertSize(null, FileSizeUnit.B, FileSizeUnit.GB));
                 Assert.equal(0, Files.convertSize(undefined, FileSizeUnit.KB, FileSizeUnit.TB));
                 Assert.equal(0, Files.convertSize('', FileSizeUnit.TB, FileSizeUnit.B));
@@ -36,7 +36,7 @@ module JS {
                 Assert.equal(0.00048828125, Files.convertSize(512, FileSizeUnit.B, FileSizeUnit.MB));
                 Assert.equal(536870912, Files.convertSize(512, FileSizeUnit.MB, FileSizeUnit.B));
             }
-            public test4() {
+            test4() {
                 Assert.equal('0B', Files.toSizeString(null));
                 Assert.equal('0B', Files.toSizeString(undefined));
                 Assert.equal('0B', Files.toSizeString(''));

@@ -164,7 +164,7 @@ module JS {
             }
 
             private _renderChildren() {
-                let els = this.widgetEl.find('div.modal-body div[jsfx-alias]');
+                let els = this.widgetEl.find(`div.modal-body div[${View.WIDGET_ATTRIBUTE}]`);
                 if (els.length < 1) return;
 
                 this._children = {};
@@ -173,7 +173,7 @@ module JS {
                     let el = $(e),
                         name = el.attr('name'),
                         id = el.attr('id'),
-                        alias = el.attr('jsfx-alias');
+                        alias = el.attr(View.WIDGET_ATTRIBUTE);
 
                     let cfg: WidgetConfig<Widget> = Jsons.union(wConfigs && wConfigs[id], { id: id, name: name });
                     this._children[id] = Class.aliasInstance<Widget>(alias, cfg);

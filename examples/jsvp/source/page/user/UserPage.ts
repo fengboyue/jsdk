@@ -30,7 +30,7 @@ module AppDemo {
                     });
                 }
                 public read404() {
-                    this.userService.read404().catch((res: AjaxResponse) => {
+                    this.userService.read404().catch((res: HttpResponse) => {
                         App.fireEvent('404', res.statusText)
                     })
                 }

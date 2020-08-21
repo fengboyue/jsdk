@@ -42,11 +42,11 @@ JS.imports('$xyz').then(()=>{ //$xyz is JLU format
 
 ```javascript
 JS.config({
-    closeImport: true|false,       //True指示JSDK将关闭动态加载。比如：类库可能已在html中静态加载过。
-    cachedImport: true|false,      //False指示JSDK将会自动在每个文件的URL后添加时间戳"_="以阻止缓存。
-    minImport: true|false,         //True指示JSDK将加载JS或CSS资源的最小化文件(.min结尾的文件)。
-    jsdkRoot: null,                //JSDK自库的根网址。缺省为null时表示JSDK库部署在{libsRoot}/jsdk/{JSDK-VERSION}下；其他网址时表示部署在该网址。
-    libRoot: '/libs',              //第三方类库的根网址。     
+    closeImport: boolean,          //True指示JSDK将关闭动态加载。比如：类库可能已在html中静态加载过。
+    cachedImport: boolean|string,  //False则会在每个URL后添加时间戳"_={now}"以阻止缓存；String则会添加"_={string}"的自定义时间戳。
+    minImport: boolean,            //True指示JSDK将加载JS或CSS资源的最小化文件(.min结尾的文件)。
+    jsdkRoot: null|string,         //JSDK自库的根网址。缺省为null时表示JSDK库部署在{libsRoot}/jsdk/{JSDK-VERSION}下；其他网址时表示部署在该网址。
+    libRoot: string,               //第三方类库的根网址。     
     libs: {
         ...
     }
@@ -91,21 +91,22 @@ JS.imports([
 ```
 
 ## JSDK模块
-JSDK被划分成多个模块（类库）。最底层的核心模块是<b>jscore</b>，包含了全部的工具类、反射、注解、线程、切面、容器等基础功能；最上层的模块是<b>jsvp</b>和<b>jsfx</b>。在实际开发中，你可以不必加载整个<code>jsdk.js</code>，而是仅仅加载你需要的模块。
+JSDK被划分成多个模块（类库）。最底层的核心模块是<b>jscore</b>，包含了全部的工具类、反射、注解、线程、切面等基础功能；最上层的模块是<b>jsvp</b>和<b>jsfx</b>。在实际开发中，你可以不必加载整个<code>jsdk.js</code>，而是仅仅加载你需要的模块。
 ### 模块清单
-模块名|备注|所含包|依赖模块|最小尺寸
----|---|---|---|---
-jscore|核心库|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||98kb
-jsds|数据结构库|JS.ds.* |jscore |6kb
-jsmedia|音视频播放器|JS.media.* |jscore |4kb
-jsinput|外设事件库|JS.input.* |jsds |14kb
-jsui|UI基础库|JS.ui.* |jscore |5kb
-jsmvc|Model&View&Component|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
-jsan|动画库|JS.an.* |jsui |16kb
-jsfx|Widget组件库 |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
-jsvp|应用层框架|JS.store.*<br>JS.app.* |jsmv|8kb
-jsunit|单元测试框架|JS.unit.* |jscore|js: 9kb<br>css: 669b
-jsdk|包含上述全部模块|JS.* ||js: 281kb
+模块名|备注|所含包|依赖自身模块|是否依赖第三方库|最小尺寸
+---|---|---|---|---|---
+jscore|core module|JS.util.* <br>JS.net.* <br>JS.lang.*  ||No|73 kb
+jsugar|syntax sugars:<br>reflect/annotation/aop/mixin|JS.sugar.* |jscore|No|28 kb
+jsds|data structures+stores|JS.ds.*<br>JS.store.* |jscore |No|13 kb
+jsmedia|audio+video|JS.media.* |jsds |No|5 kb
+jsmath|math tools|JS.math.* |jscore |No|38 kb
+jsui|ui+events|JS.input.*<br>JS.ui.* |jsds |No|16 kb
+jsmvc|model&views&component|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsugar<br>jsui |No|29 kb
+jsan|animations|JS.an.* |jsui |No|17 kb
+jsfx|widgets |JS.fx.* |jsmvc|Yes|js: 112 kb<br>css: 104 kb
+jsvp|app framework|JS.app.* |jsmvc|No|4 kb
+jsunit|unit-test framework|JS.unit.* |jsugar|No|js: 9 kb<br>css: 669 b
+jsdk|all above modules|JS.* ||Yes|js: 322 kb
 
 ### 自定义模块
 当你需要更小尺寸的模块文件，你可以修改build/目录下的构建脚本，去掉不需要用到的类或包，重新构建出自定义的模块文件。

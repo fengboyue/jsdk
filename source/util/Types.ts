@@ -13,13 +13,13 @@ module JS {
 
         let _of = function (a: any, s: string): boolean {
             return typeof a === s
-        }
-        let _is = function (a: any, s: string) {
+        },
+         _is = function (a: any, s: string) {
             return toString.call(a) === `[object ${s}]`
-        }
+        },
 
         /** 是不是类的构造函数 */
-        let _isKlass = function (obj: any): boolean {
+         _isKlass = function (obj: any): boolean {
             if (typeof obj != 'function') return false;
             
             let proto = obj.prototype;
@@ -40,7 +40,12 @@ module JS {
             }
 
             return false;
-        }
+        },
+        _superklass = (klass: Klass<any>):Klass<any>=>{
+            if (Object === klass) return null;
+            let sup = Object.getPrototypeOf(klass);
+            return <Klass<any>>Object.getPrototypeOf(Object) === sup ? Object : sup;
+        };
 
         /**
          * A type-check class.<br>
@@ -253,6 +258,7 @@ module JS {
              * 是不是类的实例
              */
             public static isKlass(obj: any, klass: Klass<any>): boolean {
+                if (!this.ofKlass(obj, klass)) return false;
                 return obj.constructor && obj.constructor === klass;
             }
 
@@ -261,9 +267,7 @@ module JS {
              * 是不是类或是其子类的实例
              */
             public static ofKlass(obj: any, klass: Klass<any>): boolean {
-                if (obj == void 0) return false;
-                if (this.isKlass(obj, klass)) return true;
-                return obj instanceof klass;
+                return obj instanceof klass
             }
 
             /**
@@ -282,31 +286,16 @@ module JS {
              * Kls1 is class or subclass of Kls2.<br>
              * 是不是类及其子类
              */
-            public static subKlass(kls1: Klass<any>, kls2: Klass<any>): boolean {
+            public static subklassOf(kls1: Klass<any>, kls2: Klass<any>): boolean {
                 if (kls2 === Object || kls1 === kls2) return true;
 
-                let superXls = Class.getSuperklass(kls1);
+                let superXls = _superklass(kls1);
                 while (superXls != null) {
                     if (superXls === kls2) return true;
-                    superXls = Class.getSuperklass(superXls);
+                    superXls = _superklass(superXls);
                 }
 
                 return false;
-            }
-
-            /**
-             * Equal a reflect class.<br>
-             * 是否是某个反射类
-             */
-            public static equalClass(cls1: Class<any>, cls2: Class<any>) {
-                return cls1.equals(cls2);
-            }
-            /**
-             * Cls1 is reflect subclass of Cls2.<br>
-             * 是否是反射类及其子类
-             */
-            public static subClass(cls1: Class<any>, cls2: Class<any>) {
-                return cls1.subclassOf(cls2);
             }
 
             /**

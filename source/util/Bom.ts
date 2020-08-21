@@ -10,7 +10,7 @@ module JS {
 
     export namespace util {
 
-        let R = false, D = document, W = window; //isReady
+        let R = false, W = self; 
         /**
          * Window Helper
          */
@@ -26,7 +26,7 @@ module JS {
                     return
                 }
 
-                let callback = function () {
+                let D = document, callback = function () {
                     R = true;
                     fn();
                     callback = null;
@@ -99,7 +99,7 @@ module JS {
              * Full screen
              */
             public static fullscreen() {
-                let de = D.documentElement;
+                let de = document.documentElement;
                 let fnName = de['mozRequestFullScreen'] ? 'mozRequestFullScreen' : (de['webkitRequestFullScreen'] ? 'webkitRequestFullScreen' : 'requestFullscreen');
                 if (de[fnName]) de[fnName]();
             }
@@ -108,7 +108,8 @@ module JS {
              * Normal screen
              */
             public static normalscreen() {
-                let fnName = D['mozCancelFullScreen'] ? 'mozCancelFullScreen' : (D['webkitCancelFullScreen'] ? 'webkitCancelFullScreen' : 'exitFullscreen');
+                let D = document,
+                fnName = D['mozCancelFullScreen'] ? 'mozCancelFullScreen' : (D['webkitCancelFullScreen'] ? 'webkitCancelFullScreen' : 'exitFullscreen');
                 if (D[fnName]) D[fnName]();
             }
 

@@ -6,15 +6,15 @@
         alt="License: MIT"></a>
     <a href="#">
         <img
-        src="https://img.shields.io/badge/version-v2.4.0-brightgreen"
-        alt="Version: 2.4.0"></a>
+        src="https://img.shields.io/badge/version-v2.5.0-brightgreen"
+        alt="Version: 2.5.0"></a>
 </p>
 
-JSDK 2.0+ is the most comprehensive TS/JS framework, including lots of features, frameworks and tools from the bottom layers to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.
+JSDK 2.0+ is the most comprehensive TS/JS framework, including lots of features, frameworks and tools from the bottom to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.
 
 It supports such following features:
 <p class="warn">
-Annotation, Reflection, AOP, Component & Dependency Injection, Thread, Timer, Unit Test, Event Bus, Animations, Application Framework. A group of advanced widgets and more powerful toolboxes are also provided.
+Annotation, Reflection, AOP, Component & Dependency Injection, Thread, Timer, Unit-Test, Event-Bus, Animations, Application Framework. A group of advanced widgets and more powerful tools are also provided.
 </p>
 
 JSDK will greatly help you to develop libraries, components, widgets, applications and even games.
@@ -42,7 +42,7 @@ If you touch JSDK for the first time, you need to have these following basic kno
 * *It is <b>strongly recommended to use JSDK in TS projects</b>, which will make all features of JSDK effective.*
 * *If you need to run JSDK on a browser that does not support ES6, please use [Babel](https://babeljs.io/docs/en/).*
 
-## Resources Online
+## Online Resources 
 You can visit the following online resources on Github to know more:
 <p class="warn">
 <a href="https://fengboyue.github.io/jsdk/docs/#/en/quick" target="_blank">JSDK Guides</a>
@@ -54,7 +54,7 @@ You can visit the following online resources on Github to know more:
 <a href="https://fengboyue.github.io/jsdk/api" target="_blank">JSDK API Docs</a>
 </p>
 
-## Launch Local Resources
+## Local Resources
 You can launch a http server on your PC to visit these resources quickly.
 1. Suppose you download and unzip JSDK to the <code>{JSDK-INSTALL}</code> directory.
 2. Run a http server and set your server path <code>http://localhost/jsdk/</code> to refer to your <code>{JSDK-INSTALL}</code>.
@@ -66,67 +66,63 @@ JSDK is licensed under the MIT license since version 2.0.
 
 ## Updates
 
-### v2.4.0 - 2020/8/3
-[Added] 
-- Supports drag/tap events for mobile browsers.
+### v2.5.0 Milestone - 2020/8/21
+- Now "cachedImport" of global configuration supports custom timestamp string.
+- New "math" module for vector and geometry calculations.
+- New "jsugar" module for containing advanced syntax featues that already exists.
+- New "JS.net" package and Http class insteading of old Ajax class.
+- Rename NotHandleError class to RefusedError.
+- Rename Bundle class to I18N.
+- New DataCache class for binary files.
+- New ImageCache class for preload images.
 
-[Changed] 
-- rename the system module to jscore.
-- rename the jsmv module to jsmvc.
-- refactor some class of the input module.
-- set the default interval time of SeqKeys to Infinity.
-- change "canImport" to "closeImport" in global configuration.
-- rename "minimize" to "minImport" in global configuration.
-- add new "cachedImport" item in global configuration.
+### v2.4.0 - 2020/8/3
+- Support drag/tap events for mobile browsers.
+- Rename system module to jscore.
+- Rename jsmv module to jsmvc.
+- Refactor some class of the input module.
+- Set the default interval time of SeqKeys to Infinity.
+- Change "canImport" to "closeImport" in global configuration.
+- Rename "minimize" to "minImport" in global configuration.
+- Add new "cachedImport" item in global configuration.
 
 ### v2.3.1 - 2020/7/26
-[Bugfix] 
-- fix a bug of EventBus's _call method caused by the last refactoring.
-- fix a bug after Bom.ready() has been called many times.
-
-[Removed] 
-- remove redundancy @aop annotation.
-
-[Changed] 
-- refactor some methods of Page class.
-- refactor App Event.
-- minify size of source code.
-- minify Reflect.js.
+- Fix a bug of EventBus's _call method caused by the last refactoring.
+- Fix a bug when Bom.ready() had been called many times.
+- Remove redundancy @aop annotation.
+- Refactor some methods of Page class.
+- Refactor App Event.
+- Minify size of source code.
+- Minify Reflect.js.
 
 ### v2.3.0 - 2020/7/24
-[Added] 
-- create new media module with advanced audio and video players.
-- add interval time for Seqkeys in Keyboard class.
+- New "media" module supports advanced audio and video players.
+- Add interval time for Seqkeys in Keyboard class.
 - Ajax class supports new response type: arraybuffer.
 
 ### v2.2.0 - 2020/7/17
-[Added] 
-- create new input module for complex key and mouse events.
-- generate index.html for every directory of examples automatically.
-
-[Changed] 
-- rename "importMode" to "canImport" in global configuration.
-- if EventHandler function renturn false means that: evt.stopPropagation();evt.preventDefault().
-- revise parts of contents in the guides.
-- lightweight bugfixes & optimizes.
+- New "input" module for complex key and mouse events.
+- Generate index.html for every directory of examples automatically.
+- Rename "importMode" to "canImport" in global configuration.
+- Now, if EventHandler function renturn false means that: evt.stopPropagation();evt.preventDefault().
+- Revise parts of contents in the guides.
+- Lightweight bugfixes & optimizes.
 
 ### v2.1.0 - 2020/7/11
-[Added] 
-- create new animation module.
-- add computedStyle method on HTMLElement.prototype.
-- add some useful methods to Colors class.
-- add Type.json from Type.object which only presents class instance now.
+- New "animation" module.
+- Add computedStyle method on HTMLElement.prototype.
+- Add some useful methods to Colors class.
+- Add Type.json from Type.object which only presents class instance now.
+- Remove and modified some unused methods of Dates class and Date.prototye.
+- Remove some unused type definitions on Model classes.
+- Remove some unused jsdocs.
+- Redesign new stronger Timer class for constant interval time and calculation of FPS.
+- Move all Model and View classes to new "jsmv" module from old "jsui" module.
+- Rename the package of "JS.data.*" to "JS.ds.*" and create separated "jsds" module for keeping core module smaller.
+- Move the package of "JS.store.*" to "jsvp" module for keeping core module smaller.
 
-[Removed] 
-- remove and modified some unused methods of Dates class and Date.prototye.
-- remove some unused type definitions on Model classes.
-- remove some unused jsdocs.
-
-[Changed] 
-- redesign new stronger Timer class for constant interval time and calculation of FPS.
-- move all Model and View classes to new "jsmv" module from old "jsui" module.
-- rename the package of "JS.data.*" to "JS.ds.*" and create new "jsds" module for keeping core module size smaller.
-- move the package of "JS.store.*" to "jsvp" module for keeping core module size smaller.
+### v2.0.0 Milestone - 2020/6/16
+- Release all-new JDSK 2.0!
 
 ## Old Versions
 The <a href="https://github.com/fengboyue/jsdk-0.x" target="_blank">

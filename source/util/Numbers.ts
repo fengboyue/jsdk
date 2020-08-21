@@ -6,7 +6,6 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
-/// <reference path="../reflect/Class.ts"/>
 /**
  * Add some helpful methods for Number.prototype
  */
@@ -206,7 +205,7 @@ interface Number {
     }
     /**
      * 每三位整数逗号分割
-     * @param digit 
+     * @param dLen 小数位长度 
      */
     $N.format = function (dLen?: number): string {
         let d:number = dLen == void 0 || !Number.isFinite(dLen) ? this.fractionLength() : dLen,

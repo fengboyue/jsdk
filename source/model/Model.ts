@@ -21,7 +21,7 @@ module JS {
             off(event?: ModelEvents): this;
             clone(): this;
             reload(): Promise<ResultSet<T>>;
-            load(req: string | AjaxRequest, silent?: boolean): Promise<ResultSet<T>>;
+            load(req: string | HttpRequest, silent?: boolean): Promise<ResultSet<T>>;
             setData(data: any, silent?: boolean): this;
             getData(): any;
             iniData(): any;
@@ -38,47 +38,47 @@ module JS {
 
         export type ModelListeners<M> = {
             /**
-             * @event (e, newData, oldData)
+             * @event (this:Model, e:CustomEvent, newData:JsonObject, oldData:JsonObject)
              */
             dataupdating: EventHandler2<M, JsonObject, JsonObject>
             /**
-             * @event (e, newData, oldData)
+             * @event (this:Model, e:CustomEvent, newData:any, oldData:any)
              */
             dataupdated: EventHandler2<M, JsonObject, JsonObject>
             /**
-             * @event (e, newVal, oldVal, fieldName)
+             * @event (this:Model, e:CustomEvent, newVal:any, oldVal:any, fieldName:string)
              */
             fieldchanged: EventHandler3<M, any, any, string>
             /**
-             * @event (e, result, data)
+             * @event (this:Model, e:CustomEvent, result:ValidateResult, data:JsonObject)
              */
             validated: EventHandler2<M, ValidateResult, JsonObject>
             /**
-             * @event (e, result, val, fieldName)
+             * @event (this:Model, e:CustomEvent, result:ValidateResult, val:any, fieldName:string)
              */
             fieldvalidated: EventHandler3<M, ValidateResult, any, string>
             /**
-             * @event (e, request)
+             * @event (this:Model, e:CustomEvent, request:HttpRequest)
              */
-            loading: EventHandler1<M, AjaxRequest>
+            loading: EventHandler1<M, HttpRequest>
             /**
-             * @event (e, result)
+             * @event (this:Model, e:CustomEvent, result:ResultSet<any>)
              */
             loadsuccess: EventHandler1<M, ResultSet<any>>
             /**
-             * @event (e, result)
+             * @event (this:Model, e:CustomEvent, result:ResultSet<any>)
              */
             loadfailure: EventHandler1<M, ResultSet<any>>
             /**
-             * @event (e, response|error)
+             * @event (this:Model, e:CustomEvent, res:HttpResponse|Error)
              */
-            loaderror: EventHandler1<M, AjaxResponse|Error>
+            loaderror: EventHandler1<M, HttpResponse|Error>
         };
         export class ModelConfig {
             readonly listeners?: ModelListeners<this>;
             idProperty?: string = 'id';
             readonly fields?: Array<FieldConfig | string>;
-            dataQuery?: string | AjaxRequest;
+            dataQuery?: string | HttpRequest;
             iniData?: JsonObject = null;
         }
 
@@ -111,7 +111,7 @@ module JS {
             }
 
             private _check() {
-                if (this.isDestroyed()) throw new NotHandledError('The model was destroyed!');
+                if (this.isDestroyed()) throw new RefusedError('The model was destroyed!');
             }
 
             private _newField(cfg: FieldConfig) {
@@ -194,11 +194,11 @@ module JS {
                 return this.load(this._config.dataQuery);
             }
 
-            public load<T>(quy: string | AjaxRequest, silent?: boolean): Promise<ResultSet<T>> {
+            public load<T>(quy: string | HttpRequest, silent?: boolean): Promise<ResultSet<T>> {
                 this._check();
 
                 let me = this,
-                query = <AjaxRequest>J.union(Ajax.toRequest(this._config.dataQuery),Ajax.toRequest(quy));
+                query = <HttpRequest>J.union(Http.toRequest(this._config.dataQuery),Http.toRequest(quy));
 
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
@@ -211,7 +211,7 @@ module JS {
                         me._fire('loadsuccess', [result]);
                     } 
                     return Promise.resolve(<any>result)
-                }).catch(function (err: AjaxResponse | Error) {
+                }).catch(function (err: HttpResponse | Error) {
                     if (Types.ofKlass(err, Error)) JSLogger.error('[' + (<Error>err).name + ']' + (<Error>err).message);
                     me._fire('loaderror', [err]);
                 })

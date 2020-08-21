@@ -83,15 +83,15 @@ module JS {
             private _addTest(test: TestClass) {
                 if (!test) return;
 
-                let T = this;
+                let m = this;
                 if (Y.ofKlass(test, TestSuite)) {
-                    T._cases = T._cases.concat((<TestSuite>test).getTestCases());
+                    m._cases = m._cases.concat((<TestSuite>test).getTestCases());
                 } else if (Y.ofKlass(test, TestCase)) {
-                    T._cases[T._cases.length] = <TestCase>test;
-                } else if (Y.subClass(<Class<any>>test, TestSuite.class)) {
-                    T._cases = T._cases.concat((<TestSuite>Class.newInstance((<Class<any>>test).name)).getTestCases());
-                } else if (Y.subClass(<Class<any>>test, TestCase.class)) {
-                    T._cases[T._cases.length] = <TestCase>Class.newInstance((<Class<any>>test).name);
+                    m._cases[m._cases.length] = <TestCase>test;
+                } else if ((<Class<any>>test).subclassOf(TestSuite.class)) {
+                    m._cases = m._cases.concat((<TestSuite>Class.newInstance((<Class<any>>test).name)).getTestCases());
+                } else if ((<Class<any>>test).subclassOf(TestCase.class)) {
+                    m._cases[m._cases.length] = <TestCase>Class.newInstance((<Class<any>>test).name);
                 }
             }
 

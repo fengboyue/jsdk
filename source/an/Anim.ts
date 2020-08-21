@@ -16,7 +16,9 @@ module JS {
             PAUSED
         }
 
-        export class AnimConfig {
+        export class AnimInit {
+            target?: HTMLElement|string;
+            
             /**
              * Defines whether this Animation reverses direction on the ending of every loop.
              */
@@ -45,10 +47,6 @@ module JS {
              */
             direction?: 'forward' | 'backward' = 'forward';
             /**
-             * The default easing function is LINEAR.
-             */
-            easing?: EasingFunction = Easings.LINEAR;
-            /**
              * The action to be executed at the starting of this Animation.
              */
             onStarting?: EventHandler<Anim>;
@@ -60,18 +58,18 @@ module JS {
 
         export abstract class Anim {
 
-            protected _cfg: AnimConfig;
+            protected _cfg: AnimInit;
             protected _timer: AnimTimer = null;
             protected _dir: 'forward' | 'backward' = 'forward';
             protected _loop: number = 0;
               
-            constructor(cfg: AnimConfig) {
+            constructor(cfg: AnimInit) {
                 this._init();
                 this.config(cfg);
             }
 
             protected _init(){
-                this.config(new AnimConfig());
+                this.config(new AnimInit());
             }
 
             protected _convertFrame(f: KeyFrame):number|JsonObject<number>|JsonObject<JsonObject<number>>{
@@ -79,12 +77,12 @@ module JS {
             }
 
             
-            public config(): AnimConfig
-            public config(cfg: AnimConfig): this
-            public config(cfg?: AnimConfig): any {
+            public config(): AnimInit
+            public config(cfg: AnimInit): this
+            public config(cfg?: AnimInit): any {
                 if (!cfg) return this._cfg;
 
-                this._cfg = <AnimConfig>Jsons.union(this._cfg, cfg);
+                this._cfg = <AnimInit>Jsons.union(this._cfg, cfg);
                 this.direction(this._cfg.direction);
                 return this
             }
@@ -109,6 +107,8 @@ module JS {
              * Plays Animation from current position.
              */
             public abstract play(t?: number) : this;
+
+            protected _resetEl() {};
 
             protected _reset(){
                 let T = this;
@@ -137,5 +137,5 @@ module JS {
 }
 
 import AnimState = JS.an.AnimState;
-import AnimConfig = JS.an.AnimConfig;
+import AnimInit = JS.an.AnimInit;
 import Anim = JS.an.Anim;

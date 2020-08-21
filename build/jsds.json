@@ -6,6 +6,7 @@
         "noLib": true
     },
     "include": [
+        "../source/store/*.ts",
         "../source/ds/*.ts"
     ]
 } 

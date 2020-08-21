@@ -25,20 +25,12 @@ module JS {
              * The json data for rendering.
              */
             data?: any;
-            /**
-             * The common config for all widgets.
-             */
-            defaultConfig?: IWidgetConfig;
-            /**
-             * Each widget's config.
-             */
-            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
         }
 
         /**
          * An TemplateView is a widgets container rendering with Templator.
          */
-        export abstract class TemplateView extends View {
+        export class TemplateView extends View {
             protected _config: TemplateViewConfig;
             protected _engine: Templator;
             protected _model = new ListModel();
@@ -57,7 +49,7 @@ module JS {
                 this._model.setData(data);
             }
 
-            public load(api: string | AjaxRequest) {
+            public load(api: string | HttpRequest) {
                 return this._model.load(api);
             }
 
@@ -68,7 +60,7 @@ module JS {
                     ctr.off().innerHTML = html;
 
                     let wConfigs = cfg.widgetConfigs;
-                    if (!Check.isEmpty(wConfigs)) ctr.findAll('[jsfx-alias]').forEach((el: HTMLElement) => {
+                    if (!Check.isEmpty(wConfigs)) ctr.findAll(`[${View.WIDGET_ATTRIBUTE}]`).forEach((el: HTMLElement) => {
                         let realId = $1(el).attr('id'),
                             prefixId = realId.replace(/(\d)*/g, '');
                         this.addWidget(this._newWidget(realId, wConfigs[prefixId], cfg.defaultConfig))

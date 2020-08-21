@@ -1,6 +1,6 @@
-//# sourceURL=jsan.js
+//# sourceURL=../dist/jsan.js
 /**
-* JSDK 2.4.0 
+* JSDK 2.5.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -15,7 +15,7 @@ var JS;
             AnimState[AnimState["RUNNING"] = 1] = "RUNNING";
             AnimState[AnimState["PAUSED"] = 2] = "PAUSED";
         })(AnimState = an.AnimState || (an.AnimState = {}));
-        class AnimConfig {
+        class AnimInit {
             constructor() {
                 this.autoReverse = false;
                 this.autoReset = false;
@@ -23,10 +23,9 @@ var JS;
                 this.loop = 1;
                 this.delay = 0;
                 this.direction = 'forward';
-                this.easing = an.Easings.LINEAR;
             }
         }
-        an.AnimConfig = AnimConfig;
+        an.AnimInit = AnimInit;
         class Anim {
             constructor(cfg) {
                 this._timer = null;
@@ -36,7 +35,7 @@ var JS;
                 this.config(cfg);
             }
             _init() {
-                this.config(new AnimConfig());
+                this.config(new AnimInit());
             }
             _convertFrame(f) {
                 return f;
@@ -60,6 +59,8 @@ var JS;
             getLooped() {
                 return this._loop;
             }
+            _resetEl() { }
+            ;
             _reset() {
                 let T = this;
                 T._loop = 0;
@@ -81,7 +82,7 @@ var JS;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
 var AnimState = JS.an.AnimState;
-var AnimConfig = JS.an.AnimConfig;
+var AnimInit = JS.an.AnimInit;
 var Anim = JS.an.Anim;
 var JS;
 (function (JS) {
@@ -327,11 +328,46 @@ var JS;
 (function (JS) {
     let an;
     (function (an) {
-        let J = Jsons;
-        class ElementAnimConfig extends an.AnimConfig {
+        class FadeAnimInit extends an.FrameAnimInit {
         }
-        an.ElementAnimConfig = ElementAnimConfig;
-        class ElementAnim extends an.Anim {
+        an.FadeAnimInit = FadeAnimInit;
+        class FadeAnim extends an.FrameAnim {
+            constructor(cfg) {
+                super(cfg);
+            }
+            config(cfg) {
+                if (!cfg)
+                    return this._cfg;
+                let m = super.config(cfg);
+                if (this._el)
+                    this._o = this._el.computedStyle().opacity || '1';
+                return m;
+            }
+            _onUpdate(f) {
+                this._el.style.opacity = f + '';
+            }
+            _resetEl() {
+                this._el.style.opacity = this._o;
+            }
+        }
+        an.FadeAnim = FadeAnim;
+    })(an = JS.an || (JS.an = {}));
+})(JS || (JS = {}));
+var FadeAnimInit = JS.an.FadeAnimInit;
+var FadeAnim = JS.an.FadeAnim;
+var JS;
+(function (JS) {
+    let an;
+    (function (an) {
+        let J = Jsons;
+        class FrameAnimInit extends an.AnimInit {
+            constructor() {
+                super(...arguments);
+                this.easing = an.Easings.LINEAR;
+            }
+        }
+        an.FrameAnimInit = FrameAnimInit;
+        class FrameAnim extends an.Anim {
             constructor(cfg) {
                 super(cfg);
             }
@@ -350,8 +386,8 @@ var JS;
             config(cfg) {
                 if (!cfg)
                     return this._cfg;
-                if (cfg.el)
-                    this._el = $1(cfg.el);
+                if (cfg.target)
+                    this._el = $1(cfg.target);
                 if (cfg.frames)
                     this._parseFrames(cfg.frames);
                 return super.config(cfg);
@@ -417,13 +453,12 @@ var JS;
             _resetFrame() {
                 this._onUpdate(this._dir == 'forward' ? this._from : this._to);
             }
-            _resetInitial() { }
             play() {
                 let T = this, r = T._timer, c = T._cfg;
                 if (!r) {
                     T._reset();
-                    r = new an.AnimTimer((et) => {
-                        T._onUpdate.call(T, T._calc(c.duration, et, c.easing));
+                    r = new an.AnimTimer((t) => {
+                        T._onUpdate.call(T, T._calc(c.duration, t, c.easing));
                     }, {
                         delay: c.delay,
                         duration: c.duration,
@@ -444,7 +479,7 @@ var JS;
                     });
                     r.on('finished', () => {
                         if (c.autoReset)
-                            T._resetInitial();
+                            T._resetEl();
                         if (c.onFinished)
                             c.onFinished.call(T);
                         T._reset();
@@ -462,55 +497,24 @@ var JS;
                 super.stop();
                 let T = this, c = T._cfg;
                 if (c.autoReset)
-                    T._resetInitial();
+                    T._resetEl();
                 return T;
             }
         }
-        an.ElementAnim = ElementAnim;
+        an.FrameAnim = FrameAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var ElementAnimConfig = JS.an.ElementAnimConfig;
-var ElementAnim = JS.an.ElementAnim;
-var JS;
-(function (JS) {
-    let an;
-    (function (an) {
-        class FadeAnimConfig extends an.ElementAnimConfig {
-        }
-        an.FadeAnimConfig = FadeAnimConfig;
-        class FadeAnim extends an.ElementAnim {
-            constructor(cfg) {
-                super(cfg);
-            }
-            config(cfg) {
-                if (!cfg)
-                    return this._cfg;
-                let m = super.config(cfg);
-                if (this._el)
-                    this._o = this._el.computedStyle().opacity || '1';
-                return m;
-            }
-            _onUpdate(f) {
-                this._el.style.opacity = f + '';
-            }
-            _resetInitial() {
-                this._el.style.opacity = this._o;
-            }
-        }
-        an.FadeAnim = FadeAnim;
-    })(an = JS.an || (JS.an = {}));
-})(JS || (JS = {}));
-var FadeAnimConfig = JS.an.FadeAnimConfig;
-var FadeAnim = JS.an.FadeAnim;
+var FrameAnimInit = JS.an.FrameAnimInit;
+var FrameAnim = JS.an.FrameAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
         let J = Jsons;
-        class GradientAnimConfig extends an.ElementAnimConfig {
+        class GradientAnimInit extends an.FrameAnimInit {
         }
-        an.GradientAnimConfig = GradientAnimConfig;
-        class GradientAnim extends an.ElementAnim {
+        an.GradientAnimInit = GradientAnimInit;
+        class GradientAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
@@ -558,7 +562,7 @@ var JS;
                     el.style[k] = Colors.rgba2css(v);
                 });
             }
-            _resetInitial() {
+            _resetEl() {
                 let el = this._el, c = this._cls;
                 J.forEach(c, (v, k) => {
                     el.style[k] = v;
@@ -568,16 +572,16 @@ var JS;
         an.GradientAnim = GradientAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var GradientAnimConfig = JS.an.GradientAnimConfig;
+var GradientAnimInit = JS.an.GradientAnimInit;
 var GradientAnim = JS.an.GradientAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class MoveAnimConfig extends an.ElementAnimConfig {
+        class MoveAnimInit extends an.FrameAnimInit {
         }
-        an.MoveAnimConfig = MoveAnimConfig;
-        class MoveAnim extends an.ElementAnim {
+        an.MoveAnimInit = MoveAnimInit;
+        class MoveAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
@@ -601,7 +605,7 @@ var JS;
                 if (f.y != void 0)
                     el.style.top = f.y + 'px';
             }
-            _resetInitial() {
+            _resetEl() {
                 let el = this._el, xy = this._xy;
                 el.style.left = xy.x + 'px';
                 el.style.top = xy.y + 'px';
@@ -610,15 +614,15 @@ var JS;
         an.MoveAnim = MoveAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var MoveAnimConfig = JS.an.MoveAnimConfig;
+var MoveAnimInit = JS.an.MoveAnimInit;
 var MoveAnim = JS.an.MoveAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class ParallelAnimConfig extends an.AnimConfig {
+        class ParallelAnimInit extends an.AnimInit {
         }
-        an.ParallelAnimConfig = ParallelAnimConfig;
+        an.ParallelAnimInit = ParallelAnimInit;
         let E = Check.isEmpty;
         class ParallelAnim extends an.Anim {
             constructor(cfg) {
@@ -685,16 +689,16 @@ var JS;
         an.ParallelAnim = ParallelAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var ParallelAnimConfig = JS.an.ParallelAnimConfig;
+var ParallelAnimInit = JS.an.ParallelAnimInit;
 var ParallelAnim = JS.an.ParallelAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class RotateAnimConfig extends an.ElementAnimConfig {
+        class RotateAnimInit extends an.FrameAnimInit {
         }
-        an.RotateAnimConfig = RotateAnimConfig;
-        class RotateAnim extends an.ElementAnim {
+        an.RotateAnimInit = RotateAnimInit;
+        class RotateAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
@@ -717,27 +721,27 @@ var JS;
                     el.style.transform = `rotate(${v}deg)`;
                 }
             }
-            _resetInitial() {
+            _resetEl() {
                 this._el.style.transform = `rotate(0deg)`;
             }
         }
         an.RotateAnim = RotateAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var RotateAnimConfig = JS.an.RotateAnimConfig;
+var RotateAnimInit = JS.an.RotateAnimInit;
 var RotateAnim = JS.an.RotateAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class ScaleAnimConfig extends an.ElementAnimConfig {
+        class ScaleAnimInit extends an.FrameAnimInit {
         }
-        an.ScaleAnimConfig = ScaleAnimConfig;
-        class ScaleAnim extends an.ElementAnim {
+        an.ScaleAnimInit = ScaleAnimInit;
+        class ScaleAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
-            _resetInitial() {
+            _resetEl() {
                 this._el.style.transform = `scaleX(1) scaleY(1) scaleZ(1)`;
             }
             _onUpdate(v) {
@@ -757,15 +761,15 @@ var JS;
         an.ScaleAnim = ScaleAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var ScaleAnimConfig = JS.an.ScaleAnimConfig;
+var ScaleAnimInit = JS.an.ScaleAnimInit;
 var ScaleAnim = JS.an.ScaleAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class SequentialAnimConfig extends an.AnimConfig {
+        class SequentialAnimInit extends an.AnimInit {
         }
-        an.SequentialAnimConfig = SequentialAnimConfig;
+        an.SequentialAnimInit = SequentialAnimInit;
         let E = Check.isEmpty;
         class SequentialAnim extends an.Anim {
             constructor(cfg) {
@@ -831,27 +835,27 @@ var JS;
         an.SequentialAnim = SequentialAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var SequentialAnimConfig = JS.an.SequentialAnimConfig;
+var SequentialAnimInit = JS.an.SequentialAnimInit;
 var SequentialAnim = JS.an.SequentialAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class SkewAnimConfig extends an.ElementAnimConfig {
+        class SkewAnimInit extends an.FrameAnimInit {
             constructor() {
                 super(...arguments);
                 this.firstMode = 'both';
             }
         }
-        an.SkewAnimConfig = SkewAnimConfig;
-        class SkewAnim extends an.ElementAnim {
+        an.SkewAnimInit = SkewAnimInit;
+        class SkewAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
             _init() {
-                this.config(new SkewAnimConfig());
+                this.config(new SkewAnimInit());
             }
-            _resetInitial() {
+            _resetEl() {
                 this._el.style.transform = `skew(0deg,0deg)`;
             }
             _onUpdate(f) {
@@ -868,20 +872,20 @@ var JS;
         an.SkewAnim = SkewAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var SkewAnimConfig = JS.an.SkewAnimConfig;
+var SkewAnimInit = JS.an.SkewAnimInit;
 var SkewAnim = JS.an.SkewAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class TranslateAnimConfig extends an.ElementAnimConfig {
+        class TranslateAnimInit extends an.FrameAnimInit {
         }
-        an.TranslateAnimConfig = TranslateAnimConfig;
-        class TranslateAnim extends an.ElementAnim {
+        an.TranslateAnimInit = TranslateAnimInit;
+        class TranslateAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
-            _resetInitial() {
+            _resetEl() {
                 this._el.style.transform = `translateX(0px) translateY(0px) translateZ(0px)`;
             }
             _onUpdate(f) {
@@ -891,5 +895,5 @@ var JS;
         an.TranslateAnim = TranslateAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var TranslateAnimConfig = JS.an.TranslateAnimConfig;
+var TranslateAnimInit = JS.an.TranslateAnimInit;
 var TranslateAnim = JS.an.TranslateAnim;

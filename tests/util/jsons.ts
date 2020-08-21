@@ -31,7 +31,7 @@ module JS {
                 }
             }
 
-            public test1() {
+            test1() {
                 let json = Jsons.union(this._json1, this._json2);
                 Assert.equal(json.a, null);
                 Assert.equal(json.b, null);

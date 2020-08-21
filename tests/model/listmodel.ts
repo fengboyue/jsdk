@@ -3,7 +3,7 @@
 
 @klass('ListPerson')
 class ListPerson extends Model {
-    public static DEFAULT_FIELDS = [
+    static DEFAULT_FIELDS = [
         { name: 'id', type: 'int'},
         { name: 'name', nameMapping: 'field1', type: 'string' },
         { name: 'age', nameMapping: 'field2', type: 'float', defaultValue: 99.99 }
@@ -22,7 +22,7 @@ module JS {
                 this.persons = new ListModel().modelKlass(Person);
             }
 
-            public test1() {
+            test1() {
                 this.persons.add({ code: 1001, name: 'Arthur' });
                 this.persons.add(new Person().setData({ code: 2001, name: 'Bill' }));
                 Assert.equal(2, this.persons.size());
@@ -35,7 +35,7 @@ module JS {
                 Assert.equal('David', this.persons.getRowModel<Person>(3).get('name'));
             }
 
-            public test2() {
+            test2() {
                 this.persons.insert(0, { code: 1001, name: 'Arthur' });
                 Assert.equal(1, this.persons.size());
 
@@ -48,7 +48,7 @@ module JS {
                 Assert.equal('David', this.persons.getRowModel<Person>(1).get('name'));
             }
 
-            public test3() {
+            test3() {
                 this.persons.insert(1, [
                     { code: 3001, name: 'Smith' },
                     { code: 4001, name: 'David' },
@@ -62,7 +62,7 @@ module JS {
                 Assert.true(this.persons.isEmpty());
             }
 
-            public test4() {
+            test4() {
                 this.persons.insert(0, [
                     { code: 3001, name: 'Smith' },
                     { code: 4001, name: 'David' },
@@ -87,7 +87,7 @@ module JS {
                 Assert.equal('Zoro', this.persons.getRowModel<Person>(2).get('name'));
             }
 
-            public test5() {
+            test5() {
                 this.persons.iniData([
                     { code: 3001, name: 'Smith' },
                     { code: 4001, name: 'David' },
@@ -113,7 +113,7 @@ module JS {
                 Assert.equal(4, this.persons.iniData().length);
             }
 
-            public test6() {
+            test6() {
                 let persons = new ListModel().modelKlass(ListPerson);
 
                 persons.load('test-data/persons-list.json').then((result) => {
@@ -122,7 +122,7 @@ module JS {
                 })
             }
 
-            public test7() {
+            test7() {
                 let persons = new ListModel({
                     sorters: [{
                         field:'gmtCreated'

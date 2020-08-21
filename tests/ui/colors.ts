@@ -7,7 +7,7 @@ module JS {
         @klass('JS.test.ColorsTest')
         export class ColorsTest extends TestCase {
 
-            public test1() {
+            test1() {
                 Assert.equal({r:39,g:174,b:96,a:1}, Colors.hex2rgba('27ae60'));
                 Assert.equal({r:39,g:174,b:96,a:1}, Colors.hex2rgba('#27ae60'));
                 Assert.equal({r:39,g:174,b:96,a:1}, Colors.hex2rgba('#27ae60ff'));
@@ -21,7 +21,7 @@ module JS {
                 Assert.equal({r:0,g:0,b:0,a:1}, Colors.hex2rgba('000f'));
             }
 
-            public test2() {
+            test2() {
                 Assert.equal('#000000', Colors.rgba2hex(0,0,0));
                 Assert.equal('#ffffff', Colors.rgba2hex(255,255,255));
                 
@@ -58,7 +58,7 @@ module JS {
             *  95%         242.25          F2
             *  100%        255.00          FF
              */
-            public test3() {
+            test3() {
                 Assert.equal('#0000000c', Colors.rgba2hex(0,0,0,0.05));
                 Assert.equal('#00000019', Colors.rgba2hex(0,0,0,0.10));
                 Assert.equal('#00000026', Colors.rgba2hex(0,0,0,0.15));
@@ -80,7 +80,7 @@ module JS {
                 Assert.equal('#000000f2', Colors.rgba2hex(0,0,0,0.95));
             }
 
-            public test4() {
+            test4() {
                 Assert.equal(0.05, Colors.hex2rgba('#0000000c').a);
                 Assert.equal(0.10, Colors.hex2rgba('#00000019').a);
                 Assert.equal(0.15, Colors.hex2rgba('#00000026').a);

@@ -1,183 +1,10 @@
-//# sourceURL=jsvp.js
+//# sourceURL=../dist/jsvp.js
 /**
-* JSDK 2.4.0 
+* JSDK 2.5.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
 */
-var JS;
-(function (JS) {
-    let store;
-    (function (store) {
-        let D = document;
-        class CookieStore {
-            static get(key) {
-                let reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)", "gi"), data = reg.exec(D.cookie), str = data ? window['unescape'](data[2]) : null;
-                return store.StoreHelper.parse(str);
-            }
-            ;
-            static set(key, value, expireHours, path) {
-                if (!key)
-                    return;
-                let exp = CookieStore.EXPIRES_DATETIME;
-                if (Types.isDefined(expireHours) && expireHours > 0) {
-                    var date = new Date();
-                    date.setTime(date.getTime() + expireHours * 3600 * 1000);
-                    exp = date.toUTCString();
-                }
-                let p = path ? path : CookieStore.PATH;
-                let domain = CookieStore.DOMAIN;
-                if (domain)
-                    domain = 'domain=' + domain;
-                D.cookie = key + '=' + window['escape']('' + store.StoreHelper.toString(value)) + '; path=' + p + '; expires=' + exp + domain;
-            }
-            ;
-            static remove(key) {
-                let date = new Date();
-                date.setTime(date.getTime() - 10000);
-                D.cookie = key + "=; expire=" + date.toUTCString();
-            }
-            ;
-            static clear() {
-                D.cookie = '';
-            }
-            ;
-        }
-        CookieStore.EXPIRES_DATETIME = 'Wed, 15 Apr 2099 00:00:00 GMT';
-        CookieStore.PATH = '/';
-        CookieStore.DOMAIN = self.document ? D.domain : null;
-        store.CookieStore = CookieStore;
-    })(store = JS.store || (JS.store = {}));
-})(JS || (JS = {}));
-var CookieStore = JS.store.CookieStore;
-var JS;
-(function (JS) {
-    let store;
-    (function (store) {
-        let L = localStorage;
-        class LocalStore {
-            static get(key) {
-                let str = L.getItem(key);
-                if (!str)
-                    return undefined;
-                return store.StoreHelper.parse(str);
-            }
-            ;
-            static set(key, value) {
-                L.setItem(key, store.StoreHelper.toString(value));
-            }
-            ;
-            static remove(key) {
-                L.removeItem(key);
-            }
-            ;
-            static key(i) {
-                return L.key(i);
-            }
-            ;
-            static size() {
-                return L.length;
-            }
-            ;
-            static clear() {
-                L.clear();
-            }
-            ;
-        }
-        store.LocalStore = LocalStore;
-    })(store = JS.store || (JS.store = {}));
-})(JS || (JS = {}));
-var LocalStore = JS.store.LocalStore;
-var JS;
-(function (JS) {
-    let store;
-    (function (store) {
-        let S = sessionStorage;
-        class SessionStore {
-            static get(key) {
-                let str = S.getItem(key);
-                if (!str)
-                    return undefined;
-                return store.StoreHelper.parse(str);
-            }
-            ;
-            static set(key, value) {
-                S.setItem(key, store.StoreHelper.toString(value));
-            }
-            ;
-            static remove(key) {
-                S.removeItem(key);
-            }
-            ;
-            static key(i) {
-                return S.key(i);
-            }
-            ;
-            static size() {
-                return S.length;
-            }
-            ;
-            static clear() {
-                S.clear();
-            }
-            ;
-        }
-        store.SessionStore = SessionStore;
-    })(store = JS.store || (JS.store = {}));
-})(JS || (JS = {}));
-var SessionStore = JS.store.SessionStore;
-var JS;
-(function (JS) {
-    let store;
-    (function (store) {
-        let T = Types, J = Jsons, TP = Type, S = J.stringify;
-        class StoreHelper {
-            static toString(value) {
-                if (T.isUndefined(value))
-                    return 'undefined';
-                if (T.isNull(value))
-                    return 'null';
-                if (T.isString(value))
-                    return S(['string', value]);
-                if (T.isBoolean(value))
-                    return S(['boolean', value]);
-                if (T.isNumber(value))
-                    return S(['number', value]);
-                if (T.isDate(value))
-                    return S(['date', '' + value.valueOf()]);
-                if (T.isArray(value) || T.isJsonObject(value))
-                    return S(['object', S(value)]);
-            }
-            static parse(data) {
-                if (TP.null == data)
-                    return null;
-                if (TP.undefined == data)
-                    return undefined;
-                let [type, val] = J.parse(data), v = val;
-                switch (type) {
-                    case TP.boolean:
-                        v = Boolean(val);
-                        break;
-                    case TP.number:
-                        v = Number(val);
-                        break;
-                    case TP.date:
-                        v = new Date(val);
-                        break;
-                    case TP.array:
-                        v = J.parse(val);
-                        break;
-                    case TP.json:
-                        v = J.parse(val);
-                        break;
-                }
-                return v;
-            }
-        }
-        store.StoreHelper = StoreHelper;
-    })(store = JS.store || (JS.store = {}));
-})(JS || (JS = {}));
-var StoreHelper = JS.store.StoreHelper;
 var JS;
 (function (JS) {
     let app;
@@ -358,7 +185,8 @@ var JS;
                 if (!this._proxy)
                     this._proxy = Class.newInstance(Service_1.DEFAULT_PROXY);
                 return new Promise((resolve, reject) => {
-                    return this._proxy.execute(api, params).then((result) => {
+                    api.data = params;
+                    return this._proxy.execute(api).then((result) => {
                         let model = Class.newInstance(api.dataKlass || Model), rds = result.data();
                         Types.ofKlass(model, Model) ? model.setData(rds) : model = rds;
                         resolve(model);

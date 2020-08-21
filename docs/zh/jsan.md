@@ -112,4 +112,4 @@ anim.play();
 ```
 
 ## 更多示例
-请去<code>examples</code>目录中查看更多动画示例。
+请去<code>examples/jsan</code>目录中查看更多动画示例。

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MoveAnim | JSDK 2.4.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.4.0 API">
+	<title>MoveAnim | JSDK 2.5.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.5.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.4.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.5.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -84,7 +84,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="js.an.elementanim.html" class="tsd-signature-type">ElementAnim</a>
+						<a href="js.an.frameanim.html" class="tsd-signature-type">FrameAnim</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">MoveAnim</span>
@@ -123,7 +123,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="js.an.moveanim.html#_newval" class="tsd-kind-icon">_new<wbr>Val</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="js.an.moveanim.html#_onupdate" class="tsd-kind-icon">_on<wbr>Update</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-protected"><a href="js.an.moveanim.html#_reset" class="tsd-kind-icon">_reset</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="js.an.moveanim.html#_resetinitial" class="tsd-kind-icon">_reset<wbr>Initial</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="js.an.moveanim.html#_resetel" class="tsd-kind-icon">_reset<wbr>El</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite"><a href="js.an.moveanim.html#config" class="tsd-kind-icon">config</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="js.an.moveanim.html#direction" class="tsd-kind-icon">direction</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="js.an.moveanim.html#getlooped" class="tsd-kind-icon">get<wbr>Looped</a></li>
@@ -142,17 +142,17 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Move<wbr>Anim<span class="tsd-signature-symbol">(</span>cfg<span class="tsd-signature-symbol">: </span><a href="js.an.moveanimconfig.html" class="tsd-signature-type">MoveAnimConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.an.moveanim.html" class="tsd-signature-type">MoveAnim</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Move<wbr>Anim<span class="tsd-signature-symbol">(</span>cfg<span class="tsd-signature-symbol">: </span><a href="js.an.moveaniminit.html" class="tsd-signature-type">MoveAnimInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.an.moveanim.html" class="tsd-signature-type">MoveAnim</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#constructor">constructor</a></p>
+								<p>Overrides <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#constructor">constructor</a></p>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>cfg: <a href="js.an.moveanimconfig.html" class="tsd-signature-type">MoveAnimConfig</a></h5>
+									<h5>cfg: <a href="js.an.moveaniminit.html" class="tsd-signature-type">MoveAnimInit</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="js.an.moveanim.html" class="tsd-signature-type">MoveAnim</a></h4>
@@ -165,9 +165,9 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-protected">
 					<a name="_cfg" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _cfg</h3>
-					<div class="tsd-signature tsd-kind-icon">_cfg<span class="tsd-signature-symbol">:</span> <a href="js.an.elementanimconfig.html" class="tsd-signature-type">ElementAnimConfig</a></div>
+					<div class="tsd-signature tsd-kind-icon">_cfg<span class="tsd-signature-symbol">:</span> <a href="js.an.frameaniminit.html" class="tsd-signature-type">FrameAnimInit</a></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#_cfg">_cfg</a></p>
+						<p>Inherited from <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#_cfg">_cfg</a></p>
 						<p>Overrides <a href="js.an.anim.html">Anim</a>.<a href="js.an.anim.html#_cfg">_cfg</a></p>
 					</aside>
 				</section>
@@ -184,7 +184,7 @@
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _el</h3>
 					<div class="tsd-signature tsd-kind-icon">_el<span class="tsd-signature-symbol">:</span> <a href="../interfaces/htmlelement.html" class="tsd-signature-type">HTMLElement</a></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#_el">_el</a></p>
+						<p>Inherited from <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#_el">_el</a></p>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
@@ -192,7 +192,7 @@
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _frame</h3>
 					<div class="tsd-signature tsd-kind-icon">_frame<span class="tsd-signature-symbol">:</span> <a href="../modules/js.an.html#keyframe" class="tsd-signature-type">KeyFrame</a></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#_frame">_frame</a></p>
+						<p>Inherited from <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#_frame">_frame</a></p>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
@@ -259,7 +259,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#_newframe">_newFrame</a></p>
+								<p>Inherited from <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#_newframe">_newFrame</a></p>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -292,7 +292,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#_newval">_newVal</a></p>
+								<p>Inherited from <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#_newval">_newVal</a></p>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -328,7 +328,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#_onupdate">_onUpdate</a></p>
+								<p>Overrides <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#_onupdate">_onUpdate</a></p>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -349,7 +349,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#_reset">_reset</a></p>
+								<p>Inherited from <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#_reset">_reset</a></p>
 								<p>Overrides <a href="js.an.anim.html">Anim</a>.<a href="js.an.anim.html#_reset">_reset</a></p>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -357,15 +357,15 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
-					<a name="_resetinitial" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _reset<wbr>Initial</h3>
+					<a name="_resetel" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _reset<wbr>El</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">_reset<wbr>Initial<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">_reset<wbr>El<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#_resetinitial">_resetInitial</a></p>
+								<p>Overrides <a href="js.an.anim.html">Anim</a>.<a href="js.an.anim.html#_resetel">_resetEl</a></p>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -381,24 +381,24 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#config">config</a></p>
+								<p>Overrides <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#config">config</a></p>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>T<span class="tsd-signature-symbol">: </span><a href="js.an.elementanimconfig.html" class="tsd-signature-type">ElementAnimConfig</a></h4>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="js.an.frameaniminit.html" class="tsd-signature-type">FrameAnimInit</a></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#config">config</a></p>
+								<p>Overrides <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#config">config</a></p>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>T<span class="tsd-signature-symbol">: </span><a href="js.an.elementanimconfig.html" class="tsd-signature-type">ElementAnimConfig</a></h4>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="js.an.frameaniminit.html" class="tsd-signature-type">FrameAnimInit</a></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -498,7 +498,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#play">play</a></p>
+								<p>Inherited from <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#play">play</a></p>
 								<p>Overrides <a href="js.an.anim.html">Anim</a>.<a href="js.an.anim.html#play">play</a></p>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
@@ -514,7 +514,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="js.an.elementanim.html">ElementAnim</a>.<a href="js.an.elementanim.html#stop">stop</a></p>
+								<p>Inherited from <a href="js.an.frameanim.html">FrameAnim</a>.<a href="js.an.frameanim.html#stop">stop</a></p>
 								<p>Overrides <a href="js.an.anim.html">Anim</a>.<a href="js.an.anim.html#stop">stop</a></p>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
@@ -554,16 +554,22 @@
 								<a href="../modules/js.lang.html">lang</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.math.html">math</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.media.html">media</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.model.html">model</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-								<a href="../modules/js.reflect.html">reflect</a>
+								<a href="../modules/js.net.html">net</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.store.html">store</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.sugar.html">sugar</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.ui.html">ui</a>
@@ -628,7 +634,7 @@
 								<a href="js.an.moveanim.html#_reset" class="tsd-kind-icon">_reset</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
-								<a href="js.an.moveanim.html#_resetinitial" class="tsd-kind-icon">_reset<wbr>Initial</a>
+								<a href="js.an.moveanim.html#_resetel" class="tsd-kind-icon">_reset<wbr>El</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite">
 								<a href="js.an.moveanim.html#config" class="tsd-kind-icon">config</a>

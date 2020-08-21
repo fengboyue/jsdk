@@ -43,13 +43,13 @@ JS.imports('$xyz').then(()=>{ //$xyz is JLU format
 You can modify this file directly or dynamically override its configuration items in JS code:
 ```javascript
 JS.config({
-    closeImport: true|false,  //True indicates JSDK will not loads library dynamically. For example: current library maybe was loaded statically in HTML.
-    cachedImport: true|false, //False indicates JSDK will automatically add a time stamp("_=") after every file URL to block caching.
+    closeImport: boolean,         //True indicates to close importing function. For example: The following libraries had been loaded statically in HTML so that you need close importing.
+    cachedImport: boolean|string, //False indicates to add a timestamp "_={now}" after each URL to block loading caching file; String indicates to add a timestamp "_={string}" after each URL to block loading caching file at first time.
     
-    minImport: true|false,    //True indicates JSDK will load the minimized file(its ".min" file) of JS or CSS
-    jsdkRoot: null,           //The root url of JSDK self-library. The default is null that indicates JSDK self-library be deployed under libRoot: {libsRoot}/jsdk/{JSDK-VERSION}/. 
-                              //Note: The config item means JSDK self-library is allowed to be deployed outside the "libRoot".
-    libRoot: '/libs',         //The root url of 3rd-party libraries using by JSDK. 
+    minImport: boolean,    //True indicates JSDK will load the minimized file(its ".min" file) of JS or CSS
+    jsdkRoot: null|string, //The root url of JSDK self-library. The default is null that indicates JSDK self-library be deployed under libRoot: {libsRoot}/jsdk/{JSDK-VERSION}/. 
+                           //Note: The config item means JSDK self-library is allowed to be deployed outside the "libRoot".
+    libRoot: '/libs',      //The root url of 3rd-party libraries using by JSDK. 
     libs: {
         ...
     }
@@ -95,27 +95,28 @@ JS.imports([
 
 ## Modules of JSDK
 JSDK is divided into several modules(libraries).
-The most bottom core module is <b>jscore</b>, includes all keys features and tools;
+The bottom module is <b>jscore</b>, includes all basic features and tools;
 The toppest modules are <b>jsvp</b> and <b>jsfx</b>. 
-In real development, you don't have to load the entire <code>jsdk.js</code>, but just load the modules you need.
+In real development, you don't need to load the entire <code>jsdk.js</code>, but just load modules you need.
 
 ### JSDK Modules List
-Module Name|Remarks|Includes|Depends|Min Sizes
----|---|---|---|---
-jscore|core module|JS.util.* <br>JS.lang.* <br>JS.reflect.* ||98kb
-jsds|data structures|JS.ds.* |jscore |6kb
-jsmedia|audio+video|JS.media.* |jscore |4kb
-jsinput|key&mouse events|JS.input.* |jsds |14kb
-jsui|ui module|JS.ui.* |jscore |5kb
-jsmvc|model&views&component|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsui |29kb
-jsan|animations|JS.an.* |jsui |16kb
-jsfx|widgets |JS.fx.* |jsmv|js: 112kb<br>css: 104kb
-jsvp|app framework|JS.store.*<br>JS.app.* |jsmv|8kb
-jsunit|unit-test framework|JS.unit.* |jscore|js: 9kb<br>css: 669b
-jsdk|all above modules|JS.* ||js: 281kb
+Module Name|Remarks|Includes|Depends Self|Depends 3rd|Min Sizes
+---|---|---|---|---|---
+jscore|core module|JS.util.* <br>JS.net.* <br>JS.lang.*  ||No|73 kb
+jsugar|syntax sugars:<br>reflect/annotation/aop/mixin|JS.sugar.* |jscore|No|28 kb
+jsds|data structures+stores|JS.ds.*<br>JS.store.* |jscore |No|13 kb
+jsmedia|audio+video|JS.media.* |jsds |No|5 kb
+jsmath|math tools|JS.math.* |jscore |No|38 kb
+jsui|ui+events|JS.input.*<br>JS.ui.* |jsds |No|16 kb
+jsmvc|model&views&component|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsugar<br>jsui |No|29 kb
+jsan|animations|JS.an.* |jsui |No|17 kb
+jsfx|widgets |JS.fx.* |jsmvc|Yes|js: 112 kb<br>css: 104 kb
+jsvp|app framework|JS.app.* |jsmvc|No|4 kb
+jsunit|unit-test framework|JS.unit.* |jsugar|No|js: 9 kb<br>css: 669 b
+jsdk|all above modules|JS.* ||Yes|js: 322 kb
 
 ### Custom JSDK Module 
-When you need smaller module files, you can modify the build scripts in <code>build/</code> directory. 
+When you need smaller module file, you can modify the build script in <code>build/</code> directory. 
 Remove classes or packages you dont need, and rebuild new module files.
 
 For example, you don't need Button of JSFX, you can remove the JS.fx.Button class in building script of jsfx module.
@@ -132,7 +133,7 @@ The detailed steps are as follows:
 ```
 ./build-module.sh jsfx
 ```
-After execution, new generated files such as <code>jsfx.js</code> and <code>jsfx.min.js</code> in the <code>dist</code> directory no longer include Button class.
+After execution, new generated files such as <code>jsfx.js</code> and <code>jsfx.min.js</code> in the <code>dist</code> directory no longer includes Button class.
 
 <p class='tip'>
 Warn:<br>

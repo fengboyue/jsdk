@@ -16,7 +16,7 @@ module JS {
 
         export interface ResultSetFormat {
             rootProperty?: string;
-            recordsProperty?: string;
+            dataProperty?: string;
             totalProperty?: string;
             pageProperty?: string;
             pageSizeProperty?: string;
@@ -29,13 +29,13 @@ module JS {
         }
 
         /**
-         * A result for API response.
-         */
+        * A result contains remote json response for models such as Model/ListModel/PageModel.
+        */
         export class ResultSet<T=PrimitiveType|Array<any>|JsonObject|Model> {
 
             public static DEFAULT_FORMAT: ResultSetFormat = {
                 rootProperty: undefined,
-                recordsProperty: 'data',
+                dataProperty: 'data',
                 totalProperty: 'paging.total',
                 pageProperty: 'paging.page',
                 pageSizeProperty: 'paging.pageSize',
@@ -133,7 +133,7 @@ module JS {
                 result.version(F(root, fmt.versionProperty));
                 result.success(fmt.isSuccess ? fmt.isSuccess(root) : (root[fmt.successProperty] === (fmt.successCode || true)));
 
-                result.data(F(root, fmt.recordsProperty));
+                result.data(F(root, fmt.dataProperty));
                 result.rawObject(root);
                 result.page(F(root, fmt.pageProperty));
                 result.pageSize(F(root, fmt.pageSizeProperty));

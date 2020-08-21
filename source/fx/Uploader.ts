@@ -10,6 +10,7 @@
 /// <reference path="../util/Files.ts"/>
 /// <reference path="FormWidget.ts"/>
 /// <reference path="Toast.ts"/>
+/// <reference path="UploaderFiles.ts"/>
 
 module JS {
 
@@ -31,7 +32,7 @@ module JS {
             server?: string;
             dnd?: boolean = false;
             paste?: boolean | 'body' = false;
-            accept?: FileExts;
+            accept?: FileAccepts;
             /**
              * 配置生成缩略图的选项。
              */
@@ -57,7 +58,7 @@ module JS {
 
             faceMode?: UploaderFaceMode | UploaderFaceMode[] = [UploaderFaceMode.square, UploaderFaceMode.list];
 
-            i18n?: Resource | UploaderResource;
+            i18n?: URLString | UploaderResource;
             
             iniValue?: MimeFile[] = null;
             data?: MimeFile[] = null;
@@ -444,23 +445,23 @@ module JS {
 
             private _fileIcon(path: string) {
                 let icon = 'alt';
-                if (Files.isFileExt(path, 'pdf')) {
+                if (Files.isFileType(path, 'pdf')) {
                     icon = 'pdf'
-                } else if (Files.isFileExt(path, 'doc,docx')) {
+                } else if (Files.isFileType(path, 'doc,docx')) {
                     icon = 'word'
-                } else if (Files.isFileExt(path, 'xls,xlsx')) {
+                } else if (Files.isFileType(path, 'xls,xlsx')) {
                     icon = 'excel'
-                } else if (Files.isFileExt(path, 'ppt,pptx')) {
+                } else if (Files.isFileType(path, 'ppt,pptx')) {
                     icon = 'powerpoint'
-                } else if (Files.isAudioFile(path)) {
+                } else if (Files.isFileType(path, FileTypes.AUDIOS)) {
                     icon = 'audio'
-                } else if (Files.isVideoFile(path)) {
+                } else if (Files.isFileType(path, FileTypes.VIDEOS)) {
                     icon = 'video'
-                } else if (Files.isCompressedFile(path)) {
+                } else if (Files.isFileType(path, FileTypes.ZIPS)) {
                     icon = 'archive'
-                } else if (Files.isSourceFile(path)) {
+                } else if (Files.isFileType(path, FileTypes.CODES)) {
                     icon = 'code'
-                } else if (Files.isImageFile(path)) {
+                } else if (Files.isFileType(path, FileTypes.IMAGES)) {
                     icon = 'image'
                 }
                 return '<span><i class="far fa-file-' + icon + '"></i></span>'
@@ -470,7 +471,7 @@ module JS {
                 let file = this._toMimeFile(wuFile);
                 this._renderFile(file);
                 if (this._hasFaceMode(UploaderFaceMode.image)) {
-                    let isImage = Files.isImageFile(file.name);
+                    let isImage = Files.isFileType(file.name, FileTypes.IMAGES);
                     if (!file.uri && isImage) {
                         this._makeThumb(wuFile);//生成50%缩略图
                     } else if (!isImage) this.widgetEl.find(`[file-id=${file.id}] img`).replaceWith(this._fileIcon('.' + file.ext));
@@ -538,7 +539,7 @@ module JS {
                 fEl.on('click', !this._hasFaceMode(UploaderFaceMode.image) ? 'a' : 'a,.file-image', (e: JQuery.Event) => {
                     let src = this.widgetEl.find(`#${this.id}-${fileId}`).attr('src');
                     if (src) {
-                        (Files.isImageFile(src) || (<string>src).indexOf('data:image/') == 0) ? window.open().document.body.innerHTML = `<img src="${src}" >` : window.open(src);
+                        (Files.isFileType(src, FileTypes.IMAGES) || (<string>src).indexOf('data:image/') == 0) ? window.open().document.body.innerHTML = `<img src="${src}" >` : window.open(src);
                     } else {
                         Toast.show({
                             type: 'error',
@@ -588,7 +589,7 @@ module JS {
                     id: cf.id,
                     type: cf.mime,
                     name: cf.name,
-                    ext: cf.ext || Files.getExt(cf.name),
+                    ext: cf.ext || Files.getFileType(cf.name),
                     size: cf.size || 1,
                     getRuid: () => { return '' },
                     getSource: () => { return null }

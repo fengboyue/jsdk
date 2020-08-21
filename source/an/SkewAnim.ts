@@ -6,6 +6,8 @@
  * @version 2.1.0
  * @author Frank.Feng
  */
+/// <reference path="FrameAnim.ts" />
+
 module JS {
 
     export namespace an {
@@ -17,9 +19,16 @@ module JS {
             aX?: number,
             aY?: number
         };
-        export type SkewKeyFrames = JsonObject<SkewKeyFrame>;
+        export type SkewKeyFrames = 
+        {
+            from?: SkewKeyFrame,
+            to?: SkewKeyFrame,
+            "0%"?: SkewKeyFrame,
+            "100%"?: SkewKeyFrame,
+            [key: string]: SkewKeyFrame
+        }
 
-        export class SkewAnimConfig extends ElementAnimConfig {
+        export class SkewAnimInit extends FrameAnimInit {
             frames: SkewKeyFrames;
             firstMode?:'both'|'x'|'y' = 'both'; 
         }
@@ -28,22 +37,22 @@ module JS {
          * Skew Animation.<br>
          * Skew a element by angles of X and Y axes.
          */
-        export class SkewAnim extends ElementAnim {
+        export class SkewAnim extends FrameAnim {
 
-            constructor(cfg: SkewAnimConfig) {
+            constructor(cfg: SkewAnimInit) {
                 super(cfg)
             }
 
             protected _init(){
-                this.config(new SkewAnimConfig());
+                this.config(new SkewAnimInit());
             }
 
-            protected _resetInitial(){
+            protected _resetEl(){
                 this._el.style.transform = `skew(0deg,0deg)`
             }
 
             protected _onUpdate(f: SkewKeyFrame) {
-                let m = (<SkewAnimConfig>this._cfg).firstMode, el = this._el;
+                let m = (<SkewAnimInit>this._cfg).firstMode, el = this._el;
                 if(m=='both'){
                     el.style.transform = `skew(${f.aX||0}deg,${f.aY||0}deg)`
                 }else{
@@ -56,5 +65,5 @@ module JS {
 }
 import SkewKeyFrame = JS.an.SkewKeyFrame;
 import SkewKeyFrames = JS.an.SkewKeyFrames;
-import SkewAnimConfig = JS.an.SkewAnimConfig;
+import SkewAnimInit = JS.an.SkewAnimInit;
 import SkewAnim = JS.an.SkewAnim;

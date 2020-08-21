@@ -117,8 +117,8 @@ module JS {
                 super(cfg);
             }
 
-            public load(api: string | AjaxRequest) {
-                if ((<SelectConfig>this._config).autoSearch) throw new NotHandledError('The method be not supported when autoSearch is true!');
+            public load(api: string | HttpRequest) {
+                if ((<SelectConfig>this._config).autoSearch) throw new RefusedError('The method be not supported when autoSearch is true!');
                 return super.load(api);
             }
 
@@ -186,8 +186,8 @@ module JS {
             private _initSelect2(): void {
                 let cfg = <SelectConfig>this._config,
                     dataQuery = cfg.dataQuery,
-                    url = dataQuery ? (Y.isString(dataQuery) ? <string>dataQuery : (<AjaxRequest>dataQuery).url) : null,
-                    jsonParams = dataQuery ? (Y.isString(dataQuery) ? null : (<AjaxRequest>dataQuery).data) : null,
+                    url = dataQuery ? (Y.isString(dataQuery) ? <string>dataQuery : (<HttpRequest>dataQuery).url) : null,
+                    jsonParams = dataQuery ? (Y.isString(dataQuery) ? null : (<HttpRequest>dataQuery).data) : null,
                     options: Select2Options = {
                         disabled: cfg.disabled,
                         allowClear: cfg.allowClear,
@@ -233,7 +233,7 @@ module JS {
                     delay: 500,// 延迟请求500毫秒
                     data: function () { return jsonParams ? jsonParams : {} },
                     processResults: (res: any, params) => {
-                        let data = <Array<any>>J.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
+                        let data = <Array<any>>J.find(res, ResultSet.DEFAULT_FORMAT.dataProperty);
                         this.data(data);
                         return {
                             results: data// 后台返回的数据集

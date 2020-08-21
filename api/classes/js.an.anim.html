@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Anim | JSDK 2.4.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.4.0 API">
+	<title>Anim | JSDK 2.5.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.5.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.4.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.5.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -79,7 +79,7 @@
 						<span class="target">Anim</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<a href="js.an.elementanim.html" class="tsd-signature-type">ElementAnim</a>
+								<a href="js.an.frameanim.html" class="tsd-signature-type">FrameAnim</a>
 							</li>
 							<li>
 								<a href="js.an.parallelanim.html" class="tsd-signature-type">ParallelAnim</a>
@@ -116,6 +116,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="js.an.anim.html#_convertframe" class="tsd-kind-icon">_convert<wbr>Frame</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="js.an.anim.html#_init" class="tsd-kind-icon">_init</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="js.an.anim.html#_reset" class="tsd-kind-icon">_reset</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="js.an.anim.html#_resetel" class="tsd-kind-icon">_reset<wbr>El</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.an.anim.html#config" class="tsd-kind-icon">config</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.an.anim.html#direction" class="tsd-kind-icon">direction</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="js.an.anim.html#getlooped" class="tsd-kind-icon">get<wbr>Looped</a></li>
@@ -134,7 +135,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Anim<span class="tsd-signature-symbol">(</span>cfg<span class="tsd-signature-symbol">: </span><a href="js.an.animconfig.html" class="tsd-signature-type">AnimConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.an.anim.html" class="tsd-signature-type">Anim</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Anim<span class="tsd-signature-symbol">(</span>cfg<span class="tsd-signature-symbol">: </span><a href="js.an.animinit.html" class="tsd-signature-type">AnimInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.an.anim.html" class="tsd-signature-type">Anim</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -143,7 +144,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>cfg: <a href="js.an.animconfig.html" class="tsd-signature-type">AnimConfig</a></h5>
+									<h5>cfg: <a href="js.an.animinit.html" class="tsd-signature-type">AnimInit</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="js.an.anim.html" class="tsd-signature-type">Anim</a></h4>
@@ -156,7 +157,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="_cfg" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _cfg</h3>
-					<div class="tsd-signature tsd-kind-icon">_cfg<span class="tsd-signature-symbol">:</span> <a href="js.an.animconfig.html" class="tsd-signature-type">AnimConfig</a></div>
+					<div class="tsd-signature tsd-kind-icon">_cfg<span class="tsd-signature-symbol">:</span> <a href="js.an.animinit.html" class="tsd-signature-type">AnimInit</a></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
@@ -232,18 +233,32 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="config" class="tsd-anchor"></a>
-					<h3>config</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.an.animconfig.html" class="tsd-signature-type">AnimConfig</a></li>
-						<li class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">(</span>cfg<span class="tsd-signature-symbol">: </span><a href="js.an.animconfig.html" class="tsd-signature-type">AnimConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="_resetel" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _reset<wbr>El</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">_reset<wbr>El<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="js.an.animconfig.html" class="tsd-signature-type">AnimConfig</a></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="config" class="tsd-anchor"></a>
+					<h3>config</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.an.animinit.html" class="tsd-signature-type">AnimInit</a></li>
+						<li class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">(</span>cfg<span class="tsd-signature-symbol">: </span><a href="js.an.animinit.html" class="tsd-signature-type">AnimInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="js.an.animinit.html" class="tsd-signature-type">AnimInit</a></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
@@ -251,7 +266,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>cfg: <a href="js.an.animconfig.html" class="tsd-signature-type">AnimConfig</a></h5>
+									<h5>cfg: <a href="js.an.animinit.html" class="tsd-signature-type">AnimInit</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
@@ -408,16 +423,22 @@
 								<a href="../modules/js.lang.html">lang</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.math.html">math</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.media.html">media</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.model.html">model</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-								<a href="../modules/js.reflect.html">reflect</a>
+								<a href="../modules/js.net.html">net</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.store.html">store</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.sugar.html">sugar</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.ui.html">ui</a>
@@ -465,6 +486,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 								<a href="js.an.anim.html#_reset" class="tsd-kind-icon">_reset</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="js.an.anim.html#_resetel" class="tsd-kind-icon">_reset<wbr>El</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="js.an.anim.html#config" class="tsd-kind-icon">config</a>

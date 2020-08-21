@@ -7,33 +7,29 @@ module JS {
         @klass('JS.test.DatesTest')
         export class DatesTest extends TestCase {
 
-            protected setUp(){
-                Date.class.cancelAop('format');
-            }
-
-            public test1() {
+            test1() {
                 Assert.true(Dates.isLeapYear(2004));
                 Assert.false(Dates.isLeapYear(1999));
             }
-            public test2() {
+            test2() {
                 Assert.true(Dates.getDaysOfMonth(1,2019)==28);
                 Assert.true(Dates.getDaysOfMonth(2,2019)==31);
             }
-            public test3() {
+            test3() {
                 Assert.true(new Date(2019,0,1,1,1,1).equals(new Date('2019-1-1'), 'd'));
             }
-            public test4() {
+            test4() {
                 let d = new Date(2019,0,1);
                 Assert.true(d.setLastTime().diff(new Date('2019-1-1').setLastTime())==0);
                 Assert.true(d.isBefore(new Date('2019-1-2')));
                 Assert.true(d.isAfter(new Date('2018-12-31')));
             }
-            public test5(){
+            test5(){
                 Assert.true(new Date('2018-12-30').getWeek()==52);
                 Assert.true(new Date('2018-12-31').getWeek()==53);
                 Assert.true(new Date('2019-1-1').getWeek()==1);
             }
-            public test6(){
+            test6(){
                 let d = new Date('2018-12-30');
                 d.setWeek(52);
                 Assert.true(d.getWeek()==52);
@@ -43,32 +39,32 @@ module JS {
                 Assert.true(d.getWeek()==53);
                 Assert.true(d.equals(new Date('2018-12-31'), 'd'));
             }
-            public test8(){
+            test8(){
                 Assert.true(new Date(2019,0,1,12,0,1,123).equals(new Date(2019,0,1,12,0,1,123)));
                 Assert.false(new Date(2019,0,1,12,0,1,123).equals(new Date(2019,0,1,12,0,1,124)));
             }
-            public test9(){
+            test9(){
                 let d = new Date('2019-1-2'), d1 = new Date('2019-1-1'), d2 = new Date('2019-1-3');
                 Assert.true(d.between(d1,d2));
                 Assert.false(d.between(d2,d1));
                 Assert.true(d.between(d,d2));               
             }
-            public test10(){
+            test10(){
                 let d = new Date('2019-1-2'), d1 = new Date('2019-1-1'), d2 = new Date('2019-1-3');
                 Assert.true(d.isAfter(d1));
                 Assert.false(d.isAfter(d2));
                 Assert.false(d.isAfter(d));               
             }
-            public test11(){
+            test11(){
                 let d = new Date('2019-1-2'), d1 = new Date('2019-1-1'), d2 = new Date('2019-1-3');
                 Assert.true(d.isBefore(d2));
                 Assert.false(d.isBefore(d1));
                 Assert.false(d.isBefore(d));               
             }
-            public test12(){
+            test12(){
                 Assert.true(new Date().isToday(new Date()));            
             }
-            public test13(){
+            test13(){
                 let d = new Date('2019-1-1').setZeroTime(),
                     h = d.getHours(),
                     m = d.getMinutes(),
@@ -99,13 +95,13 @@ module JS {
                 Assert.true(d.clone().add(1, 'ms').getMilliseconds()==ms+1);
                 Assert.true(d.clone().add(-1, 'ms').getMilliseconds()==999);
             }
-            public test14(){
+            test14(){
                 let d = new Date('2019-1-1').setZeroTime(), offset = d.formatTimezoneOffset();
                 d.setTimezoneOffset(Number(offset)/100);
 
                 Assert.true(d.formatTimezoneOffset()===offset);
             }
-            public test15(){
+            test15(){
                 let d = new Date('2019-1-1').setZeroTime();
                 
                 Assert.true(d.clone().set({year: 2018}).getFullYear()==2018);
@@ -118,7 +114,7 @@ module JS {
                 Assert.true(d.clone().set({millisecond: 999}).getMilliseconds()==999);
                 Assert.true(d.clone().set({timezoneOffset: -480}).getTimezoneOffset()==-480);
             }
-            public test16(){
+            test16(){
                 Dates.I18N_RESOURCE = {
                     en: {
                         AM: 'AM',

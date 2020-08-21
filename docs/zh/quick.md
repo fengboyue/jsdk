@@ -16,7 +16,7 @@ npm install jsdk-offical -g
 ```
 
 ## 基础知识 
-JSDK 2.0是基于 <code>ES6 / TypeScript 2.0+</code> 编写的。
+JSDK 2.0+是基于 <code>ES6 / TypeScript 2.0+</code> 编写的。
 
 如果你第一次接触JSDK，那么你需要先具备以下基础知识：
 > ES6的核心语法及新API，比如：类定义／多行字符串／箭头函数／原生类型的新API/Promise等
@@ -54,67 +54,63 @@ JSDK自2.0版开始支持MIT许可协议。
 
 ## 更新日志
 
-### v2.4.0 - 2020/8/3
-[新增] 
-- 针对移动浏览器支持拖放和Tap事件。
+### v2.5.0 Milestone
+- Now "cachedImport" of global configuration supports custom timestamp string.
+- New "math" module for vector and geometry calculations.
+- New "jsugar" module for containing advanced syntax featues that already exists.
+- New "JS.net" package and Http class insteading of old Ajax class.
+- Rename NotHandleError class to RefusedError.
+- Rename Bundle class to I18N.
+- New DataCache class for binary files.
+- New ImageCache class for preload images.
 
-[修改] 
-- 重命名system模块为jscore。
-- 重命名jsmv模块为jsmvc.
-- 重构jsinput模块的某些类。
-- 设置SeqKeys的缺省间隔时间为Infinity（无限大）。
-- 修改全局配置项"canImport"为"closeImport"。
-- 重命名全局配置项"minimize"为"minImport"。
-- 新增全局配置项"cachedImport"。
+### v2.4.0 - 2020/8/3
+- Support drag/tap events for mobile browsers.
+- Rename system module to jscore.
+- Rename jsmv module to jsmvc.
+- Refactor some class of the input module.
+- Set the default interval time of SeqKeys to Infinity.
+- Change "canImport" to "closeImport" in global configuration.
+- Rename "minimize" to "minImport" in global configuration.
+- Add new "cachedImport" item in global configuration.
 
 ### v2.3.1 - 2020/7/26
-[缺陷修复] 
-- 修复EventBus's _call方法的一个bug，因最近重构导致。
-- 修复Bom.ready()的一个bug：多次调用后多执行了不该执行的代码段。
-
-[删除] 
-- 删除冗余的@aop注解。
-
-[修改] 
-- 重构Page类的部分方法。
-- 重构App Event。
-- 最小化源码文件尺寸。
-- 最小化Reflect.js库文件尺寸。
+- Fix a bug of EventBus's _call method caused by the last refactoring.
+- Fix a bug when Bom.ready() had been called many times.
+- Remove redundancy @aop annotation.
+- Refactor some methods of Page class.
+- Refactor App Event.
+- Minify size of source code.
+- Minify Reflect.js.
 
 ### v2.3.0 - 2020/7/24
-[新增] 
-- 创建新模块"jsmedia"包含高级音频和视频播放器。
-- 为Keyboard类的Seqkeys类型事件添加间隔时间设置。
-- Ajax类支持新的响应类型：arraybuffer。
+- New "media" module supports advanced audio and video players.
+- Add interval time for Seqkeys in Keyboard class.
+- Ajax class supports new response type: arraybuffer.
 
 ### v2.2.0 - 2020/7/17
-[新增] 
-- 创建新模块"jsinput"处理复杂键盘和鼠标事件。
-- 为每个examples的子目录自动化生成index.html.
-
-[修改] 
-- 重命名全局配置项"importMode"为"canImport"。
-- EventHandler函数返回false时将执行: evt.stopPropagation();evt.preventDefault().
-- 修订教程文档的原有部分内容。
-- 轻量的BUG修复与代码优化。
+- New "input" module for complex key and mouse events.
+- Generate index.html for every directory of examples automatically.
+- Rename "importMode" to "canImport" in global configuration.
+- Now, if EventHandler function renturn false means that: evt.stopPropagation();evt.preventDefault().
+- Revise parts of contents in the guides.
+- Lightweight bugfixes & optimizes.
 
 ### v2.1.0 - 2020/7/11
-[新增] 
-- 创建新的动画库jsan。
-- 在HTMLElement原型链上新增computedStyle方法。
-- 在Colors类上新增一些有用的颜色转换方法。
-- 从Type.object类型中分离出Type.json类型，现在object类型仅仅表示类的实例。
+- New "animation" module.
+- Add computedStyle method on HTMLElement.prototype.
+- Add some useful methods to Colors class.
+- Add Type.json from Type.object which only presents class instance now.
+- Remove and modified some unused methods of Dates class and Date.prototye.
+- Remove some unused type definitions on Model classes.
+- Remove some unused jsdocs.
+- Redesign new stronger Timer class for constant interval time and calculation of FPS.
+- Move all Model and View classes to new "jsmv" module from old "jsui" module.
+- Rename the package of "JS.data.*" to "JS.ds.*" and create separated "jsds" module for keeping core module smaller.
+- Move the package of "JS.store.*" to "jsvp" module for keeping core module smaller.
 
-[删除] 
-- 删除和修改了在Dates类和Date原型链上的一些无用方法。
-- 删除了一些Model类上的一些无用的类型定义。
-- 删除了一些无用的jsdoc注释。
-
-[修改] 
-- 重新设计了更强大的Timer类，支持稳定间隔时间和FPS帧率计算。
-- 从旧模块"jsui"中移出所有的Model类和View类到新建的模块"jsmv"。
-- 重命名"JS.data.*"包为"JS.ds.*"并创建新模块"jsds"，为了让核心模块尺寸更小。
-- 移动"JS.store.*"包到"jsvp"模块，为了让核心模块尺寸更小。
+### v2.0.0 Milestone - 2020/6/16
+- Release all-new JDSK 2.0!
 
 ## 旧版本
 <a href="https://github.com/fengboyue/jsdk-0.x" target="_blank">

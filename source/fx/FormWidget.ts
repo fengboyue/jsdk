@@ -32,7 +32,7 @@ module JS {
         /**
          * [req]
          */    
-        export type FormWidgetEventHanler_Loading<T> = EventHandler1<T, AjaxRequest>;
+        export type FormWidgetEventHanler_Loading<T> = EventHandler1<T, HttpRequest>;
         /**
          * [rst] 
          */    
@@ -44,7 +44,7 @@ module JS {
         /**
          * [error]
          */    
-        export type FormWidgetEventHanler_Loaderror<T> = EventHandler1<T, AjaxResponse | Error>;
+        export type FormWidgetEventHanler_Loaderror<T> = EventHandler1<T, HttpResponse | Error>;
         /**
          * [newData, oldData] 
          */    
@@ -88,7 +88,7 @@ module JS {
             bodyStyle?: string;
 
             data?: any = null;
-            dataQuery?: string | AjaxRequest;
+            dataQuery?: string | HttpRequest;
 
             iniValue?: any = null;
             listeners?: FormWidgetListeners<T>;
@@ -338,9 +338,9 @@ module JS {
             /**
              * Load data from server. 
              */
-            public load(quy: string | AjaxRequest, silent?: boolean): Promise<ResultSet<any>> {
+            public load(quy: string | HttpRequest, silent?: boolean): Promise<ResultSet<any>> {
                 let cfg = <FormWidgetConfig<any>>this._config;
-                cfg.dataQuery = <AjaxRequest>J.union(Ajax.toRequest(cfg.dataQuery), Ajax.toRequest(quy));
+                cfg.dataQuery = <HttpRequest>J.union(Http.toRequest(cfg.dataQuery), Http.toRequest(quy));
                 return this._dataModel.load(cfg.dataQuery, silent);
             }
 
@@ -390,7 +390,7 @@ module JS {
 
                 if (!vModel) {
                     this._valueModel = new Model();
-                } else if (Types.subKlass(<any>vModel, Model)) {
+                } else if (Types.subklassOf(<any>vModel, Model)) {
                     this._valueModel = Class.newInstance(<Klass<Model>>vModel);
                 } else {
                     this._valueModel = <Model>vModel;

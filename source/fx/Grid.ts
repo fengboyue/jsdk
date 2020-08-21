@@ -64,7 +64,7 @@ module JS {
 
             faceMode?: GridFaceMode | GridFaceMode[];
 
-            i18n?: Resource | GridResource = null;
+            i18n?: URLString | GridResource = null;
 
             listeners?: GridListeners;
         }
@@ -150,7 +150,7 @@ module JS {
                 cfg.dataQuery = <PageQuery>Jsons.union({
                     page: 1,
                     pageSize: cfg.pageSizes ? cfg.pageSizes[0] : Infinity
-                },Ajax.toRequest(cfg.dataQuery));
+                },Http.toRequest(cfg.dataQuery));
 
                 cfg.dataModel = PageModel;
                 this._initDataModel();
@@ -183,14 +183,14 @@ module JS {
             private _bindHeadCheckbox() {//表头Checkbox事件
                 if (!(<GridConfig>this._config).checkable) return;
                 this._hChk = null;
-                let span = $(`#${this.id}_htable tr>th:first-child span[jsfx-alias=checkbox]`);
+                let span = $(`#${this.id}_htable tr>th:first-child span[${View.WIDGET_ATTRIBUTE}=checkbox]`);
                 this._newCheckbox(span, '-1');
             }
 
             private _bindBodyCheckbox() {//表体Checkbox事件
                 if (!(<GridConfig>this._config).checkable) return;
                 this._bChks = null;
-                let me = this, spans = $(`#${this.id}_btable tr>td:first-child span[jsfx-alias=checkbox]`);
+                let me = this, spans = $(`#${this.id}_btable tr>td:first-child span[${View.WIDGET_ATTRIBUTE}=checkbox]`);
                 spans.each(function (i) {
                     me._newCheckbox(this, $(this).attr('jsfx-id'), i+1);
                 })
@@ -375,7 +375,7 @@ module JS {
 
                 if (col.sortable) this._dataModel.addSorter(col.field, <any>sortDir);
                 return `<th width="${width}" nowrap>
-                ${hasCheckbox ? `<div class="items-left items-middle"><span jsfx-alias="checkbox"/>${cell}</div>` : cell}
+                ${hasCheckbox ? `<div class="items-left items-middle"><span ${View.WIDGET_ATTRIBUTE}="checkbox"/>${cell}</div>` : cell}
                 </th>`;
             }
             private _tdHtml(opt: GridColumnOption, html: string, title: string, col: number, row: number): string {
@@ -387,7 +387,7 @@ module JS {
                         `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
                     ${html}</div>`;
                 return `<td width="${width}" nowrap>
-                ${hasCheckbox ? `<div class="items-left items-middle" jsfx-row="${row}" jsfx-col="${col}"><span jsfx-alias="checkbox" jsfx-id="${id}"/>${cell}</div>` : cell}
+                ${hasCheckbox ? `<div class="items-left items-middle" jsfx-row="${row}" jsfx-col="${col}"><span ${View.WIDGET_ATTRIBUTE}="checkbox" jsfx-id="${id}"/>${cell}</div>` : cell}
                 </td>`;
             }
 
@@ -646,7 +646,7 @@ module JS {
 
             public load<M>(quy: string | PageQuery, silent?: boolean): Promise<ResultSet<M>> {
                 let cfg = <FormWidgetConfig<any>>this._config,
-                oQuery = Ajax.toRequest(cfg.dataQuery), nQuery = Ajax.toRequest(quy);
+                oQuery = Http.toRequest(cfg.dataQuery), nQuery = Http.toRequest(quy);
 
                 cfg.dataQuery = <PageQuery>Jsons.union(oQuery, {
                     page: 1,

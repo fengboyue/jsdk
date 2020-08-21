@@ -12,11 +12,11 @@ module JS {
                 this.a = [1, '-1', undefined, null, { name: 'jsdk' }];
             }
 
-            public test1() {
+            test1() {
                 Assert.equal(Arrays.newArray(null), []);
                 Assert.equal(Arrays.newArray(undefined), []);
             }
-            public test2() {
+            test2() {
                 Assert.equal(this.a.findIndex(it=>{return it==1}), 0);
                 Assert.equal(this.a.findIndex(it=>{return it===undefined}), 2);
                 Assert.equal(this.a.findIndex(it=>{return it===null}), 3);
@@ -27,7 +27,7 @@ module JS {
                 }), 4);
 
             }
-            public test3() {
+            test3() {
                 let rst = this.a.remove(item => {
                     return 'jsdk' === (item && item.name)
                 });
@@ -35,11 +35,11 @@ module JS {
                 Assert.equal(this.a.length, 4);
                 Assert.equal(null, this.a[this.a.length - 1]);
             }
-            public test4() {
+            test4() {
                 this.a.remove(it=>{return it==1});
                 Assert.equal(undefined, this.a[1]);
             }
-            public test5() {
+            test5() {
                 let oldLen = this.a.length;
                 this.a.add([new Date(), 'insertAt'], 0);
                 Assert.true(this.a.length==oldLen+2);
@@ -51,39 +51,19 @@ module JS {
                 Assert.true(b.length==5);
                 Assert.true(b.toString()=='1,2,3,4,5');
             }
-            public test6(){
+            test6(){
                 Assert.false(Arrays.equal([1,2],[2,3]));
                 Assert.true(Arrays.equal([1,2],[1,2]));
                 Assert.true(Arrays.equal([[1],[2]],[[1],[2]],(item1,item2)=>{
                     return item1[0]===item2[0]
                 }));    
             }
-            public test7() {
-                let a = [1,2,3];
-                a[4] = 9;
-                Assert.true(a.hasOwnProperty('4') && a[4] === 9);
 
-                Object.seal(a);
-                Assert.error(()=>{
-                    a[5] = 99;
-                });
-
-                a[0] = 123;
-                Assert.true(a[0] === 123);
-            }
-            public test8() {
-                let a = [1,2,3];
-                a[4] = 9;
-                Assert.true(a.hasOwnProperty('4') && a[4] === 9);
-
-                Object.freeze(a);
-                Assert.error(()=>{
-                    a[5] = 99;
-                })
-
-                Assert.error(()=>{
-                    a[0] = 123;
-                });
+            test7() {
+                let a1 = [1,2,3],a2 = [3,2,1], a3 = [1,3,2];
+                Assert.true(Arrays.same(a1,a2));
+                Assert.true(Arrays.same(a1,a3));
+                Assert.true(Arrays.same(a2,a3));
             }
         }
     }

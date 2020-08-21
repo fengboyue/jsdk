@@ -19,45 +19,45 @@ module JS {
 
         export interface ListModelListeners<M> {
             /**
-             * @event (e, newData, oldData)
+             * @event (this:ListModel, e:CustomEvent, newData:JsonObject[], oldData:JsonObject[])
              */
             dataupdating:  EventHandler2<M, JsonObject[], JsonObject[]>
             /**
-             * @event (e, newData, oldData)
+             * @event (this:ListModel, e:CustomEvent, newData:JsonObject[], oldData:JsonObject[])
              */
             dataupdated: EventHandler2<M, JsonObject[], JsonObject[]>
             /**
-             * @event (e, newRows, index)
+             * @event (this:ListModel, e:CustomEvent, newRows:JsonObject[], index:number)
              */
             rowadded:  EventHandler2<M, JsonObject[], number>
             /**
-             * @event (e, removedRow, index)
+             * @event (this:ListModel, e:CustomEvent, removedRow:JsonObject, index:number)
              */
             rowremoved:  EventHandler2<M, JsonObject, number>
             /**
-             * @event (e, result, data)
+             * @event (this:ListModel, e:CustomEvent, result:ValidateResult, data:JsonObject[])
              */
             validated: EventHandler2<M, ValidateResult, JsonObject[]>
             /**
-             * @event (e, result, row, index)
+             * @event (this:ListModel, e:CustomEvent, result:ValidateResult, row:JsonObject, index:number)
              */
-            rowvalidated: EventHandler3<M, ValidateResult, JsonObject[], number>
+            rowvalidated: EventHandler3<M, ValidateResult, JsonObject, number>
             /**
-             * @event (e, request)
+             * @event (this:ListModel, e:CustomEvent, request:HttpRequest)
              */
-            loading:  EventHandler1<M, AjaxRequest>
+            loading:  EventHandler1<M, HttpRequest>
             /**
-             * @event (e, result)
+             * @event (this:ListModel, e:CustomEvent, result:ResultSet<any>)
              */
             loadsuccess:  EventHandler1<M, ResultSet<any>>
             /**
-             * @event (e, result)
+             * @event (this:ListModel, e:CustomEvent, result:ResultSet<any>)
              */
             loadfailure:  EventHandler1<M, ResultSet<any>>
             /**
-             * @event (e, response|error)
+             * @event (this:ListModel, e:CustomEvent, res:HttpResponse|Error)
              */
-            loaderror:  EventHandler1<M, AjaxResponse|Error>
+            loaderror:  EventHandler1<M, HttpResponse|Error>
         };
 
         export type Sorter = {
@@ -70,7 +70,7 @@ module JS {
             autoLoad?: boolean = false;
             readonly listeners?: ListModelListeners<this>;
             sorters?: Array<Sorter>;
-            dataQuery?: string | AjaxRequest;
+            dataQuery?: string | HttpRequest;
             iniData?: JsonObject[];
         }
 
@@ -102,7 +102,7 @@ module JS {
             }
 
             protected _check() {
-                if (this.isDestroyed()) throw new NotHandledError('The model was destroyed!');
+                if (this.isDestroyed()) throw new RefusedError('The model was destroyed!');
             }
 
             public addSorter(field: string, dir?: 'asc' | 'desc') {
@@ -190,11 +190,11 @@ module JS {
             /**
              * load using its configured query.
              */
-            public load<R=JsonObject[]>(quy: string | AjaxRequest, silent?:boolean): Promise<ResultSet<R>> {
+            public load<R=JsonObject[]>(quy: string | HttpRequest, silent?:boolean): Promise<ResultSet<R>> {
                 this._check();
 
                 let me = this,
-                query = <AjaxRequest>J.union(Ajax.toRequest(this._config.dataQuery),Ajax.toRequest(quy));
+                query = <HttpRequest>J.union(Http.toRequest(this._config.dataQuery),Http.toRequest(quy));
                 query.data = J.union(<JsonObject>query.data,this._sortParams());
                 
                 this._fire('loading', [query]);
@@ -207,7 +207,7 @@ module JS {
                         me._fire('loadfailure', [result]);
                     }
                     return Promise.resolve(<any>result);
-                }).catch(function (err: AjaxResponse|Error) {
+                }).catch(function (err: HttpResponse|Error) {
                     if(Types.ofKlass(err, Error)) JSLogger.error('['+(<Error>err).name+']'+(<Error>err).message);
                     me._fire('loaderror', [err]);
                 });
@@ -304,7 +304,7 @@ module JS {
                 if (!id || this.size()==0) return -1;
 
                 let idName = 'id';
-                if(this._modelKlass && Types.subKlass(this._modelKlass, Model)) {//如果modelKlass是Model的子类，则获取其id名称
+                if(this._modelKlass && Types.subklassOf(this._modelKlass, Model)) {//如果modelKlass是Model的子类，则获取其id名称
                     let model = Class.newInstance<Model>(this._modelKlass),
                     field = model.getIdField();
                     if(field) idName = field.alias();

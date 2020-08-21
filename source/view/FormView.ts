@@ -15,20 +15,12 @@ module JS {
 
         export interface FormViewConfig extends ViewConfig {
             valueModel?: Klass<Model>;
-             /**
-             * The common config for all widgets.
-             */
-            defaultConfig?: IWidgetConfig;
-            /**
-             * Each widget's config.
-             */
-            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
         }
 
         /**
          * For form widgets.
          */
-        export abstract class FormView extends View {
+        export class FormView extends View {
             protected _config: FormViewConfig;
             protected _model: Model;
 

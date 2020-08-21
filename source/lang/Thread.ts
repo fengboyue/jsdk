@@ -8,7 +8,7 @@
  */
 
 /// <reference path="../util/EventBus.ts"/>
-/// <reference path="../util/URI.ts"/>
+/// <reference path="../net/URI.ts"/>
 
 module JS {
 
@@ -82,15 +82,14 @@ module JS {
             _findSystem=function(){
                 if(SYS_URL) return SYS_URL;
 
-                ////如在线程中启动线程，查找document则代码会异常；更好的方式是将system库路径同时缓存于当前线程代码中
-                let p = (<any>self).__jsdk_sys_path;
+                ////如在线程中启动线程，查找document则代码会异常；更好的方式是将核心库路径同时缓存于当前线程代码中
+                let p = (<any>self).__jscore;
                 if(p) {SYS_URL = p; return SYS_URL};
 
                 SYS_URL = _docSystem(document);
                 return SYS_URL
             }
 
-        @klass('JS.lang.Thread')
         export class Thread implements Runnable {
             public readonly id: string;
             private _wk: Worker;
@@ -133,7 +132,7 @@ module JS {
                 return `
                 //@ sourceURL=thread-${id}.js
                 this.id="${id}";
-                this.__jsdk_sys_path="${sys}";
+                this.__jscore="${sys}";
                 importScripts("${sys}");
                 ${this._define('imports')}
                 ${this._define('onposted')}

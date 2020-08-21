@@ -280,7 +280,7 @@ module JS {
             }
 
             private _check() {
-                if (this._d) throw new NotHandledError()
+                if (this._d) throw new RefusedError()
             }
             public destroy() {
                 let T = this;

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>media | JSDK 2.4.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.4.0 API">
+	<title>media | JSDK 2.5.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.5.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.4.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.5.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -76,14 +76,17 @@
 						<section class="tsd-index-section ">
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.media.sound.html" class="tsd-kind-icon">Sound</a></li>
-								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.media.video.html" class="tsd-kind-icon">Video</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.media.audiocache.html" class="tsd-kind-icon">Audio<wbr>Cache</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.media.audiopro.html" class="tsd-kind-icon">Audio<wbr>Pro</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.media.videoplayer.html" class="tsd-kind-icon">Video<wbr>Player</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-namespace"><a href="../interfaces/js.media.soundconfig.html" class="tsd-kind-icon">Sound<wbr>Config</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-namespace"><a href="../interfaces/js.media.audiocacheinit.html" class="tsd-kind-icon">Audio<wbr>Cache<wbr>Init</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-namespace"><a href="../interfaces/js.media.audioproinit.html" class="tsd-kind-icon">Audio<wbr>Pro<wbr>Init</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-namespace"><a href="../interfaces/js.media.remoteaudio.html" class="tsd-kind-icon">Remote<wbr>Audio</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -91,7 +94,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.media.html#mediaevents" class="tsd-kind-icon">Media<wbr>Events</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.media.html#mediatypes" class="tsd-kind-icon">Media<wbr>Types</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.media.html#videoconfig" class="tsd-kind-icon">Video<wbr>Config</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.media.html#videoplayerinit" class="tsd-kind-icon">Video<wbr>Player<wbr>Init</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-not-exported">
@@ -122,9 +125,9 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
-					<a name="videoconfig" class="tsd-anchor"></a>
-					<h3>Video<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">Video<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>appendTo<span class="tsd-signature-symbol">?: </span><a href="../interfaces/htmlelement.html" class="tsd-signature-type">HTMLElement</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>controls<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>height<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>id<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>loop<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>muted<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>on<span class="tsd-signature-symbol">?: </span><a href="js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLMediaElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>poster<span class="tsd-signature-symbol">?: </span><a href="js.util.html#urlstring" class="tsd-signature-type">URLString</a><span class="tsd-signature-symbol">; </span>preload<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"auto"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meta"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"none"</span><span class="tsd-signature-symbol">; </span>src<span class="tsd-signature-symbol">?: </span><a href="js.util.html#urlstring" class="tsd-signature-type">URLString</a><span class="tsd-signature-symbol">; </span>width<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<a name="videoplayerinit" class="tsd-anchor"></a>
+					<h3>Video<wbr>Player<wbr>Init</h3>
+					<div class="tsd-signature tsd-kind-icon">Video<wbr>Player<wbr>Init<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>appendTo<span class="tsd-signature-symbol">?: </span><a href="../interfaces/htmlelement.html" class="tsd-signature-type">HTMLElement</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>controls<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>height<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>id<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>loop<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>muted<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>on<span class="tsd-signature-symbol">?: </span><a href="js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLMediaElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>poster<span class="tsd-signature-symbol">?: </span><a href="js.net.html#urlstring" class="tsd-signature-type">URLString</a><span class="tsd-signature-symbol">; </span>preload<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"auto"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meta"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"none"</span><span class="tsd-signature-symbol">; </span>src<span class="tsd-signature-symbol">?: </span><a href="js.net.html#urlstring" class="tsd-signature-type">URLString</a><span class="tsd-signature-symbol">; </span>width<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-type-declaration">
@@ -152,13 +155,13 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> on<span class="tsd-signature-symbol">?: </span><a href="js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLMediaElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> poster<span class="tsd-signature-symbol">?: </span><a href="js.util.html#urlstring" class="tsd-signature-type">URLString</a></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> poster<span class="tsd-signature-symbol">?: </span><a href="js.net.html#urlstring" class="tsd-signature-type">URLString</a></h5>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> preload<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"auto"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meta"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"none"</span></h5>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> src<span class="tsd-signature-symbol">?: </span><a href="js.util.html#urlstring" class="tsd-signature-type">URLString</a></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> src<span class="tsd-signature-symbol">?: </span><a href="js.net.html#urlstring" class="tsd-signature-type">URLString</a></h5>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> width<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
@@ -222,6 +225,9 @@
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.lang.html">lang</a>
 							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.math.html">math</a>
+							</li>
 							<li class="current tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.media.html">media</a>
 							</li>
@@ -229,10 +235,13 @@
 								<a href="js.model.html">model</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-								<a href="js.reflect.html">reflect</a>
+								<a href="js.net.html">net</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.store.html">store</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.sugar.html">sugar</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.ui.html">ui</a>
@@ -253,13 +262,22 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="../classes/js.media.sound.html" class="tsd-kind-icon">Sound</a>
+						<a href="../classes/js.media.audiocache.html" class="tsd-kind-icon">Audio<wbr>Cache</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
-						<a href="../classes/js.media.video.html" class="tsd-kind-icon">Video</a>
+						<a href="../classes/js.media.audiopro.html" class="tsd-kind-icon">Audio<wbr>Pro</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.media.videoplayer.html" class="tsd-kind-icon">Video<wbr>Player</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
-						<a href="../interfaces/js.media.soundconfig.html" class="tsd-kind-icon">Sound<wbr>Config</a>
+						<a href="../interfaces/js.media.audiocacheinit.html" class="tsd-kind-icon">Audio<wbr>Cache<wbr>Init</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="../interfaces/js.media.audioproinit.html" class="tsd-kind-icon">Audio<wbr>Pro<wbr>Init</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="../interfaces/js.media.remoteaudio.html" class="tsd-kind-icon">Remote<wbr>Audio</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="js.media.html#mediaevents" class="tsd-kind-icon">Media<wbr>Events</a>
@@ -268,7 +286,7 @@
 						<a href="js.media.html#mediatypes" class="tsd-kind-icon">Media<wbr>Types</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-						<a href="js.media.html#videoconfig" class="tsd-kind-icon">Video<wbr>Config</a>
+						<a href="js.media.html#videoplayerinit" class="tsd-kind-icon">Video<wbr>Player<wbr>Init</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-namespace tsd-is-not-exported">
 						<a href="js.media.html#a" class="tsd-kind-icon">A</a>

@@ -13,7 +13,7 @@ module JS {
                 this.a.clear();
             }
 
-            public test1() {
+            test1() {
                 this.a.add(3);
                 this.a.add([2,1]);
                 Assert.equal(3, this.a.get(0));
@@ -46,7 +46,7 @@ module JS {
                 Assert.equal(22, this.a.get(7));
                 Assert.equal([3,0.5,2,1,33,11,44,22], this.a.toArray());
             }
-            public test2() {
+            test2() {
                 this.a.removeFirst();
                 Assert.equal(0, this.a.size());
                 
@@ -61,7 +61,7 @@ module JS {
                 this.a.removeFirst();
                 Assert.equal([], this.a.toArray());
             }
-            public test3() {
+            test3() {
                 Assert.equal(null, this.a.peek());
                 
                 this.a.add([3,2,1]);
@@ -74,7 +74,7 @@ module JS {
                 Assert.equal(3, this.a.peekFirst());
                 Assert.equal(3, this.a.size());
             }
-            public test4(){
+            test4(){
                 this.a.add([3,2,1,1]);
                 Assert.equal(0, this.a.indexOf(3));
                 Assert.equal(2, this.a.indexOf(1));
@@ -85,19 +85,19 @@ module JS {
                 Assert.false(this.a.contains(null));
                 Assert.false(this.a.contains(undefined));
             }
-            public test5(){
+            test5(){
                 this.a.add([3,2,1,1]);
                 Assert.equal(3, this.a.get(0));
                 Assert.equal(3, this.a.getFirst());
                 Assert.equal(1, this.a.getLast());
                 Assert.equal(1, this.a.get(3));
             }
-            public test6(){
+            test6(){
                 this.a.add([3,2,1,1]);
                 let b = this.a.clone();
                 Assert.equal(this.a.toArray(), b.toArray());
             }
-            public test7(){
+            test7(){
                 this.a.add([3,2,1]);
                 
                 Assert.true(this.a.each(item=>{

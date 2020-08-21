@@ -16,8 +16,8 @@ Clear the console:
 Konsole.clear();
 ```
 
-## Log Management
-### Use Log class
+## Log
+### Usage of Log class
 Instantiate a Log object before you need to output log info:
 ```javascript
 let myLogger = new Log('My Logger', LogLevel.INFO); //set output level is INFO
@@ -75,7 +75,7 @@ export class AjaxAppender implements LogAppender {
         this.name = name;
     }
     public log(level: LogLevel.TRACE | LogLevel.DEBUG | LogLevel.INFO | LogLevel.WARN | LogLevel.ERROR, ...data: any[]) {
-        Ajax.send({
+        Http.send({
             url: 'xxxx',
             data: {
                 name: this.name,
@@ -97,7 +97,7 @@ JSDK provides <b>JS.lang.JSError</b> as the parent class of custom error. (it ex
 ### Predefine Error Class
 JSDK predefine 7 Error classes, extends JSError. You can use these error classes directly. They are:
 ```text
-NotHandledError
+RefusedError
 NotFoundError
 ArithmeticError
 ArgumentError
@@ -129,60 +129,62 @@ Because JS errors can be thrown in any code at anytime, without pre compilation 
 > 3. Try not to throw exceptions when not necessary; A method can be designed to return null or false for execution failures, at the same time you can consider logging exception context info for debugging.
 
 ## I18N
-JSDK provides <b>JS.util.Bundle</b> to manage I18N resource.
+JSDK provides <b>JS.util.I18N</b> to manage I18N resource.
 
 ### Resource Loading
-Bundle class allows to load two types of I18N resources: JSON resource data or JSON resource file.
+I18N class can load two types of JSON-format I18N resources: local resource data or remote resource file.
 
-<b>1. Load resource data.</b>
+<b>1. Load local resource.</b>
 
 ```javascript
-let bundle = new Bundle({
-    'zh': { //load the value of 'zh'
+let i18n = new I18N('zh-CN').set({
+    'zh': { 
         k1: '中文'
     },
-    'zh-CN': {
+    'zh-CN': {//will be loaded
         k1: '中文，中国'
-    }
-    ,
+    },
     'CN': {
         k1: '中国'
     }
-}, 'zh'); //find locale is 'zh'
+});
 ```
 
-Bundle class looks up the key in resource data by the following order(Suppose find locale is "zh-CN"), then load the value when the key be found: 
+The <code>set</code> method looks up the key in resource data by the following order(Suppose current locale is "zh-CN"), then load its value when a locale key be found: 
 <p class="warn">
 zh_CN<br>
 zh
 </p>
 
-* *If the current key does not exist, the next level key will be found automatically. If all of these keys do not exist in the end, Bundle class will automatically loads the entire JSON data.*
+* *If current key does not exist, the next level key will be found automatically. If all of these keys do not exist in the end, I18N class will loads the entire JSON.*
 
-<b>2. Load resource file.</b>
+<b>2. Load remote resource.</b>
 
 ```javascript
-//If no locale is specified, the default locale is system locale: System.info().locale
-let bundle = new Bundle('http://mydomain/xxx.yyy'); 
+let i18n = new I18N(); //default locale is system locale: System.info().locale
+i18n.load('http://mydomain/xxx.yyy', 'zh-CN'); //current locale is zh-CN
 ```
-* *The file content is same as the above JSON data.*
+The <code>xxx.yyy</code> file content is same as:
+```text
+{
+    "k1": "中文，中国"
+}
+```
 
-Bundle class looks up the resource file by the following order(Suppose find locale is "zh-CN"), then load the file by Ajax when the file be found: 
+The <code>load</code> method looks up the resource file by the following order(Suppose the current locale is "zh-CN"), then load data by Ajax when a file be found: 
 <p class="warn">
 xxx_zh_CN.yyy<br>
 xxx_zh.yyy<br>
 xxx.yyy
 </p>
 
-* *If the current file does not exist, the next level file will be found automatically. If all of these files do not exist in the end, Bundle class will print the error log "Resource file not found".*
+* *If the current file does not exist, the next level file will be found automatically. If all of these files do not exist in the end, I18N class will log the error "Any valid resource file not found".*
 
-### Use of resource
+### Usage of I18N-Resource
 
 ```javascript
-let bundle = new Bundle(...);
-
-bundle.get('k1'); //Read the value of "k1"
-bundle.get(); //Read all values
+i18n.get('k1'); //Read the value of "k1" in current locale
+i18n.get(); //Read all key-value pairs in current locale
 ```
 
 ## Event Bus
@@ -260,3 +262,75 @@ Warn:
 <br><br>
 Do not use Dom methods and JS.util.Dom class in WebWork thread, and also do not try to execute any api related DOM, otherwise it will directly lead to thread script errors. Because the WebWorker specification bans reading and writing DOM in threaded code.
 </p>
+
+
+## Promise Helper
+HTML5 provides the <b>Promise</b> api to better support asynchronous callback programming.
+
+For example, we instantiate a <b>Promise</b> object:
+```javascript
+let p = new Promise<T>((resolve, reject) => {
+    ...
+    resolve(1);
+    ...
+    reject(2);
+})
+```
+
+The above code is not concise enough and hard values dependency. JSDK provides a helper class <b>JS.util.Promises</b> to better do it:
+```javascript
+let p = Promises.create(function(a, b){
+    ...
+    this.resolve(a);
+    ...
+    this.reject(b);
+}, 1, 2)
+```
+
+### Promise Plan & Promises Queue
+JSDK defines a TS type that returns Promise as <b>PromisePlan</b>:
+```javascript
+export type PromisePlan<T> = (...args:any[])=>Promise<T>;
+```
+And names a queue of promise plans as <b>PromisePlans</b>:
+```javascript
+export type PromisePlans<T> = Array<PromisePlan<T>>;
+```
+
+### Promises Execution
+The execution of an async plan is very simple, and the execution of a queue of async plans are difficult.<br>
+
+The native <b>Promise</b> class provides two execution modes for promise queue:
+* <b>all</b>: Parallel execute and returns result after all async plans are completed.
+* <b>race</b>: Parallel execute and returns result when any async plan is completed.
+
+In reality, we often need the third mode of execution:
+* <b>order</b>: Sequential orderly execute and returns result when the last async plan is completed.
+
+<b>Promises</b> supports for all above execution modes:
+```javascript
+//PromisePlan a
+let a = Promises.createPlan<string>(function () {
+    this.resolve('a');
+});
+
+//PromisePlan b
+let b = Promises.createPlan<string>(function (s) {
+    this.resolve(s+'b');
+});
+
+//PromisePlan c
+let c = Promises.createPlan<string>(function (s) {
+    this.resolve(s+'c');
+});
+
+Promises.order([a, b, c]).then((s) => {
+    Konsole.print('The result of order mode = ' + s);
+});
+Promises.all([a, b, c]).then((s) => {
+    Konsole.print('The result of all mode = ' + s);
+});
+Promises.race([a, b, c]).then((s) => {
+    Konsole.print('The result of race mode = ' + s);
+});
+```

@@ -18,7 +18,7 @@ module JS {
         @klass('JS.model.AjaxProxy')
         export abstract class AjaxProxy {
 
-            public abstract execute<T>(req: string | AjaxRequest, data?: JsonObject|QueryString): Promise<ResultSet<T>>;s
+            public abstract execute<T>(req: string | HttpRequest): Promise<ResultSet<T>>;s
 
         }
 

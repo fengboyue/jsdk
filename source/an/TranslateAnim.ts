@@ -6,14 +6,23 @@
  * @version 2.1.0
  * @author Frank.Feng
  */
+/// <reference path="FrameAnim.ts" />
+
 module JS {
 
     export namespace an {
 
         export type TranslateKeyFrame = { oX?: number, oY?: number, oZ?: number };
-        export type TranslateKeyFrames = JsonObject<TranslateKeyFrame>;
+        export type TranslateKeyFrames = 
+        {
+            from?: TranslateKeyFrame,
+            to?: TranslateKeyFrame,
+            "0%"?: TranslateKeyFrame,
+            "100%"?: TranslateKeyFrame,
+            [key: string]: TranslateKeyFrame
+        }
 
-        export class TranslateAnimConfig extends ElementAnimConfig {
+        export class TranslateAnimInit extends FrameAnimInit {
             frames: TranslateKeyFrames
         }
 
@@ -21,13 +30,13 @@ module JS {
          * Translate Animation.<br>
          * Translate a element from current position to offset position.
          */
-        export class TranslateAnim extends ElementAnim {
+        export class TranslateAnim extends FrameAnim {
 
-            constructor(cfg: TranslateAnimConfig) {
+            constructor(cfg: TranslateAnimInit) {
                 super(cfg)
             }
 
-            protected _resetInitial(){
+            protected _resetEl(){
                 this._el.style.transform = `translateX(0px) translateY(0px) translateZ(0px)`
             }
 
@@ -39,5 +48,5 @@ module JS {
 }
 import TranslateKeyFrame = JS.an.TranslateKeyFrame;
 import TranslateKeyFrames = JS.an.TranslateKeyFrames;
-import TranslateAnimConfig = JS.an.TranslateAnimConfig;
+import TranslateAnimInit = JS.an.TranslateAnimInit;
 import TranslateAnim = JS.an.TranslateAnim;

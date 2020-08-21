@@ -45,7 +45,7 @@ JS.imports('$jsan').then(() => {
     easings.forEach(a => {
         html += `${a.fn}:<div id="${a.el}" class="brick"></div>`;
         anims.push(new MoveAnim(Jsons.union(cfg, {
-            el: '#' + a.el,
+            target: '#' + a.el,
             easing: Easings[a.fn]
         })));
     });

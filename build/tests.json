@@ -1,7 +1,7 @@
 {
     "extends":"../build/base",
     "compilerOptions": {
-        "outFile": "../dist/tests.js",
+        "outFile": "../tests/tests.js",
         "noLib": true
     },
     "include": [

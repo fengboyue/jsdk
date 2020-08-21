@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RowsInput | JSDK 2.4.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.4.0 API">
+	<title>RowsInput | JSDK 2.5.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.5.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.4.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.5.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -281,7 +281,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 					<a name="i18n" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> I18N</h3>
-					<div class="tsd-signature tsd-kind-icon">I18N<span class="tsd-signature-symbol">:</span> <a href="../modules/js.util.html#resource" class="tsd-signature-type">Resource</a><span class="tsd-signature-symbol"> = null</span></div>
+					<div class="tsd-signature tsd-kind-icon">I18N<span class="tsd-signature-symbol">:</span> <a href="../modules/js.util.html#i18nresource" class="tsd-signature-type">I18NResource</a><span class="tsd-signature-symbol"> | </span><a href="../modules/js.net.html#urlstring" class="tsd-signature-type">URLString</a><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="js.fx.widget.html">Widget</a>.<a href="js.fx.widget.html#i18n">I18N</a></p>
 					</aside>
@@ -1082,7 +1082,7 @@
 					<a name="load" class="tsd-anchor"></a>
 					<h3>load</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">load<span class="tsd-signature-symbol">(</span>quy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/js.util.ajaxrequest.html" class="tsd-signature-type">AjaxRequest</a>, silent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/promise.html" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="js.model.resultset.html" class="tsd-signature-type">ResultSet</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">load<span class="tsd-signature-symbol">(</span>quy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/js.net.httprequest.html" class="tsd-signature-type">HttpRequest</a>, silent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/promise.html" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="js.model.resultset.html" class="tsd-signature-type">ResultSet</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -1097,7 +1097,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>quy: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/js.util.ajaxrequest.html" class="tsd-signature-type">AjaxRequest</a></h5>
+									<h5>quy: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/js.net.httprequest.html" class="tsd-signature-type">HttpRequest</a></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> silent: <span class="tsd-signature-type">boolean</span></h5>
@@ -1506,16 +1506,22 @@
 								<a href="../modules/js.lang.html">lang</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.math.html">math</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.media.html">media</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.model.html">model</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-								<a href="../modules/js.reflect.html">reflect</a>
+								<a href="../modules/js.net.html">net</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.store.html">store</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.sugar.html">sugar</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.ui.html">ui</a>

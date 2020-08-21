@@ -28,7 +28,10 @@ module JS {
         
         export type ViewEvents ='rendering'|'rendered'|'widgetiniting'|'widgetinited'|'dataupdated'|'validated';
 
-        export interface ViewConfig {}
+        export interface ViewConfig {
+            defaultConfig?: IWidgetConfig;            
+            widgetConfigs?: JsonObject<ViewWidgetConfig|IWidgetConfig>;
+        }
 
         /**
          * An View is a widgets container which initialize, render and destroy its widgets.
@@ -39,8 +42,10 @@ module JS {
             protected _eventBus = new EventBus(this);
             protected _config: ViewConfig;
 
-            public initialize() { }
-            public destroy() {
+            static WIDGET_ATTRIBUTE = 'js-wgt';
+
+            initialize() { }
+            destroy() {
                 if (this._widgets) {
                     Jsons.forEach(this._widgets, w => {
                         w.destroy();
@@ -48,7 +53,7 @@ module JS {
                 }
             }
 
-            public config(): ViewConfig {
+            config(): ViewConfig {
                 return this._config;
             }
 
@@ -58,7 +63,7 @@ module JS {
                 return this._eventBus.fire(<any>e, args);
             }
 
-            public render() {
+            render() {
                 Bom.ready(() => {
                     this._fire('rendering');
                     this._render();
@@ -66,29 +71,29 @@ module JS {
                 })
             }
 
-            public getModel(): Modelable<any> {
+            getModel(): Modelable<any> {
                 return this._model;
             }
 
-            public getWidget<W extends IWidget>(id: string): W {
+            getWidget<W extends IWidget>(id: string): W {
                 return <W>this._widgets[id];
             }
 
-            public getWidgets(): JsonObject<IWidget> {
+            getWidgets(): JsonObject<IWidget> {
                 return this._widgets;
             }
 
-            public addWidget(wgt: IWidget): View {
+            addWidget(wgt: IWidget): View {
                 if (wgt) this._widgets[wgt.id] = wgt;
                 return this;
             }
 
-            public removeWidget(id: string): View {
+            removeWidget(id: string): View {
                 delete this._widgets[id];
                 return this;
             }
 
-            public destroyWidget(id: string): View {
+            destroyWidget(id: string): View {
                 let w = this._widgets[id];
                 if (!w) return this;
 
@@ -97,24 +102,24 @@ module JS {
                 return this;
             }
 
-            public on(type: 'rendering', handler: EventHandler<this>)
-            public on(type: 'rendered', handler: EventHandler<this>)
-            public on(type: 'widgetiniting', handler: EventHandler2<this, string|Klass<IWidget>, ViewWidgetConfig>)
-            public on(type: 'widgetinited', handler: EventHandler1<this, IWidget>)
-            public on(type: 'dataupdated', handler: EventHandler2<this, any, any>)//[newVal, oldVal]
-            public on(type: 'validated', handler: EventHandler2<this, ValidateResult, any>)//[result, val]
-            public on(type: string, handler: EventHandler<this>) {
+            on(type: 'rendering', handler: EventHandler<this>)
+            on(type: 'rendered', handler: EventHandler<this>)
+            on(type: 'widgetiniting', handler: EventHandler2<this, string|Klass<IWidget>, ViewWidgetConfig>)
+            on(type: 'widgetinited', handler: EventHandler1<this, IWidget>)
+            on(type: 'dataupdated', handler: EventHandler2<this, any, any>)//[newVal, oldVal]
+            on(type: 'validated', handler: EventHandler2<this, ValidateResult, any>)//[result, val]
+            on(type: string, handler: EventHandler<this>) {
                 this._eventBus.on(<any>type, handler);
             }
             
             /**
              * @param type 
              */
-            public off(type?: string) {
+            off(type?: string) {
                 this._eventBus.off(type);
             }
 
-            public eachWidget(fn: (w: IWidget) => void) {
+            eachWidget(fn: (w: IWidget) => void) {
                 Jsons.forEach(this._widgets, (w: IWidget) => {
                     fn.apply(this, [w])
                 })
@@ -128,7 +133,7 @@ module JS {
 
                 let vconfig: ViewWidgetConfig = cfg,
                     newConfig: ViewWidgetConfig = Jsons.union(defaults, vconfig, { id: id }),
-                    klass = newConfig.klass || $1('#' + id).attr('jsfx-alias');
+                    klass = newConfig.klass || $1('#' + id).attr(View.WIDGET_ATTRIBUTE);
 
                 if (!klass) {
                     JSLogger.error(`The widget<${id}> was not configured for its klass type!`);

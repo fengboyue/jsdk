@@ -1,6 +1,6 @@
 /// <reference path='../../dist/jsdk.d.ts' /> 
 JS.imports([
-    '$handlebars#async',
+    '$handlebars',
     '$jsui'
 ]).then(()=>{
     let te = new Templator(), array = [];

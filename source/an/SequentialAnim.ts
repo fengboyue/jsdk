@@ -10,25 +10,25 @@ module JS {
 
     export namespace an {
 
-        export class SequentialAnimConfig extends AnimConfig {
+        export class SequentialAnimInit extends AnimInit {
             anims: Anim[];
-            el?: HTMLElement|string
+            target?: HTMLElement|string
         }
 
         let E = Check.isEmpty;
         
         export class SequentialAnim extends Anim {
-            protected _cfg: SequentialAnimConfig;
+            protected _cfg: SequentialAnimInit;
             private _i: number = 0;
             private _sta = AnimState.STOPPED;
 
-            constructor(cfg: SequentialAnimConfig) {
+            constructor(cfg: SequentialAnimInit) {
                 super(cfg)
             }
 
-            public config(): SequentialAnimConfig
-            public config(cfg: SequentialAnimConfig): this
-            public config(cfg?: SequentialAnimConfig): any {
+            public config(): SequentialAnimInit
+            public config(cfg: SequentialAnimInit): this
+            public config(cfg?: SequentialAnimInit): any {
                 if (!cfg) return this._cfg;
 
                 super.config(cfg);
@@ -89,5 +89,5 @@ module JS {
         }
     }
 }
-import SequentialAnimConfig = JS.an.SequentialAnimConfig;
+import SequentialAnimInit = JS.an.SequentialAnimInit;
 import SequentialAnim = JS.an.SequentialAnim;

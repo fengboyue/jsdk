@@ -6,9 +6,8 @@
         "skipLibCheck": true
     },
     "include": [
-        "../libs/reflect/2.0.1/Reflect.js",
-        "../source/reflect/*.ts",
         "../source/util/*.ts",
+        "../source/net/*.ts",
         "../source/lang/*.ts"
     ]
 } 

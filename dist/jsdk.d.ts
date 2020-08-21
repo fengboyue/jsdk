@@ -1,5 +1,5 @@
 /**
-* JSDK 2.4.0 
+* JSDK 2.5.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -27,32 +27,33 @@ declare module JS {
             RUNNING = 1,
             PAUSED = 2
         }
-        class AnimConfig {
+        class AnimInit {
+            target?: HTMLElement | string;
             autoReverse?: boolean;
             autoReset?: boolean;
             duration?: number;
             loop?: boolean | number;
             delay?: number;
             direction?: 'forward' | 'backward';
-            easing?: EasingFunction;
             onStarting?: EventHandler<Anim>;
             onFinished?: EventHandler<Anim>;
         }
         abstract class Anim {
-            protected _cfg: AnimConfig;
+            protected _cfg: AnimInit;
             protected _timer: AnimTimer;
             protected _dir: 'forward' | 'backward';
             protected _loop: number;
-            constructor(cfg: AnimConfig);
+            constructor(cfg: AnimInit);
             protected _init(): void;
             protected _convertFrame(f: KeyFrame): number | JsonObject<number> | JsonObject<JsonObject<number>>;
-            config(): AnimConfig;
-            config(cfg: AnimConfig): this;
+            config(): AnimInit;
+            config(cfg: AnimInit): this;
             direction(): 'forward' | 'backward';
             direction(d: 'forward' | 'backward'): this;
             getState(): AnimState;
             getLooped(): number;
             abstract play(t?: number): this;
+            protected _resetEl(): void;
             protected _reset(): void;
             pause(): this;
             stop(): this;
@@ -60,19 +61,19 @@ declare module JS {
     }
 }
 import AnimState = JS.an.AnimState;
-import AnimConfig = JS.an.AnimConfig;
+import AnimInit = JS.an.AnimInit;
 import Anim = JS.an.Anim;
 declare module JS {
     namespace an {
         type AnimTimerEvents = TimerEvents | 'looping' | 'looped';
-        type AnimTimerConfig = {
+        type AnimTimerInit = {
             delay?: number;
             duration?: number;
             loop?: boolean | number;
         };
         class AnimTimer extends Timer {
-            protected _cfg: AnimTimerConfig;
-            constructor(tick: TimerTask, cfg?: AnimTimerConfig);
+            protected _cfg: AnimTimerInit;
+            constructor(tick: TimerTask, cfg?: AnimTimerInit);
             protected _loop(begin?: boolean): void;
             protected _cycle(): void;
             protected _cancelTimer(): void;
@@ -80,6 +81,8 @@ declare module JS {
     }
 }
 import AnimTimer = JS.an.AnimTimer;
+import AnimTimerInit = JS.an.AnimTimerInit;
+import AnimTimerEvents = JS.an.AnimTimerEvents;
 declare module JS {
     namespace an {
         type EasingFunction = (t: number, b: number, c: number, d: number, ...args: any[]) => number;
@@ -122,22 +125,22 @@ import EasingFunction = JS.an.EasingFunction;
 import Easings = JS.an.Easings;
 declare module JS {
     namespace an {
-        class ElementAnimConfig extends AnimConfig {
-            el: HTMLElement | string;
+        class FrameAnimInit extends AnimInit {
             frames: KeyFrames;
+            easing?: EasingFunction;
         }
-        abstract class ElementAnim extends Anim {
-            protected _cfg: ElementAnimConfig;
+        abstract class FrameAnim extends Anim {
+            protected _cfg: FrameAnimInit;
             protected _el: HTMLElement;
             protected _frame: KeyFrame;
             private _from;
             private _to;
             private _frames;
-            constructor(cfg: ElementAnimConfig);
+            constructor(cfg: FrameAnimInit);
             protected abstract _onUpdate(newFrame: KeyFrame): void;
             private _parseFrames;
-            config<T extends ElementAnimConfig>(): T;
-            config<T extends ElementAnimConfig>(cfg: T): this;
+            config<T extends FrameAnimInit>(): T;
+            config<T extends FrameAnimInit>(cfg: T): this;
             private _num;
             protected _newFrame(from: KeyFrame, to: KeyFrame, t: number, d: number, e: EasingFunction): number | JsonObject<number> | JsonObject<JsonObject<number>>;
             protected _newVal(t: number, d: number, from: number, to: number, e: EasingFunction, base: number): number;
@@ -145,34 +148,39 @@ declare module JS {
             private _reset4loop;
             protected _reset(): void;
             private _resetFrame;
-            protected _resetInitial(): void;
             play(): this;
             stop(): this;
         }
     }
 }
-import ElementAnimConfig = JS.an.ElementAnimConfig;
-import ElementAnim = JS.an.ElementAnim;
+import FrameAnimInit = JS.an.FrameAnimInit;
+import FrameAnim = JS.an.FrameAnim;
 declare module JS {
     namespace an {
         type FadeKeyFrame = number;
-        type FadeKeyFrames = JsonObject<FadeKeyFrame>;
-        class FadeAnimConfig extends ElementAnimConfig {
+        type FadeKeyFrames = {
+            from?: FadeKeyFrame;
+            to?: FadeKeyFrame;
+            "0%"?: FadeKeyFrame;
+            "100%"?: FadeKeyFrame;
+            [key: string]: FadeKeyFrame;
+        };
+        class FadeAnimInit extends FrameAnimInit {
             frames: FadeKeyFrames;
         }
-        class FadeAnim extends ElementAnim {
+        class FadeAnim extends FrameAnim {
             private _o;
-            constructor(cfg: FadeAnimConfig);
-            config<T extends ElementAnimConfig>(): T;
-            config<T extends ElementAnimConfig>(cfg: T): this;
+            constructor(cfg: FadeAnimInit);
+            config<T extends FrameAnimInit>(): T;
+            config<T extends FrameAnimInit>(cfg: T): this;
             protected _onUpdate(f: FadeKeyFrame): void;
-            protected _resetInitial(): void;
+            protected _resetEl(): void;
         }
     }
 }
 import FadeKeyFrame = JS.an.FadeKeyFrame;
 import FadeKeyFrames = JS.an.FadeKeyFrames;
-import FadeAnimConfig = JS.an.FadeAnimConfig;
+import FadeAnimInit = JS.an.FadeAnimInit;
 import FadeAnim = JS.an.FadeAnim;
 declare module JS {
     namespace an {
@@ -185,31 +193,43 @@ declare module JS {
             borderBottomColor?: HEX;
             borderLeftColor?: HEX;
         };
-        type GradientKeyFrames = JsonObject<GradientKeyFrame>;
-        class GradientAnimConfig extends ElementAnimConfig {
+        type GradientKeyFrames = {
+            from?: GradientKeyFrame;
+            to?: GradientKeyFrame;
+            "0%"?: GradientKeyFrame;
+            "100%"?: GradientKeyFrame;
+            [key: string]: GradientKeyFrame;
+        };
+        class GradientAnimInit extends FrameAnimInit {
             frames: GradientKeyFrames;
         }
-        class GradientAnim extends ElementAnim {
+        class GradientAnim extends FrameAnim {
             private _cls;
-            constructor(cfg: GradientAnimConfig);
-            config<T extends ElementAnimConfig>(): T;
-            config<T extends ElementAnimConfig>(cfg: T): this;
+            constructor(cfg: GradientAnimInit);
+            config<T extends FrameAnimInit>(): T;
+            config<T extends FrameAnimInit>(cfg: T): this;
             private _newColor;
-            protected _convertFrame(f: GradientKeyFrame): JsonObject<RGBA>;
-            protected _newFrame(from: JsonObject<RGBA>, to: JsonObject<RGBA>, t: number, d: number, e: EasingFunction): JsonObject<RGBA>;
-            protected _onUpdate(j: JsonObject<RGBA>): void;
-            protected _resetInitial(): void;
+            protected _convertFrame(f: GradientKeyFrame): JsonObject<TRGBA>;
+            protected _newFrame(from: JsonObject<TRGBA>, to: JsonObject<TRGBA>, t: number, d: number, e: EasingFunction): JsonObject<TRGBA>;
+            protected _onUpdate(j: JsonObject<TRGBA>): void;
+            protected _resetEl(): void;
         }
     }
 }
 import GradientKeyFrame = JS.an.GradientKeyFrame;
 import GradientKeyFrames = JS.an.GradientKeyFrames;
-import GradientAnimConfig = JS.an.GradientAnimConfig;
+import GradientAnimInit = JS.an.GradientAnimInit;
 import GradientAnim = JS.an.GradientAnim;
 declare module JS {
     namespace an {
         type KeyFrame = number | JsonObject<number> | JsonObject<JsonObject<number>> | any;
-        type KeyFrames = JsonObject<KeyFrame>;
+        type KeyFrames = {
+            from?: KeyFrame;
+            to?: KeyFrame;
+            "0%"?: KeyFrame;
+            "100%"?: KeyFrame;
+            [key: string]: KeyFrame;
+        };
     }
 }
 import KeyFrame = JS.an.KeyFrame;
@@ -220,45 +240,51 @@ declare module JS {
             x?: number;
             y?: number;
         };
-        type MoveKeyFrames = JsonObject<MoveKeyFrame>;
-        class MoveAnimConfig extends ElementAnimConfig {
+        type MoveKeyFrames = {
+            from?: MoveKeyFrame;
+            to?: MoveKeyFrame;
+            "0%"?: MoveKeyFrame;
+            "100%"?: MoveKeyFrame;
+            [key: string]: MoveKeyFrame;
+        };
+        class MoveAnimInit extends FrameAnimInit {
             frames: MoveKeyFrames;
         }
-        class MoveAnim extends ElementAnim {
+        class MoveAnim extends FrameAnim {
             private _xy;
-            constructor(cfg: MoveAnimConfig);
-            config<T extends ElementAnimConfig>(): T;
-            config<T extends ElementAnimConfig>(cfg: T): this;
+            constructor(cfg: MoveAnimInit);
+            config<T extends FrameAnimInit>(): T;
+            config<T extends FrameAnimInit>(cfg: T): this;
             protected _onUpdate(f: MoveKeyFrame): void;
-            protected _resetInitial(): void;
+            protected _resetEl(): void;
         }
     }
 }
 import MoveKeyFrame = JS.an.MoveKeyFrame;
 import MoveKeyFrames = JS.an.MoveKeyFrames;
-import MoveAnimConfig = JS.an.MoveAnimConfig;
+import MoveAnimInit = JS.an.MoveAnimInit;
 import MoveAnim = JS.an.MoveAnim;
 declare module JS {
     namespace an {
-        class ParallelAnimConfig extends AnimConfig {
+        class ParallelAnimInit extends AnimInit {
             anims: Anim[];
-            el?: HTMLElement | string;
+            target?: HTMLElement | string;
         }
         class ParallelAnim extends Anim {
-            protected _cfg: ParallelAnimConfig;
+            protected _cfg: ParallelAnimInit;
             private _plans;
             private _sta;
-            constructor(cfg: ParallelAnimConfig);
+            constructor(cfg: ParallelAnimInit);
             getState(): AnimState;
-            config(): ParallelAnimConfig;
-            config(cfg: ParallelAnimConfig): this;
+            config(): ParallelAnimInit;
+            config(cfg: ParallelAnimInit): this;
             play(): this;
             pause(): this;
             stop(): this;
         }
     }
 }
-import ParallelAnimConfig = JS.an.ParallelAnimConfig;
+import ParallelAnimInit = JS.an.ParallelAnimInit;
 import ParallelAnim = JS.an.ParallelAnim;
 declare module JS {
     namespace an {
@@ -267,21 +293,27 @@ declare module JS {
             aY?: number;
             aZ?: number;
         };
-        type RotateKeyFrames = JsonObject<RotateKeyFrame>;
-        class RotateAnimConfig extends ElementAnimConfig {
+        type RotateKeyFrames = {
+            from?: RotateKeyFrame;
+            to?: RotateKeyFrame;
+            "0%"?: RotateKeyFrame;
+            "100%"?: RotateKeyFrame;
+            [key: string]: RotateKeyFrame;
+        };
+        class RotateAnimInit extends FrameAnimInit {
             frames: RotateKeyFrames;
         }
-        class RotateAnim extends ElementAnim {
-            constructor(cfg: RotateAnimConfig);
+        class RotateAnim extends FrameAnim {
+            constructor(cfg: RotateAnimInit);
             protected _newVal(t: number, d: number, from: number, to: number, e: EasingFunction, base: number): number;
             protected _onUpdate(v: RotateKeyFrame): void;
-            protected _resetInitial(): void;
+            protected _resetEl(): void;
         }
     }
 }
 import RotateKeyFrame = JS.an.RotateKeyFrame;
 import RotateKeyFrames = JS.an.RotateKeyFrames;
-import RotateAnimConfig = JS.an.RotateAnimConfig;
+import RotateAnimInit = JS.an.RotateAnimInit;
 import RotateAnim = JS.an.RotateAnim;
 declare module JS {
     namespace an {
@@ -290,41 +322,47 @@ declare module JS {
             sY?: number;
             sZ?: number;
         };
-        type ScaleKeyFrames = JsonObject<ScaleKeyFrame>;
-        class ScaleAnimConfig extends ElementAnimConfig {
+        type ScaleKeyFrames = {
+            from?: ScaleKeyFrame;
+            to?: ScaleKeyFrame;
+            "0%"?: ScaleKeyFrame;
+            "100%"?: ScaleKeyFrame;
+            [key: string]: ScaleKeyFrame;
+        };
+        class ScaleAnimInit extends FrameAnimInit {
             frames: ScaleKeyFrames;
         }
-        class ScaleAnim extends ElementAnim {
-            constructor(cfg: ScaleAnimConfig);
-            protected _resetInitial(): void;
+        class ScaleAnim extends FrameAnim {
+            constructor(cfg: ScaleAnimInit);
+            protected _resetEl(): void;
             protected _onUpdate(v: ScaleKeyFrame): void;
         }
     }
 }
 import ScaleKeyFrame = JS.an.ScaleKeyFrame;
 import ScaleKeyFrames = JS.an.ScaleKeyFrames;
-import ScaleAnimConfig = JS.an.ScaleAnimConfig;
+import ScaleAnimInit = JS.an.ScaleAnimInit;
 import ScaleAnim = JS.an.ScaleAnim;
 declare module JS {
     namespace an {
-        class SequentialAnimConfig extends AnimConfig {
+        class SequentialAnimInit extends AnimInit {
             anims: Anim[];
-            el?: HTMLElement | string;
+            target?: HTMLElement | string;
         }
         class SequentialAnim extends Anim {
-            protected _cfg: SequentialAnimConfig;
+            protected _cfg: SequentialAnimInit;
             private _i;
             private _sta;
-            constructor(cfg: SequentialAnimConfig);
-            config(): SequentialAnimConfig;
-            config(cfg: SequentialAnimConfig): this;
+            constructor(cfg: SequentialAnimInit);
+            config(): SequentialAnimInit;
+            config(cfg: SequentialAnimInit): this;
             play(): this;
             pause(): this;
             stop(): this;
         }
     }
 }
-import SequentialAnimConfig = JS.an.SequentialAnimConfig;
+import SequentialAnimInit = JS.an.SequentialAnimInit;
 import SequentialAnim = JS.an.SequentialAnim;
 declare module JS {
     namespace an {
@@ -332,22 +370,28 @@ declare module JS {
             aX?: number;
             aY?: number;
         };
-        type SkewKeyFrames = JsonObject<SkewKeyFrame>;
-        class SkewAnimConfig extends ElementAnimConfig {
+        type SkewKeyFrames = {
+            from?: SkewKeyFrame;
+            to?: SkewKeyFrame;
+            "0%"?: SkewKeyFrame;
+            "100%"?: SkewKeyFrame;
+            [key: string]: SkewKeyFrame;
+        };
+        class SkewAnimInit extends FrameAnimInit {
             frames: SkewKeyFrames;
             firstMode?: 'both' | 'x' | 'y';
         }
-        class SkewAnim extends ElementAnim {
-            constructor(cfg: SkewAnimConfig);
+        class SkewAnim extends FrameAnim {
+            constructor(cfg: SkewAnimInit);
             protected _init(): void;
-            protected _resetInitial(): void;
+            protected _resetEl(): void;
             protected _onUpdate(f: SkewKeyFrame): void;
         }
     }
 }
 import SkewKeyFrame = JS.an.SkewKeyFrame;
 import SkewKeyFrames = JS.an.SkewKeyFrames;
-import SkewAnimConfig = JS.an.SkewAnimConfig;
+import SkewAnimInit = JS.an.SkewAnimInit;
 import SkewAnim = JS.an.SkewAnim;
 declare module JS {
     namespace an {
@@ -356,24 +400,30 @@ declare module JS {
             oY?: number;
             oZ?: number;
         };
-        type TranslateKeyFrames = JsonObject<TranslateKeyFrame>;
-        class TranslateAnimConfig extends ElementAnimConfig {
+        type TranslateKeyFrames = {
+            from?: TranslateKeyFrame;
+            to?: TranslateKeyFrame;
+            "0%"?: TranslateKeyFrame;
+            "100%"?: TranslateKeyFrame;
+            [key: string]: TranslateKeyFrame;
+        };
+        class TranslateAnimInit extends FrameAnimInit {
             frames: TranslateKeyFrames;
         }
-        class TranslateAnim extends ElementAnim {
-            constructor(cfg: TranslateAnimConfig);
-            protected _resetInitial(): void;
+        class TranslateAnim extends FrameAnim {
+            constructor(cfg: TranslateAnimInit);
+            protected _resetEl(): void;
             protected _onUpdate(f: TranslateKeyFrame): void;
         }
     }
 }
 import TranslateKeyFrame = JS.an.TranslateKeyFrame;
 import TranslateKeyFrames = JS.an.TranslateKeyFrames;
-import TranslateAnimConfig = JS.an.TranslateAnimConfig;
+import TranslateAnimInit = JS.an.TranslateAnimInit;
 import TranslateAnim = JS.an.TranslateAnim;
 declare module JS {
     namespace app {
-        interface Api<T> extends AjaxRequest {
+        interface Api<T> extends HttpRequest {
             dataKlass?: Klass<T>;
         }
     }
@@ -451,9 +501,7 @@ declare module JS {
             static isKlass(obj: any, klass: Klass<any>): boolean;
             static ofKlass(obj: any, klass: Klass<any>): boolean;
             static equalKlass(kls: any, klass?: Klass<any>): boolean;
-            static subKlass(kls1: Klass<any>, kls2: Klass<any>): boolean;
-            static equalClass(cls1: Class<any>, cls2: Class<any>): boolean;
-            static subClass(cls1: Class<any>, cls2: Class<any>): boolean;
+            static subklassOf(kls1: Klass<any>, kls2: Klass<any>): boolean;
             static type(obj: any): Type;
         }
     }
@@ -490,24 +538,24 @@ declare module JS {
             static isIP(s: string): boolean;
             static isExistUrl(url: string): Promise<boolean>;
             static isPattern(s: string, exp: RegExp): boolean;
-            static byServer(req: string | AjaxRequest, judge: (res: AjaxResponse) => boolean): Promise<boolean>;
+            static byServer(req: string | HttpRequest, judge: (res: HttpResponse) => boolean): Promise<boolean>;
         }
     }
 }
 import Check = JS.util.Check;
 interface Array<T> {
     add(a: T | T[], from?: number): this;
-    remove(index: number): this;
+    remove(index: number): boolean;
     remove(find: (item: T, i: number, array: Array<T>) => boolean): boolean;
 }
 declare module JS {
     namespace util {
         class Arrays {
-            static newArray(a: ArrayLike<any>, from?: number): any;
+            static newArray(a: ArrayLike<any>, from?: number): Array<any>;
             static toArray<T>(a: T | T[]): T[];
-            static equal<T, K>(a1: Array<T>, a2: Array<K>, equal?: (item1: T, item2: K, index: number) => boolean): boolean;
+            static equal<T, K>(a1: Array<T>, a2: Array<K>, eq?: (item1: T, item2: K, index: number) => boolean): boolean;
             static equalToString(a1: Array<any>, a2: Array<any>): boolean;
-            static same(a1: Array<any>, a2: Array<any>): boolean;
+            static same<T1, T2>(a1: Array<T1>, a2: Array<T2>, eq?: (t1: T1, t2: T2) => boolean): boolean;
             static slice(args: ArrayLike<any>, fromIndex?: number, endIndex?: number): Array<any>;
         }
     }
@@ -522,7 +570,7 @@ declare module JS {
             resolve: (value: T) => void;
             reject: (value: T) => void;
         };
-        type PromisePlan<T> = (value?: any) => Promise<T>;
+        type PromisePlan<T> = (...args: any[]) => Promise<T>;
         type PromisePlans<T> = Array<PromisePlan<T>>;
         class Promises {
             static create<T>(fn: (this: PromiseContext<T>, ...args: any[]) => void, ...args: any[]): Promise<T>;
@@ -531,7 +579,7 @@ declare module JS {
             static resolvePlan<T>(v: any): PromisePlan<T>;
             static rejectPlan<T>(v: any): PromisePlan<T>;
             static order<T>(plans: PromisePlans<T>): Promise<void>;
-            static all<T>(plans: PromisePlans<T>): Promise<any[]>;
+            static all<T>(plans: PromisePlans<T>): Promise<T[]>;
             static race<T>(plans: PromisePlans<T>): Promise<any>;
         }
     }
@@ -565,63 +613,157 @@ declare module JS {
 }
 import Jsons = JS.util.Jsons;
 declare module JS {
-    namespace util {
-        interface AjaxRequest {
+    namespace net {
+        class MIME {
+            static exe: string;
+            static bin: string;
+            static eps: string;
+            static word: string;
+            static xls: string;
+            static ppt: string;
+            static mdb: string;
+            static pdf: string;
+            static odt: string;
+            static swf: string;
+            static apk: string;
+            static jar: string;
+            static dll: string;
+            static class: string;
+            static gz: string;
+            static tgz: string;
+            static bz: string;
+            static zip: string;
+            static rar: string;
+            static tar: string;
+            static z: string;
+            static z7: string;
+            static arj: string;
+            static lzh: string;
+            static ZIPS: string;
+            static text: string;
+            static md: string;
+            static html: string;
+            static xml: string;
+            static css: string;
+            static json: string;
+            static js: string;
+            static rtf: string;
+            static rtfd: string;
+            static sql: string;
+            static sh: string;
+            static csv: string;
+            static svg: string;
+            static jpg: string;
+            static gif: string;
+            static png: string;
+            static webp: string;
+            static bmp: string;
+            static tif: string;
+            static tga: string;
+            static pcx: string;
+            static pic: string;
+            static ico: string;
+            static ai: string;
+            static psd: string;
+            static WEB_IMAGES: string;
+            static IMAGES: string;
+            static wav: string;
+            static ogg: string;
+            static mp4_a: string;
+            static webm_a: string;
+            static wma: string;
+            static mp3: string;
+            static mid: string;
+            static au: string;
+            static aif: string;
+            static H5_AUDIOS: string;
+            static AUDIOS: string;
+            static ogv: string;
+            static mp4_v: string;
+            static webm_v: string;
+            static avi: string;
+            static dv: string;
+            static mpeg: string;
+            static mov: string;
+            static wmv: string;
+            static asf: string;
+            static flv: string;
+            static mkv: string;
+            static gpp3: string;
+            static rm: string;
+            static H5_VIDEOS: string;
+            static VIDEOS: string;
+        }
+    }
+}
+import MIME = JS.net.MIME;
+declare module JS {
+    namespace net {
+        type HttpResponseType = 'xml' | 'html' | 'json' | 'text' | 'arraybuffer' | 'blob';
+        interface HttpRequest {
             thread?: boolean | ThreadPreload;
             url: string;
             async?: boolean;
             cache?: boolean;
-            contentType?: string | false;
-            parsers?: {
-                html?: (data: string) => Document;
-                xml?: (data: string) => XMLDocument;
-                text?: (data: string) => string;
+            requestMime?: string | false;
+            converts?: {
+                html?: <T>(data: HTMLDocument) => T;
+                xml?: <T>(data: XMLDocument) => T;
+                text?: <T>(data: string) => T;
+                json?: <T>(data: JsonObject) => T;
+                arraybuffer?: <T>(data: ArrayBuffer) => T;
+                blob?: <T>(data: Blob) => T;
             };
-            data?: JsonObject | string;
-            responseFilter?(data: string, type: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer'): string;
-            type?: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer';
+            data?: string | JsonObject | FormData | ArrayBuffer | Blob;
+            responseFilter?(raw: any, type: HttpResponseType): any;
+            responseType?: HttpResponseType;
             headers?: JsonObject<string | null | undefined>;
             ifModified?: boolean;
             method?: 'HEAD' | 'GET' | 'POST' | 'OPTIONS' | 'PUT' | 'DELETE';
-            mimeType?: string;
+            overrideResponseMime?: string;
             username?: string;
             password?: string;
             timeout?: number;
             crossCookie?: boolean;
-            onSending?: ((req: AjaxRequest) => boolean | void);
-            onCompleted?: ((res: AjaxResponse) => void);
-            onError?: ((res: AjaxResponse) => void);
+            complete?: ((res: HttpResponse) => void);
+            success?: ((res: HttpResponse) => void);
+            error?: ((res: HttpResponse) => void);
+            progress?: ((e: ProgressEvent, xhr: XMLHttpRequest) => void);
         }
-        interface AjaxResponse {
-            request: AjaxRequest;
-            url: string;
+        interface HttpResponse {
+            request: HttpRequest;
+            type: HttpResponseType;
             raw: any;
-            type: 'xml' | 'html' | 'json' | 'text' | 'arraybuffer';
             data: any;
             status: number;
-            statusText: 'cancel' | 'timeout' | 'abort' | 'parseerror' | 'nocontent' | 'notmodified' | string;
+            statusText: 'timeout' | 'abort' | 'parseerror' | 'nocontent' | 'notmodified' | string;
             headers: JsonObject<string>;
             xhr: XMLHttpRequest;
         }
-        class Ajax {
-            private static _toQuery;
-            static toRequest(quy: string | AjaxRequest, data?: JsonObject | QueryString): AjaxRequest;
-            static send(req: AjaxRequest | URLString): Promise<AjaxResponse>;
+        type HttpResponseConvert<INPUT, OUTPUT> = (data: INPUT, res: HttpResponse) => OUTPUT;
+        class Http {
+            static toRequest(quy: string | HttpRequest): HttpRequest;
+            static send(req: HttpRequest | URLString): Promise<HttpResponse>;
             private static _inMain;
-            static get(req: AjaxRequest | URLString): Promise<AjaxResponse>;
-            static post(req: AjaxRequest | URLString): Promise<AjaxResponse>;
-            static _ON: {};
-            static on(ev: 'sending', fn: (req: AjaxRequest) => boolean | void): any;
-            static on(ev: 'completed', fn: (res: AjaxResponse) => void): any;
-            static on(ev: 'error', fn: (res: AjaxResponse) => void): any;
+            static get(req: HttpRequest | URLString): Promise<HttpResponse>;
+            static post(req: HttpRequest | URLString): Promise<HttpResponse>;
+            static upload(file: {
+                data: Blob;
+                postName?: string;
+                fileName?: string;
+            } | FormData, url: URLString): Promise<HttpResponse>;
+            static _ON: JsonObject<(res: HttpResponse) => void>;
+            static on(ev: 'complete', fn: (res: HttpResponse) => void): any;
+            static on(ev: 'success', fn: (res: HttpResponse) => void): any;
+            static on(ev: 'error', fn: (res: HttpResponse) => void): any;
             static sendBeacon(e: 'beforeunload' | 'unload', fn: (evt: Event) => void, scope?: any): void;
             private static _inThread;
         }
     }
 }
-import Ajax = JS.util.Ajax;
-import AjaxRequest = JS.util.AjaxRequest;
-import AjaxResponse = JS.util.AjaxResponse;
+import Http = JS.net.Http;
+import HttpRequest = JS.net.HttpRequest;
+import HttpResponse = JS.net.HttpResponse;
 declare module JS {
     namespace util {
         type EventHandler<T = any> = (this: T, e: Event, ...args: any[]) => boolean | void;
@@ -701,16 +843,20 @@ declare module JS {
             static $L(selector: string): NodeListOf<HTMLElement>;
             static rename(node: Element, newTagName: string): void;
             static applyStyle(code: string, id?: string): void;
-            static applyHtml(html: string | Document, appendTo?: string | HTMLElement, ignore?: {
+            static applyHtml(html: string | HTMLDocument, appendTo?: string | HTMLElement, ignore?: {
                 script?: boolean;
                 css?: boolean;
             } | boolean): Promise<string>;
             static loadCSS(url: string, async?: boolean, uncached?: boolean): Promise<string>;
             static loadJS(url: string, async?: boolean, uncached?: boolean): Promise<string>;
-            static loadHTML(url: string, async?: boolean, appendTo?: string | HTMLElement, ignore?: {
-                script?: boolean;
-                css?: boolean;
-            } | boolean, preHandler?: (doc: Document) => Document): Promise<string>;
+            static loadHTML(url: string, async?: boolean, opts?: {
+                appendTo?: string | HTMLElement;
+                ignore?: {
+                    script?: boolean;
+                    css?: boolean;
+                } | boolean;
+                prehandle?: (doc: HTMLDocument) => HTMLDocument;
+            }): Promise<string>;
         }
     }
 }
@@ -721,7 +867,7 @@ declare module JS {
     let version: string;
     type JSDKConfig = {
         closeImport?: boolean;
-        cachedImport?: boolean;
+        cachedImport?: boolean | string;
         minImport?: boolean;
         jsdkRoot?: string;
         libRoot?: string;
@@ -734,220 +880,7 @@ declare module JS {
     function imports(url: string | string[]): Promise<any>;
 }
 declare module JS {
-    namespace util {
-        class Functions {
-            static call(fb: Fallback<any>): any;
-            static execute(code: string, ctx?: any, argsExpression?: string, args?: ArrayLike<any>): any;
-        }
-    }
-}
-import Functions = JS.util.Functions;
-declare module JS {
-    namespace util {
-        class Strings {
-            static padStart(text: string, maxLength: number, fill?: string): string;
-            static padEnd(text: string, maxLength: number, fill?: string): string;
-            static nodeHTML(nodeType: string, attrs?: JsonObject<string | boolean | number>, text?: string): string;
-            static escapeHTML(html: string): string;
-            static format(tpl: string, ...data: any[]): string;
-            static merge(tpl: string, data: JsonObject<PrimitiveType | ((data: JsonObject, match: string, key: string) => string)>): string;
-        }
-    }
-}
-import Strings = JS.util.Strings;
-declare module JS {
-    namespace util {
-        class Konsole {
-            static clear(): void;
-            static count(label?: string): void;
-            static countReset(label?: string): void;
-            static time(label?: string): void;
-            static timeEnd(label?: string): void;
-            static trace(data: any, css?: string): void;
-            static text(data: string, css?: string): void;
-            private static _print;
-            static print(...data: any[]): void;
-        }
-    }
-}
-import Konsole = JS.util.Konsole;
-declare module JS {
-    namespace util {
-        enum LogLevel {
-            ALL = 6,
-            TRACE = 5,
-            DEBUG = 4,
-            INFO = 3,
-            WARN = 2,
-            ERROR = 1,
-            OFF = 0
-        }
-        interface LogAppender {
-            log(level: LogLevel.TRACE | LogLevel.DEBUG | LogLevel.INFO | LogLevel.WARN | LogLevel.ERROR, ...data: any[]): void;
-        }
-        class ConsoleAppender implements LogAppender {
-            private name;
-            constructor(name: string);
-            log(level: LogLevel.TRACE | LogLevel.DEBUG | LogLevel.INFO | LogLevel.WARN | LogLevel.ERROR, ...data: any[]): void;
-            private _log;
-        }
-        class Log {
-            level: LogLevel;
-            private _name;
-            private _appender;
-            constructor(name: string, level: LogLevel, appender?: Klass<LogAppender>);
-            name(): string;
-            private _log;
-            trace(...data: any[]): void;
-            debug(...data: any[]): void;
-            info(...data: any[]): void;
-            warn(...data: any[]): void;
-            error(...data: any[]): void;
-            clear(): void;
-        }
-    }
-}
-import LogLevel = JS.util.LogLevel;
-import LogAppender = JS.util.LogAppender;
-import Log = JS.util.Log;
-declare let JSLogger: Log;
-declare module JS {
-    namespace lang {
-        export interface AopAdvisor<T> {
-            before?: (this: T, ...args: any[]) => void;
-            around?: (this: T, fn: Function, ...args: any[]) => any;
-            after?: (this: T, returns: any) => void;
-            throws?: (this: T, e: Error) => void;
-        }
-        export enum AnnotationTarget {
-            ANY = 1,
-            CLASS = 2,
-            FIELD = 4,
-            METHOD = 8,
-            PARAMETER = 16
-        }
-        type AnnotationDefinition = {
-            name: string;
-            handler?: (annoName: string, values: Array<any>, target: Klass<any> | object, key?: string, d?: PropertyDescriptor) => void;
-            target?: number;
-        };
-        export class Annotation extends Function {
-        }
-        export class Annotations {
-            static getPropertyType(obj: object, propertyKey: string): any;
-            static getValue(anno: Annotation, klass: Klass<any>): any;
-            static getValue(anno: Annotation, obj: object, propertyKey: string): any;
-            static setValue(annoName: string | Annotation, metaValue: any, obj: Klass<any>): void;
-            static setValue(annoName: string | Annotation, metaValue: any, obj: object, propertyKey: string): void;
-            static hasAnnotation(anno: Annotation, obj: object | Klass<any>, propertyKey?: string): boolean;
-            static getAnnotations(obj: object | Klass<any>): string[];
-            static define(definition: string | AnnotationDefinition, params?: ArrayLike<any>): Function | PropertyDescriptor;
-        }
-        export function deprecated(info?: string): any;
-        export function before(fn: (...args: any[]) => void): any;
-        export function after(fn: (returns: any) => void): any;
-        export function around(fn: (fn: Function, ...args: any[]) => any): any;
-        export function throws(fn: (e: Error) => void): any;
-        export {};
-    }
-}
-import AnnotationTarget = JS.lang.AnnotationTarget;
-import Annotation = JS.lang.Annotation;
-import Annotations = JS.lang.Annotations;
-import AopAdvisor = JS.lang.AopAdvisor;
-import deprecated = JS.lang.deprecated;
-import before = JS.lang.before;
-import after = JS.lang.after;
-import around = JS.lang.around;
-import throws = JS.lang.throws;
-declare module JS {
-    namespace reflect {
-        function klass(fullName: string): any;
-        class Method {
-            readonly ownerClass: Class<any>;
-            readonly name: string;
-            readonly paramTypes: Array<Type>;
-            readonly returnType: Type;
-            readonly fn: Function;
-            readonly isStatic: boolean;
-            readonly annotations: string[];
-            readonly parameterAnnotations: string[];
-            constructor(clazz: Class<any>, name: string, isStatic: boolean, fn: Function, paramTypes: Array<Type>, returnType: Type);
-            invoke(obj: object, ...args: Array<any>): any;
-        }
-        class Field {
-            readonly ownerClass: Class<any>;
-            readonly name: string;
-            readonly type: Type;
-            readonly isStatic: boolean;
-            readonly annotations: string[];
-            constructor(clazz: Class<any>, name: string, isStatic: boolean, type: Type);
-            set(value: any, obj?: object): void;
-            get(obj?: object): any;
-        }
-        class Class<T> {
-            readonly name: string;
-            readonly shortName: string;
-            private _klass;
-            private _superklass;
-            private _methods;
-            private _fields;
-            constructor(name: string, klass: T);
-            static getSuperklass(klass: Klass<any>): Klass<any>;
-            private static _reflectable;
-            static byName(name: string): Klass<any>;
-            static newInstance<T>(ctor: string | Klass<T>, ...args: any[]): T;
-            static aliasInstance<T>(alias: string | Klass<T>, ...args: any[]): T;
-            static aop<T>(klass: Klass<any>, method: string, advisor: AopAdvisor<T>): void;
-            static cancelAop(klass: Klass<any>, method: string): void;
-            aop<T>(method: string, advisor: AopAdvisor<T>): void;
-            private _cancelAop;
-            cancelAop(method?: string): void;
-            equals(cls: Class<any>): boolean;
-            equalsKlass(cls: Klass<any>): boolean;
-            subclassOf(cls: Class<any> | Klass<any>): boolean;
-            newInstance<T>(...args: any[]): T;
-            getSuperclass(): Class<T>;
-            getKlass<T>(): Klass<T>;
-            private _parseStaticMembers;
-            private _parseInstanceMembers;
-            private _forceProto;
-            private _isValidStatic;
-            private _isValidInstance;
-            private _init;
-            private _toArray;
-            method(name: string): Method;
-            methodsMap(): JsonObject<Method>;
-            methods(): Method[];
-            field(name: string, instance?: object): Field;
-            private _instanceFields;
-            fieldsMap(instance?: object, anno?: Annotation): JsonObject<Field>;
-            fields(instance?: object, anno?: Annotation): Field[];
-            private static _MAP;
-            private static _ALIAS_MAP;
-            static forName<T>(name: string | Klass<T>, isAlias?: boolean): Class<T>;
-            static all(): JsonObject<Class<any>>;
-            static register<T>(klass: Klass<T>, className?: string, alias?: string): void;
-            static classesOf(ns: string): Class<any>[];
-        }
-    }
-}
-import Method = JS.reflect.Method;
-import Field = JS.reflect.Field;
-import Class = JS.reflect.Class;
-import klass = JS.reflect.klass;
-interface Function {
-    class: Class<any>;
-    aop<T>(this: Function, advisor: AopAdvisor<T>, that?: T): (...args: any) => any;
-    mixin(kls: Klass<any>, methodNames?: string[]): void;
-}
-interface Object {
-    className: string;
-    getClass(): Class<any>;
-}
-declare var __decorate: (decorators: any, target: any, key: any, desc: any) => any;
-declare module JS {
-    namespace util {
+    namespace net {
         type URLString = string;
         type QueryString = string;
         type URIData = {
@@ -1004,9 +937,9 @@ declare module JS {
         }
     }
 }
-import URI = JS.util.URI;
-import URLString = JS.util.URLString;
-import QueryString = JS.util.QueryString;
+import URI = JS.net.URI;
+import URLString = JS.net.URLString;
+import QueryString = JS.net.QueryString;
 declare module JS {
     namespace util {
         type Locale = string;
@@ -1020,25 +953,26 @@ import Locale = JS.util.Locale;
 import Locales = JS.util.Locales;
 declare module JS {
     namespace util {
-        type JsonResource = JsonObject<PrimitiveType | Array<any> | RegExp | JsonObject>;
-        type Resource = URLString | JsonResource;
-        class Bundle {
+        type I18NResource = JsonObject<PrimitiveType | Array<any> | RegExp | JsonObject>;
+        class I18N {
             private _lc;
             private _d;
+            constructor(lc?: Locale);
             private _load;
-            constructor(res: Resource, locale?: Locale);
+            private _loadJson;
+            load(url: URLString, locale?: Locale): boolean;
             get(): JsonObject;
             get(key: string): any;
             getKeys(): (string | number | symbol)[];
             hasKey(k: string): boolean;
-            getLocale(): Locale;
-            set(d: JsonObject): this;
+            locale(): Locale;
+            locale(lc: Locale): this;
+            set(d: I18NResource): this;
         }
     }
 }
-import JsonResource = JS.util.JsonResource;
-import Resource = JS.util.Resource;
-import Bundle = JS.util.Bundle;
+import I18NResource = JS.util.I18NResource;
+import I18N = JS.util.I18N;
 interface Date {
     getWeek(): number;
     setWeek(week: number, dayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6): Date;
@@ -1071,7 +1005,7 @@ interface Date {
 declare module JS {
     namespace util {
         class Dates {
-            static I18N_RESOURCE: Resource;
+            static I18N_RESOURCE: I18NResource;
             static isValidDate(d: Date | string | number): boolean;
             static isLeapYear(y: number): boolean;
             static getDaysOfMonth(m: number, y?: number): number;
@@ -1119,12 +1053,28 @@ declare module JS {
 }
 import Numbers = JS.util.Numbers;
 declare module JS {
+    namespace util {
+        class Konsole {
+            static clear(): void;
+            static count(label?: string): void;
+            static countReset(label?: string): void;
+            static time(label?: string): void;
+            static timeEnd(label?: string): void;
+            static trace(data: any, css?: string): void;
+            static text(data: string, css?: string): void;
+            private static _print;
+            static print(...data: any[]): void;
+        }
+    }
+}
+import Konsole = JS.util.Konsole;
+declare module JS {
     namespace lang {
         class JSError extends Error {
             cause: Error;
             constructor(msg?: string, cause?: Error);
         }
-        class NotHandledError extends JSError {
+        class RefusedError extends JSError {
         }
         class NotFoundError extends JSError {
         }
@@ -1134,6 +1084,8 @@ declare module JS {
         }
         class StateError extends JSError {
         }
+        class ParseError extends JSError {
+        }
         class NetworkError extends JSError {
         }
         class TimeoutError extends JSError {
@@ -1141,11 +1093,12 @@ declare module JS {
     }
 }
 import JSError = JS.lang.JSError;
-import NotHandledError = JS.lang.NotHandledError;
+import RefusedError = JS.lang.RefusedError;
 import NotFoundError = JS.lang.NotFoundError;
 import ArithmeticError = JS.lang.ArithmeticError;
 import ArgumentError = JS.lang.ArgumentError;
 import StateError = JS.lang.StateError;
+import ParseError = JS.lang.ParseError;
 import NetworkError = JS.lang.NetworkError;
 import TimeoutError = JS.lang.TimeoutError;
 declare module JS {
@@ -1158,13 +1111,14 @@ declare module JS {
             static failNotEqual(expected: any, actual: any, msg?: string): void;
             static failEqual(expected: any, actual: any, msg?: string): void;
             static _equal(expected: any, actual: any): boolean;
+            static equal(expected: object, actual: object, msg?: string): any;
             static equal(expected: Date, actual: Date, msg?: string): any;
-            static equal(expected: any[], actual: any[], msg?: string): any;
-            static equal(expected: JsonObject, actual: JsonObject, msg?: string): any;
+            static equal(expected: PrimitiveType[], actual: PrimitiveType[], msg?: string): any;
+            static equal(expected: JsonObject<PrimitiveType>, actual: JsonObject<PrimitiveType>, msg?: string): any;
             static equal(expected: PrimitiveType, actual: PrimitiveType, msg?: string): any;
             static notEqual(expected: Date, actual: Date, msg?: string): any;
-            static notEqual(expected: any[], actual: any[], msg?: string): any;
-            static notEqual(expected: JsonObject, actual: JsonObject, msg?: string): any;
+            static notEqual(expected: PrimitiveType[], actual: PrimitiveType[], msg?: string): any;
+            static notEqual(expected: JsonObject<PrimitiveType>, actual: JsonObject<PrimitiveType>, msg?: string): any;
             static notEqual(expected: PrimitiveType, actual: PrimitiveType, msg?: string): any;
             static sameType(expected: any, actual: any, msg?: string): void;
             static notSameType(expected: any, actual: any, msg?: string): void;
@@ -1325,7 +1279,7 @@ declare module JS {
         interface IDataWidget extends IWidget {
             data<T>(): T;
             data(data: any, silent?: boolean): this;
-            load<T>(api: string | AjaxRequest): Promise<ResultSet<T>>;
+            load<T>(api: string | HttpRequest): Promise<ResultSet<T>>;
             reload(): this;
             dataModel<M>(): M;
         }
@@ -1352,12 +1306,15 @@ declare module JS {
         }
         type ViewEvents = 'rendering' | 'rendered' | 'widgetiniting' | 'widgetinited' | 'dataupdated' | 'validated';
         interface ViewConfig {
+            defaultConfig?: IWidgetConfig;
+            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
         }
         abstract class View implements IComponent {
             protected _widgets: JsonObject<IWidget>;
             protected _model: Modelable<any>;
             protected _eventBus: EventBus;
             protected _config: ViewConfig;
+            static WIDGET_ATTRIBUTE: string;
             initialize(): void;
             destroy(): void;
             config(): ViewConfig;
@@ -1460,7 +1417,7 @@ declare module JS {
     namespace model {
         interface ResultSetFormat {
             rootProperty?: string;
-            recordsProperty?: string;
+            dataProperty?: string;
             totalProperty?: string;
             pageProperty?: string;
             pageSizeProperty?: string;
@@ -1510,7 +1467,7 @@ import ResultSetFormat = JS.model.ResultSetFormat;
 declare module JS {
     namespace model {
         abstract class AjaxProxy {
-            abstract execute<T>(req: string | AjaxRequest, data?: JsonObject | QueryString): Promise<ResultSet<T>>;
+            abstract execute<T>(req: string | HttpRequest): Promise<ResultSet<T>>;
             s: any;
         }
     }
@@ -1520,7 +1477,7 @@ declare module JS {
     namespace model {
         class JsonProxy extends AjaxProxy {
             constructor();
-            execute<T>(query: string | AjaxRequest, data?: JsonObject | QueryString): Promise<ResultSet<T>>;
+            execute<T>(query: string | HttpRequest): Promise<ResultSet<T>>;
         }
     }
 }
@@ -1755,7 +1712,6 @@ declare module JS {
         type ValidatorSetting = RequiredValidatorSetting | FormatValidatorSetting | RangeValidatorSetting | LengthValidatorSetting | CustomValidatorSetting;
         interface FieldConfig {
             readonly name: string;
-            readonly type?: string | 'string' | 'int' | 'float' | 'boolean' | 'date' | 'object' | 'array';
             isId?: boolean;
             readonly nullable?: boolean;
             readonly defaultValue?: any;
@@ -1773,11 +1729,8 @@ declare module JS {
             alias(): string;
             isId(): boolean;
             defaultValue(): any;
-            type(): 'string' | 'int' | 'float' | 'boolean' | 'date' | 'object' | 'array';
             nullable(): boolean;
             set(val: any): any;
-            compare(v1: any, v2: any): number;
-            isEqual(v1: any, v2: any): boolean;
             validate(value: any, errors?: ValidateResult): boolean | string;
         }
     }
@@ -1797,7 +1750,7 @@ declare module JS {
             off(event?: ModelEvents): this;
             clone(): this;
             reload(): Promise<ResultSet<T>>;
-            load(req: string | AjaxRequest, silent?: boolean): Promise<ResultSet<T>>;
+            load(req: string | HttpRequest, silent?: boolean): Promise<ResultSet<T>>;
             setData(data: any, silent?: boolean): this;
             getData(): any;
             iniData(): any;
@@ -1815,16 +1768,16 @@ declare module JS {
             fieldchanged: EventHandler3<M, any, any, string>;
             validated: EventHandler2<M, ValidateResult, JsonObject>;
             fieldvalidated: EventHandler3<M, ValidateResult, any, string>;
-            loading: EventHandler1<M, AjaxRequest>;
+            loading: EventHandler1<M, HttpRequest>;
             loadsuccess: EventHandler1<M, ResultSet<any>>;
             loadfailure: EventHandler1<M, ResultSet<any>>;
-            loaderror: EventHandler1<M, AjaxResponse | Error>;
+            loaderror: EventHandler1<M, HttpResponse | Error>;
         };
         class ModelConfig {
             readonly listeners?: ModelListeners<this>;
             idProperty?: string;
             readonly fields?: Array<FieldConfig | string>;
-            dataQuery?: string | AjaxRequest;
+            dataQuery?: string | HttpRequest;
             iniData?: JsonObject;
         }
         class Model {
@@ -1846,7 +1799,7 @@ declare module JS {
             updateFields(fields: Array<FieldConfig | string>): this;
             clone(): this;
             reload(): Promise<ResultSet<unknown>>;
-            load<T>(quy: string | AjaxRequest, silent?: boolean): Promise<ResultSet<T>>;
+            load<T>(quy: string | HttpRequest, silent?: boolean): Promise<ResultSet<T>>;
             setData(data: JsonObject, silent?: boolean): this;
             hasField(name: string): boolean;
             get(fieldName: string): any;
@@ -1886,11 +1839,11 @@ declare module JS {
             rowadded: EventHandler2<M, JsonObject[], number>;
             rowremoved: EventHandler2<M, JsonObject, number>;
             validated: EventHandler2<M, ValidateResult, JsonObject[]>;
-            rowvalidated: EventHandler3<M, ValidateResult, JsonObject[], number>;
-            loading: EventHandler1<M, AjaxRequest>;
+            rowvalidated: EventHandler3<M, ValidateResult, JsonObject, number>;
+            loading: EventHandler1<M, HttpRequest>;
             loadsuccess: EventHandler1<M, ResultSet<any>>;
             loadfailure: EventHandler1<M, ResultSet<any>>;
-            loaderror: EventHandler1<M, AjaxResponse | Error>;
+            loaderror: EventHandler1<M, HttpResponse | Error>;
         }
         type Sorter = {
             field: string;
@@ -1901,7 +1854,7 @@ declare module JS {
             autoLoad?: boolean;
             readonly listeners?: ListModelListeners<this>;
             sorters?: Array<Sorter>;
-            dataQuery?: string | AjaxRequest;
+            dataQuery?: string | HttpRequest;
             iniData?: JsonObject[];
         }
         class ListModel {
@@ -1922,7 +1875,7 @@ declare module JS {
             private _modelKlass;
             modelKlass(): Klass<Model>;
             modelKlass(klass: Klass<Model>): this;
-            load<R = JsonObject[]>(quy: string | AjaxRequest, silent?: boolean): Promise<ResultSet<R>>;
+            load<R = JsonObject[]>(quy: string | HttpRequest, silent?: boolean): Promise<ResultSet<R>>;
             getData(): JsonObject[];
             setData(data: JsonObject[], silent?: boolean): this;
             iniData(): any;
@@ -1955,7 +1908,7 @@ import ListModelConfig = JS.model.ListModelConfig;
 import ListModelEvents = JS.model.ListModelEvents;
 import ListModelListeners = JS.model.ListModelListeners;
 declare module JS {
-    namespace ui {
+    namespace util {
         enum LengthUnit {
             PCT = "%",
             PX = "px",
@@ -1974,41 +1927,44 @@ declare module JS {
         }
     }
 }
-import Lengths = JS.ui.Lengths;
+import Lengths = JS.util.Lengths;
+import LengthUnit = JS.util.LengthUnit;
 declare module JS {
-    namespace ui {
+    namespace util {
         type HEX = string;
-        type RGBAString = string;
-        type RGBA = {
+        type RGBA = string;
+        type TRGBA = {
             r: number;
             g: number;
             b: number;
             a?: number;
         };
-        type HSLAString = string;
-        type HSLA = {
+        type HSLA = string;
+        type THSLA = {
             h: number;
             s: number;
             l: number;
             a?: number;
         };
+        type Color = HEX | RGBA | HSLA;
         class Colors {
-            static hex2rgba(hex: HEX): RGBA;
+            static hex2rgba(hex: HEX): TRGBA;
             static rgba2hex(r: number, g: number, b: number, a?: number): HEX;
-            static rgba2css(c: RGBA): RGBAString;
-            static hsla2string(c: HSLA): HSLAString;
-            static hsl2rgb(hsl: HSLA): RGBA;
-            static rgbTohsl(rgb: RGBA): HSLA;
-            static css2rgba(css: string): RGBA;
+            static rgba2css(c: TRGBA): RGBA;
+            static hsla2string(c: THSLA): HSLA;
+            static hsl2rgb(hsl: THSLA): TRGBA;
+            static rgb2hsl(rgb: TRGBA): THSLA;
+            static css2rgba(css: string): TRGBA;
         }
     }
 }
-import HEX = JS.ui.HEX;
-import RGBAString = JS.ui.RGBAString;
-import RGBA = JS.ui.RGBA;
-import HSLAString = JS.ui.HSLAString;
-import HSLA = JS.ui.HSLA;
-import Colors = JS.ui.Colors;
+import HEX = JS.util.HEX;
+import RGBA = JS.util.RGBA;
+import TRGBA = JS.util.TRGBA;
+import HSLA = JS.util.HSLA;
+import THSLA = JS.util.THSLA;
+import Color = JS.util.Color;
+import Colors = JS.util.Colors;
 declare module JS {
     namespace ui {
         type LR = 'left' | 'right';
@@ -2067,7 +2023,7 @@ declare module JS {
             colorMode?: ColorMode;
             faceMode?: string | Array<string>;
             locale?: Locale;
-            i18n?: Resource;
+            i18n?: I18NResource | URLString;
             listeners?: WidgetListeners<W>;
         }
     }
@@ -2106,9 +2062,9 @@ declare module JS {
             on<H = EventHandler<this>>(types: string, fn: H, once?: boolean): this;
             off(types?: string): this;
             protected _fire<E>(e: E, args?: Array<any>): void;
-            static I18N: Resource;
-            private _i18nBundle;
-            private _createBundle;
+            static I18N: I18NResource | URLString;
+            private _i18nObj;
+            private _newI18N;
             protected _i18n(): JsonObject;
             protected _i18n<T>(key: string): T;
             locale(): string;
@@ -2123,10 +2079,10 @@ declare module JS {
         type FormWidgetEventHanler_Changed<T> = EventHandler2<T, any, any>;
         type FormWidgetEventHanler_Validating<T> = EventHandler3<T, ValidateResult, any, string>;
         type FormWidgetEventHanler_Validated<T> = EventHandler3<T, ValidateResult, any, string>;
-        type FormWidgetEventHanler_Loading<T> = EventHandler1<T, AjaxRequest>;
+        type FormWidgetEventHanler_Loading<T> = EventHandler1<T, HttpRequest>;
         type FormWidgetEventHanler_Loadsuccess<T> = EventHandler1<T, ResultSet<any>>;
         type FormWidgetEventHanler_Loadfailure<T> = EventHandler1<T, ResultSet<any>>;
-        type FormWidgetEventHanler_Loaderror<T> = EventHandler1<T, AjaxResponse | Error>;
+        type FormWidgetEventHanler_Loaderror<T> = EventHandler1<T, HttpResponse | Error>;
         type FormWidgetEventHanler_Dataupdating<T> = EventHandler2<T, any, any>;
         type FormWidgetEventHanler_Dataupdated<T> = EventHandler2<T, any, any>;
         interface FormWidgetListeners<T> extends WidgetListeners<T> {
@@ -2163,7 +2119,7 @@ declare module JS {
             bodyCls?: string;
             bodyStyle?: string;
             data?: any;
-            dataQuery?: string | AjaxRequest;
+            dataQuery?: string | HttpRequest;
             iniValue?: any;
             listeners?: FormWidgetListeners<T>;
         }
@@ -2202,7 +2158,7 @@ declare module JS {
             data(data: any, silent?: boolean): this;
             protected _renderData(): void;
             clear(silent?: boolean): this;
-            load(quy: string | AjaxRequest, silent?: boolean): Promise<ResultSet<any>>;
+            load(quy: string | HttpRequest, silent?: boolean): Promise<ResultSet<any>>;
             reload(): this;
             protected _equalValues(newVal: any, oldVal: any): boolean;
             value(): any;
@@ -2664,7 +2620,7 @@ declare module JS {
         interface PageModelListeners<M = PageModel> extends ListModelListeners<M> {
             pagechanged: EventHandler2<M, number, number>;
         }
-        interface PageQuery extends AjaxRequest {
+        interface PageQuery extends HttpRequest {
             pageSize?: number;
             page?: number;
         }
@@ -2743,7 +2699,7 @@ declare module JS {
             pageSizes?: number[];
             pagingBar?: boolean;
             faceMode?: GridFaceMode | GridFaceMode[];
-            i18n?: Resource | GridResource;
+            i18n?: URLString | GridResource;
             listeners?: GridListeners;
         }
         type GridEvents = WidgetEvents | 'loadsuccess' | 'loadfailure' | 'dataupdating' | 'dataupdated' | 'selected' | 'unselected' | 'allselected' | 'allunselected' | 'rowclick' | 'cellclick';
@@ -3226,7 +3182,7 @@ declare module JS {
         }
         class Select extends FormWidget implements ICRUDWidget<JsonObject[]> {
             constructor(cfg: SelectConfig);
-            load(api: string | AjaxRequest): Promise<ResultSet<any>>;
+            load(api: string | HttpRequest): Promise<ResultSet<any>>;
             iniValue(): string | string[];
             iniValue(v: string | string[], render?: boolean): this;
             protected _destroy(): void;
@@ -3533,27 +3489,13 @@ import ToastConfig = JS.fx.ToastConfig;
 import ToastListeners = JS.fx.ToastListeners;
 declare module JS {
     namespace util {
-        type MimeFile = {
-            id: string;
-            mime?: string;
-            name: string;
-            ext?: string;
-            size?: number;
-            uri: string;
-        };
-        type FileExts = {
-            title?: string;
-            extensions?: string;
-            mimeTypes?: string;
-        };
-        class MimeFiles {
-            static SOURCE_FILES: FileExts;
-            static IMAGE_FILES: FileExts;
-            static DOC_FILES: FileExts;
-            static COMPRESSED_FILES: FileExts;
-            static VIDEO_FILES: FileExts;
-            static AUDIO_FILES: FileExts;
-            static WEB_FILES: FileExts;
+        class FileTypes {
+            static CODES: string;
+            static IMAGES: string;
+            static DOCS: string;
+            static ZIPS: string;
+            static VIDEOS: string;
+            static AUDIOS: string;
         }
         enum FileSizeUnit {
             B = "B",
@@ -3568,25 +3510,35 @@ declare module JS {
             static ONE_GB: number;
             static ONE_TB: number;
             static getFileName(path: string): string;
-            static getExt(path: string): string;
-            static isFileExt(path: string, exts: string): boolean;
-            static isSourceFile(path: string): boolean;
-            static isImageFile(path: string): boolean;
-            static isDocFile(path: string): boolean;
-            static isAudioFile(path: string): boolean;
-            static isVideoFile(path: string): boolean;
-            static isCompressedFile(path: string): boolean;
-            static isWebFile(path: string): boolean;
+            static getFileType(path: string): string;
+            static isFileType(path: string, exts: string): boolean;
             static convertSize(size: string | number, orgUnit: FileSizeUnit, tarUnit: FileSizeUnit): number;
             static toSizeString(byte: string | number, sizeUnit?: FileSizeUnit): string;
         }
     }
 }
-import MimeFile = JS.util.MimeFile;
-import FileExts = JS.util.FileExts;
-import MimeFiles = JS.util.MimeFiles;
 import FileSizeUnit = JS.util.FileSizeUnit;
 import Files = JS.util.Files;
+import FileTypes = JS.util.FileTypes;
+declare module JS {
+    namespace fx {
+        type MimeFile = {
+            id: string;
+            mime?: string;
+            name: string;
+            ext?: string;
+            size?: number;
+            uri: string;
+        };
+        type FileAccepts = {
+            title?: string;
+            extensions?: string;
+            mimeTypes?: string;
+        };
+    }
+}
+import MimeFile = JS.fx.MimeFile;
+import FileAccepts = JS.fx.FileAccepts;
 declare module JS {
     namespace fx {
         enum UploaderFaceMode {
@@ -3601,7 +3553,7 @@ declare module JS {
             server?: string;
             dnd?: boolean;
             paste?: boolean | 'body';
-            accept?: FileExts;
+            accept?: FileAccepts;
             thumb?: {
                 width?: number;
                 height?: number;
@@ -3619,7 +3571,7 @@ declare module JS {
             fieldName?: string;
             uploadData?: JsonObject;
             faceMode?: UploaderFaceMode | UploaderFaceMode[];
-            i18n?: Resource | UploaderResource;
+            i18n?: URLString | UploaderResource;
             iniValue?: MimeFile[];
             data?: MimeFile[];
             dataFormat?: ResultSetFormat | ((this: Uploader, rawData: any) => ResultSet<MimeFile[]>);
@@ -3938,6 +3890,182 @@ declare module JS {
     }
 }
 declare module JS {
+    namespace util {
+        class Functions {
+            static call(fb: Fallback<any>): any;
+            static execute(code: string, ctx?: any, argsExpression?: string, args?: ArrayLike<any>): any;
+        }
+    }
+}
+import Functions = JS.util.Functions;
+declare module JS {
+    namespace util {
+        class Strings {
+            static padStart(text: string, maxLength: number, fill?: string): string;
+            static padEnd(text: string, maxLength: number, fill?: string): string;
+            static nodeHTML(nodeType: string, attrs?: JsonObject<string | boolean | number>, text?: string): string;
+            static escapeHTML(html: string): string;
+            static format(tpl: string, ...data: any[]): string;
+            static merge(tpl: string, data: JsonObject<PrimitiveType | ((data: JsonObject, match: string, key: string) => string)>): string;
+        }
+    }
+}
+import Strings = JS.util.Strings;
+declare module JS {
+    namespace util {
+        enum LogLevel {
+            ALL = 6,
+            TRACE = 5,
+            DEBUG = 4,
+            INFO = 3,
+            WARN = 2,
+            ERROR = 1,
+            OFF = 0
+        }
+        interface LogAppender {
+            log(level: LogLevel.TRACE | LogLevel.DEBUG | LogLevel.INFO | LogLevel.WARN | LogLevel.ERROR, ...data: any[]): void;
+        }
+        class ConsoleAppender implements LogAppender {
+            private name;
+            constructor(name: string);
+            log(level: LogLevel.TRACE | LogLevel.DEBUG | LogLevel.INFO | LogLevel.WARN | LogLevel.ERROR, ...data: any[]): void;
+            private _log;
+        }
+        class Log {
+            level: LogLevel;
+            private _name;
+            private _appender;
+            constructor(name: string, level: LogLevel, appender?: Klass<LogAppender>);
+            name(): string;
+            private _log;
+            trace(...data: any[]): void;
+            debug(...data: any[]): void;
+            info(...data: any[]): void;
+            warn(...data: any[]): void;
+            error(...data: any[]): void;
+            clear(): void;
+        }
+    }
+}
+import LogLevel = JS.util.LogLevel;
+import LogAppender = JS.util.LogAppender;
+import Log = JS.util.Log;
+declare let JSLogger: Log;
+declare module JS {
+    namespace sugar {
+        export enum AnnotationTarget {
+            ANY = 1,
+            CLASS = 2,
+            FIELD = 4,
+            METHOD = 8,
+            PARAMETER = 16
+        }
+        type AnnotationDefinition = {
+            name: string;
+            handler?: (annoName: string, values: Array<any>, target: Klass<any> | object, key?: string, d?: PropertyDescriptor) => void;
+            target?: number;
+        };
+        export class Annotation extends Function {
+        }
+        export class Annotations {
+            static getPropertyType(obj: object, propertyKey: string): any;
+            static getValue(anno: Annotation, klass: Klass<any>): any;
+            static getValue(anno: Annotation, obj: object, propertyKey: string): any;
+            static setValue(annoName: string | Annotation, metaValue: any, obj: Klass<any>): void;
+            static setValue(annoName: string | Annotation, metaValue: any, obj: object, propertyKey: string): void;
+            static hasAnnotation(anno: Annotation, obj: object | Klass<any>, propertyKey?: string): boolean;
+            static getAnnotations(obj: object | Klass<any>): string[];
+            static define(definition: string | AnnotationDefinition, params?: ArrayLike<any>): Function | PropertyDescriptor;
+        }
+        export {};
+    }
+}
+import AnnotationTarget = JS.sugar.AnnotationTarget;
+import Annotation = JS.sugar.Annotation;
+import Annotations = JS.sugar.Annotations;
+interface Function {
+    class: Class<any>;
+}
+interface Object {
+    className: string;
+    getClass(): Class<any>;
+}
+declare module JS {
+    namespace sugar {
+        function klass(fullName: string): any;
+        class Method {
+            readonly ownerClass: Class<any>;
+            readonly name: string;
+            readonly paramTypes: Array<Type>;
+            readonly returnType: Type;
+            readonly fn: Function;
+            readonly isStatic: boolean;
+            readonly annotations: string[];
+            readonly parameterAnnotations: string[];
+            constructor(clazz: Class<any>, name: string, isStatic: boolean, fn: Function, paramTypes: Array<Type>, returnType: Type);
+            invoke(obj: object, ...args: Array<any>): any;
+        }
+        class Field {
+            readonly ownerClass: Class<any>;
+            readonly name: string;
+            readonly type: Type;
+            readonly isStatic: boolean;
+            readonly annotations: string[];
+            constructor(clazz: Class<any>, name: string, isStatic: boolean, type: Type);
+            set(value: any, obj?: object): void;
+            get(obj?: object): any;
+        }
+        class Class<T> {
+            readonly name: string;
+            readonly shortName: string;
+            private _klass;
+            private _superklass;
+            private _methods;
+            private _fields;
+            constructor(name: string, klass: T);
+            static getSuperklass(klass: Klass<any>): Klass<any>;
+            private static _reflectable;
+            static byName(name: string): Klass<any>;
+            static newInstance<T>(ctor: string | Klass<T>, ...args: any[]): T;
+            static aliasInstance<T>(alias: string | Klass<T>, ...args: any[]): T;
+            static aop<T>(klass: Klass<any>, method: string, advisor: AopAdvisor<T>): void;
+            static cancelAop(klass: Klass<any>, method: string): void;
+            aop<T>(method: string, advisor: AopAdvisor<T>): void;
+            private _cancelAop;
+            cancelAop(method?: string): void;
+            equals(cls: Class<any> | Klass<any>): boolean;
+            subclassOf(cls: Class<any> | Klass<any>): boolean;
+            newInstance<T>(...args: any[]): T;
+            getSuperclass(): Class<T>;
+            getKlass<T>(): Klass<T>;
+            private _parseStaticMembers;
+            private _parseInstanceMembers;
+            private _forceProto;
+            private _isValidStatic;
+            private _isValidInstance;
+            private _init;
+            private _toArray;
+            method(name: string): Method;
+            methodsMap(): JsonObject<Method>;
+            methods(): Method[];
+            field(name: string, instance?: object): Field;
+            private _instanceFields;
+            fieldsMap(instance?: object, anno?: Annotation): JsonObject<Field>;
+            fields(instance?: object, anno?: Annotation): Field[];
+            private static _MAP;
+            private static _ALIAS_MAP;
+            static forName<T>(name: string | Klass<T>, isAlias?: boolean): Class<T>;
+            static all(): JsonObject<Class<any>>;
+            static reflect<T>(klass: Klass<T>, className?: string, alias?: string): void;
+            static classesOf(ns: string): Class<any>[];
+        }
+    }
+}
+import Method = JS.sugar.Method;
+import Field = JS.sugar.Field;
+import Class = JS.sugar.Class;
+import klass = JS.sugar.klass;
+declare module JS {
     namespace ioc {
         interface IComponent {
             initialize(): any;
@@ -4023,6 +4151,628 @@ import ThreadRunner = JS.lang.ThreadRunner;
 import ThreadState = JS.lang.ThreadState;
 import ThreadPreload = JS.lang.ThreadPreload;
 declare module JS {
+    namespace math {
+        type ArrayPoint2 = [number, number];
+        type ArrayPoint3 = [number, number, number];
+        type PolarPoint2 = {
+            d: number;
+            a: number;
+        };
+        type PolarPoint3 = {
+            d: number;
+            ax: number;
+            az: number;
+        };
+    }
+}
+import ArrayPoint2 = JS.math.ArrayPoint2;
+import ArrayPoint3 = JS.math.ArrayPoint3;
+import PolarPoint2 = JS.math.PolarPoint2;
+import PolarPoint3 = JS.math.PolarPoint3;
+declare module JS {
+    namespace math {
+        class Coords2 {
+            static rotate(p: ArrayPoint2, rad: number): ArrayPoint2;
+            static rotateX(p: ArrayPoint2, rad: number): ArrayPoint2;
+            static rotateY(p: ArrayPoint2, rad: number): ArrayPoint2;
+            static translate(p: ArrayPoint2, dx: number, dy: number): ArrayPoint2;
+            static translateX(p: ArrayPoint2, delta: number): ArrayPoint2;
+            static translateY(p: ArrayPoint2, delta: number): ArrayPoint2;
+        }
+    }
+}
+import Coords2 = JS.math.Coords2;
+declare module JS {
+    namespace math {
+        class Floats {
+            static EQUAL_PRECISION: number;
+            static equal(n1: number, n2: number, eps?: number): boolean;
+            static greater(n1: number, n2: number, eps?: number): boolean;
+            static greaterEqual(n1: number, n2: number, eps?: number): boolean;
+            static less(n1: number, n2: number, eps?: number): boolean;
+            static lessEqual(n1: number, n2: number, eps?: number): boolean;
+        }
+    }
+}
+import Floats = JS.math.Floats;
+declare module JS {
+    namespace math {
+        class Point2 {
+            x: number;
+            y: number;
+            constructor();
+            constructor(x: number, y: number);
+            static ORIGIN: Point2;
+            static toPoint(p: ArrayPoint2): Point2;
+            static toArray(p: ArrayPoint2 | Point2): ArrayPoint2;
+            static polar2xy(d: number, rad: number): ArrayPoint2;
+            static xy2polar(x: number, y: number): PolarPoint2;
+            static equal(p1: ArrayPoint2, p2: ArrayPoint2): boolean;
+            static equal(x1: number, y1: number, x2: number, y2: number): boolean;
+            static isOrigin(x: number, y: number): boolean;
+            static distanceSq(x1: number, y1: number, x2: number, y2: number): number;
+            static distance(x1: number, y1: number, x2: number, y2: number): number;
+            static radian(x1: number, y1: number, x2?: number, y2?: number): number;
+            set(p: ArrayPoint2 | Point2 | PolarPoint2): this;
+            toPolar(): PolarPoint2;
+            toArray(): ArrayPoint2;
+            clone(): Point2;
+            equals(p: Point2): boolean;
+            radian(): number;
+            distanceSq(x: number, y: number): number;
+            distance(x: number, y: number): number;
+            distanceL1(x: number, y: number): number;
+            distanceLinf(x: number, y: number): number;
+            translate(x: number, y: number): this;
+            moveTo(x: number, y: number): this;
+            clamp(min: number, max: number): this;
+            clampMin(min: number): this;
+            clampMax(max: number): this;
+            toward(step: number, rad: number): this;
+        }
+    }
+}
+import Point2 = JS.math.Point2;
+declare module JS {
+    namespace math {
+        class Point3 {
+            x: number;
+            y: number;
+            z: number;
+            constructor();
+            constructor(x: number, y: number, z: number);
+            static toPoint(p: ArrayPoint3): Point3;
+            static equal(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number): boolean;
+            static isOrigin(x: number, y: number, z: number): boolean;
+            static polar2xyz(d: number, az: number, ax: number): ArrayPoint3;
+            static xyz2polar(x: number, y: number, z: number): PolarPoint3;
+            static distanceSq(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number): number;
+            static distance(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number): number;
+            set(p: Point3 | ArrayPoint3): this;
+            equals(p: Point3): boolean;
+            clone(): Point3;
+            distanceSq(p: Point3): number;
+            distance(p: Point3): number;
+            distanceL1(p: Point3): number;
+            distanceLinf(p: Point3): number;
+            toArray(): ArrayPoint3;
+            moveTo(x: number, y: number, z: number): this;
+            clamp(min: number, max: number): this;
+            clampMin(min: number): this;
+            clampMax(max: number): this;
+        }
+    }
+}
+import Point3 = JS.math.Point3;
+declare module JS {
+    namespace math {
+        class Radians {
+            static EAST: number;
+            static SOUTH: number;
+            static WEST: number;
+            static NORTH: number;
+            static ONE_CYCLE: number;
+            static rad2deg(rad: number, limit?: boolean): number;
+            static deg2rad(deg: number): number;
+            static positive(rad: number): number;
+            static equal(rad1: number, rad2: number): boolean;
+            static equalAngle(rad1: number, rad2: number): boolean;
+            static reverse(rad: number): number;
+        }
+    }
+}
+import Radians = JS.math.Radians;
+declare module JS {
+    namespace math {
+        class Vector2 {
+            x: number;
+            y: number;
+            static Zero: Vector2;
+            static One: Vector2;
+            static UnitX: Vector2;
+            static UnitY: Vector2;
+            static toVector(p1: ArrayPoint2, p2: ArrayPoint2): Vector2;
+            static toVector(p1: Point2, p2: Point2): Vector2;
+            static toVector(line: Segment): Vector2;
+            static whichSide(p1: ArrayPoint2, p2: ArrayPoint2, p: ArrayPoint2): number;
+            static cross(v1: Vector2, v2: Vector2): number;
+            static lerp(from: Vector2, to: Vector2, amount: number): Vector2;
+            constructor();
+            constructor(x: number, y: number);
+            set(v: Vector2): this;
+            set(from: ArrayPoint2, to: ArrayPoint2): this;
+            set(from: Point2, to: Point2): this;
+            equals(v: Vector2): boolean;
+            toString(): string;
+            toArray(): [number, number];
+            clone(): Vector2;
+            negate(): this;
+            add(v: Vector2): this;
+            sub(v: Vector2): this;
+            mul(n: number): this;
+            div(n: number): this;
+            lengthSq(): number;
+            length(): number;
+            dot(v: Vector2): number;
+            normalize(): this;
+            radian(): number;
+            angle(v: Vector2): number;
+            isZero(): boolean;
+            verticalTo(v: Vector2): boolean;
+            parallelTo(v: Vector2): boolean;
+            getNormL(): Vector2;
+            getNormR(): Vector2;
+            getProject(v: Vector2): Vector2;
+            private _rebound;
+            getReboundL(v: Vector2): Vector2;
+            getReboundR(v: Vector2): Vector2;
+            abs(): this;
+        }
+    }
+}
+import Vector2 = JS.math.Vector2;
+declare module JS {
+    namespace math {
+        class Vector3 {
+            x: number;
+            y: number;
+            z: number;
+            static Zero: Vector3;
+            static One: Vector3;
+            static UnitX: Vector3;
+            static UnitY: Vector3;
+            static UnitZ: Vector3;
+            static toVector(p1: Point3 | ArrayPoint3, p2: Point3 | ArrayPoint3): Vector3;
+            static cross(v1: Vector3, v2: Vector3): Vector3;
+            static lerp(from: Vector3, to: Vector3, amount: number): Vector3;
+            constructor();
+            constructor(x: number, y: number, z: number);
+            set(v: Vector3): this;
+            set(from: Point3 | ArrayPoint3, to: Point3 | ArrayPoint3): this;
+            equals(v: Vector3): boolean;
+            toString(): string;
+            toArray(): [number, number, number];
+            clone(): Vector3;
+            negate(): this;
+            add(v: Vector3): this;
+            sub(v: Vector3): this;
+            mul(n: number): this;
+            div(n: number): this;
+            lengthSq(): number;
+            length(): number;
+            dot(v: Vector3): number;
+            normalize(): this;
+            abs(): this;
+        }
+    }
+}
+import Vector3 = JS.math.Vector3;
+declare module JS {
+    namespace math {
+        namespace geom {
+            enum AngleType {
+                ACUTE = 0,
+                RIGHT = 1,
+                OBTUSE = 2,
+                UNKNOWN = 3
+            }
+            enum ArcType {
+                OPEN = 0,
+                PIE = 1
+            }
+            interface Shape {
+                clone(): this;
+                equals(s: this): boolean;
+                onside(p: ArrayPoint2): boolean;
+                inside(s: ArrayPoint2 | Shape): boolean;
+                intersects(s: Shape): boolean;
+                bounds(): Rect;
+                perimeter(): number;
+                vertexes(): ArrayPoint2[];
+                vertexes(vs: ArrayPoint2[]): this;
+                isEmpty(): boolean;
+            }
+            class Shapes {
+                static crossPoints(line: Segment | Line, sh: Shape, unClosed?: boolean): ArrayPoint2[];
+                static inShape(p: Point2 | ArrayPoint2, sh: Rect | Triangle, unClosed?: boolean): boolean;
+                static onShape(p: Point2 | ArrayPoint2, sh: Shape, unClosed?: boolean): boolean;
+            }
+        }
+    }
+}
+import Shape = JS.math.geom.Shape;
+import Shapes = JS.math.geom.Shapes;
+import AngleType = JS.math.geom.AngleType;
+import ArcType = JS.math.geom.ArcType;
+declare module JS {
+    namespace math {
+        namespace geom {
+            class Line implements Shape {
+                x1: number;
+                y1: number;
+                x2: number;
+                y2: number;
+                static X: Line;
+                static Y: Line;
+                static toLine(p1: ArrayPoint2, p2: ArrayPoint2): Line;
+                static slope(p1: ArrayPoint2, p2: ArrayPoint2): number;
+                static position(p1: ArrayPoint2, p2: ArrayPoint2, p3: ArrayPoint2, p4: ArrayPoint2): number;
+                static isCollinear(p1: ArrayPoint2, p2: ArrayPoint2, p3: ArrayPoint2): boolean;
+                static isCollinearLine(l1: Line | Segment, l2: Line | Segment): boolean;
+                static distanceSqToPoint(p1: ArrayPoint2, p2: ArrayPoint2, p: ArrayPoint2): number;
+                static distanceToPoint(p1: ArrayPoint2, p2: ArrayPoint2, p: ArrayPoint2): number;
+                constructor();
+                constructor(x1: number, y1: number, x2: number, y2: number);
+                toSegment(): Segment;
+                toVector(): Vector2;
+                p1(): ArrayPoint2;
+                p1(x: number, y: number): this;
+                p2(): ArrayPoint2;
+                p2(x: number, y: number): this;
+                vertexes(): ArrayPoint2[];
+                vertexes(ps: ArrayPoint2[]): this;
+                set(l: Line | Segment): this;
+                set(p1: ArrayPoint2, p2: ArrayPoint2): this;
+                clone(): this;
+                equals(s: Line): boolean;
+                isEmpty(): boolean;
+                inside(s: ArrayPoint2 | Segment): boolean;
+                onside(p: ArrayPoint2): boolean;
+                intersects(s: Segment | Line): boolean;
+                bounds(): Rect;
+                slope(): number;
+                perimeter(): number;
+                private _cpOfLinePoint;
+                private _cpOfLineLine;
+                private _cpOfLineRay;
+                crossPoint(p: ArrayPoint2): ArrayPoint2;
+                crossLine(l: Line): ArrayPoint2;
+                crossRay(p: ArrayPoint2, rad: number): ArrayPoint2;
+            }
+        }
+    }
+}
+import Line = JS.math.geom.Line;
+declare module JS {
+    namespace math {
+        namespace geom {
+            class Segment extends Line {
+                static toSegment(p1: ArrayPoint2, p2: ArrayPoint2): Segment;
+                static inSegment(p1: ArrayPoint2, p2: ArrayPoint2, p: ArrayPoint2): boolean;
+                static distanceSqToPoint(p1: ArrayPoint2, p2: ArrayPoint2, p: ArrayPoint2): number;
+                static distanceToPoint(p1: ArrayPoint2, p2: ArrayPoint2, p: ArrayPoint2): number;
+                static intersect(p1: ArrayPoint2, p2: ArrayPoint2, p3: ArrayPoint2, p4: ArrayPoint2): boolean;
+                toLine(): Line;
+                equals(s: Segment, isStrict?: boolean): boolean;
+                inside(s: ArrayPoint2 | Segment): boolean;
+                intersects(s: Segment | Line): boolean;
+                bounds(): Rect;
+                perimeter(): number;
+                ratioPoint(ratio: number): ArrayPoint2;
+                midPoint(): ArrayPoint2;
+                private _cpOfSS;
+                private _cpOfSL;
+                private _cpOfSR;
+                crossSegment(s: Segment): ArrayPoint2;
+                crossLine(l: Line): ArrayPoint2;
+                crossRay(p: ArrayPoint2, rad: number): ArrayPoint2;
+            }
+        }
+    }
+}
+import Segment = JS.math.geom.Segment;
+declare module JS {
+    namespace math {
+        namespace geom {
+            class CirArc implements Shape {
+                type: ArcType;
+                sAngle: number;
+                eAngle: number;
+                dir: 1 | 0;
+                x: number;
+                y: number;
+                r: number;
+                static toArc(type: ArcType, c: ArrayPoint2, r: number, sAngle: number, eAngle: number, dir?: 1 | 0): CirArc;
+                constructor();
+                constructor(type: ArcType, x: number, y: number, r: number, sAngle: number, eAngle: number, dir?: 1 | 0);
+                isEmpty(): boolean;
+                center(): ArrayPoint2;
+                center(x: number, y: number): this;
+                set(s: CirArc): this;
+                clone(): this;
+                equals(s: CirArc): boolean;
+                _inAngle(p: ArrayPoint2, ps: ArrayPoint2[], cache?: {
+                    va: Vector2;
+                    vb: Vector2;
+                    realRad: number;
+                    minRad: number;
+                }): boolean;
+                inside(s: ArrayPoint2 | Segment | Rect | Triangle): boolean;
+                onside(p: ArrayPoint2): boolean;
+                intersects(s: Segment | Line): boolean;
+                _crossByRay(rad: number): ArrayPoint2;
+                private _bounds;
+                bounds(): Rect;
+                arcLength(): number;
+                perimeter(): number;
+                area(): number;
+                vertexes(): ArrayPoint2[];
+                vertexes(ps: ArrayPoint2[]): this;
+                angle(): number;
+                moveTo(x: number, y: number): this;
+            }
+        }
+    }
+}
+import CirArc = JS.math.geom.CirArc;
+declare module JS {
+    namespace math {
+        namespace geom {
+            class Circle implements Shape {
+                x: number;
+                y: number;
+                r: number;
+                static toCircle(c: ArrayPoint2, r: number): Circle;
+                constructor();
+                constructor(x: number, y: number, r: number);
+                set(c: Circle): this;
+                set(p: Point2 | ArrayPoint2, r: number): this;
+                isEmpty(): boolean;
+                clone(): this;
+                equals(s: Circle): boolean;
+                inside(s: ArrayPoint2 | Segment | Circle | Rect | Triangle): boolean;
+                onside(p: ArrayPoint2): boolean;
+                intersects(s: Segment | Line | Circle | Rect): boolean;
+                bounds(): Rect;
+                moveTo(x: number, y: number): this;
+                perimeter(): number;
+                area(): number;
+                vertexes(): ArrayPoint2[];
+                vertexes(ps: ArrayPoint2[]): this;
+            }
+        }
+    }
+}
+import Circle = JS.math.geom.Circle;
+declare module JS {
+    namespace math {
+        namespace geom {
+            class Ellipse implements Shape {
+                x: number;
+                y: number;
+                rx: number;
+                ry: number;
+                static toEllipse(c: ArrayPoint2, rx: number, ry: number): Ellipse;
+                constructor();
+                constructor(x: number, y: number, rx: number, ry: number);
+                set(c: Ellipse): this;
+                set(p: Point2 | ArrayPoint2, rx: number, ry: number): this;
+                isEmpty(): boolean;
+                clone(): this;
+                equals(s: Ellipse): boolean;
+                inside(s: ArrayPoint2 | Segment | Rect | Triangle): boolean;
+                onside(p: ArrayPoint2): boolean;
+                intersects(s: Segment | Line): boolean;
+                bounds(): Rect;
+                moveTo(x: number, y: number): this;
+                perimeter(): number;
+                area(): number;
+                vertexes(): ArrayPoint2[];
+                vertexes(ps: ArrayPoint2[]): this;
+            }
+        }
+    }
+}
+import Ellipse = JS.math.geom.Ellipse;
+declare module JS {
+    namespace math {
+        namespace geom {
+            class Polygon implements Shape {
+                protected _points: Array<ArrayPoint2>;
+                private _bounds;
+                constructor();
+                constructor(points: Array<ArrayPoint2>);
+                isEmpty(): boolean;
+                numberVertexes(): number;
+                clone(): this;
+                private _contains;
+                inside(s: ArrayPoint2): boolean;
+                onside(p: ArrayPoint2): boolean;
+                intersects(s: Segment | Line | Circle | Rect): boolean;
+                bounds(): Rect;
+                private _calculateBounds;
+                private _updateBounds;
+                addPoint(x: number, y: number): this;
+                vertexes(): Array<ArrayPoint2>;
+                vertexes(ps: Array<ArrayPoint2>): this;
+                protected _len: any;
+                perimeter(): number;
+                equals(s: Polygon | Polyline): boolean;
+            }
+        }
+    }
+}
+import Polygon = JS.math.geom.Polygon;
+declare module JS {
+    namespace math {
+        namespace geom {
+            class Polyline extends Polygon {
+                clone(): this;
+                inside(s: ArrayPoint2 | Segment | Rect): boolean;
+                onside(p: ArrayPoint2): boolean;
+                intersects(s: Segment | Line | Circle | Rect): boolean;
+                perimeter(): number;
+                equals(s: Polyline): boolean;
+            }
+        }
+    }
+}
+import Polyline = JS.math.geom.Polyline;
+declare module JS {
+    namespace math {
+        namespace geom {
+            class Rect implements Shape {
+                x: number;
+                y: number;
+                w: number;
+                h: number;
+                static toRect(p: ArrayPoint2, w: number, h: number): Rect;
+                static centerTo(rect1: Rect, rect2: Rect): void;
+                static limitIn(rect1: Rect, rect2: Rect): void;
+                constructor();
+                constructor(x: number, y: number);
+                constructor(x: number, y: number, w: number, h: number);
+                minX(): number;
+                minY(): number;
+                maxX(): number;
+                maxY(): number;
+                centerX(): number;
+                centerY(): number;
+                clone(): this;
+                equals(s: Rect): boolean;
+                set(r: Rect): this;
+                set(x: number, y: number, w: number, h: number): this;
+                isEmpty(): boolean;
+                size(): {
+                    w: number;
+                    h: number;
+                };
+                size(w: number, h: number): this;
+                moveTo(x: number, y: number): this;
+                area(): number;
+                perimeter(): number;
+                vertexes(): ArrayPoint2[];
+                vertexes(ps: ArrayPoint2[]): this;
+                private _inside;
+                inside(s: ArrayPoint2 | Segment | Rect | Circle): boolean;
+                onside(p: ArrayPoint2): boolean;
+                intersects(s: Segment | Line | Rect): boolean;
+                intersection(rect: Rect): Rect;
+                bounds(): Rect;
+                edges(): Segment[];
+                union(r: Rect): Rect;
+            }
+        }
+    }
+}
+import Rect = JS.math.geom.Rect;
+declare module JS {
+    namespace math {
+        namespace geom {
+            class Triangle implements Shape {
+                x1: number;
+                y1: number;
+                x2: number;
+                y2: number;
+                x3: number;
+                y3: number;
+                static toTri(p1: ArrayPoint2, p2: ArrayPoint2, p3: ArrayPoint2): Triangle;
+                constructor();
+                constructor(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number);
+                isEmpty(): boolean;
+                p1(): ArrayPoint2;
+                p1(x: number, y: number): this;
+                p2(): ArrayPoint2;
+                p2(x: number, y: number): this;
+                p3(): ArrayPoint2;
+                p3(x: number, y: number): this;
+                set(t: Triangle): this;
+                set(p1: ArrayPoint2, p2: ArrayPoint2, p3: ArrayPoint2): this;
+                vertexes(): ArrayPoint2[];
+                vertexes(ps: ArrayPoint2[]): this;
+                clone(): this;
+                equals(s: Triangle): boolean;
+                inside(s: ArrayPoint2 | Segment | Rect | Circle): boolean;
+                onside(p: ArrayPoint2): boolean;
+                private _addPoint;
+                intersects(s: Segment | Line | Rect): boolean;
+                bounds(): Rect;
+                edges(): Segment[];
+                private _sides;
+                perimeter(): number;
+                angles(): number[];
+                angleType(): AngleType;
+                area(): number;
+                gravityPoint(): ArrayPoint2;
+            }
+        }
+    }
+}
+import Triangle = JS.math.geom.Triangle;
+declare module JS {
+    namespace media {
+        interface RemoteAudio {
+            id: string;
+            url: string;
+        }
+        interface AudioCacheInit {
+            name: string;
+            loaderror?: (this: AudioCache, res: HttpResponse) => void;
+        }
+        class AudioCache {
+            private _cache;
+            private _init;
+            constructor(init: AudioCacheInit);
+            private _load;
+            load(imgs: RemoteAudio[] | RemoteAudio): Promise<void>;
+            get(id: string): Promise<ArrayBuffer>;
+            set(id: string, data: ArrayBuffer): Promise<void>;
+            has(id: string): Promise<boolean>;
+            clear(): Promise<void>;
+            destroy(): Promise<void>;
+        }
+    }
+}
+import AudioCache = JS.media.AudioCache;
+declare module JS {
+    namespace media {
+        interface AudioProInit {
+            volume?: number;
+            loop?: boolean;
+            handler?: (this: AudioPro, ac: AudioContext) => AudioNode;
+            playing?: EventHandler<AudioPro>;
+            played?: EventHandler<AudioPro>;
+        }
+        class AudioPro {
+            private _init;
+            private _node;
+            private _gain;
+            static play(id: string, cache: AudioCache): void;
+            constructor(init?: AudioProInit);
+            loop(): boolean;
+            loop(is: boolean): this;
+            _play(a: AudioBuffer): void;
+            play(a: ArrayBuffer): any;
+            play(id: string, cache: AudioCache): any;
+            stop(): void;
+            volume(n: number): void;
+            _dispose(): void;
+        }
+    }
+}
+import AudioProInit = JS.media.AudioProInit;
+import AudioPro = JS.media.AudioPro;
+declare module JS {
     namespace media {
         type MediaEvents = 'abort' | 'canplay' | 'canplaythrough' | 'durationchange' | 'emptied' | 'ended' | 'error' | 'loadeddata' | 'loadedmetadata' | 'loadstart' | 'pause' | 'play' | 'playing' | 'progress' | 'ratechange' | 'readystatechange' | 'seeking' | 'seeked' | 'stalled' | 'suspend' | 'timeupdate' | 'volumechange' | 'waiting';
         type MediaTypes = 'video/ogg' | 'video/mp4' | 'video/webm' | 'audio/ogg' | 'audio/mpeg';
@@ -4032,46 +4782,7 @@ import MediaEvents = JS.media.MediaEvents;
 import MediaTypes = JS.media.MediaTypes;
 declare module JS {
     namespace media {
-        interface SoundConfig {
-            volume?: number;
-            loop?: boolean;
-            handler?: (this: Sound, ac: AudioContext) => AudioNode;
-            on?: {
-                loading?: EventHandler1<Sound, AjaxRequest>;
-                load_error?: EventHandler1<Sound, AjaxResponse>;
-                decode_error?: EventHandler1<Sound, DOMException>;
-                playing?: EventHandler2<Sound, AudioContext, AudioParam>;
-                ended?: EventHandler<Sound>;
-            };
-        }
-        class Sound {
-            private _cfg;
-            private _bus;
-            private _src;
-            private _buffer;
-            private _node;
-            private _gain;
-            private _d;
-            constructor(cfg?: SoundConfig);
-            protected _check(): void;
-            load(url: URLString): Promise<this>;
-            on(type: string, fn: EventHandler, once?: boolean): this;
-            off(type: string, fn: EventHandler): this;
-            loop(): boolean;
-            loop(is: boolean): this;
-            src(): string;
-            play(delay?: number, offset?: number, duration?: number): void;
-            stop(): void;
-            volume(n: number): void;
-            destroy(): void;
-        }
-    }
-}
-import SoundConfig = JS.media.SoundConfig;
-import Sound = JS.media.Sound;
-declare module JS {
-    namespace media {
-        type VideoConfig = {
+        type VideoPlayerInit = {
             id?: string;
             appendTo?: HTMLElement | string;
             controls?: boolean;
@@ -4084,11 +4795,11 @@ declare module JS {
             src?: URLString;
             on?: JsonObject<(this: HTMLMediaElement) => void>;
         };
-        class Video {
-            protected _c: VideoConfig;
+        class VideoPlayer {
+            protected _c: VideoPlayerInit;
             protected _el: HTMLMediaElement;
             protected _src: URLString;
-            constructor(c: VideoConfig);
+            constructor(c: VideoPlayerInit);
             src(): URLString;
             src(src: URLString): this;
             currentTime(): number;
@@ -4122,8 +4833,8 @@ declare module JS {
         }
     }
 }
-import VideoConfig = JS.media.VideoConfig;
-import Video = JS.media.Video;
+import VideoPlayerInit = JS.media.VideoPlayerInit;
+import VideoPlayer = JS.media.VideoPlayer;
 declare module JS {
     namespace store {
         type StorePrimitiveType = PrimitiveType | Date | JsonObject<PrimitiveType> | Array<PrimitiveType>;
@@ -4153,6 +4864,66 @@ declare module JS {
 import CookieStore = JS.store.CookieStore;
 declare module JS {
     namespace store {
+        type CachePrimitiveType = PrimitiveType | ArrayBuffer | Blob;
+        type ArrayCachePrimitiveType = Array<CachePrimitiveType>;
+        type JsonCachePrimitiveType = JsonObject<CachePrimitiveType>;
+        export type CacheDataType = CachePrimitiveType | ArrayCachePrimitiveType | JsonCachePrimitiveType;
+        export interface LocalCachedData<T = CacheDataType> {
+            id: string;
+            data: T;
+        }
+        export interface RemoteCachedData {
+            id: string;
+            url: string;
+            type: 'text' | 'arraybuffer' | 'blob';
+        }
+        export interface DataCacheInit {
+            name: string;
+            onLoadFail?: (this: DataCache, res: HttpResponse) => void;
+            onReadFail?: (this: DataCache, e: Event) => void;
+            onWriteFail?: (this: DataCache, e: Event) => void;
+        }
+        export class DataCache {
+            private _init;
+            private _tName;
+            constructor(init: DataCacheInit);
+            destroy(): Promise<void>;
+            private _open;
+            keys(): Promise<string[]>;
+            hasKey(id: string): Promise<boolean>;
+            write<T>(d: LocalCachedData<T>): Promise<void>;
+            delete(id: string): Promise<void>;
+            clear(): Promise<void>;
+            read<T = CacheDataType>(id: string): Promise<T>;
+            load(d: RemoteCachedData): Promise<this>;
+        }
+        export {};
+    }
+}
+import DataCache = JS.store.DataCache;
+import CacheDataType = JS.store.CacheDataType;
+import LocalCachedData = JS.store.LocalCachedData;
+import RemoteCachedData = JS.store.RemoteCachedData;
+declare module JS {
+    namespace store {
+        interface RemoteImage {
+            id: string;
+            url: string;
+        }
+        class ImageCache {
+            private _map;
+            private _load;
+            load(imgs: RemoteImage[] | RemoteImage): Promise<void[]>;
+            set(id: string, img: HTMLImageElement): void;
+            get(id: string): HTMLImageElement;
+            has(id: string): boolean;
+            clear(): void;
+        }
+    }
+}
+import ImageCache = JS.store.ImageCache;
+declare module JS {
+    namespace store {
         class LocalStore {
             static get<T extends StoreDataType>(key: string): T;
             static set(key: string, value: StoreDataType): void;
@@ -4177,6 +4948,32 @@ declare module JS {
     }
 }
 import SessionStore = JS.store.SessionStore;
+declare module JS {
+    namespace sugar {
+        interface AopAdvisor<T> {
+            before?: (this: T, ...args: any[]) => void;
+            around?: (this: T, fn: Function, ...args: any[]) => any;
+            after?: (this: T, returns: any) => void;
+            throws?: (this: T, e: Error) => void;
+        }
+        function deprecated(info?: string): any;
+        function before(fn: (...args: any[]) => void): any;
+        function after(fn: (returns: any) => void): any;
+        function around(fn: (fn: Function, ...args: any[]) => any): any;
+        function throws(fn: (e: Error) => void): any;
+    }
+}
+interface Function {
+    aop<T>(this: Function, advisor: AopAdvisor<T>, that?: T): (...args: any) => any;
+    mixin(kls: Klass<any>, methodNames?: string[]): void;
+}
+declare var __decorate: (decorators: any, target: any, key: any, desc: any) => any;
+import AopAdvisor = JS.sugar.AopAdvisor;
+import deprecated = JS.sugar.deprecated;
+import before = JS.sugar.before;
+import after = JS.sugar.after;
+import around = JS.sugar.around;
+import throws = JS.sugar.throws;
 declare module JS {
     namespace ui {
         class ClipBoard {
@@ -4387,7 +5184,7 @@ import Random = JS.util.Random;
 declare module JS {
     namespace util {
         type TimerTask = (this: Timer, elapsedTime: number) => void;
-        type TimerConfig = {
+        type TimerInit = {
             delay?: number;
             loop?: boolean | number;
             interval?: number;
@@ -4401,7 +5198,7 @@ declare module JS {
         }
         class Timer {
             protected _bus: EventBus;
-            protected _cfg: TimerConfig;
+            protected _cfg: TimerInit;
             protected _tick: TimerTask;
             protected _timer: any;
             protected _sta: TimerState;
@@ -4410,12 +5207,12 @@ declare module JS {
             protected _et: number;
             protected _pt: number;
             protected _count: number;
-            constructor(tick: TimerTask, cfg?: TimerConfig);
+            constructor(tick: TimerTask, cfg?: TimerInit);
             on(type: string, fn: EventHandler<this>): this;
             off(type: string, fn?: EventHandler<this>): this;
             count(): number;
-            config(): TimerConfig;
-            config(cfg?: TimerConfig): this;
+            config(): TimerInit;
+            config(cfg?: TimerInit): this;
             pause(): this;
             protected _cancelTimer(): void;
             protected _reset(): void;
@@ -4433,15 +5230,13 @@ import Timer = JS.util.Timer;
 import TimerState = JS.util.TimerState;
 import TimerEvents = JS.util.TimerEvents;
 import TimerTask = JS.util.TimerTask;
-import TimerOptions = JS.util.TimerConfig;
+import TimerInit = JS.util.TimerInit;
 declare module JS {
     namespace view {
         interface FormViewConfig extends ViewConfig {
             valueModel?: Klass<Model>;
-            defaultConfig?: IWidgetConfig;
-            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
         }
-        abstract class FormView extends View {
+        class FormView extends View {
             protected _config: FormViewConfig;
             protected _model: Model;
             reset(): this;
@@ -4461,26 +5256,9 @@ import FormView = JS.view.FormView;
 import FormViewConfig = JS.view.FormViewConfig;
 declare module JS {
     namespace view {
-        interface PageViewConfig extends ViewConfig, ViewWidgetConfig {
-        }
-        abstract class PageView extends View {
-            protected _config: PageViewConfig;
-            protected _model: PageModel;
-            load(api: PageQuery): Promise<ResultSet<unknown>>;
-            reload(): this;
-            protected _render(): void;
-        }
-    }
-}
-import PageViewConfig = JS.view.PageViewConfig;
-import PageView = JS.view.PageView;
-declare module JS {
-    namespace view {
         interface SimpleViewConfig extends ViewConfig {
-            defaultConfig?: IWidgetConfig;
-            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
         }
-        abstract class SimpleView extends View {
+        class SimpleView extends View {
             protected _config: SimpleViewConfig;
             protected _render(): void;
         }
@@ -4494,16 +5272,14 @@ declare module JS {
             container: string | HTMLElement;
             tpl: string;
             data?: any;
-            defaultConfig?: IWidgetConfig;
-            widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
         }
-        abstract class TemplateView extends View {
+        class TemplateView extends View {
             protected _config: TemplateViewConfig;
             protected _engine: Templator;
             protected _model: ListModel;
             initialize(): void;
             data(data: any): void;
-            load(api: string | AjaxRequest): Promise<ResultSet<JsonObject<any>[]>>;
+            load(api: string | HttpRequest): Promise<ResultSet<JsonObject<any>[]>>;
             protected _render(): void;
         }
     }

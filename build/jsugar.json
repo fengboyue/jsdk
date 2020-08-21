@@ -1,0 +1,16 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../dist/jsugar.js",
+        "noResolve": true,
+        "noLib": true,
+        "allowJs": true
+    },
+    "files": [
+        "../libs/reflect/2.0.1/Reflect.js",
+        "../source/sugar/Annotation.ts",
+        "../source/sugar/ReflectInterface.ts",
+        "../source/sugar/Class.ts",
+        "../source/sugar/Aop.ts"
+    ]
+} 

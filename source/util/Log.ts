@@ -62,7 +62,7 @@ module JS {
             private _appender;
             
             constructor(name: string, level: LogLevel, appender?:Klass<LogAppender>){
-                this._appender = !appender?new ConsoleAppender(name):Class.newInstance(appender, name);
+                this._appender = !appender?new ConsoleAppender(name):Reflect.construct(appender, name);
                 this.level  = level || LogLevel.ALL;
                 this._name = name;
             }

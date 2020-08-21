@@ -12,11 +12,11 @@
 /// <reference path="../lang/System.ts"/>
 /// <reference path="../model/Model.ts"/>
 /// <reference path="../model/ListModel.ts"/>
-/// <reference path="../ui/Lengths.ts"/>
-/// <reference path="../ui/Colors.ts"/>
+/// <reference path="../util/Lengths.ts"/>
+/// <reference path="../util/Colors.ts"/>
 /// <reference path='../ui/Placements.ts'/>
 /// <reference path="../ui/IWidget.ts"/>
-/// <reference path="../util/URI.ts"/>
+/// <reference path="../net/URI.ts"/>
 module JS {
 
     export namespace fx {
@@ -83,7 +83,7 @@ module JS {
             /**
              * I18N resource.
              */
-            i18n?: Resource = null;
+            i18n?: I18NResource|URLString = null;
 
             /**
              * 事件监听

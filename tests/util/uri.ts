@@ -7,25 +7,25 @@ module JS {
         @klass('JS.test.URITest')
         export class URITest extends TestCase {
 
-            public test1() {
+            test1() {
                 let uri = new URI();
                 Assert.equal('http://', uri.toAbsolute());
                 Assert.equal('', uri.toRelative());
                 Assert.equal('', uri.toString());
             }
-            public test2() {
+            test2() {
                 let uri = new URI('http://www.w3c.org');
                 Assert.equal('http://www.w3c.org', uri.toAbsolute());
                 Assert.equal('', uri.toRelative());
                 Assert.equal('http://www.w3c.org', uri.toString());
             }
-            public test3() {
+            test3() {
                 let uri = new URI('/');
                 Assert.equal('http://', uri.toAbsolute());
                 Assert.equal('', uri.toRelative());
                 Assert.equal('', uri.toString());
             }
-            public test4() { 
+            test4() { 
                 let uri = new URI('https://username:password@example.com:123/path/data?key=%20value#frag');
                 Assert.equal('https', uri.scheme());
                 Assert.equal('username', uri.user());
@@ -40,7 +40,7 @@ module JS {
                 Assert.equal('frag', uri.fragment());
             }
 
-            public test5() { 
+            test5() { 
                 let uri = new URI();
                 uri.scheme('https');
                 uri.user('username');

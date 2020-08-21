@@ -14,7 +14,7 @@ module JS {
                 }
             }
 
-            public test1() {
+            test1() {
                 class Pig {};
                 class Fly {
                     fly() {
@@ -40,10 +40,10 @@ module JS {
                 Assert.equal('I can eat', (<Fly>pig).eat());
             }
 
-            public test2() {
+            test2() {
                 Assert.equal(1, Functions.execute('return this(a)-this(b);', Number, 'b,a', [1, 2]));
             }
-            public test3() {
+            test3() {
                 let newFn = this._fn.aop({
                     before: function (a:number) {
                         Assert.equal(7, a);

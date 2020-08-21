@@ -19,7 +19,7 @@ module JS {
                 return Annotations.define({
                     name: 'component', handler: (anno: string, values: Array<any>, obj: Klass<any> | object) => {
                         let className = values[0];
-                        Class.register(<Klass<any>>obj, className);
+                        Class.reflect(<Klass<any>>obj, className);
                         Components.add(Class.forName(className).name);
                     }
                 }, arguments);

@@ -8,10 +8,10 @@ tsc -d --target es6 -p ${name}.json
 else  
 tsc --target es6 -p ${name}.json
 fi 
-./_comments.sh ${name}.js
-./_sourcemap.sh ${name}.js
+./_comments.sh ../dist/${name}.js
+./_sourcemap.sh ../dist/${name}.js
 
 echo "开始压缩${name}"
 uglifyjs ../dist/${name}.js --warn --ecma 6 -o ../dist/${name}.min.js
-./_comments.sh ${name}.min.js
+./_comments.sh ../dist/${name}.min.js
 echo "${name}构建完毕"

@@ -6,58 +6,70 @@
  * @author Frank.Feng
  * @email boyue.feng@foxmail.com
  * 
+ * @version 2.5.0
+ * @date 2020/8/20
+ * @update Milestone for new jsmath and jsugar
+ *
  * @version 2.4.0
  * @date 2020/7/27
- * @update support drag/tap events for mobile browser in input module
+ * @update Support drag and tap events for mobile browser
  *
  * @version 2.3.1
  * @date 2020/7/25
  * 
  * @version 2.3.0
  * @date 2020/7/19
- * @update create new media module for audio and video
+ * @update New media module for audio and video
  *
  * @version 2.2.0
  * @date 2020/7/12
- * @update create new input module for input-devices
+ * @update New input module for keyboard, mouse and touch events 
  * 
  * @version 2.1.1
  * @date 2020/7/11
- * @update bugfix for Number.foramt method on WeChat mobile browser
+ * @update Bugfix for Number.foramt method on WeChat mobile browser
  * 
  * @version 2.1.0
  * @date 2020/7/1
- * @update create new animation module
- * @update reduce size of system
+ * @update New animation module
  * 
  * @version 2.0.0
  * @date 2018/1/8 - 2020/6/12
+ * @update All-new Milestone Version in TS language
  * 
+ * ***************************************** OLD VERSION *********************************************
  * @version 1.0.0
  * @date 2012/12/19
+ * @update New independent kernel and stronger loader for loading multiple-version libs in the meantime but not released finally
  * 
  * @version 0.6.2
  * @date 2012/5/2
+ * @update Enhance and bugfix
  * 
  * @version 0.6.1
  * @date 2012/4/18
+ * @update Enhance and bugfix
  * 
  * @version 0.6.0
  * @date 2011/2-2012/4/14
+ * @update Milestone version for new game framework: JSGF
  * 
  * @version 0.1
  * @date 2007/8/30
+ * @update Trial version for micro-kernel and utils
+ * ***************************************** OLD VERSION *********************************************
  */
 /// <reference path="../../libs/reflect/2.0.1/Reflect.d.ts" />
+/// <reference path="../util/Promises.ts" />
 /// <reference path="../util/Dom.ts" />
 
 module JS {
 
-    export let version = '2.4.0';
+    export let version = '2.5.0';
 
     export type JSDKConfig = {
         closeImport?: boolean;
-        cachedImport?: boolean;
+        cachedImport?: boolean | string;
         minImport?: boolean;
         jsdkRoot?: string;
         libRoot?: string;
@@ -102,12 +114,16 @@ module JS {
         }
     }
 
-    let _cfg: JSDKConfig = {},
+    let P = Promises,
+        _cfg: JSDKConfig = {},
         _ldd = {},//loaded URLs
 
         //cached url
-        _ts = (uri: string)=>{
-            return JS.config<boolean>('cachedImport')?uri:(uri.indexOf('?')>0?`${uri}&_=${Date.now()}`:`${uri}?_=${Date.now()}`)
+        _ts = (uri: string) => {
+            let c = <any>JS.config('cachedImport');
+            if (c === true) return uri;
+            let s: string = '_=' + (c ? <string>c : '' + Date.now());
+            return uri.lastIndexOf('?') > 0 ? `${uri}&${s}` : `${uri}?${s}`
         },
         _min = (uri: string, type: 'js' | 'css') => {
             if (JS.config<boolean>('minImport')) {
@@ -128,18 +144,18 @@ module JS {
                         tasks.push(_impFile(path + (async ? '#async' : '')))
                     }
                 })
-                return Promises.newPlan(Promises.order, [tasks])
+                return P.newPlan(P.order, [tasks])
             } else {
                 console.error('Not found the <' + libName + '> library in JSDK settings.');
-                return Promises.resolvePlan(null)
+                return P.resolvePlan(null)
             }
         },
         _impFile = (url: string): (() => Promise<any>) => {
             let u = url;
             if (url.startsWith('!')) {
                 let jr = JS.config('jsdkRoot');
-                jr = jr?jr:(JS.config('libRoot')+'/jsdk/'+JS.version);
-                u =  jr + url.slice(1);
+                jr = jr ? jr : (JS.config('libRoot') + '/jsdk/' + JS.version);
+                u = jr + url.slice(1);
             } else if (url.startsWith('~')) {
                 u = JS.config('libRoot') + url.slice(1)
             }
@@ -148,15 +164,15 @@ module JS {
                 len = us.length,
                 u0 = us[0],
                 ayc = len > 1 && us[1] == 'async';
-            if (_ldd[u0]) return Promises.resolvePlan(null);
+            if (_ldd[u0]) return P.resolvePlan(null);
             _ldd[u0] = 1;
 
             if (u0.endsWith('.js')) {
-                return Promises.newPlan(Dom.loadJS, [_ts(_min(u0, 'js')), ayc])
+                return P.newPlan(Dom.loadJS, [_ts(_min(u0, 'js')), ayc])
             } else if (u0.endsWith('.css')) {
-                return Promises.newPlan(Dom.loadCSS, [_ts(_min(u0, 'css')), ayc])
+                return P.newPlan(Dom.loadCSS, [_ts(_min(u0, 'css')), ayc])
             } else {
-                return Promises.newPlan(Dom.loadHTML, [_ts(u0), ayc])
+                return P.newPlan(Dom.loadHTML, [_ts(u0), ayc])
             }
         }
 
@@ -178,7 +194,7 @@ module JS {
      * http://mycom.net/myapp/1.0.0/model.js#async
      * http://mycom.net/myapp/1.0.0/template.html
      * </pre>
-     */    
+     */
     export function imports(url: string | string[]): Promise<any> {
         if (JS.config('closeImport')) return Promise.resolve();
 
@@ -186,7 +202,7 @@ module JS {
         uris.forEach(uri => {
             tasks.push(uri.startsWith('$') ? _impLib(uri.slice(1)) : _impFile(uri))
         })
-        return Promises.order(tasks)
+        return P.order(tasks)
     }
 
 }

@@ -17,7 +17,7 @@ module JS {
 
         export type TimerTask = (this: Timer, elapsedTime:number) => void;
 
-        export type TimerConfig = {
+        export type TimerInit = {
             /**
              * Delays (ms) the start of Timer.
              */
@@ -51,7 +51,7 @@ module JS {
 
         export class Timer {
             protected _bus = new EventBus(this);
-            protected _cfg: TimerConfig;
+            protected _cfg: TimerInit;
             protected _tick: TimerTask;
             protected _timer;
             protected _sta: TimerState = TimerState.STOPPED;
@@ -62,7 +62,7 @@ module JS {
             protected _pt: number = 0; //pause time 
             protected _count = 0;
             
-            constructor(tick: TimerTask, cfg?: TimerConfig) {
+            constructor(tick: TimerTask, cfg?: TimerInit) {
                 this._tick = tick;  
                 this.config(cfg);            
             }
@@ -80,9 +80,9 @@ module JS {
                 return this._count
             }
 
-            public config(): TimerConfig
-            public config(cfg?: TimerConfig): this
-            public config(cfg?: TimerConfig): any{
+            public config(): TimerInit
+            public config(cfg?: TimerInit): this
+            public config(cfg?: TimerInit): any{
                 if(!cfg) return this._cfg;
                 
                 this._cfg = Jsons.union({
@@ -217,4 +217,4 @@ import Timer = JS.util.Timer;
 import TimerState = JS.util.TimerState;
 import TimerEvents = JS.util.TimerEvents;
 import TimerTask = JS.util.TimerTask;
-import TimerOptions = JS.util.TimerConfig;
+import TimerInit = JS.util.TimerInit;

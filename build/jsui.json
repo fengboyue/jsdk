@@ -6,6 +6,7 @@
         "noLib": true
     },
     "include": [
+        "../source/input/*.ts",
         "../source/ui/*.ts"
     ]
 } 

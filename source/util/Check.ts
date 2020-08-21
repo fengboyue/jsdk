@@ -266,9 +266,9 @@ module JS {
              * Check by server.<br>
              * 服务器端校验
              */
-            public static byServer(req: string | AjaxRequest, judge: (res: AjaxResponse) => boolean): Promise<boolean> {
+            public static byServer(req: string | HttpRequest, judge: (res: HttpResponse) => boolean): Promise<boolean> {
                 return new Promise(function(resolve, reject){
-                    Ajax.send(req).then(res => {
+                    Http.send(req).then(res => {
                         judge.apply(null, [res])?resolve(true):reject(false)
                     })
                 })

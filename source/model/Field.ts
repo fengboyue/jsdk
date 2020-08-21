@@ -33,7 +33,6 @@ module JS {
 
         export interface FieldConfig {
             readonly name: string;
-            readonly type?: string | 'string' | 'int' | 'float' | 'boolean' | 'date' | 'object' | 'array';
             isId?: boolean;//This property is set to `true` if this is an id field.
             readonly nullable?: boolean;//an unique field cannot be nullable.
             readonly defaultValue?: any;
@@ -51,16 +50,15 @@ module JS {
 
             constructor(config: FieldConfig) {
                 this._cfg = <FieldConfig>Jsons.union(<FieldConfig>{
-                    type: 'string',
                     isId: false,
                     nullable: true,
                     defaultValue: null
                 }, config);
             }
 
-            public config(): FieldConfig
-            public config(cfg: FieldConfig): this
-            public config(cfg?: FieldConfig): any {
+            config(): FieldConfig
+            config(cfg: FieldConfig): this
+            config(cfg?: FieldConfig): any {
                 let T = this;
                 if(cfg==void 0) return T._cfg;
 
@@ -68,60 +66,34 @@ module JS {
                 return T
             }
 
-            public name(): string {
+            name(): string {
                 return this._cfg.name
             }
 
-            public alias(): string {
+            alias(): string {
                 let mp = this._cfg.nameMapping;
                 if (!mp) return this.name();
 
                 return Types.isString(mp) ? <string>mp : <string>(<Function>mp).call(this);
             }
 
-            public isId(): boolean {
+            isId(): boolean {
                 return this._cfg.isId
             }
 
-            public defaultValue() {
+            defaultValue() {
                 return this._cfg.defaultValue
             }
-
-            public type(): 'string' | 'int' | 'float' | 'boolean' | 'date' | 'object' | 'array' {
-                return <any>this._cfg.type
-            }
-
-            public nullable(): boolean {
+            
+            nullable(): boolean {
                 return this._cfg.nullable
             }
 
-            public set(val: any): any {
+            set(val: any): any {
                 let T = this;
                 if (!T.nullable() && val == void 0) throw new TypeError(`This Field<${T.name()}> must be not null`)
                 let fn = T._cfg.setter, v = fn ? fn.apply(T, [val]) : val;
                 return v === undefined ? T._cfg.defaultValue : v
-            }
-
-            /**
-             * When the 'comparable' config be empty, returns a positive number when vv1 > v2; Zero when v1==v2.
-             */
-            public compare(v1: any, v2: any): number {
-                let ret = 0;
-
-                if (this._cfg.comparable) {
-                    ret = this._cfg.comparable(v1, v2);
-                } else {
-                    ret = (v1 === v2) ? 0 : ((v1 < v2) ? -1 : 1);
-                }
-
-                return ret
-            }
-
-            /**
-             * When the 'comparable' config be empty, returns TRUE when v1==v2.
-             */
-            public isEqual(v1: any, v2: any): boolean {
-                return this.compare(v1, v2) === 0;
             }
 
             /**
@@ -134,7 +106,7 @@ module JS {
              * indicates the value is not valid. This method is not implemented by default,
              * subclasses may override it to provide an implementation.
              */
-            public validate(value: any, errors?: ValidateResult): boolean | string {
+            validate(value: any, errors?: ValidateResult): boolean | string {
                 let cfg = this._cfg,
                     vts = cfg.validators,
                     rst, ret = '';

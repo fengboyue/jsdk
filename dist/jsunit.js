@@ -1,6 +1,6 @@
-//# sourceURL=jsunit.js
+//# sourceURL=../dist/jsunit.js
 /**
-* JSDK 2.4.0 
+* JSDK 2.5.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -265,18 +265,18 @@ var JS;
             _addTest(test) {
                 if (!test)
                     return;
-                let T = this;
+                let m = this;
                 if (Y.ofKlass(test, TestSuite_1)) {
-                    T._cases = T._cases.concat(test.getTestCases());
+                    m._cases = m._cases.concat(test.getTestCases());
                 }
                 else if (Y.ofKlass(test, unit.TestCase)) {
-                    T._cases[T._cases.length] = test;
+                    m._cases[m._cases.length] = test;
                 }
-                else if (Y.subClass(test, TestSuite_1.class)) {
-                    T._cases = T._cases.concat(Class.newInstance(test.name).getTestCases());
+                else if (test.subclassOf(TestSuite_1.class)) {
+                    m._cases = m._cases.concat(Class.newInstance(test.name).getTestCases());
                 }
-                else if (Y.subClass(test, unit.TestCase.class)) {
-                    T._cases[T._cases.length] = Class.newInstance(test.name);
+                else if (test.subclassOf(unit.TestCase.class)) {
+                    m._cases[m._cases.length] = Class.newInstance(test.name);
                 }
             }
             _addTestMethods() {

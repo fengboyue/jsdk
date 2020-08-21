@@ -7,7 +7,7 @@ module JS {
         @klass('JS.test.TypesTest')
         export class TypesTest extends TestCase {
             
-            public test1() {
+            test1() {
                 Assert.true(Types.isKlass(new JSError(), JSError));
                 Assert.false(Types.isKlass(new Error(), JSError));
 
@@ -16,26 +16,16 @@ module JS {
                 Assert.false(Types.ofKlass(new TestCase(), TypesTest));
                 Assert.true(Types.ofKlass(this, TestCase));
             }
-            public test2() {
+            test2() {
                 Assert.true(Types.equalKlass(JSError, JSError));
                 Assert.false(Types.equalKlass(new JSError(), JSError));
                 Assert.false(Types.equalKlass(JSError, Error));
 
-                Assert.true(Types.subKlass(JSError, Error));
-                Assert.true(Types.subKlass(TypesTest, TestCase));
-                Assert.false(Types.subKlass(TestCase, TypesTest));
+                Assert.true(Types.subklassOf(JSError, Error));
+                Assert.true(Types.subklassOf(TypesTest, TestCase));
+                Assert.false(Types.subklassOf(TestCase, TypesTest));
             }
-            public test3() {
-                Assert.true(Types.equalClass(new Class('JS.unit.TestCase', TestCase), TestCase.class));
-                Assert.false(Types.equalClass(new Class('JS.unit.TestCase', TestCase), TypesTest.class));
-
-                Assert.true(Types.subClass(new Class('JS.unit.TestCase', TestCase), Object.class));
-                Assert.true(Types.subClass(new Class('JS.test.TypesTest', TypesTest), TestCase.class));
-                Assert.false(Types.equalClass(new Class('JS.unit.TestCase', TestCase), TypesTest.class));
-
-                Assert.true(Types.subClass(new Class('JS.unit.TestCase', TestCase), Object.class));
-            }
-            public test4(){
+            test3(){
                 Assert.equal(Types.type(null), Type.null);
                 Assert.equal(Types.type(undefined), Type.undefined);
                 Assert.equal(Types.type(''), Type.string);

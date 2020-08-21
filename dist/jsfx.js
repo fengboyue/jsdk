@@ -1,6 +1,6 @@
-//# sourceURL=jsfx.js
+//# sourceURL=../dist/jsfx.js
 /**
-* JSDK 2.4.0 
+* JSDK 2.5.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -70,7 +70,7 @@ var JS;
                 this._config = null;
                 this._initialConfig = null;
                 this._isD = false;
-                this._i18nBundle = null;
+                this._i18nObj = null;
                 if (!cfg.id && cfg.renderTo) {
                     let wgt = $(cfg.renderTo);
                     if (wgt.length == 1) {
@@ -216,24 +216,30 @@ var JS;
             _fire(e, args) {
                 return this._eventBus.fire(e, args);
             }
-            _createBundle() {
-                let defaults = new Bundle(this.getClass().getKlass()['I18N'], this._config.locale);
-                if (!this._config.i18n)
-                    return defaults;
-                let b = new Bundle(this._config.i18n, this._config.locale);
-                return defaults ? defaults.set(J.union(defaults.get(), b.get())) : b;
+            _newI18N() {
+                let lc = this._config.locale, n = new I18N(lc), v = this.getClass().getKlass()['I18N'];
+                if (v)
+                    typeof v == 'string' ? n.load(v) : n.set(v);
+                let i18n = this._config.i18n;
+                if (i18n) {
+                    if (Types.isString(i18n)) {
+                        n.load(i18n, lc);
+                    }
+                    else {
+                        n.set(J.union(n.get(), i18n));
+                    }
+                }
+                this._i18nObj = n;
             }
             _i18n(key) {
-                if (!this._i18nBundle)
-                    this._i18nBundle = this._createBundle();
-                return this._i18nBundle ? this._i18nBundle.get(key) : undefined;
+                if (!this._i18nObj)
+                    this._newI18N();
+                return this._i18nObj.get(key);
             }
-            locale(locale) {
+            locale(lc) {
                 if (arguments.length == 0)
                     return this._config.locale;
-                this._config.locale = locale;
-                if (locale !== this._config.locale)
-                    this._i18nBundle = this._createBundle();
+                this._config.locale = lc;
                 return this;
             }
         };
@@ -456,7 +462,7 @@ var JS;
             }
             load(quy, silent) {
                 let cfg = this._config;
-                cfg.dataQuery = J.union(Ajax.toRequest(cfg.dataQuery), Ajax.toRequest(quy));
+                cfg.dataQuery = J.union(Http.toRequest(cfg.dataQuery), Http.toRequest(quy));
                 return this._dataModel.load(cfg.dataQuery, silent);
             }
             reload() {
@@ -497,7 +503,7 @@ var JS;
                 if (!vModel) {
                     this._valueModel = new Model();
                 }
-                else if (Types.subKlass(vModel, Model)) {
+                else if (Types.subklassOf(vModel, Model)) {
                     this._valueModel = Class.newInstance(vModel);
                 }
                 else {
@@ -712,7 +718,7 @@ var JS;
             }
             load(api) {
                 if (this._config.autoSearch)
-                    throw new NotHandledError('The method be not supported when autoSearch is true!');
+                    throw new RefusedError('The method be not supported when autoSearch is true!');
                 return super.load(api);
             }
             iniValue(v, render) {
@@ -813,7 +819,7 @@ var JS;
                         delay: 500,
                         data: function () { return jsonParams ? jsonParams : {}; },
                         processResults: (res, params) => {
-                            let data = J.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
+                            let data = J.find(res, ResultSet.DEFAULT_FORMAT.dataProperty);
                             this.data(data);
                             return {
                                 results: data
@@ -1332,31 +1338,31 @@ var JS;
             }
             _fileIcon(path) {
                 let icon = 'alt';
-                if (Files.isFileExt(path, 'pdf')) {
+                if (Files.isFileType(path, 'pdf')) {
                     icon = 'pdf';
                 }
-                else if (Files.isFileExt(path, 'doc,docx')) {
+                else if (Files.isFileType(path, 'doc,docx')) {
                     icon = 'word';
                 }
-                else if (Files.isFileExt(path, 'xls,xlsx')) {
+                else if (Files.isFileType(path, 'xls,xlsx')) {
                     icon = 'excel';
                 }
-                else if (Files.isFileExt(path, 'ppt,pptx')) {
+                else if (Files.isFileType(path, 'ppt,pptx')) {
                     icon = 'powerpoint';
                 }
-                else if (Files.isAudioFile(path)) {
+                else if (Files.isFileType(path, FileTypes.AUDIOS)) {
                     icon = 'audio';
                 }
-                else if (Files.isVideoFile(path)) {
+                else if (Files.isFileType(path, FileTypes.VIDEOS)) {
                     icon = 'video';
                 }
-                else if (Files.isCompressedFile(path)) {
+                else if (Files.isFileType(path, FileTypes.ZIPS)) {
                     icon = 'archive';
                 }
-                else if (Files.isSourceFile(path)) {
+                else if (Files.isFileType(path, FileTypes.CODES)) {
                     icon = 'code';
                 }
-                else if (Files.isImageFile(path)) {
+                else if (Files.isFileType(path, FileTypes.IMAGES)) {
                     icon = 'image';
                 }
                 return '<span><i class="far fa-file-' + icon + '"></i></span>';
@@ -1365,7 +1371,7 @@ var JS;
                 let file = this._toMimeFile(wuFile);
                 this._renderFile(file);
                 if (this._hasFaceMode(UploaderFaceMode.image)) {
-                    let isImage = Files.isImageFile(file.name);
+                    let isImage = Files.isFileType(file.name, FileTypes.IMAGES);
                     if (!file.uri && isImage) {
                         this._makeThumb(wuFile);
                     }
@@ -1422,7 +1428,7 @@ var JS;
                 fEl.on('click', !this._hasFaceMode(UploaderFaceMode.image) ? 'a' : 'a,.file-image', (e) => {
                     let src = this.widgetEl.find(`#${this.id}-${fileId}`).attr('src');
                     if (src) {
-                        (Files.isImageFile(src) || src.indexOf('data:image/') == 0) ? window.open().document.body.innerHTML = `<img src="${src}" >` : window.open(src);
+                        (Files.isFileType(src, FileTypes.IMAGES) || src.indexOf('data:image/') == 0) ? window.open().document.body.innerHTML = `<img src="${src}" >` : window.open(src);
                     }
                     else {
                         fx.Toast.show({
@@ -1472,7 +1478,7 @@ var JS;
                     id: cf.id,
                     type: cf.mime,
                     name: cf.name,
-                    ext: cf.ext || Files.getExt(cf.name),
+                    ext: cf.ext || Files.getFileType(cf.name),
                     size: cf.size || 1,
                     getRuid: () => { return ''; },
                     getSource: () => { return null; }
@@ -3942,13 +3948,13 @@ var JS;
                 return id ? this._children : this._children[id];
             }
             _renderChildren() {
-                let els = this.widgetEl.find('div.modal-body div[jsfx-alias]');
+                let els = this.widgetEl.find(`div.modal-body div[${View.WIDGET_ATTRIBUTE}]`);
                 if (els.length < 1)
                     return;
                 this._children = {};
                 let wConfigs = this._config.childWidgets;
                 els.each((i, e) => {
-                    let el = $(e), name = el.attr('name'), id = el.attr('id'), alias = el.attr('jsfx-alias');
+                    let el = $(e), name = el.attr('name'), id = el.attr('id'), alias = el.attr(View.WIDGET_ATTRIBUTE);
                     let cfg = Jsons.union(wConfigs && wConfigs[id], { id: id, name: name });
                     this._children[id] = Class.aliasInstance(alias, cfg);
                 });
@@ -4190,7 +4196,7 @@ var JS;
                 cfg.dataQuery = Jsons.union({
                     page: 1,
                     pageSize: cfg.pageSizes ? cfg.pageSizes[0] : Infinity
-                }, Ajax.toRequest(cfg.dataQuery));
+                }, Http.toRequest(cfg.dataQuery));
                 cfg.dataModel = PageModel;
                 this._initDataModel();
             }
@@ -4220,14 +4226,14 @@ var JS;
                 if (!this._config.checkable)
                     return;
                 this._hChk = null;
-                let span = $(`#${this.id}_htable tr>th:first-child span[jsfx-alias=checkbox]`);
+                let span = $(`#${this.id}_htable tr>th:first-child span[${View.WIDGET_ATTRIBUTE}=checkbox]`);
                 this._newCheckbox(span, '-1');
             }
             _bindBodyCheckbox() {
                 if (!this._config.checkable)
                     return;
                 this._bChks = null;
-                let me = this, spans = $(`#${this.id}_btable tr>td:first-child span[jsfx-alias=checkbox]`);
+                let me = this, spans = $(`#${this.id}_btable tr>td:first-child span[${View.WIDGET_ATTRIBUTE}=checkbox]`);
                 spans.each(function (i) {
                     me._newCheckbox(this, $(this).attr('jsfx-id'), i + 1);
                 });
@@ -4360,14 +4366,14 @@ var JS;
                 if (col.sortable)
                     this._dataModel.addSorter(col.field, sortDir);
                 return `<th width="${width}" nowrap>
-                ${hasCheckbox ? `<div class="items-left items-middle"><span jsfx-alias="checkbox"/>${cell}</div>` : cell}
+                ${hasCheckbox ? `<div class="items-left items-middle"><span ${View.WIDGET_ATTRIBUTE}="checkbox"/>${cell}</div>` : cell}
                 </th>`;
             }
             _tdHtml(opt, html, title, col, row) {
                 let cfg = this._config, hasCheckbox = col == 0 && cfg.checkable, id = this.data()[row]['id'], width = Lengths.toCSS(opt.width, '100%'), cell = `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
                     ${html}</div>`;
                 return `<td width="${width}" nowrap>
-                ${hasCheckbox ? `<div class="items-left items-middle" jsfx-row="${row}" jsfx-col="${col}"><span jsfx-alias="checkbox" jsfx-id="${id}"/>${cell}</div>` : cell}
+                ${hasCheckbox ? `<div class="items-left items-middle" jsfx-row="${row}" jsfx-col="${col}"><span ${View.WIDGET_ATTRIBUTE}="checkbox" jsfx-id="${id}"/>${cell}</div>` : cell}
                 </td>`;
             }
             _headHtml(columns) {
@@ -4573,7 +4579,7 @@ var JS;
                 return this;
             }
             load(quy, silent) {
-                let cfg = this._config, oQuery = Ajax.toRequest(cfg.dataQuery), nQuery = Ajax.toRequest(quy);
+                let cfg = this._config, oQuery = Http.toRequest(cfg.dataQuery), nQuery = Http.toRequest(quy);
                 cfg.dataQuery = Jsons.union(oQuery, {
                     page: 1,
                     pageSize: Number($(`#${this.id}_pagesize`).text())

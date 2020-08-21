@@ -153,7 +153,7 @@ wgt.value('2');//set value 2 of wgt
 ```
 
 ### 数据绑定与值绑定
-JSFX的表单组件都有两个内置属性：dataModel/valueModel，提供了数据绑定与值绑定功能，即属性中的数据与值与DOM中的数据与值自动关联。
+JSFX的表单组件都有两个内置属性：<code>dataModel/valueModel</code>，提供了数据绑定与值绑定功能，即属性中的数据与值与DOM中的数据与值自动关联。
 
 比如：我们修改组件对象的值则页面上的组件选中值也会改变。
 ```javascript
@@ -242,18 +242,18 @@ JSFX支持五种校验器，分别是：
 
 
 ### 表单视图
-表单中通常有许多组件，假设每个组件像上述代码那样实例化，那么将产生大量冗余代码。所以JSDK提供了FormView类来管理表单中的所有组件，批量简化了以下操作：实例化、销毁、值读写、值重置、值校验等。
+表单中通常有许多组件，假设每个组件像上述代码那样实例化，那么将产生大量冗余代码。所以JSDK提供了 <b>FormView</b> 类来管理表单中的所有组件，批量简化了以下操作：实例化、销毁、值读写、值重置、值校验等。
 
 1. 在HTML中书写表单视图的容器及组件标签：
 
 ```html
 <div id="fv1">
-    <div id="first_name" jsfx-alias="textinput" /> <!-- 属性 jsfx-alias 应该填写组件的别名 -->
-    <div id="last_name" jsfx-alias="textinput" />
-    <div id="submit" jsfx-alias="button" />    
+    <div id="first_name" js-wgt="textinput" /> <!-- 属性 js-wgt 应该填写组件的别名 -->
+    <div id="last_name" js-wgt="textinput" />
+    <div id="submit" js-wgt="button" />    
 </div>
 ```
-2. 定义一个MyFormView类文件：
+2. 定义<code>MyFormView.ts</code>文件：
 
 ```javascript
 module JS {
@@ -302,7 +302,7 @@ module JS {
 import MyFormView = JS.examples.MyFormView;
 ```
 
-3. 在TS/JS代码中使用MyFormView：
+3. 在TS/JS代码中使用 <b>MyFormView</b>：
 
 ```javascript
 JS.imports([
@@ -322,7 +322,7 @@ JS.imports([
 
 
 ## 国际化
-JSFX组件的初始化配置项<code>i18n</code>来定义国际化资源，初始化配置项<code>locale</code>来设置组件的时区。在组件代码内部，使用<code>JS.util.Bundle</code>工具类来读写国际化文案。
+JSFX组件的初始化配置项<code>i18n</code>来定义国际化资源，初始化配置项<code>locale</code>来设置组件的时区。在组件代码内部，使用<code>JS.util.I18N</code>工具类来读写国际化文案。
 
 ### 资源定义
 例如，Grid组件的<code>i18n</code>属性缺省时只定义了英文资源。
@@ -384,7 +384,7 @@ let grid = new Grid({
 <b>[方法二]</b><br> 
 添加资源文件，这是我们推荐的方法。
 
-添加以下两个资源文件至"/libs/jsdk/grid/"目录下。
+添加以下两个资源文件至<code>"/libs/jsdk/grid/"</code>目录下。
 1. <code>grid_en.json</code>
 
 ```json
@@ -417,13 +417,13 @@ Grid.I18N = '/libs/jsdk/grid/grid.json'; //web server path
 ```
 
 ### 显示语言
-我们初始化一个Grid对象，并设置为显示中文：
+我们初始化一个 <b>Grid</b> 对象，并设置为显示中文：
 ```javascript
 let grid = new Grid({
     locale: 'zh'
 })
 ```
-我们也可以将上述显示中文的Grid对象改为显示英文：
+我们也可以将上述显示中文的 <b>Grid</b> 对象改为显示英文：
 ```javascript
 grid.locale('en');
 grid.render();
@@ -474,14 +474,14 @@ new Button({
 
 *如果系统自带的预定义变量不能满足你的自定义需求，还可以试试以下方法：*<br>
 * *加载一个新的css文件，覆盖jsfx.css中样式定义。*<br>
-* *或者修改某个组件的scss文件并重新编译jsfx.css。（但你应该明白这是很不好的做法）*<br>
-* *或者给我发邮件，描述你的自定义需求。*
+* *或者修改某个组件的scss文件并重新编译jsfx.css。但你应该明白这是不好的临时做法。*<br>
+* *或者给我发邮件，描述你的自定义需求。也许我可以或不可以解决。*
 
 ## 自定义组件
-假设你有自己的UI组件或某个第三方组件，希望封装成JSFX组件。
+如果你有自己的UI组件或某个第三方组件，希望封装成JSFX组件，请参考以下步骤。
 
-例如，现有第三方提供的时间选择器组件<code>xpicker</code>，你打算将其封装成JSFX的表单型组件。
-1. 将其源文件、css文件放置于libs目录下：
+假设有第三方的时间选择器组件 <b>xpicker</b>，你打算将其封装成JSFX的表单型组件。
+1. 将其源文件、css文件放置于<code>libs</code>目录下：
 
 ```
 - libs/        
@@ -592,7 +592,7 @@ uglifyjs ../libs/xpicker/1.0.0/XPicker.js --warn --ecma 6 -o ../libs/xpicker/1.0
 } 
 ```
 
-5. 在TS／JS代码中使用新的XPicker类：
+5. 在TS／JS代码中使用新的 <b>XPicker</b> 类：
 
 ```javascript
 JS.imports([

@@ -11,7 +11,13 @@ module JS {
     export namespace an {
 
         export type KeyFrame = number|JsonObject<number>|JsonObject<JsonObject<number>>|any;
-        export type KeyFrames = JsonObject<KeyFrame>;
+        export type KeyFrames = {
+            from?: KeyFrame,
+            to?: KeyFrame,
+            "0%"?: KeyFrame,
+            "100%"?: KeyFrame,
+            [key: string]: KeyFrame
+        }
     }
 }
 import KeyFrame = JS.an.KeyFrame;

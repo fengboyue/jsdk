@@ -48,11 +48,12 @@ module JS {
             public call<T>(api: Api<T>, params?: JsonObject): Promise<T> {
                 if (!this._proxy) this._proxy = <AjaxProxy>Class.newInstance(Service.DEFAULT_PROXY);
                 return new Promise<T>((resolve, reject) => {
-                    return this._proxy.execute(api, params).then((result: ResultSet<T>) => {
+                    api.data = params;
+                    return this._proxy.execute(api).then((result: ResultSet<T>) => {
                         let model = Class.newInstance<T>(api.dataKlass || Model), rds = result.data();
                         Types.ofKlass(model, Model)?(<any>model).setData(<JsonObject>rds): model = <T>rds;
                         resolve(model);
-                    }).catch((res: AjaxResponse) => {
+                    }).catch((res: HttpResponse) => {
                         reject(res)
                     })
                 });

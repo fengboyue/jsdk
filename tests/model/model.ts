@@ -2,12 +2,12 @@
 
 @klass('Person')
 class Person extends Model {
-    public static DEFAULT_FIELDS = [
-        { name: 'code', type: 'int', isId: true },
-        { name: 'name', type: 'string' },
-        { name: 'age', type: 'float'},
-        { name: 'birthday', type: 'date' },
-        { name: 'data', type: 'object' }
+    static DEFAULT_FIELDS = [
+        { name: 'code', isId: true },
+        { name: 'name' },
+        { name: 'age' },
+        { name: 'birthday' },
+        { name: 'data' }
     ]
 }
 
@@ -23,14 +23,14 @@ module JS {
                 this.person = new Person();
             }
 
-            public test1() {
+            test1() {
                 Assert.true(this.person.isEmpty());
-                
+
                 this.person.set('code', 1001);
                 this.person.set('name', 'Bill');
-                this.person.set('data', {a:1});
+                this.person.set('data', { a: 1 });
                 Assert.false(this.person.isEmpty());
-                
+
                 Assert.equal(1001, this.person.get('code'));
                 Assert.equal('Bill', this.person.get('name'));
                 Assert.equal(1, this.person.get('data')['a']);
@@ -44,7 +44,7 @@ module JS {
                 Assert.true(this.person.isEmpty());
             }
 
-            public test2() {
+            test2() {
                 Assert.equal(5, Jsons.values(this.person.getFields()).length);
 
                 this.person.removeField('age');
@@ -58,10 +58,10 @@ module JS {
                 Assert.equal(null, this.person.get('age'));
             }
 
-            public test3() {
+            test3() {
                 this.person.set('code', 1001);
                 this.person.set('name', 'Bill');
-                this.person.set('data', {a:1});
+                this.person.set('data', { a: 1 });
                 Assert.false(this.person.isEmpty());
 
                 let cln = this.person.clone();
@@ -69,11 +69,11 @@ module JS {
                 Assert.equal('Bill', cln.get('name'));
             }
 
-            public test4() {
+            test4() {
                 this.person.set('code', 1001);
                 Assert.equal(1001, this.person.getData()['code']);
                 Assert.true(Check.isEmpty(this.person.iniData()));
-                
+
                 this.person.iniData({
                     'code': 2001
                 })
@@ -88,41 +88,37 @@ module JS {
                 Assert.false(Check.isEmpty(this.person.iniData()));
             }
 
-            public test5() {
+            test5() {
                 Assert.true(this.person.isEmpty());
 
                 this.person.destroy();
-                Assert.equalError(JSError, ()=>{
+                Assert.equalError(JSError, () => {
                     this.person.set('code', 1002);
                 })
             }
 
-            public test6() {
-                Assert.equal('date', this.person.getField('birthday').type());
-
+            test6() {
                 this.person.updateField({
                     name: 'birthday',
-                    type: 'string',
-                    setter: function(val:string){
+                    setter: function (val: string) {
                         return new Date(val).setZeroTime().add(1, 'd').format()
                     }
                 });
-                Assert.equal('string', this.person.getField('birthday').type());
 
                 this.person.set('birthday', new Date().format());
                 Assert.equal(new Date().setZeroTime().add(1, 'd').format(), this.person.get('birthday'));
             }
 
-            public test7(){
+            test7() {
                 this.person.updateField({
                     name: 'data',
                     nameMapping: '_data'
                 });
 
                 this.person.setData({
-                    _data: [1,2,3]
+                    _data: [1, 2, 3]
                 });
-                Assert.equal([1,2,3], this.person.get('data'));
+                Assert.equal([1, 2, 3], this.person.get('data'));
             }
 
 

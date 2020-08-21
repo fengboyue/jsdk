@@ -23,16 +23,16 @@ module JS {
                 super();
             }
 
-            public execute<T>(query: string | AjaxRequest, data?: JsonObject|QueryString): Promise<ResultSet<T>> {
-                var req: AjaxRequest = <AjaxRequest>Jsons.union({
+            public execute<T>(query: string | HttpRequest): Promise<ResultSet<T>> {
+                var req: HttpRequest = <HttpRequest>Jsons.union({
                     method: 'GET'
-                },Ajax.toRequest(query, data),{
+                },Http.toRequest(query),<HttpRequest>{
                     async:true,
-                    type: 'json'
+                    responseType: 'json'
                 });
                   
                 return new Promise<ResultSet<T>>(function (resolve, reject) {
-                    Ajax.send(req).always((res)=>{
+                    Http.send(req).always((res)=>{
                         let result = ResultSet.parseJSON<T>(res.data);
                         result && result.success()?resolve(result):reject(res);
                     })

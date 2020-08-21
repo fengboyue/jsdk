@@ -16,7 +16,7 @@ module JS {
          */
         export type AnimTimerEvents = TimerEvents | 'looping' | 'looped';
 
-        export type AnimTimerConfig = {
+        export type AnimTimerInit = {
             /**
              * Delays (ms) the start of this animation.
              */
@@ -39,9 +39,9 @@ module JS {
          * The class AnimationTimer allows to create a timer, that is called in each frame while it is active. 
          */
         export class AnimTimer extends Timer {
-            protected _cfg: AnimTimerConfig;
+            protected _cfg: AnimTimerInit;
             
-            constructor(tick: TimerTask, cfg?: AnimTimerConfig) {
+            constructor(tick: TimerTask, cfg?: AnimTimerInit) {
                 super(tick, cfg);
 
                 let c = this._cfg;
@@ -90,3 +90,5 @@ module JS {
 }
 
 import AnimTimer = JS.an.AnimTimer;
+import AnimTimerInit = JS.an.AnimTimerInit;
+import AnimTimerEvents = JS.an.AnimTimerEvents;

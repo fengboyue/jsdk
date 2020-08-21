@@ -6,7 +6,7 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
-/// <reference path="../util/URI.ts"/>
+/// <reference path="../net/URI.ts"/>
 /// <reference path="../util/Bom.ts"/>
 
 module JS {

@@ -1,5 +1,5 @@
 ## Common TS Types
-JSDK predefine some common types in TS, which can be used as variable types directly: 
+JSDK predefine some common types in <b>TypeScript</b>, which can be used as variable types directly: 
 ```javascript
 /**
  * The primitive type of JS language.
@@ -44,7 +44,7 @@ export interface Klass<T> extends Function {
 ```
 
 ## Classes of data structure
-JSDK provids following data structure classes in the "JS.ds.*" package:
+JSDK  provids following data structure classes in <b>"JS.ds.*"</b> package:
 * BiMap: Bidirectional mapping table
 * LinkedList: Bidirectional linked list for high frequency insert and delete operations
 * Queue: FIFO Queue
@@ -80,10 +80,7 @@ enum Type {
 Assert.true(Types.isKlass(new Error(), Error));
 Assert.true(Types.ofKlass(new JSError(), Error));
 Assert.true(Types.equalKlass(Error, Error));
-Assert.true(Types.subKlass(JSError, Error));
-
-Assert.true(Types.equalClass(Object.class, Object.class));
-Assert.true(Types.subClass(String.class, Object.class));
+Assert.true(Types.subklassOf(JSError, Error));
 
 Assert.true(Types.isNull(null));
 Assert.true(Types.isUndefined(undefined));
@@ -152,8 +149,8 @@ Assert.true(Check.equalLength('null', 4));
 ### Check by server
 ```javascript
 Check.byServer({
-    url:'xxx.json',
-    type:'json'
+    url: 'xxx.json',
+    responseType: 'json'
 }, (res)=>{
     return res.data.code == 'success'
 }).then((ok)=>{
@@ -203,3 +200,74 @@ Assert.equal(Numbers.algebra(' a*(0.3894567-1.5908+d)/(+b-c)', {
 > Remarks
 >
 > Base on Number/Numbers of JSDK helps you develop better JS calculators.
+
+
+## Data Caching
+### Data Persistence
+When you have lots of binary big data, you should persist it to <b>JS.store.DataCache</b>(based on local database IndexDB) instead of keeping them in memory:
+```javascript
+let cache = new DataCache({
+    name: 'MyCache'
+});
+
+Http.get({
+    url: 'xxx.doc',
+    responseType: 'blob',
+    success: res => {
+        cache.write('1', res.data); //write blob data
+    }
+})
+```
+
+You can also persist data in other formats (primitive types or JSON):
+```javascript
+cache.write('2', {a: 1, b: '1', c: false}); //write json data
+```
+
+### Read Data
+```javascript
+cache.read('1').then((data: Blob)=>{
+    //do your next
+})
+```
+
+### Empty Cache
+Clear the cache table of <code>MyCache</code> : 
+```javascript
+cache.clear().then((data: Blob)=>{
+    //do your next
+})
+```
+
+### Destroy Cache
+Destroy the cache table of <code>MyCache</code> :
+```javascript
+cache.destroy().then((data: Blob)=>{
+    //do your next
+})
+```
+* The destroyed cache will no longer be able to read and write.
+
+## Image Caching
+### Preload Images
+When you need to display a lot of pictures, you can use <b>JS.store.ImageCache</b> to preload before using:
+```javascript
+let cache = new ImageCache();
+cache.load([
+    {
+        id: '1',
+        url: '../jsfx/carousel/greatwall.jpg'
+    }
+])
+```
+
+### Display Cached Images
+Display cached images on document when you need:
+```javascript
+(<HTMLImageElement>$1('#img1')).src = cache.get('1').src;
+```
+
+### Empty Images Index
+```javascript
+cache.clear()
+```

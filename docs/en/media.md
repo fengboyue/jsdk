@@ -1,35 +1,47 @@
-## Sound
-<code>JS.media.Sound</code> class supports loading and playing multiple sound files at the same time, and can perform effects processing such as mixing, rhythm, filtering, etc. The native <code>Audio</code> class cannot.
+## Audio
+<b>JS.media.AudioPro</b> class supports playing multiple audio in the meantime, and can perform effects processing such as mixing, rhythm, filtering, etc. But native <b>Audio</b> class can't.
 
-But <code>Sound</code> class has no player on UI, so you need <code>audio</code> tag or <code>Audio</code> class only when your user needs to play one audio at a time by the player controls.
+*Note: <b>AudioPro</b> class has no player UI, so you need <code>audio</code> tag or <b>Audio</b> class when your users only need to play one audio in the meantime and control it in player UI.*
 
-### Multiple Sounds Playing
-In the following code, load two sound files and play them at the same time:
+### Audio Files Preload
+When multiple audio files will need to be played, you should first load them into the persistent cache using <b>AudioCache</b> class, rather than keeping them in memory.
 ```javascript
-let s1 = new Sound();
-s1.load('blueyellow.wav').then(()=>{
-    $1('#btnPlay1').on('click', ()=>{
-        s1.play()
-    }) 
-});
-
-let s2 = new Sound();
-s2.load('clapping-crowd.wav').then(()=>{
-    $1('#btnPlay2').on('click', ()=>{
-        s2.play()
-    }) 
-});
+let ac = new AudioCache();
+ac.load([{
+    id: 'a1',
+    url: 'blueyellow.wav'
+},{
+    id: 'a2',
+    url: 'clapping-crowd.wav'
+}])
 ```
 
-### Modulation
-Drag a range input to change the current volume in playing time:
+### Audio Play
+
+Play audio by id in the cache:
 ```javascript
-$1('#range1').on('input', function(this: HTMLInputElement){
-    s1.volume(parseInt(this.value)/parseInt(this.max))
-})
+let ap1 = new AudioPro();
+ap1.play('a1', ac);
 ```
 
-### Sound Effects Processing
+Change volume and loop playing:
+```javascript
+ap1.volume(0.5);
+ap1.loop(true);
+```
+
+Play another audio in the meantime:
+```javascript
+let ap2 = new AudioPro();
+ap2.play('a2', ac);
+```
+
+Play directly (when you don't need to change volume or effects):
+```javascript
+AudioPro.play('a1', ac);
+```
+
+### Audio Effects Processing
 For example, add a low pass filter:
 ```javascript
 let s1 = new Sound({
@@ -43,6 +55,7 @@ let s1 = new Sound({
     }
 });
 ```
+
 ## Video
 
 ### Instantiation
@@ -51,17 +64,17 @@ If the page already has a <code>video</code> tag:
 <video id="v1" width="200" height="200"></video>
 ```
 
-You can initialize a <code>Video</code> instance with tag's id:
+You can initialize a <b>VideoPlayer</b> instance with tag's <code>id</code>:
 ```javascript
-let vp = new Video({
+let vp = new VideoPlayer({
     id: 'v1',
     src: 'https://www.runoob.com/try/demo_source/movie.mp4'
 });
 ```
 
-If there is no <code>video</code> tag on the page, you can render it to a container element:
+If there is no <code>video</code> tag on the page, you can render a new <code>video</code> tag to the container element:
 ```javascript
-let vp = new Video({
+let vp = new VideoPlayer({
     appendTo: document.body,
     src: 'https://www.runoob.com/try/demo_source/movie.mp4',
     width: 200,
@@ -77,8 +90,7 @@ $1('#btn').on('click', ()=>{
 }) 
 ```
 
-## Note
+## Warn
 <p class='tip'>
-Warn:<br>
-The browser will throw an uncaught DOMException if the script execute Video.play() or Sound.play() when the user didn’t interact with the document first.
+The browser will throw an uncaught DOMException if the script execute VideoPlayer.play() or AudioPro.play() when the user didn’t interact with the document first.
 </p>

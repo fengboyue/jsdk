@@ -1,5 +1,5 @@
 /**
-* JSDK 2.4.0 
+* JSDK 2.5.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -14,22 +14,26 @@ JS.config({
         'jsds': [
             '!/jsds.js'
         ],
+        'jsugar': [
+            '!/jsugar.js'
+        ],
+        'jsmath': [
+            '!/jsmath.js'
+        ],
         'jsmedia': [
+            '$jsds',
             '!/jsmedia.js'
         ],
-        'jsinput': [
-            '$jsds',
-            '!/jsinput.js'
-        ],
         'jsui': [
+            '$jsds',
             '!/jsui.js'
         ],
         'jsmvc': [
+            '$jsugar',
             '$jsui',
             '!/jsmvc.js'
         ],
         'jsan': [
-            '$jsui',
             '!/jsan.js'
         ],
         'jsvp': [
@@ -37,6 +41,7 @@ JS.config({
             '!/jsvp.js'
         ],
         'jsunit': [
+            '$jsugar',
             '$ua-parser#async',
             '!/jsunit.js'
         ],

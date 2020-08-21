@@ -2,9 +2,10 @@
 echo '开始构建'
 ./build-module.sh jsdk
 ./build-module.sh jscore
-./build-module.sh jsmedia
 ./build-module.sh jsds
-./build-module.sh jsinput
+./build-module.sh jsugar
+./build-module.sh jsmath
+./build-module.sh jsmedia
 ./build-module.sh jsui
 ./build-module.sh jsan
 ./build-module.sh jsmvc

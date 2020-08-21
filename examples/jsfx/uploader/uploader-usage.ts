@@ -78,7 +78,11 @@ JS.imports([
     })
     new Uploader({
         id:'limit2',
-        accept: MimeFiles.IMAGE_FILES,
+        accept: {
+            title:'Any Images',
+            extensions: FileTypes.IMAGES,
+            mimeTypes: MIME.IMAGES
+        },
         duplicate: true
     })
     

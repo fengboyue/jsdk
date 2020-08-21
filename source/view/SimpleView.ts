@@ -11,15 +11,12 @@
 module JS {
     export namespace view {
 
-        export interface SimpleViewConfig extends ViewConfig {
-            defaultConfig?: IWidgetConfig;            
-            widgetConfigs?: JsonObject<ViewWidgetConfig|IWidgetConfig>;
-        }
+        export interface SimpleViewConfig extends ViewConfig {}
         /**
          * For simple widgets without data-model.
          * 适合放置一组不需要DataModel的widgets
          */
-        export abstract class SimpleView extends View {
+        export class SimpleView extends View {
             protected _config: SimpleViewConfig;
 
             protected _render() {

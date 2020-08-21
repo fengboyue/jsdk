@@ -6,6 +6,8 @@
  * @version 2.1.0
  * @author Frank.Feng
  */
+/// <reference path="FrameAnim.ts" />
+
 module JS {
 
     export namespace an {
@@ -15,9 +17,16 @@ module JS {
             sY?: number,
             sZ?: number
         };
-        export type ScaleKeyFrames = JsonObject<ScaleKeyFrame>;
+        export type ScaleKeyFrames = 
+        {
+            from?: ScaleKeyFrame,
+            to?: ScaleKeyFrame,
+            "0%"?: ScaleKeyFrame,
+            "100%"?: ScaleKeyFrame,
+            [key: string]: ScaleKeyFrame
+        }
 
-        export class ScaleAnimConfig extends ElementAnimConfig {
+        export class ScaleAnimInit extends FrameAnimInit {
             frames: ScaleKeyFrames
         }
 
@@ -25,13 +34,13 @@ module JS {
          * Scale Animation.<br>
          * Scale a element by times of X and Y and Z axes.
          */
-        export class ScaleAnim extends ElementAnim {
+        export class ScaleAnim extends FrameAnim {
 
-            constructor(cfg: ScaleAnimConfig) {
+            constructor(cfg: ScaleAnimInit) {
                 super(cfg);
             }
 
-            protected _resetInitial(){
+            protected _resetEl(){
                 this._el.style.transform = `scaleX(1) scaleY(1) scaleZ(1)`
             }
 
@@ -53,5 +62,5 @@ module JS {
 }
 import ScaleKeyFrame = JS.an.ScaleKeyFrame;
 import ScaleKeyFrames = JS.an.ScaleKeyFrames;
-import ScaleAnimConfig = JS.an.ScaleAnimConfig;
+import ScaleAnimInit = JS.an.ScaleAnimInit;
 import ScaleAnim = JS.an.ScaleAnim;

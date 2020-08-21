@@ -44,7 +44,7 @@ JS.imports('$jsfx').then(() => {
     });
     $('#btn5').on('click', function () {
         new Dialog({
-            html: '<div id="textinput1" jsfx-alias="textinput"></div>',
+            html: `<div id="textinput1" ${View.WIDGET_ATTRIBUTE}="textinput"></div>`,
             childWidgets: {
                 textinput1: <TextInputConfig>{
                     colorMode: ColorMode.primary,

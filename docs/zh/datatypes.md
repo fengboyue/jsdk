@@ -1,5 +1,5 @@
 ## 常用TS类型
-JSDK在TS中预定义了一些常用类型，可以直接作为变量类型来使用：
+JSDK 预定义了一些常用的 <b>TypeScript</b> 类型，可以直接作为变量类型来使用：
 ```javascript
 /**
  * The primitive type of JS language.
@@ -44,14 +44,14 @@ export interface Klass<T> extends Function {
 ```
 
 ## 数据结构类
-JSDK在"JS.ds.*"包下提供了以下数据结构类：
+JSDK 在 <b>JS.ds.*</b> 包下提供了以下数据结构类：
 * BiMap: 双向映射表
 * LinkedList: 双向链表，适合高频插入／删除操作
 * Queue: 队列，即先进先出队列
 * Stack: 栈，即先进后出栈
 
 ## 类型判定
-JSDK提供了工具类<b>JS.util.Types</b>来判定各种数据类型。
+JSDK 提供了工具类 <b>JS.util.Types</b> 来判定各种数据类型。
 
 ### 判断变量类型
 ```javascript
@@ -80,10 +80,7 @@ enum Type {
 Assert.true(Types.isKlass(new Error(), Error));
 Assert.true(Types.ofKlass(new JSError(), Error));
 Assert.true(Types.equalKlass(Error, Error));
-Assert.true(Types.subKlass(JSError, Error));
-
-Assert.true(Types.equalClass(Object.class, Object.class));
-Assert.true(Types.subClass(String.class, Object.class));
+Assert.true(Types.subklassOf(JSError, Error));
 
 Assert.true(Types.isNull(null));
 Assert.true(Types.isUndefined(undefined));
@@ -115,7 +112,7 @@ Assert.true(Types.isWindow(...));
 ```
 
 ## 值检查
-JSDK提供了工具类<b>JS.util.Check</b>，用来检查变量的值内容或格式。
+JSDK 提供了工具类 <b>JS.util.Check</b> ，用来检查变量的值内容或格式。
 
 ### 空值检查
 ```javascript
@@ -152,8 +149,8 @@ Assert.true(Check.equalLength('null', 4));
 ### 服务器端检查
 ```javascript
 Check.byServer({
-    url:'xxx.json',
-    type:'json'
+    url: 'xxx.json',
+    responseType: 'json'
 }, (res)=>{
     return res.data.code == 'success'
 }).then((ok)=>{
@@ -163,7 +160,7 @@ Check.byServer({
 
 ## 数值计算
 ### Number扩展方法
-JSDK对原生的Number对象的原型链作了方法扩展。
+JSDK 对原生的 <b>Number</b> 对象的原型链作了方法扩展。
 
 例如：增加了stringfy方法，支持将科学计数法表示的数字转换成正常格式的字符串。
 ```javascript
@@ -181,7 +178,7 @@ Assert.equal(Number(0.15).div(0.2).stringify(), '0.75');
 * *更多扩展方法请查阅API文档*
 
 ### 四则计算
-JSDK还提供了工具类<b>JS.util.Numbers</b>，其支持多种四则计算。
+JSDK 还提供了工具类 <b>JS.util.Numbers</b> ，其支持多种四则计算。
 
 #### 逐项计算
 ```javascript
@@ -202,4 +199,74 @@ Assert.equal(Numbers.algebra(' a*(0.3894567-1.5908+d)/(+b-c)', {
 
 > 提示
 >
-> 基于JSDK的Number/Numbers，有助于你开发更好的JS计算器。
+> 基于 JSDK 的 Number/Numbers，有助于你开发更好的JS计算器。
+
+## 数据缓存
+### 数据持久化
+当你有很多二进制大数据的时候，你应该将其持久化至 <b>JS.store.DataCache</b>（基于本地持久化数据库IndexDB）中，而不是保留在内存中：
+```javascript
+let cache = new DataCache({
+    name: 'MyCache'
+});
+
+Http.get({
+    url: 'xxx.doc',
+    responseType: 'blob',
+    success: res => {
+        cache.write('1', res.data); //write blob data
+    }
+})
+```
+
+你也可以持久化其他格式数据（原始类型或JSON）：
+```javascript
+cache.write('2', {a: 1, b: '1', c: false}); //write json data
+```
+
+### 读取数据
+```javascript
+cache.read('1').then((data: Blob)=>{
+    //do your next
+})
+```
+
+### 清空缓存区
+清空 <code>MyCache</code> 缓存区：
+```javascript
+cache.clear().then((data: Blob)=>{
+    //do your next
+})
+```
+
+### 销毁缓存区
+销毁 <code>MyCache</code> 缓存区：
+```javascript
+cache.destroy().then((data: Blob)=>{
+    //do your next
+})
+```
+* 销毁后的 MyCache 缓存将无法再读写
+
+## 图像缓存
+### 预加载图片
+当你需要显示很多图片时，可以用 <b>JS.store.ImageCache</b> 提前预加载：
+```javascript
+let cache = new ImageCache();
+cache.load([
+    {
+        id: '1',
+        url: '../jsfx/carousel/greatwall.jpg'
+    }
+])
+```
+
+### 显示图片
+在需要显示的时候再将其显示在界面上：
+```javascript
+(<HTMLImageElement>$1('#img1')).src = cache.get('1').src;
+```
+
+### 清空图片索引
+```javascript
+cache.clear()
+```

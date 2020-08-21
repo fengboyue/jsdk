@@ -6,6 +6,8 @@
  * @version 2.1.0
  * @author Frank.Feng
  */
+/// <reference path="FrameAnim.ts" />
+
 module JS {
 
     export namespace an {
@@ -21,9 +23,16 @@ module JS {
             borderBottomColor?: HEX,
             borderLeftColor?: HEX
         };
-        export type GradientKeyFrames = JsonObject<GradientKeyFrame>;
+        export type GradientKeyFrames = 
+        {
+            from?: GradientKeyFrame,
+            to?: GradientKeyFrame,
+            "0%"?: GradientKeyFrame,
+            "100%"?: GradientKeyFrame,
+            [key: string]: GradientKeyFrame
+        }
 
-        export class GradientAnimConfig extends ElementAnimConfig {
+        export class GradientAnimInit extends FrameAnimInit {
             frames: GradientKeyFrames
         }
 
@@ -31,7 +40,7 @@ module JS {
          * Color Gradient Animation.<br>
          * Gradient a element's color from color1 to color2.
          */
-        export class GradientAnim extends ElementAnim {
+        export class GradientAnim extends FrameAnim {
             private _cls:{
                 color?: string,
                 backgroundColor?: string,
@@ -42,13 +51,13 @@ module JS {
                 borderLeftColor?: string
             };
 
-            constructor(cfg: GradientAnimConfig) {
+            constructor(cfg: GradientAnimInit) {
                 super(cfg);
             }
 
-            public config<T extends ElementAnimConfig>(): T
-            public config<T extends ElementAnimConfig>(cfg: T): this
-            public config(cfg?: ElementAnimConfig): any {
+            public config<T extends FrameAnimInit>(): T
+            public config<T extends FrameAnimInit>(cfg: T): this
+            public config(cfg?: FrameAnimInit): any {
                 if (!cfg) return this._cfg;
 
                 let m = super.config(cfg);
@@ -68,11 +77,11 @@ module JS {
                 return m
             }
 
-            private _newColor(t, d, from: RGBA, to: RGBA, k: string, e, base: RGBA): number {
+            private _newColor(t, d, from: TRGBA, to: TRGBA, k: string, e, base: TRGBA): number {
                 return this._newVal(t, d, from[k], to[k], e, base==null?null:base[k])
             }
 
-            protected _convertFrame(f: GradientKeyFrame):JsonObject<RGBA>{
+            protected _convertFrame(f: GradientKeyFrame):JsonObject<TRGBA>{
                 let json = {};
                 J.forEach(f, (v,k)=>{
                     json[k] = Colors.hex2rgba(v)
@@ -80,8 +89,8 @@ module JS {
                 return json
             }
 
-            protected _newFrame(from:JsonObject<RGBA>, to:JsonObject<RGBA>, t:number, d:number, e:EasingFunction):JsonObject<RGBA>{
-                let json = <JsonObject<RGBA>>{};
+            protected _newFrame(from:JsonObject<TRGBA>, to:JsonObject<TRGBA>, t:number, d:number, e:EasingFunction):JsonObject<TRGBA>{
+                let json = <JsonObject<TRGBA>>{};
                 J.forEach(from, (v, k) => {
                     json[k] = <any>{};
                     J.forEach(from[k], (vv,kk)=>{
@@ -91,14 +100,14 @@ module JS {
                 return json
             }
 
-            protected _onUpdate(j: JsonObject<RGBA>) {
+            protected _onUpdate(j: JsonObject<TRGBA>) {
                 let el = this._el;
                 J.forEach(j,(v,k)=>{
                     el.style[k] = Colors.rgba2css(v)
                 })
             }
 
-            protected _resetInitial(){
+            protected _resetEl(){
                 let el = this._el, c = this._cls;
                 J.forEach(c, (v,k)=>{
                     el.style[k] = v
@@ -109,5 +118,5 @@ module JS {
 }
 import GradientKeyFrame = JS.an.GradientKeyFrame;
 import GradientKeyFrames = JS.an.GradientKeyFrames;
-import GradientAnimConfig = JS.an.GradientAnimConfig;
+import GradientAnimInit = JS.an.GradientAnimInit;
 import GradientAnim = JS.an.GradientAnim;

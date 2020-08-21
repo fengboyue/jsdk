@@ -1,6 +1,6 @@
-//# sourceURL=jsdk.js
+//# sourceURL=../dist/jsdk.js
 /**
-* JSDK 2.4.0 
+* JSDK 2.5.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -15,7 +15,7 @@ var JS;
             AnimState[AnimState["RUNNING"] = 1] = "RUNNING";
             AnimState[AnimState["PAUSED"] = 2] = "PAUSED";
         })(AnimState = an.AnimState || (an.AnimState = {}));
-        class AnimConfig {
+        class AnimInit {
             constructor() {
                 this.autoReverse = false;
                 this.autoReset = false;
@@ -23,10 +23,9 @@ var JS;
                 this.loop = 1;
                 this.delay = 0;
                 this.direction = 'forward';
-                this.easing = an.Easings.LINEAR;
             }
         }
-        an.AnimConfig = AnimConfig;
+        an.AnimInit = AnimInit;
         class Anim {
             constructor(cfg) {
                 this._timer = null;
@@ -36,7 +35,7 @@ var JS;
                 this.config(cfg);
             }
             _init() {
-                this.config(new AnimConfig());
+                this.config(new AnimInit());
             }
             _convertFrame(f) {
                 return f;
@@ -60,6 +59,8 @@ var JS;
             getLooped() {
                 return this._loop;
             }
+            _resetEl() { }
+            ;
             _reset() {
                 let T = this;
                 T._loop = 0;
@@ -81,7 +82,7 @@ var JS;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
 var AnimState = JS.an.AnimState;
-var AnimConfig = JS.an.AnimConfig;
+var AnimInit = JS.an.AnimInit;
 var Anim = JS.an.Anim;
 var JS;
 (function (JS) {
@@ -328,10 +329,14 @@ var JS;
     let an;
     (function (an) {
         let J = Jsons;
-        class ElementAnimConfig extends an.AnimConfig {
+        class FrameAnimInit extends an.AnimInit {
+            constructor() {
+                super(...arguments);
+                this.easing = an.Easings.LINEAR;
+            }
         }
-        an.ElementAnimConfig = ElementAnimConfig;
-        class ElementAnim extends an.Anim {
+        an.FrameAnimInit = FrameAnimInit;
+        class FrameAnim extends an.Anim {
             constructor(cfg) {
                 super(cfg);
             }
@@ -350,8 +355,8 @@ var JS;
             config(cfg) {
                 if (!cfg)
                     return this._cfg;
-                if (cfg.el)
-                    this._el = $1(cfg.el);
+                if (cfg.target)
+                    this._el = $1(cfg.target);
                 if (cfg.frames)
                     this._parseFrames(cfg.frames);
                 return super.config(cfg);
@@ -417,13 +422,12 @@ var JS;
             _resetFrame() {
                 this._onUpdate(this._dir == 'forward' ? this._from : this._to);
             }
-            _resetInitial() { }
             play() {
                 let T = this, r = T._timer, c = T._cfg;
                 if (!r) {
                     T._reset();
-                    r = new an.AnimTimer((et) => {
-                        T._onUpdate.call(T, T._calc(c.duration, et, c.easing));
+                    r = new an.AnimTimer((t) => {
+                        T._onUpdate.call(T, T._calc(c.duration, t, c.easing));
                     }, {
                         delay: c.delay,
                         duration: c.duration,
@@ -444,7 +448,7 @@ var JS;
                     });
                     r.on('finished', () => {
                         if (c.autoReset)
-                            T._resetInitial();
+                            T._resetEl();
                         if (c.onFinished)
                             c.onFinished.call(T);
                         T._reset();
@@ -462,23 +466,23 @@ var JS;
                 super.stop();
                 let T = this, c = T._cfg;
                 if (c.autoReset)
-                    T._resetInitial();
+                    T._resetEl();
                 return T;
             }
         }
-        an.ElementAnim = ElementAnim;
+        an.FrameAnim = FrameAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var ElementAnimConfig = JS.an.ElementAnimConfig;
-var ElementAnim = JS.an.ElementAnim;
+var FrameAnimInit = JS.an.FrameAnimInit;
+var FrameAnim = JS.an.FrameAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class FadeAnimConfig extends an.ElementAnimConfig {
+        class FadeAnimInit extends an.FrameAnimInit {
         }
-        an.FadeAnimConfig = FadeAnimConfig;
-        class FadeAnim extends an.ElementAnim {
+        an.FadeAnimInit = FadeAnimInit;
+        class FadeAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
@@ -493,24 +497,24 @@ var JS;
             _onUpdate(f) {
                 this._el.style.opacity = f + '';
             }
-            _resetInitial() {
+            _resetEl() {
                 this._el.style.opacity = this._o;
             }
         }
         an.FadeAnim = FadeAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var FadeAnimConfig = JS.an.FadeAnimConfig;
+var FadeAnimInit = JS.an.FadeAnimInit;
 var FadeAnim = JS.an.FadeAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
         let J = Jsons;
-        class GradientAnimConfig extends an.ElementAnimConfig {
+        class GradientAnimInit extends an.FrameAnimInit {
         }
-        an.GradientAnimConfig = GradientAnimConfig;
-        class GradientAnim extends an.ElementAnim {
+        an.GradientAnimInit = GradientAnimInit;
+        class GradientAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
@@ -558,7 +562,7 @@ var JS;
                     el.style[k] = Colors.rgba2css(v);
                 });
             }
-            _resetInitial() {
+            _resetEl() {
                 let el = this._el, c = this._cls;
                 J.forEach(c, (v, k) => {
                     el.style[k] = v;
@@ -568,16 +572,16 @@ var JS;
         an.GradientAnim = GradientAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var GradientAnimConfig = JS.an.GradientAnimConfig;
+var GradientAnimInit = JS.an.GradientAnimInit;
 var GradientAnim = JS.an.GradientAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class MoveAnimConfig extends an.ElementAnimConfig {
+        class MoveAnimInit extends an.FrameAnimInit {
         }
-        an.MoveAnimConfig = MoveAnimConfig;
-        class MoveAnim extends an.ElementAnim {
+        an.MoveAnimInit = MoveAnimInit;
+        class MoveAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
@@ -601,7 +605,7 @@ var JS;
                 if (f.y != void 0)
                     el.style.top = f.y + 'px';
             }
-            _resetInitial() {
+            _resetEl() {
                 let el = this._el, xy = this._xy;
                 el.style.left = xy.x + 'px';
                 el.style.top = xy.y + 'px';
@@ -610,15 +614,15 @@ var JS;
         an.MoveAnim = MoveAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var MoveAnimConfig = JS.an.MoveAnimConfig;
+var MoveAnimInit = JS.an.MoveAnimInit;
 var MoveAnim = JS.an.MoveAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class ParallelAnimConfig extends an.AnimConfig {
+        class ParallelAnimInit extends an.AnimInit {
         }
-        an.ParallelAnimConfig = ParallelAnimConfig;
+        an.ParallelAnimInit = ParallelAnimInit;
         let E = Check.isEmpty;
         class ParallelAnim extends an.Anim {
             constructor(cfg) {
@@ -685,16 +689,16 @@ var JS;
         an.ParallelAnim = ParallelAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var ParallelAnimConfig = JS.an.ParallelAnimConfig;
+var ParallelAnimInit = JS.an.ParallelAnimInit;
 var ParallelAnim = JS.an.ParallelAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class RotateAnimConfig extends an.ElementAnimConfig {
+        class RotateAnimInit extends an.FrameAnimInit {
         }
-        an.RotateAnimConfig = RotateAnimConfig;
-        class RotateAnim extends an.ElementAnim {
+        an.RotateAnimInit = RotateAnimInit;
+        class RotateAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
@@ -717,27 +721,27 @@ var JS;
                     el.style.transform = `rotate(${v}deg)`;
                 }
             }
-            _resetInitial() {
+            _resetEl() {
                 this._el.style.transform = `rotate(0deg)`;
             }
         }
         an.RotateAnim = RotateAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var RotateAnimConfig = JS.an.RotateAnimConfig;
+var RotateAnimInit = JS.an.RotateAnimInit;
 var RotateAnim = JS.an.RotateAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class ScaleAnimConfig extends an.ElementAnimConfig {
+        class ScaleAnimInit extends an.FrameAnimInit {
         }
-        an.ScaleAnimConfig = ScaleAnimConfig;
-        class ScaleAnim extends an.ElementAnim {
+        an.ScaleAnimInit = ScaleAnimInit;
+        class ScaleAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
-            _resetInitial() {
+            _resetEl() {
                 this._el.style.transform = `scaleX(1) scaleY(1) scaleZ(1)`;
             }
             _onUpdate(v) {
@@ -757,15 +761,15 @@ var JS;
         an.ScaleAnim = ScaleAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var ScaleAnimConfig = JS.an.ScaleAnimConfig;
+var ScaleAnimInit = JS.an.ScaleAnimInit;
 var ScaleAnim = JS.an.ScaleAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class SequentialAnimConfig extends an.AnimConfig {
+        class SequentialAnimInit extends an.AnimInit {
         }
-        an.SequentialAnimConfig = SequentialAnimConfig;
+        an.SequentialAnimInit = SequentialAnimInit;
         let E = Check.isEmpty;
         class SequentialAnim extends an.Anim {
             constructor(cfg) {
@@ -831,27 +835,27 @@ var JS;
         an.SequentialAnim = SequentialAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var SequentialAnimConfig = JS.an.SequentialAnimConfig;
+var SequentialAnimInit = JS.an.SequentialAnimInit;
 var SequentialAnim = JS.an.SequentialAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class SkewAnimConfig extends an.ElementAnimConfig {
+        class SkewAnimInit extends an.FrameAnimInit {
             constructor() {
                 super(...arguments);
                 this.firstMode = 'both';
             }
         }
-        an.SkewAnimConfig = SkewAnimConfig;
-        class SkewAnim extends an.ElementAnim {
+        an.SkewAnimInit = SkewAnimInit;
+        class SkewAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
             _init() {
-                this.config(new SkewAnimConfig());
+                this.config(new SkewAnimInit());
             }
-            _resetInitial() {
+            _resetEl() {
                 this._el.style.transform = `skew(0deg,0deg)`;
             }
             _onUpdate(f) {
@@ -868,20 +872,20 @@ var JS;
         an.SkewAnim = SkewAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var SkewAnimConfig = JS.an.SkewAnimConfig;
+var SkewAnimInit = JS.an.SkewAnimInit;
 var SkewAnim = JS.an.SkewAnim;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
-        class TranslateAnimConfig extends an.ElementAnimConfig {
+        class TranslateAnimInit extends an.FrameAnimInit {
         }
-        an.TranslateAnimConfig = TranslateAnimConfig;
-        class TranslateAnim extends an.ElementAnim {
+        an.TranslateAnimInit = TranslateAnimInit;
+        class TranslateAnim extends an.FrameAnim {
             constructor(cfg) {
                 super(cfg);
             }
-            _resetInitial() {
+            _resetEl() {
                 this._el.style.transform = `translateX(0px) translateY(0px) translateZ(0px)`;
             }
             _onUpdate(f) {
@@ -891,7 +895,7 @@ var JS;
         an.TranslateAnim = TranslateAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var TranslateAnimConfig = JS.an.TranslateAnimConfig;
+var TranslateAnimInit = JS.an.TranslateAnimInit;
 var TranslateAnim = JS.an.TranslateAnim;
 var JS;
 (function (JS) {
@@ -921,11 +925,9 @@ var JS;
     (function (util) {
         let _of = function (a, s) {
             return typeof a === s;
-        };
-        let _is = function (a, s) {
+        }, _is = function (a, s) {
             return toString.call(a) === `[object ${s}]`;
-        };
-        let _isKlass = function (obj) {
+        }, _isKlass = function (obj) {
             if (typeof obj != 'function')
                 return false;
             let proto = obj.prototype;
@@ -944,6 +946,11 @@ var JS;
                 return /^function\sdefault_\d+\s*\(/.test(str);
             }
             return false;
+        }, _superklass = (klass) => {
+            if (Object === klass)
+                return null;
+            let sup = Object.getPrototypeOf(klass);
+            return Object.getPrototypeOf(Object) === sup ? Object : sup;
         };
         class Types {
             static isSymbol(o) {
@@ -1032,13 +1039,11 @@ var JS;
                 return el != null && el === el.window;
             }
             static isKlass(obj, klass) {
+                if (!this.ofKlass(obj, klass))
+                    return false;
                 return obj.constructor && obj.constructor === klass;
             }
             static ofKlass(obj, klass) {
-                if (obj == void 0)
-                    return false;
-                if (this.isKlass(obj, klass))
-                    return true;
                 return obj instanceof klass;
             }
             static equalKlass(kls, klass) {
@@ -1046,22 +1051,16 @@ var JS;
                     return false;
                 return klass ? (kls === klass) : true;
             }
-            static subKlass(kls1, kls2) {
+            static subklassOf(kls1, kls2) {
                 if (kls2 === Object || kls1 === kls2)
                     return true;
-                let superXls = Class.getSuperklass(kls1);
+                let superXls = _superklass(kls1);
                 while (superXls != null) {
                     if (superXls === kls2)
                         return true;
-                    superXls = Class.getSuperklass(superXls);
+                    superXls = _superklass(superXls);
                 }
                 return false;
-            }
-            static equalClass(cls1, cls2) {
-                return cls1.equals(cls2);
-            }
-            static subClass(cls1, cls2) {
-                return cls1.subclassOf(cls2);
             }
             static type(obj) {
                 if (obj === null)
@@ -1208,7 +1207,7 @@ var JS;
             }
             static byServer(req, judge) {
                 return new Promise(function (resolve, reject) {
-                    util.Ajax.send(req).then(res => {
+                    Http.send(req).then(res => {
                         judge.apply(null, [res]) ? resolve(true) : reject(false);
                     });
                 });
@@ -1248,7 +1247,7 @@ var JS;
             static toArray(a) {
                 return a == void 0 ? [] : (util.Types.isArray(a) ? a : [a]);
             }
-            static equal(a1, a2, equal) {
+            static equal(a1, a2, eq) {
                 if (a1 === a2)
                     return true;
                 let y1 = E(a1), y2 = E(a2);
@@ -1259,7 +1258,7 @@ var JS;
                 if (a1.length != a2.length)
                     return false;
                 return a1.every((item1, i) => {
-                    return equal ? equal(item1, a2[i], i) : item1 === a2[i];
+                    return eq ? eq(item1, a2[i], i) : item1 === a2[i];
                 });
             }
             static equalToString(a1, a2) {
@@ -1273,17 +1272,19 @@ var JS;
                     return false;
                 return a1.toString() == a2.toString();
             }
-            static same(a1, a2) {
+            static same(a1, a2, eq) {
                 if (a1 === a2 || (E(a1) && E(a2)))
                     return true;
                 if (a1.length != a2.length)
                     return false;
-                let na = this.newArray(a2);
-                a1.forEach(item1 => {
-                    na.remove((v) => {
-                        return v == item1;
+                let na = a2.slice(), fail = a1.some(t1 => {
+                    let r = na.remove(t2 => {
+                        return eq ? eq(t1, t2) : t1 === t2;
                     });
+                    return !r;
                 });
+                if (fail)
+                    return false;
                 return na.length == 0;
             }
             static slice(args, fromIndex, endIndex) {
@@ -1559,57 +1560,124 @@ var JS;
 var Jsons = JS.util.Jsons;
 var JS;
 (function (JS) {
-    let util;
-    (function (util) {
-        let Y = util.Types, J = util.Jsons, ACCEPTS = {
-            '*': '*/*',
-            text: 'text/plain',
-            html: 'text/html',
-            xml: 'application/xml, text/xml',
-            json: 'application/json, text/javascript',
-            script: 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript'
-        }, _judgeType = (cType) => {
-            if (!cType)
-                return 'json';
-            if (cType == ACCEPTS['text'])
+    let net;
+    (function (net) {
+        class MIME {
+        }
+        MIME.exe = 'application/octet-stream';
+        MIME.bin = 'application/octet-stream';
+        MIME.eps = 'application/postscript';
+        MIME.word = 'application/vnd.ms-word';
+        MIME.xls = 'application/vnd.ms-excel';
+        MIME.ppt = 'application/vnd.ms-powerpoint';
+        MIME.mdb = 'application/x-msaccess';
+        MIME.pdf = 'application/pdf';
+        MIME.odt = 'application/vnd.oasis.opendocument.text';
+        MIME.swf = 'application/x-shockwave-flash';
+        MIME.apk = 'application/vnd.android.package-archive';
+        MIME.jar = 'application/java-archive';
+        MIME.dll = 'application/x-msdownload';
+        MIME.class = 'application/octet-stream';
+        MIME.gz = 'application/x-gzip';
+        MIME.tgz = 'application/x-gzip';
+        MIME.bz = 'application/x-bzip2';
+        MIME.zip = 'application/zip';
+        MIME.rar = 'application/x-rar';
+        MIME.tar = 'application/x-tar';
+        MIME.z = 'application/x-compress';
+        MIME.z7 = 'application/x-7z-compressed';
+        MIME.arj = 'application/arj';
+        MIME.lzh = 'application/x-lzh';
+        MIME.ZIPS = MIME.gz + ',' + MIME.tgz + ',' + MIME.bz + ',' + MIME.zip
+            + ',' + MIME.rar + ',' + MIME.tar + ',' + MIME.z + ',' + MIME.z7 + ',' + MIME.arj + ',' + MIME.lzh;
+        MIME.text = 'text/plain';
+        MIME.md = 'text/x-markdown';
+        MIME.html = 'text/html';
+        MIME.xml = 'text/xml';
+        MIME.css = 'text/css';
+        MIME.json = 'application/json,text/json';
+        MIME.js = 'application/javascript,text/javascript,application/ecmascript,application/x-ecmascript';
+        MIME.rtf = 'text/rtf';
+        MIME.rtfd = 'text/rtfd';
+        MIME.sql = 'text/x-sql';
+        MIME.sh = 'application/x-sh';
+        MIME.csv = 'text/csv';
+        MIME.svg = 'image/svg+xml';
+        MIME.jpg = 'image/jpeg';
+        MIME.gif = 'image/gif';
+        MIME.png = 'image/png';
+        MIME.webp = 'image/webp';
+        MIME.bmp = 'image/bmp,image/x-ms-bmp';
+        MIME.tif = 'image/tiff';
+        MIME.tga = 'image/x-targa';
+        MIME.pcx = 'image/x-pcx';
+        MIME.pic = 'image/x-pict';
+        MIME.ico = 'image/x-icon';
+        MIME.ai = 'application/illustrator';
+        MIME.psd = 'image/vnd.adobe.photoshop,image/x-photoshop';
+        MIME.WEB_IMAGES = MIME.svg + ',' + MIME.jpg + ',' + MIME.gif + ',' + MIME.png + ',' + MIME.webp;
+        MIME.IMAGES = MIME.WEB_IMAGES + ',' + MIME.bmp + ',' + MIME.tif + ',' + MIME.tga + ',' + MIME.pcx
+            + ',' + MIME.pic + ',' + MIME.ico + ',' + MIME.ai + ',' + MIME.psd;
+        MIME.wav = 'audio/wav,audio/x-wav';
+        MIME.ogg = 'audio/ogg';
+        MIME.mp4_a = 'audio/mp4';
+        MIME.webm_a = 'audio/webm';
+        MIME.wma = 'audio/x-ms-wma';
+        MIME.mp3 = 'audio/mpeg';
+        MIME.mid = 'audio/midi,audio/x-midi';
+        MIME.au = 'audio/basic';
+        MIME.aif = 'audio/x-aiff';
+        MIME.H5_AUDIOS = MIME.ogg + ',' + MIME.wav + ',' + MIME.mp4_a + ',' + MIME.webm_a;
+        MIME.AUDIOS = MIME.H5_AUDIOS + ',' + MIME.mp3 + ',' + MIME.mid + ',' + MIME.wma + ',' + MIME.au + ',' + MIME.aif;
+        MIME.ogv = 'video/ogg';
+        MIME.mp4_v = 'video/mp4';
+        MIME.webm_v = 'video/webm';
+        MIME.avi = 'video/x-msvideo';
+        MIME.dv = 'video/x-dv';
+        MIME.mpeg = 'video/mpeg';
+        MIME.mov = 'video/quicktime';
+        MIME.wmv = 'video/x-ms-wmv';
+        MIME.asf = 'video/x-ms-asf';
+        MIME.flv = 'video/x-flv';
+        MIME.mkv = 'video/x-matroska';
+        MIME.gpp3 = 'video/3gpp';
+        MIME.rm = 'application/vnd.rn-realmedia';
+        MIME.H5_VIDEOS = MIME.ogv + ',' + MIME.mp4_v + ',' + MIME.webm_v;
+        MIME.VIDEOS = MIME.H5_VIDEOS + ',' + MIME.avi + ',' + MIME.dv + ',' + MIME.mpeg + ',' + MIME.mov
+            + ',' + MIME.wmv + ',' + MIME.asf + ',' + MIME.flv + ',' + MIME.mkv + ',' + MIME.gpp3 + ',' + MIME.rm;
+        net.MIME = MIME;
+    })(net = JS.net || (JS.net = {}));
+})(JS || (JS = {}));
+var MIME = JS.net.MIME;
+var JS;
+(function (JS) {
+    let net;
+    (function (net) {
+        let Y = Types, J = Jsons, _judgeType = (t, dt) => {
+            if (net.MIME.text == t)
                 return 'text';
-            if (cType == ACCEPTS['html'])
+            if (net.MIME.html = t)
                 return 'html';
-            if (cType.indexOf('/xml') > 0)
+            if (net.MIME.xml == t)
                 return 'xml';
-            return 'json';
-        }, PARSERS = {
-            html: (str) => {
-                if (!str)
-                    return null;
-                return new DOMParser().parseFromString(str, 'text/html');
-            },
-            xml: (str) => {
-                if (!str)
-                    return null;
-                let xml = new DOMParser().parseFromString(str, 'text/xml');
-                if (!xml || xml.getElementsByTagName("parsererror").length)
-                    throw new NotHandledError();
-                return xml;
-            },
-            text: (str) => {
-                return str;
-            }
-        }, _headers = function (xhr) {
+            if (net.MIME.json.indexOf(t) > -1)
+                return 'json';
+            return dt;
+        }, _headers = (xhr) => {
             let headers = {}, hString = xhr.getAllResponseHeaders(), hRegexp = /([^\s]*?):[ \t]*([^\r\n]*)/mg, match = null;
             while ((match = hRegexp.exec(hString))) {
                 headers[match[1]] = match[2];
             }
             return headers;
-        }, _response = function (req, xhr, error) {
-            let type = req.type, headers = _headers(xhr);
+        }, _response = (req, xhr, error) => {
+            let type = req.responseType, headers = _headers(xhr);
             if (!type && xhr.status > 0)
-                type = _judgeType(headers['Content-Type']);
+                type = _judgeType(headers['Content-Type'], type);
             return {
                 request: req,
                 url: xhr.responseURL,
                 raw: xhr.response,
-                type: req.type,
+                type: type,
                 data: xhr.response,
                 status: xhr.status,
                 statusText: error || (xhr.status == 0 ? 'error' : xhr.statusText),
@@ -1618,46 +1686,42 @@ var JS;
             };
         }, _parseResponse = function (res, req, xhr) {
             try {
-                let raw = xhr.response, parser = req.parsers && req.parsers[res.type] || PARSERS[res.type];
+                let raw = req.responseType == 'xml' ? xhr.responseXML : xhr.response, cvt = req.converts && req.converts[res.type];
                 if (req.responseFilter)
                     raw = req.responseFilter(raw, res.type);
-                res.data = parser ? parser(raw) : raw;
+                res.data = cvt ? cvt(raw, res) : raw;
             }
             catch (e) {
                 res.statusText = 'parseerror';
-                if (req.onError)
-                    req.onError(res);
-                if (Ajax._ON['error'])
-                    Ajax._ON['error'](res);
+                if (req.error)
+                    req.error(res);
+                if (Http._ON['error'])
+                    Http._ON['error'](res);
                 this.reject(res);
             }
-        }, _rejectError = function (req, xhr, error) {
+        }, _error = function (req, xhr, error) {
             let res = _response(req, xhr, error);
-            if (req.onError)
-                req.onError(res);
-            if (Ajax._ON['error'])
-                Ajax._ON['error'](res);
+            if (req.error)
+                req.error(res);
+            if (Http._ON['error'])
+                Http._ON['error'](res);
             this.reject(res);
         }, CACHE = {
             lastModified: {},
             etag: {}
-        }, _done = function (uncacheURL, req, xhr) {
+        }, _done = function (oURL, req, xhr) {
             if (xhr['_isTimeout'])
                 return;
-            let status = xhr.status, res = _response(req, xhr);
-            if (req.onCompleted)
-                req.onCompleted(res);
-            if (Ajax._ON['completed'])
-                Ajax._ON['completed'](res);
-            if (status >= 200 && status < 300 || status === 304) {
+            let status = xhr.status, isSucc = status >= 200 && status < 300 || status === 304, res = _response(req, xhr);
+            if (isSucc) {
                 let modified = null;
                 if (req.ifModified) {
                     modified = xhr.getResponseHeader('Last-Modified');
                     if (modified)
-                        CACHE.lastModified[uncacheURL] = modified;
+                        CACHE.lastModified[oURL] = modified;
                     modified = xhr.getResponseHeader('etag');
                     if (modified)
-                        CACHE.etag[uncacheURL] = modified;
+                        CACHE.etag[oURL] = modified;
                 }
                 if (status === 204 || req.method === "HEAD") {
                     res.statusText = 'nocontent';
@@ -1666,35 +1730,42 @@ var JS;
                     res.statusText = 'notmodified';
                 }
                 _parseResponse.call(this, res, req, xhr);
+            }
+            if (req.complete)
+                req.complete(res);
+            if (Http._ON['complete'])
+                Http._ON['complete'](res);
+            if (isSucc) {
+                if (req.success)
+                    req.success(res);
+                if (Http._ON['success'])
+                    Http._ON['success'](res);
                 this.resolve(res);
             }
-            else {
+            else
                 this.reject(res);
-            }
         }, _queryString = function (data) {
-            if (Y.isString(data))
+            if (Y.isString(data)) {
                 return encodeURI(data);
-            let str = '';
-            J.forEach(data, (v, k) => {
-                str += `&${k}=${encodeURIComponent(v)}`;
-            });
-            return str;
+            }
+            else if (Y.isJsonObject(data)) {
+                let str = '';
+                J.forEach(data, (v, k) => {
+                    str += `&${k}=${encodeURIComponent(v)}`;
+                });
+                return str;
+            }
+            return '';
         }, _queryURL = (req) => {
             let url = req.url.replace(/^\/\//, location.protocol + '//');
-            if (!util.Check.isEmpty(req.data))
+            if (!Check.isEmpty(req.data))
                 url = `${url}${url.indexOf('?') < 0 ? '?' : ''}${_queryString(req.data)}`;
             return url;
-        }, _uncacheURL = (url, cache) => {
+        }, _finalURL = (url, cache) => {
             url = url.replace(/([?&])_=[^&]*/, '$1');
             if (!cache)
                 url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${Date.now()}`;
             return url;
-        }, _sending = function (fn, req) {
-            if (fn) {
-                if (fn(req) === false)
-                    return false;
-            }
-            return true;
         }, _send = function (req) {
             if (!req.url)
                 JSLogger.error('Sent an ajax request without URL.');
@@ -1702,54 +1773,54 @@ var JS;
                 method: 'GET',
                 crossCookie: false,
                 async: true,
-                type: 'text',
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                responseType: 'text',
                 cache: true
             }, req);
-            let xhr = new XMLHttpRequest(), queryURL = _queryURL(req), url = _uncacheURL(queryURL, req.cache), headers = req.headers || {};
+            let xhr = new XMLHttpRequest(), oURL = _queryURL(req), url = _finalURL(oURL, req.cache), reqType = req.requestMime, resType = req.responseType, headers = req.headers || {};
+            if (!reqType && (Y.isString(req.data) || Y.isJsonObject(req.data)))
+                reqType = 'application/x-www-form-urlencoded;charset=UTF-8';
             xhr.open(req.method, url, req.async, req.username, req.password);
-            xhr.setRequestHeader('Accept', req.type && ACCEPTS[req.type] ? ACCEPTS[req.type] + ',' + ACCEPTS['*'] + ';q=0.01' : ACCEPTS['*']);
-            if (req.data && req.contentType)
-                xhr.setRequestHeader('Content-Type', req.contentType);
+            xhr.setRequestHeader('Accept', resType && net.MIME[resType] ? net.MIME[resType] + ',*/*;q=0.01' : '*/*');
+            if (reqType)
+                xhr.setRequestHeader('Content-Type', reqType);
             if (!headers['X-Requested-With'])
                 headers['X-Requested-With'] = "XMLHttpRequest";
-            if (req.mimeType && xhr.overrideMimeType)
-                xhr.overrideMimeType(req.mimeType);
+            if (req.overrideResponseMime && xhr.overrideMimeType)
+                xhr.overrideMimeType(req.overrideResponseMime);
             if (req.ifModified) {
-                if (CACHE.lastModified[queryURL])
-                    xhr.setRequestHeader('If-Modified-Since', CACHE.lastModified[queryURL]);
-                if (CACHE.etag[queryURL])
-                    xhr.setRequestHeader('If-None-Match', CACHE.etag[queryURL]);
+                if (CACHE.lastModified[oURL])
+                    xhr.setRequestHeader('If-Modified-Since', CACHE.lastModified[oURL]);
+                if (CACHE.etag[oURL])
+                    xhr.setRequestHeader('If-None-Match', CACHE.etag[oURL]);
             }
             for (let h in headers)
                 xhr.setRequestHeader(h, headers[h]);
+            if (req.progress)
+                xhr.onprogress = function (e) { req.progress(e, xhr); };
             xhr.onerror = (e) => {
-                _rejectError.call(this, req, xhr, 'error');
+                _error.call(this, req, xhr, 'error');
             };
-            xhr.onabort = () => { _rejectError.call(this, req, xhr, xhr['_isTimeout'] ? 'timeout' : 'abort'); };
             xhr.withCredentials = req.crossCookie;
+            let oAbort = xhr.abort;
+            xhr.abort = function () {
+                _error.call(this, req, xhr, xhr['_isTimeout'] ? 'timeout' : 'abort');
+                oAbort.call(this);
+            };
             if (req.async) {
-                xhr.responseType = (req.type == 'html' || req.type == 'xml') ? 'document' : req.type;
+                xhr.responseType = (resType == 'html' || resType == 'xml') ? 'document' : resType;
                 xhr.timeout = req.timeout || 0;
                 xhr.ontimeout = () => {
-                    _rejectError.call(this, req, xhr, 'timeout');
+                    _error.call(this, req, xhr, 'timeout');
                 };
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState == 4 && xhr.status > 0)
-                        _done.call(this, queryURL, req, xhr);
+                        _done.call(this, oURL, req, xhr);
                 };
             }
-            let rst = _sending(Ajax._ON['sending'], req);
-            if (rst === false) {
-                _rejectError.call(this, req, xhr, 'cancel');
-                return;
+            let data = null;
+            if (req.method != 'HEAD' && req.method != 'GET') {
+                data = Y.isJsonObject(req.data) ? J.stringify(req.data) : req.data;
             }
-            rst = _sending(req.onSending, req);
-            if (rst === false) {
-                _rejectError.call(this, req, xhr, 'cancel');
-                return;
-            }
-            let data = req.method == 'HEAD' || req.method == 'GET' ? null : (Y.isString(req.data) ? req.data : J.stringify(req.data));
             try {
                 if (req.async && req.timeout > 0) {
                     var timer = self.setTimeout(function () {
@@ -1758,44 +1829,53 @@ var JS;
                         self.clearTimeout(timer);
                     }, req.timeout);
                 }
+                xhr['timestamp'] = new Date().getTime();
                 xhr.send(data);
             }
             catch (e) {
-                _rejectError.call(this, req, xhr, 'error');
+                _error.call(this, req, xhr, 'error');
             }
             if (!req.async && xhr.status > 0)
-                _done.call(this, queryURL, req, xhr);
+                _done.call(this, oURL, req, xhr);
         };
-        class Ajax {
-            static _toQuery(q) {
-                if (!q)
-                    return {};
-                return Y.isString(q) ? util.URI.parseQueryString(q) : q;
-            }
-            static toRequest(quy, data) {
-                let req = Y.isString(quy) ? { url: quy } : quy;
-                if (quy && data)
-                    req.data = J.union(this._toQuery(req.data), this._toQuery(data));
-                return req;
+        class Http {
+            static toRequest(quy) {
+                return Y.isString(quy) ? { url: quy } : quy;
             }
             static send(req) {
                 let q = this.toRequest(req);
                 return q.thread ? this._inThread(req) : this._inMain(req);
             }
             static _inMain(req) {
-                return util.Promises.create(function () {
+                return Promises.create(function () {
                     _send.call(this, req);
                 });
             }
             static get(req) {
-                let r = Y.isString(req) ? { url: req } : req;
+                let r = this.toRequest(req);
                 r.method = 'GET';
                 return this.send(r);
             }
             static post(req) {
-                let r = Y.isString(req) ? { url: req } : req;
+                let r = this.toRequest(req);
                 r.method = 'POST';
                 return this.send(r);
+            }
+            static upload(file, url) {
+                let fm;
+                if (file instanceof FormData) {
+                    fm = file;
+                }
+                else {
+                    fm = new FormData();
+                    fm.append(file.postName || 'file', file.data, file.fileName);
+                }
+                return this.send({
+                    url: url,
+                    method: 'POST',
+                    data: fm,
+                    requestMime: 'multipart/form-data'
+                });
             }
             static on(ev, fn) {
                 this._ON[ev] = fn;
@@ -1805,13 +1885,13 @@ var JS;
             }
             static _inThread(req) {
                 let r = this.toRequest(req);
-                r.url = util.URI.toAbsoluteURL(r.url);
-                return util.Promises.create(function () {
+                r.url = net.URI.toAbsoluteURL(r.url);
+                return Promises.create(function () {
                     let ctx = this;
                     new Thread({
                         run: function () {
                             this.onposted((request) => {
-                                self.Ajax._inMain(request).then((res) => {
+                                self.Http._inMain(request).then((res) => {
                                     delete res.xhr;
                                     this.postMain(res);
                                 });
@@ -1824,11 +1904,11 @@ var JS;
                 });
             }
         }
-        Ajax._ON = {};
-        util.Ajax = Ajax;
-    })(util = JS.util || (JS.util = {}));
+        Http._ON = {};
+        net.Http = Http;
+    })(net = JS.net || (JS.net = {}));
 })(JS || (JS = {}));
-var Ajax = JS.util.Ajax;
+var Http = JS.net.Http;
 var JS;
 (function (JS) {
     let util;
@@ -1984,7 +2064,7 @@ if (self['HTMLElement'])
         };
         HP.prepend = function (...nodes) {
             nodes.forEach(n => {
-                typeof n == 'string' ? _pd.call(this, n) : op.call(this, n.cloneNode(true));
+                typeof n == 'string' ? _pd.call(this, n) : op.call(this, n);
             });
         };
         HP.box = function () {
@@ -2108,7 +2188,6 @@ var JS;
                 return util.Promises.create(function () {
                     let doc = typeof html == 'string' ? new DOMParser().parseFromString(html, 'text/html') : html, url = doc.URL, el = Dom.$1(appendTo || D.body);
                     el.append.apply(el, doc.body.childNodes);
-                    el = null;
                     let ignoreCss = ignore === true || (ignore && ignore.css) ? true : false;
                     if (!ignoreCss) {
                         let cssFiles = doc.querySelectorAll('link[rel=stylesheet]');
@@ -2116,13 +2195,7 @@ var JS;
                             for (let i = 0, len = cssFiles.length; i < len; i++) {
                                 let css = cssFiles[i], href = css.getAttribute('href');
                                 if (href)
-                                    Dom.loadCSS(href, true);
-                            }
-                        }
-                        let styles = doc.querySelectorAll('style');
-                        if (styles) {
-                            for (let i = 0, len = styles.length; i < len; i++) {
-                                Dom.applyStyle(styles[i].textContent);
+                                    Dom.loadCSS(href, false);
                             }
                         }
                     }
@@ -2143,7 +2216,7 @@ var JS;
                             util.Promises.order(syncs).then(() => {
                                 back();
                             }).catch((u) => {
-                                JSLogger.error('Load inner script error in loading html!\nscript url=' + u + '\nhtml url=' + url);
+                                JSLogger.error('Load inner script fail: ' + u + '\n; parent html:' + url);
                                 back();
                             });
                         }
@@ -2169,6 +2242,7 @@ var JS;
                     };
                     k.type = 'text/css';
                     k.rel = 'stylesheet';
+                    k.charset = 'utf-8';
                     if (!async) {
                         k['onreadystatechange'] = () => {
                             if (k['readyState'] == 'loaded' || k['readyState'] == 'complete')
@@ -2206,17 +2280,18 @@ var JS;
                         back();
                 });
             }
-            static loadHTML(url, async, appendTo, ignore, preHandler) {
+            static loadHTML(url, async, opts) {
                 if (!url)
                     return Promise.reject(null);
                 return util.Promises.create(function () {
-                    util.Ajax.get({
-                        type: 'html',
+                    Http.get({
+                        responseType: 'html',
                         url: url,
                         cache: false,
                         async: async
                     }).then((res) => {
-                        Dom.applyHtml(preHandler ? preHandler(res.data) : res.data, appendTo, ignore).then(() => {
+                        let appendTo = opts && opts.appendTo, ignore = opts && opts.ignore, prehandle = opts && opts.prehandle;
+                        Dom.applyHtml(prehandle ? prehandle(res.data) : res.data, appendTo, ignore).then(() => {
                             this.resolve(url);
                         });
                     });
@@ -2231,7 +2306,7 @@ const $1 = Dom.$1;
 const $L = Dom.$L;
 var JS;
 (function (JS) {
-    JS.version = '2.4.0';
+    JS.version = '2.5.0';
     function config(d, v) {
         let l = arguments.length;
         if (l == 0)
@@ -2255,8 +2330,12 @@ var JS;
         }
     }
     JS.config = config;
-    let _cfg = {}, _ldd = {}, _ts = (uri) => {
-        return JS.config('cachedImport') ? uri : (uri.indexOf('?') > 0 ? `${uri}&_=${Date.now()}` : `${uri}?_=${Date.now()}`);
+    let P = Promises, _cfg = {}, _ldd = {}, _ts = (uri) => {
+        let c = JS.config('cachedImport');
+        if (c === true)
+            return uri;
+        let s = '_=' + (c ? c : '' + Date.now());
+        return uri.lastIndexOf('?') > 0 ? `${uri}&${s}` : `${uri}?${s}`;
     }, _min = (uri, type) => {
         if (JS.config('minImport')) {
             if (uri.endsWith('.min.' + type))
@@ -2278,11 +2357,11 @@ var JS;
                     tasks.push(_impFile(path + (async ? '#async' : '')));
                 }
             });
-            return Promises.newPlan(Promises.order, [tasks]);
+            return P.newPlan(P.order, [tasks]);
         }
         else {
             console.error('Not found the <' + libName + '> library in JSDK settings.');
-            return Promises.resolvePlan(null);
+            return P.resolvePlan(null);
         }
     }, _impFile = (url) => {
         let u = url;
@@ -2296,16 +2375,16 @@ var JS;
         }
         let us = u.split('#'), len = us.length, u0 = us[0], ayc = len > 1 && us[1] == 'async';
         if (_ldd[u0])
-            return Promises.resolvePlan(null);
+            return P.resolvePlan(null);
         _ldd[u0] = 1;
         if (u0.endsWith('.js')) {
-            return Promises.newPlan(Dom.loadJS, [_ts(_min(u0, 'js')), ayc]);
+            return P.newPlan(Dom.loadJS, [_ts(_min(u0, 'js')), ayc]);
         }
         else if (u0.endsWith('.css')) {
-            return Promises.newPlan(Dom.loadCSS, [_ts(_min(u0, 'css')), ayc]);
+            return P.newPlan(Dom.loadCSS, [_ts(_min(u0, 'css')), ayc]);
         }
         else {
-            return Promises.newPlan(Dom.loadHTML, [_ts(u0), ayc]);
+            return P.newPlan(Dom.loadHTML, [_ts(u0), ayc]);
         }
     };
     function imports(url) {
@@ -2315,800 +2394,15 @@ var JS;
         uris.forEach(uri => {
             tasks.push(uri.startsWith('$') ? _impLib(uri.slice(1)) : _impFile(uri));
         });
-        return Promises.order(tasks);
+        return P.order(tasks);
     }
     JS.imports = imports;
 })(JS || (JS = {}));
 var JS;
 (function (JS) {
-    let util;
-    (function (util) {
-        class Functions {
-            static call(fb) {
-                let isFn = util.Types.isFunction(fb), fn = isFn ? fb : fb.fn, ctx = isFn ? undefined : fb.ctx, args = isFn ? undefined : fb.args;
-                return fn.apply(ctx, args);
-            }
-            static execute(code, ctx, argsExpression, args) {
-                let argsList = argsExpression || '';
-                return Function.constructor.apply(null, argsList.split(',').concat([code])).apply(ctx, util.Arrays.newArray(args));
-            }
-        }
-        util.Functions = Functions;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Functions = JS.util.Functions;
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        class Strings {
-            static padStart(text, maxLength, fill) {
-                let s = text || '';
-                if (s.length >= maxLength)
-                    return s;
-                let fs = fill ? fill : ' ';
-                for (let i = 0; i < maxLength; i++) {
-                    let tmp = fs + s, d = tmp.length - maxLength;
-                    if (d < 0) {
-                        s = tmp;
-                    }
-                    else {
-                        s = fs.substr(0, fs.length - d) + s;
-                        break;
-                    }
-                }
-                return s;
-            }
-            static padEnd(text, maxLength, fill) {
-                let s = text || '';
-                if (s.length >= maxLength)
-                    return s;
-                let fs = fill ? fill : ' ';
-                for (let i = 0; i < maxLength; i++) {
-                    let tmp = s + fs, d = tmp.length - maxLength;
-                    if (d < 0) {
-                        s = tmp;
-                    }
-                    else {
-                        s += fs.substr(0, fs.length - d);
-                        break;
-                    }
-                }
-                return s;
-            }
-            static nodeHTML(nodeType, attrs, text) {
-                let a = '';
-                if (attrs)
-                    util.Jsons.forEach(attrs, (v, k) => {
-                        if (v != void 0) {
-                            if (util.Types.isBoolean(v)) {
-                                if (v === true)
-                                    a += ` ${k}`;
-                            }
-                            else {
-                                a += ` ${k}="${v || ''}"`;
-                            }
-                        }
-                    });
-                return `<${nodeType}${a}>${text || ''}</${nodeType}>`;
-            }
-            static escapeHTML(html) {
-                if (!html)
-                    return '';
-                let chars = {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;',
-                    '/': '&#x2F;',
-                    '`': '&#x60;',
-                    '=': '&#x3D;'
-                };
-                return html.replace(/[&<>"'`=\/]/g, function (s) {
-                    return chars[s];
-                });
-            }
-            static format(tpl, ...data) {
-                if (!tpl)
-                    return tpl;
-                let i = 0;
-                data = data || [];
-                return tpl.replace(/\%(%|s|b|d|f|n)/gm, (s, ...args) => {
-                    let v = i >= data.length ? '' : data[i++];
-                    switch (args[0]) {
-                        case 'b': {
-                            v = Boolean(v).toString();
-                            break;
-                        }
-                        case 'd': {
-                            v = Number(v).toInt().toString();
-                            break;
-                        }
-                        case 'f': {
-                            v = Number(v).stringify();
-                            break;
-                        }
-                        case 'n': {
-                            v = '\n';
-                            break;
-                        }
-                        case '%': {
-                            v = '%';
-                        }
-                    }
-                    return v;
-                });
-            }
-            static merge(tpl, data) {
-                if (!tpl || !data)
-                    return tpl;
-                return tpl.replace(/\{(\w+)\}/g, (str, ...args) => {
-                    let m = args[0], s = data[m];
-                    return s === undefined ? str : (util.Types.isFunction(s) ? s(data, str, m) : (s == null ? '' : String(s)));
-                });
-            }
-        }
-        util.Strings = Strings;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Strings = JS.util.Strings;
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        class Konsole {
-            static clear() {
-                console.clear();
-            }
-            static count(label) {
-                console.count(label);
-            }
-            static countReset(label) {
-                console.countReset(label);
-            }
-            static time(label) {
-                console.time(label);
-            }
-            static timeEnd(label) {
-                console.timeEnd(label);
-            }
-            static trace(data, css) {
-                if (!data)
-                    console.trace();
-                let arr = [data];
-                if (typeof data == 'string' && css)
-                    arr[arr.length] = css;
-                console.trace.apply(null, arr);
-            }
-            static text(data, css) {
-                typeof css ? console.log('%c' + data, css) : console.log(data);
-            }
-            static _print(d) {
-                typeof d == 'string' ? console.log(d) : console.dirxml(d);
-            }
-            static print(...data) {
-                data.forEach(d => {
-                    this._print(d);
-                });
-            }
-        }
-        util.Konsole = Konsole;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Konsole = JS.util.Konsole;
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        let LogLevel;
-        (function (LogLevel) {
-            LogLevel[LogLevel["ALL"] = 6] = "ALL";
-            LogLevel[LogLevel["TRACE"] = 5] = "TRACE";
-            LogLevel[LogLevel["DEBUG"] = 4] = "DEBUG";
-            LogLevel[LogLevel["INFO"] = 3] = "INFO";
-            LogLevel[LogLevel["WARN"] = 2] = "WARN";
-            LogLevel[LogLevel["ERROR"] = 1] = "ERROR";
-            LogLevel[LogLevel["OFF"] = 0] = "OFF";
-        })(LogLevel = util.LogLevel || (util.LogLevel = {}));
-        let LEVELS = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE', 'ALL'], STYLES = [
-            '',
-            'color:red;background-color:#fff0f0;',
-            'color:orange;background-color:#fffbe6;',
-            'color:black;background-color:white;',
-            'color:white;background-color:gray;',
-            'color:white;background-color:black;',
-            ''
-        ];
-        class ConsoleAppender {
-            constructor(name) {
-                this.name = '';
-                this.name = name;
-            }
-            log(level, ...data) {
-                this._log(LEVELS[level], STYLES[level], data);
-            }
-            _log(cmd, css, data) {
-                console.group(`%c${cmd} ${this.name ? '[' + this.name + '] ' : ''}${new Date().toISOString()}`, css);
-                if (data)
-                    data.forEach(a => {
-                        cmd != 'INFO' && cmd != 'WARN' ? util.Konsole.trace(a) : util.Konsole.print(a);
-                    });
-                console.groupEnd();
-            }
-        }
-        util.ConsoleAppender = ConsoleAppender;
-        class Log {
-            constructor(name, level, appender) {
-                this._appender = !appender ? new ConsoleAppender(name) : Class.newInstance(appender, name);
-                this.level = level || LogLevel.ALL;
-                this._name = name;
-            }
-            name() {
-                return this._name;
-            }
-            _log(level, data) {
-                if (level <= this.level) {
-                    this._appender.log.apply(this._appender, [level].concat(data));
-                }
-            }
-            trace(...data) {
-                this._log(LogLevel.TRACE, data);
-            }
-            debug(...data) {
-                this._log(LogLevel.DEBUG, data);
-            }
-            info(...data) {
-                this._log(LogLevel.INFO, data);
-            }
-            warn(...data) {
-                this._log(LogLevel.WARN, data);
-            }
-            error(...data) {
-                this._log(LogLevel.ERROR, data);
-            }
-            clear() {
-                this._appender.clear();
-            }
-        }
-        util.Log = Log;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var LogLevel = JS.util.LogLevel;
-var Log = JS.util.Log;
-let JSLogger = new Log(`JSDK ${JS.version}`, LogLevel.INFO);
-Konsole.text(`Powered by JSDK ${JS.version}`, 'font-weight:bold;');
-var JS;
-(function (JS) {
-    let lang;
-    (function (lang) {
-        let Y = Types, R = Reflect;
-        let AnnotationTarget;
-        (function (AnnotationTarget) {
-            AnnotationTarget[AnnotationTarget["ANY"] = 1] = "ANY";
-            AnnotationTarget[AnnotationTarget["CLASS"] = 2] = "CLASS";
-            AnnotationTarget[AnnotationTarget["FIELD"] = 4] = "FIELD";
-            AnnotationTarget[AnnotationTarget["METHOD"] = 8] = "METHOD";
-            AnnotationTarget[AnnotationTarget["PARAMETER"] = 16] = "PARAMETER";
-        })(AnnotationTarget = lang.AnnotationTarget || (lang.AnnotationTarget = {}));
-        class Annotation extends Function {
-        }
-        lang.Annotation = Annotation;
-        class Annotations {
-            static getPropertyType(obj, propertyKey) {
-                return R.getMetadata('design:type', obj, propertyKey);
-            }
-            static getValue(anno, obj, propertyKey) {
-                return R.getMetadata(anno.name, obj, propertyKey);
-            }
-            static setValue(annoName, metaValue, obj, propertyKey) {
-                R.defineMetadata(typeof annoName == 'string' ? annoName : annoName.name, metaValue, obj, propertyKey);
-            }
-            static hasAnnotation(anno, obj, propertyKey) {
-                return R.hasMetadata(anno.name, obj, propertyKey);
-            }
-            static getAnnotations(obj) {
-                return R.getMetadataKeys(obj);
-            }
-            static define(definition, params) {
-                let args = Arrays.newArray(params), isStr = Y.isString(definition), annoName = isStr ? definition : definition.name, handler = isStr ? null : definition.handler, target = (isStr ? AnnotationTarget.ANY : definition.target) || AnnotationTarget.ANY, fn = function (anno, values, obj, key, d) {
-                    if (0 == (target & AnnotationTarget.ANY)) {
-                        if (Y.equalKlass(obj)) {
-                            if (0 == (target & AnnotationTarget.CLASS))
-                                return _wrongTarget(anno, obj.name);
-                        }
-                        else if (key) {
-                            if (Y.isFunction(obj[key])) {
-                                if (0 == (target & AnnotationTarget.METHOD))
-                                    return _wrongTarget(anno, obj.constructor.name, key, 'method');
-                            }
-                            else {
-                                if (0 == (target & AnnotationTarget.FIELD))
-                                    return _wrongTarget(anno, obj.constructor.name, key, 'field');
-                            }
-                        }
-                    }
-                    Annotations.setValue(anno, values, obj, key);
-                    if (handler)
-                        handler.apply(null, [anno, values, obj, key, d]);
-                };
-                if (Y.equalKlass(args[0])) {
-                    let obj = args[0];
-                    let detor = function (tar) {
-                        fn.call(null, annoName, undefined, tar);
-                    };
-                    return R.decorate([detor], obj);
-                }
-                else if (args.length == 3 && args[0]['constructor']) {
-                    let obj = args[0], key = args[1], desc = args[2];
-                    let detor = function (tar, k) {
-                        fn.call(null, annoName, undefined, tar, k, desc);
-                    };
-                    return R.decorate([detor], obj, key);
-                }
-                let values = args;
-                return function (tar, key, d) {
-                    fn.call(null, annoName, values, tar, key, d);
-                };
-            }
-        }
-        lang.Annotations = Annotations;
-        var _wrongTarget = function (anno, klass, key, type) {
-            JSLogger.error(key ?
-                `A [${anno}] annotation should not be marked on the '${key}' ${type} of ${klass}.`
-                :
-                    `A [${anno}] annotation should not be marked on the '${klass}' class.`);
-        };
-        var _getClassName = function (klass) {
-            let clazz = klass.class;
-            return clazz ? clazz.name : klass.name;
-        };
-        function deprecated(info) {
-            return Annotations.define({
-                name: 'deprecated',
-                handler: (anno, values, obj, propertyKey) => {
-                    let info = values ? (values[0] || '') : '', text = null;
-                    if (Y.equalKlass(obj)) {
-                        let name = _getClassName(obj);
-                        text = `The [${name}] class`;
-                    }
-                    else {
-                        let klass = obj.constructor, name = _getClassName(klass);
-                        text = `The [${propertyKey}] ${Y.isFunction(obj[propertyKey]) ? 'method' : 'field'} of ${name}`;
-                    }
-                    JSLogger.warn(text + ' has been deprecated. ' + info);
-                }
-            }, arguments);
-        }
-        lang.deprecated = deprecated;
-        var _aop = function (args, fn, anno) {
-            return Annotations.define({
-                name: anno,
-                handler: (anno, values, obj, methodName) => {
-                    let adv = {};
-                    if (Y.isFunction(values[0])) {
-                        adv[anno] = values[0];
-                    }
-                    else {
-                        adv = values[0];
-                        if (!adv)
-                            return;
-                    }
-                    Class.aop(obj.constructor, methodName, adv);
-                },
-                target: AnnotationTarget.METHOD
-            }, args);
-        };
-        function before(fn) {
-            return _aop(arguments, fn, 'before');
-        }
-        lang.before = before;
-        function after(fn) {
-            return _aop(arguments, fn, 'after');
-        }
-        lang.after = after;
-        function around(fn) {
-            return _aop(arguments, fn, 'around');
-        }
-        lang.around = around;
-        function throws(fn) {
-            return _aop(arguments, fn, 'throws');
-        }
-        lang.throws = throws;
-    })(lang = JS.lang || (JS.lang = {}));
-})(JS || (JS = {}));
-var AnnotationTarget = JS.lang.AnnotationTarget;
-var Annotation = JS.lang.Annotation;
-var Annotations = JS.lang.Annotations;
-var deprecated = JS.lang.deprecated;
-var before = JS.lang.before;
-var after = JS.lang.after;
-var around = JS.lang.around;
-var throws = JS.lang.throws;
-var JS;
-(function (JS) {
-    let reflect;
-    (function (reflect) {
-        let Y = Types, J = Jsons;
-        function klass(fullName) {
-            return Annotations.define({
-                name: 'klass',
-                handler: (anno, values, obj) => {
-                    Class.register(obj, values[0]);
-                },
-                target: AnnotationTarget.CLASS
-            }, [fullName]);
-        }
-        reflect.klass = klass;
-        class Method {
-            constructor(clazz, name, isStatic, fn, paramTypes, returnType) {
-                this.isStatic = false;
-                this.annotations = [];
-                this.parameterAnnotations = [];
-                this.ownerClass = clazz;
-                this.name = name;
-                this.paramTypes = paramTypes;
-                this.returnType = returnType;
-                this.fn = fn;
-                this.isStatic = isStatic;
-            }
-            invoke(obj, ...args) {
-                let fn = this.isStatic ? this.ownerClass.getKlass() : this.fn, context = this.isStatic ? this.ownerClass.getKlass() : obj;
-                return Reflect.apply(fn, context, args);
-            }
-        }
-        reflect.Method = Method;
-        class Field {
-            constructor(clazz, name, isStatic, type) {
-                this.isStatic = false;
-                this.annotations = [];
-                this.ownerClass = clazz;
-                this.name = name;
-                this.type = type;
-                this.isStatic = isStatic;
-            }
-            set(value, obj) {
-                let target = this.isStatic ? this.ownerClass.getKlass() : obj;
-                target[this.name] = value;
-            }
-            get(obj) {
-                let target = this.isStatic ? this.ownerClass.getKlass() : obj;
-                return target[this.name];
-            }
-        }
-        reflect.Field = Field;
-        class Class {
-            constructor(name, klass) {
-                this._methods = {};
-                this._fields = {};
-                this.name = name;
-                klass.class = this;
-                this._klass = klass;
-                this.shortName = this._klass.name;
-                this._superklass = Class.getSuperklass(this._klass);
-                this._init();
-            }
-            static getSuperklass(klass) {
-                if (Object === klass)
-                    return null;
-                let sup = Object.getPrototypeOf(klass);
-                return Object.getPrototypeOf(Object) === sup ? Object : sup;
-            }
-            static _reflectable(obj, className) {
-                obj.className = className;
-                if (!obj.getClass) {
-                    obj.getClass = function () {
-                        return Class.forName(this.className);
-                    };
-                }
-            }
-            static byName(name) {
-                if (!name)
-                    return null;
-                var p = name.split('.'), len = p.length, p0 = p[0], b = window[p0] || eval(p0);
-                if (!b)
-                    throw new TypeError('Can\'t found class:' + name);
-                for (var i = 1; i < len; i++) {
-                    var pi = p[i];
-                    if (!pi)
-                        break;
-                    b[pi] = b[pi] || {};
-                    b = b[pi];
-                }
-                return b;
-            }
-            static newInstance(ctor, ...args) {
-                let tar = Y.isString(ctor) ? Class.byName(ctor) : ctor;
-                if (!tar)
-                    throw new NotFoundError(`The class<${ctor}> is not found!`);
-                return Reflect.construct(tar, J.clone(args));
-            }
-            static aliasInstance(alias, ...args) {
-                let cls = Class.forName(alias, true);
-                if (!cls)
-                    throw new NotFoundError(`The class<${alias}> is not found!`);
-                return cls.newInstance.apply(cls, args);
-            }
-            static aop(klass, method, advisor) {
-                let isStatic = klass.hasOwnProperty(method), m = isStatic ? klass[method] : klass.prototype[method];
-                if (!Y.isFunction(m))
-                    return;
-                let obj = isStatic ? klass : klass.prototype;
-                if (!obj.hasOwnProperty('__' + method))
-                    obj['__' + method] = m;
-                Object.defineProperty(obj, method, {
-                    value: m.aop(advisor),
-                    writable: true
-                });
-            }
-            static cancelAop(klass, method) {
-                let isStatic = klass.hasOwnProperty(method), m = isStatic ? klass[method] : klass.prototype[method];
-                if (!Y.isFunction(m))
-                    return;
-                let obj = isStatic ? klass : klass.prototype;
-                obj[method] = obj['__' + method];
-            }
-            aop(method, advisor) {
-                let m = this.method(method);
-                if (!m)
-                    return;
-                let pro = m.isStatic ? this._klass : this._klass.prototype;
-                pro[method] = m.fn.aop(advisor);
-            }
-            _cancelAop(m) {
-                let pro = m.isStatic ? this._klass : this._klass.prototype;
-                pro[m.name] = m.fn;
-            }
-            cancelAop(method) {
-                let ms = method ? [this.method(method)] : this.methods();
-                ms.forEach(m => {
-                    this._cancelAop(m);
-                });
-            }
-            equals(cls) {
-                return cls && this.getKlass() === cls.getKlass();
-            }
-            equalsKlass(cls) {
-                return cls && this.getKlass() === cls;
-            }
-            subclassOf(cls) {
-                let klass = (cls.constructor && cls.constructor === Class) ? cls.getKlass() : cls;
-                return Y.subKlass(this.getKlass(), klass);
-            }
-            newInstance(...args) {
-                let obj = Reflect.construct(this._klass, Arrays.newArray(arguments));
-                Class._reflectable(obj, this.name);
-                return obj;
-            }
-            getSuperclass() {
-                if (this === Object.class)
-                    return null;
-                return this._superklass ? this._superklass.class : Object.class;
-            }
-            getKlass() {
-                return this._klass.prototype.constructor;
-            }
-            _parseStaticMembers(ctor) {
-                let mKeys = ctor === Object ? ['class'] : Reflect.ownKeys(ctor);
-                for (let i = 0, len = mKeys.length; i < len; i++) {
-                    const key = mKeys[i].toString();
-                    if (!this._isValidStatic(key))
-                        continue;
-                    const obj = ctor[key];
-                    if (Y.isFunction(obj)) {
-                        this._methods[key] = new Method(this, key, true, obj, null, null);
-                    }
-                    else {
-                        this._fields[key] = new Field(this, key, true, Y.type(obj));
-                    }
-                }
-            }
-            _parseInstanceMembers(proto) {
-                let protoKeys = proto === Object.prototype ? ['toString'] : Reflect.ownKeys(proto);
-                for (let i = 0, len = protoKeys.length; i < len; i++) {
-                    const key = protoKeys[i].toString();
-                    if (!this._isValidInstance(key))
-                        continue;
-                    const obj = this._forceProto(proto, key);
-                    if (Y.isFunction(obj)) {
-                        this._methods[key] = new Method(this, key, false, obj, null, null);
-                    }
-                    else {
-                        this._fields[key] = new Field(this, key, false, Y.type(obj));
-                    }
-                }
-            }
-            _forceProto(proto, key) {
-                let rst;
-                try {
-                    rst = proto[key];
-                }
-                catch (e) {
-                    if (this._klass === File) {
-                        if (key == 'lastModified')
-                            return 0;
-                        if (key == 'lastModifiedDate')
-                            return new Date();
-                    }
-                    try {
-                        let obj = this.newInstance();
-                        return obj[key];
-                    }
-                    catch (e1) {
-                        return '';
-                    }
-                }
-                return rst;
-            }
-            _isValidStatic(mName) {
-                return ['prototype', 'name', 'length'].findIndex(v => {
-                    return v == mName;
-                }) < 0;
-            }
-            _isValidInstance(mName) {
-                return !mName.startsWith('__') && mName != 'constructor';
-            }
-            _init() {
-                this._parseStaticMembers(this._klass);
-                this._parseInstanceMembers(this._klass.prototype);
-            }
-            _toArray(json) {
-                let arr = [];
-                J.forEach(json, v => {
-                    arr[arr.length] = v;
-                });
-                return arr;
-            }
-            method(name) {
-                return this.methodsMap()[name];
-            }
-            methodsMap() {
-                return this._methods;
-            }
-            methods() {
-                return this._toArray(this.methodsMap());
-            }
-            field(name, instance) {
-                return this.fieldsMap(instance)[name];
-            }
-            _instanceFields(instance) {
-                let fs = {}, keys = Reflect.ownKeys(instance);
-                for (let i = 0; i < keys.length; i++) {
-                    const key = keys[i].toString();
-                    if (this._isValidInstance(key)) {
-                        const obj = instance[key];
-                        if (!Y.isFunction(obj))
-                            fs[key] = new Field(this, key, false, Y.type(obj));
-                    }
-                }
-                this._fields = J.union(fs, this._fields);
-            }
-            fieldsMap(instance, anno) {
-                if (instance)
-                    this._instanceFields(instance);
-                let fs = {};
-                if (anno && instance) {
-                    J.forEach(this._fields, (field, key) => {
-                        if (Annotations.hasAnnotation(anno, instance, key))
-                            fs[key] = field;
-                    });
-                }
-                else {
-                    fs = this._fields;
-                }
-                return fs;
-            }
-            fields(instance, anno) {
-                return this._toArray(this.fieldsMap(instance, anno));
-            }
-            static forName(name, isAlias) {
-                if (!name)
-                    return null;
-                let isStr = Y.isString(name);
-                if (!isStr && name.class)
-                    return name.class;
-                let classname = isStr ? name : name.name;
-                return isAlias ? this._ALIAS_MAP[classname] : this._MAP[classname];
-            }
-            static all() {
-                return this._MAP;
-            }
-            static register(klass, className, alias) {
-                let name = className || klass.name, cls = this.forName(name);
-                if (cls)
-                    return;
-                if (klass !== Object) {
-                    var $P = klass.prototype;
-                    $P.className = name;
-                    $P.getClass = function () { return Class.forName(name); };
-                }
-                let cs = new Class(name, klass);
-                this._MAP[name] = cs;
-                if (alias)
-                    this._ALIAS_MAP[alias] = cs;
-            }
-            static classesOf(ns) {
-                if (!ns)
-                    return null;
-                if (ns.endsWith('.*'))
-                    ns = ns.slice(0, ns.length - 2);
-                let a = [];
-                J.forEach(this._MAP, (cls, name) => {
-                    if (name.startsWith(ns))
-                        a.push(cls);
-                });
-                return a;
-            }
-        }
-        Class._MAP = {};
-        Class._ALIAS_MAP = {};
-        reflect.Class = Class;
-    })(reflect = JS.reflect || (JS.reflect = {}));
-})(JS || (JS = {}));
-var Method = JS.reflect.Method;
-var Field = JS.reflect.Field;
-var Class = JS.reflect.Class;
-var klass = JS.reflect.klass;
-Class.register(Object);
-Class.register(String);
-Class.register(Boolean);
-Class.register(Number);
-Class.register(Array);
-(function () {
-    let $F = Function.prototype;
-    $F.aop = function (advisor, that) {
-        let old = this, fn = function () {
-            let args = Arrays.newArray(arguments), ctx = that || this, rst = undefined;
-            if (advisor.before)
-                advisor.before.apply(ctx, args);
-            try {
-                rst = advisor.around ? advisor.around.apply(ctx, [old].concat(args)) : old.apply(ctx, args);
-            }
-            catch (e) {
-                if (advisor.throws)
-                    advisor.throws.apply(ctx, [e]);
-            }
-            if (advisor.after)
-                advisor.after.apply(ctx, [rst]);
-            return rst;
-        };
-        return fn;
-    };
-    $F.mixin = function (kls, methodNames) {
-        if (!kls)
-            return;
-        let kp = kls.prototype, tp = this.prototype, ms = Reflect.ownKeys(kp);
-        for (let i = 0, len = ms.length; i < len; i++) {
-            let m = ms[i];
-            if ('constructor' != m && !tp[m]) {
-                if (methodNames) {
-                    if (methodNames.findIndex(v => { return v == m; }) > -1)
-                        tp[m] = kp[m];
-                }
-                else {
-                    tp[m] = kp[m];
-                }
-            }
-        }
-    };
-})();
-var __decorate = function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-        r = Reflect.decorate(decorators, target, key, desc);
-    else
-        for (var i = decorators.length - 1; i >= 0; i--)
-            if (d = decorators[i])
-                r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    if (key && r && typeof target[key] == 'function')
-        delete r.value;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        let Y = util.Types, J = util.Jsons, _URI_REG = /^(([^\:\/\?\#]+)\:)?(\/\/([^\/\?\#]*))?([^\?\#]*)(\\?([^\#]*))?(\#(.*))?/, _AUTH_REG = /^(([^\:@]*)(\:([^\:@]*))?@)?([^\:@]*)(\:(\d{1,3}))?/;
+    let net;
+    (function (net) {
+        let Y = Types, J = Jsons, _URI_REG = /^(([^\:\/\?\#]+)\:)?(\/\/([^\/\?\#]*))?([^\?\#]*)(\\?([^\#]*))?(\#(.*))?/, _AUTH_REG = /^(([^\:@]*)(\:([^\:@]*))?@)?([^\:@]*)(\:(\d{1,3}))?/;
         let _ADU = null;
         class URI {
             constructor(cfg) {
@@ -3292,7 +2586,7 @@ var JS;
                 return q;
             }
             static parseQueryString(query, decode) {
-                if (util.Check.isEmpty(query))
+                if (Check.isEmpty(query))
                     return {};
                 let q = query.startsWith('?') ? query.slice(1) : query, ps = {}, arr = q.split('&');
                 arr.forEach(function (v) {
@@ -3304,10 +2598,10 @@ var JS;
                 return ps;
             }
         }
-        util.URI = URI;
-    })(util = JS.util || (JS.util = {}));
+        net.URI = URI;
+    })(net = JS.net || (JS.net = {}));
 })(JS || (JS = {}));
-var URI = JS.util.URI;
+var URI = JS.net.URI;
 var JS;
 (function (JS) {
     let util;
@@ -3338,46 +2632,38 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        class Bundle {
-            constructor(res, locale) {
-                let T = this, lc = (locale == void 0 ? System.info().locale : locale);
-                T._d = {};
-                if (res) {
-                    if (util.Types.isString(res)) {
-                        let pos = res.lastIndexOf('.'), suffix = pos < 0 ? '' : res.slice(pos + 1), prefix = pos < 0 ? res : res.slice(0, pos);
-                        if (!T._load(lc, prefix, suffix))
-                            JSLogger.error('Bundle can\'t load resource file:' + res);
-                    }
-                    else {
-                        if (res.hasOwnProperty(lc)) {
-                            T._d = res[lc];
-                        }
-                        else {
-                            let lang = util.Locales.lang(lc);
-                            T._d = res.hasOwnProperty(lang) ? res[lang] : res;
-                        }
-                    }
-                }
-                T._lc = lc;
+        class I18N {
+            constructor(lc) {
+                this._d = {};
+                this.locale(lc);
             }
             _load(lc, prefix, suffix) {
-                let paths = [];
-                if (lc) {
-                    let lang = util.Locales.lang(lc), country = util.Locales.country(lc);
-                    if (lang && country)
-                        paths.push(`_${lang}_${country}`);
-                    paths.push(`_${lang}`);
+                let lang = util.Locales.lang(lc), country = util.Locales.country(lc);
+                if (country) {
+                    let rst = this._loadJson(`${prefix}_${lang}_${country}.${suffix}`);
+                    if (rst)
+                        return true;
                 }
-                paths.push('');
-                return paths.some(p => {
-                    let path = `${prefix}${p}.${suffix}`, xhr = new XMLHttpRequest();
-                    xhr.open('GET', path, false);
-                    xhr.send();
-                    if (xhr.status != 200)
-                        return false;
-                    this._d = util.Jsons.parse(xhr.response) || {};
-                    return true;
-                });
+                if (lang) {
+                    let rst = this._loadJson(`${prefix}_${lang}.${suffix}`);
+                    if (rst)
+                        return true;
+                }
+                return this._loadJson(`${prefix}.${suffix}`);
+            }
+            _loadJson(u) {
+                let xhr = new XMLHttpRequest();
+                xhr.open('GET', u, false);
+                xhr.responseType = 'json';
+                xhr.send();
+                if (xhr.status != 200)
+                    return false;
+                this.set(xhr.response);
+                return true;
+            }
+            load(url, locale) {
+                let T = this, lc = locale || T._lc, pos = url.lastIndexOf('.'), suffix = pos < 0 ? '' : url.slice(pos + 1), prefix = pos < 0 ? url : url.slice(0, pos);
+                return T._load(lc, prefix, suffix);
             }
             get(k) {
                 if (arguments.length == 0)
@@ -3388,21 +2674,31 @@ var JS;
                 return Reflect.ownKeys(this._d);
             }
             hasKey(k) {
-                return this._d && this._d.hasOwnProperty(k);
+                return this._d.hasOwnProperty(k);
             }
-            getLocale() {
-                return this._lc;
+            locale(lc) {
+                if (arguments.length == 0)
+                    return this._lc;
+                this._lc = lc || System.info().locale;
+                return this;
             }
             set(d) {
-                if (d)
-                    this._d = d;
+                let T = this;
+                d = d || {};
+                if (d.hasOwnProperty(T._lc)) {
+                    this._d = d[T._lc];
+                }
+                else {
+                    let lang = util.Locales.lang(T._lc);
+                    this._d = d.hasOwnProperty(lang) ? d[lang] : d;
+                }
                 return this;
             }
         }
-        util.Bundle = Bundle;
+        util.I18N = I18N;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
-var Bundle = JS.util.Bundle;
+var I18N = JS.util.I18N;
 var JS;
 (function (JS) {
     let util;
@@ -3607,7 +2903,7 @@ var Dates = JS.util.Dates;
         return this - (date || new D());
     };
     $P.format = function (format, locale) {
-        let T = this, fmt = format || 'YYYY-MM-DD HH:mm:ss', bundle = new Bundle(Dates.I18N_RESOURCE, locale);
+        let T = this, fmt = format || 'YYYY-MM-DD HH:mm:ss', i18n = new I18N(locale).set(Dates.I18N_RESOURCE);
         return fmt.replace(/YYYY|YY|MMMM|MMM|MM|M|DD|D|hh|h|HH|H|mm|m|ss|s|dddd|ddd|A/g, function (m) {
             switch (m) {
                 case "YYYY":
@@ -3615,9 +2911,9 @@ var Dates = JS.util.Dates;
                 case "YY":
                     return pad(T.getFullYear());
                 case "MMMM":
-                    return bundle.get('MONTH_NAMES')[T.getMonth()];
+                    return i18n.get('MONTH_NAMES')[T.getMonth()];
                 case "MMM":
-                    return bundle.get('MONTH_SHORT_NAMES')[T.getMonth()];
+                    return i18n.get('MONTH_SHORT_NAMES')[T.getMonth()];
                 case "MM":
                     return pad((T.getMonth() + 1));
                 case "M":
@@ -3649,18 +2945,17 @@ var Dates = JS.util.Dates;
                 case "s":
                     return T.getSeconds();
                 case "dddd":
-                    return bundle.get('WEEK_DAY_NAMES')[T.getDay()];
+                    return i18n.get('WEEK_DAY_NAMES')[T.getDay()];
                 case "ddd":
-                    return bundle.get('WEEK_DAY_SHORT_NAMES')[T.getDay()];
+                    return i18n.get('WEEK_DAY_SHORT_NAMES')[T.getDay()];
                 case "A":
-                    return bundle.get(T.getHours() < 12 ? 'AM' : 'PM');
+                    return i18n.get(T.getHours() < 12 ? 'AM' : 'PM');
                 default:
                     return m;
             }
         });
     };
 }());
-Class.register(Date);
 (function () {
     var N = Number, $N = N.prototype;
     $N.stringify = function () {
@@ -3917,21 +3212,64 @@ var JS;
 var Numbers = JS.util.Numbers;
 var JS;
 (function (JS) {
+    let util;
+    (function (util) {
+        class Konsole {
+            static clear() {
+                console.clear();
+            }
+            static count(label) {
+                console.count(label);
+            }
+            static countReset(label) {
+                console.countReset(label);
+            }
+            static time(label) {
+                console.time(label);
+            }
+            static timeEnd(label) {
+                console.timeEnd(label);
+            }
+            static trace(data, css) {
+                if (!data)
+                    console.trace();
+                let arr = [data];
+                if (typeof data == 'string' && css)
+                    arr[arr.length] = css;
+                console.trace.apply(null, arr);
+            }
+            static text(data, css) {
+                typeof css ? console.log('%c' + data, css) : console.log(data);
+            }
+            static _print(d) {
+                typeof d == 'string' ? console.log(d) : console.dirxml(d);
+            }
+            static print(...data) {
+                data.forEach(d => {
+                    this._print(d);
+                });
+            }
+        }
+        util.Konsole = Konsole;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Konsole = JS.util.Konsole;
+var JS;
+(function (JS) {
     let lang;
     (function (lang) {
         class JSError extends Error {
             constructor(msg, cause) {
                 super(cause ? (cause.message || '') + ' -> ' + (msg || '') : msg || '');
                 this.cause = null;
-                this.name = this.className;
                 if (cause)
                     this.cause = cause;
             }
         }
         lang.JSError = JSError;
-        class NotHandledError extends JSError {
+        class RefusedError extends JSError {
         }
-        lang.NotHandledError = NotHandledError;
+        lang.RefusedError = RefusedError;
         class NotFoundError extends JSError {
         }
         lang.NotFoundError = NotFoundError;
@@ -3944,6 +3282,9 @@ var JS;
         class StateError extends JSError {
         }
         lang.StateError = StateError;
+        class ParseError extends JSError {
+        }
+        lang.ParseError = ParseError;
         class NetworkError extends JSError {
         }
         lang.NetworkError = NetworkError;
@@ -3953,28 +3294,20 @@ var JS;
     })(lang = JS.lang || (JS.lang = {}));
 })(JS || (JS = {}));
 var JSError = JS.lang.JSError;
-var NotHandledError = JS.lang.NotHandledError;
+var RefusedError = JS.lang.RefusedError;
 var NotFoundError = JS.lang.NotFoundError;
 var ArithmeticError = JS.lang.ArithmeticError;
 var ArgumentError = JS.lang.ArgumentError;
 var StateError = JS.lang.StateError;
+var ParseError = JS.lang.ParseError;
 var NetworkError = JS.lang.NetworkError;
 var TimeoutError = JS.lang.TimeoutError;
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
 var JS;
 (function (JS) {
     let lang;
     (function (lang) {
-        let AssertError = class AssertError extends lang.JSError {
-        };
-        AssertError = __decorate([
-            klass('JS.lang.AssertError')
-        ], AssertError);
+        class AssertError extends lang.JSError {
+        }
         lang.AssertError = AssertError;
         let T = Types, F = Functions;
         class Assert {
@@ -4193,14 +3526,14 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let R = false, D = document, W = window;
+        let R = false, W = self;
         class Bom {
             static ready(fn) {
                 if (R) {
                     fn();
                     return;
                 }
-                let callback = function () {
+                let D = document, callback = function () {
                     R = true;
                     fn();
                     callback = null;
@@ -4251,13 +3584,13 @@ var JS;
                 return e['contentDocument'] || e['contentWindow'].document;
             }
             static fullscreen() {
-                let de = D.documentElement;
+                let de = document.documentElement;
                 let fnName = de['mozRequestFullScreen'] ? 'mozRequestFullScreen' : (de['webkitRequestFullScreen'] ? 'webkitRequestFullScreen' : 'requestFullscreen');
                 if (de[fnName])
                     de[fnName]();
             }
             static normalscreen() {
-                let fnName = D['mozCancelFullScreen'] ? 'mozCancelFullScreen' : (D['webkitCancelFullScreen'] ? 'webkitCancelFullScreen' : 'exitFullscreen');
+                let D = document, fnName = D['mozCancelFullScreen'] ? 'mozCancelFullScreen' : (D['webkitCancelFullScreen'] ? 'webkitCancelFullScreen' : 'exitFullscreen');
                 if (D[fnName])
                     D[fnName]();
             }
@@ -4275,7 +3608,7 @@ var JS;
                 name: 'widget',
                 handler: (anno, values, obj) => {
                     let ctor = obj, name = values[0];
-                    Class.register(ctor, name, alias ? alias : (name.slice(name.lastIndexOf('.') + 1)).toLowerCase());
+                    Class.reflect(ctor, name, alias ? alias : (name.slice(name.lastIndexOf('.') + 1)).toLowerCase());
                 },
                 target: AnnotationTarget.CLASS
             }, [fullName]);
@@ -4356,7 +3689,7 @@ var JS;
                     JSLogger.error('The widget\'s id was empty when be inited!');
                     return null;
                 }
-                let vconfig = cfg, newConfig = Jsons.union(defaults, vconfig, { id: id }), klass = newConfig.klass || $1('#' + id).attr('jsfx-alias');
+                let vconfig = cfg, newConfig = Jsons.union(defaults, vconfig, { id: id }), klass = newConfig.klass || $1('#' + id).attr(View.WIDGET_ATTRIBUTE);
                 if (!klass) {
                     JSLogger.error(`The widget<${id}> was not configured for its klass type!`);
                     return null;
@@ -4367,10 +3700,17 @@ var JS;
                 return wgt;
             }
         }
+        View.WIDGET_ATTRIBUTE = 'js-wgt';
         view.View = View;
     })(view = JS.view || (JS.view = {}));
 })(JS || (JS = {}));
 var View = JS.view.View;
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var JS;
 (function (JS) {
     let app;
@@ -4601,7 +3941,7 @@ var JS;
                 result.message(F(root, fmt.messageProperty));
                 result.version(F(root, fmt.versionProperty));
                 result.success(fmt.isSuccess ? fmt.isSuccess(root) : (root[fmt.successProperty] === (fmt.successCode || true)));
-                result.data(F(root, fmt.recordsProperty));
+                result.data(F(root, fmt.dataProperty));
                 result.rawObject(root);
                 result.page(F(root, fmt.pageProperty));
                 result.pageSize(F(root, fmt.pageSizeProperty));
@@ -4611,7 +3951,7 @@ var JS;
         }
         ResultSet.DEFAULT_FORMAT = {
             rootProperty: undefined,
-            recordsProperty: 'data',
+            dataProperty: 'data',
             totalProperty: 'paging.total',
             pageProperty: 'paging.page',
             pageSizeProperty: 'paging.pageSize',
@@ -4649,15 +3989,15 @@ var JS;
             constructor() {
                 super();
             }
-            execute(query, data) {
+            execute(query) {
                 var req = Jsons.union({
                     method: 'GET'
-                }, Ajax.toRequest(query, data), {
+                }, Http.toRequest(query), {
                     async: true,
-                    type: 'json'
+                    responseType: 'json'
                 });
                 return new Promise(function (resolve, reject) {
-                    Ajax.send(req).always((res) => {
+                    Http.send(req).always((res) => {
                         let result = model.ResultSet.parseJSON(res.data);
                         result && result.success() ? resolve(result) : reject(res);
                     });
@@ -4693,7 +4033,8 @@ var JS;
                 if (!this._proxy)
                     this._proxy = Class.newInstance(Service_1.DEFAULT_PROXY);
                 return new Promise((resolve, reject) => {
-                    return this._proxy.execute(api, params).then((result) => {
+                    api.data = params;
+                    return this._proxy.execute(api).then((result) => {
                         let model = Class.newInstance(api.dataKlass || Model), rds = result.data();
                         Types.ofKlass(model, Model) ? model.setData(rds) : model = rds;
                         resolve(model);
@@ -5329,7 +4670,6 @@ var JS;
         class Field {
             constructor(config) {
                 this._cfg = Jsons.union({
-                    type: 'string',
                     isId: false,
                     nullable: true,
                     defaultValue: null
@@ -5357,9 +4697,6 @@ var JS;
             defaultValue() {
                 return this._cfg.defaultValue;
             }
-            type() {
-                return this._cfg.type;
-            }
             nullable() {
                 return this._cfg.nullable;
             }
@@ -5369,19 +4706,6 @@ var JS;
                     throw new TypeError(`This Field<${T.name()}> must be not null`);
                 let fn = T._cfg.setter, v = fn ? fn.apply(T, [val]) : val;
                 return v === undefined ? T._cfg.defaultValue : v;
-            }
-            compare(v1, v2) {
-                let ret = 0;
-                if (this._cfg.comparable) {
-                    ret = this._cfg.comparable(v1, v2);
-                }
-                else {
-                    ret = (v1 === v2) ? 0 : ((v1 < v2) ? -1 : 1);
-                }
-                return ret;
-            }
-            isEqual(v1, v2) {
-                return this.compare(v1, v2) === 0;
             }
             validate(value, errors) {
                 let cfg = this._cfg, vts = cfg.validators, rst, ret = '';
@@ -5433,7 +4757,7 @@ var JS;
             }
             _check() {
                 if (this.isDestroyed())
-                    throw new NotHandledError('The model was destroyed!');
+                    throw new RefusedError('The model was destroyed!');
             }
             _newField(cfg) {
                 let tField = null;
@@ -5511,7 +4835,7 @@ var JS;
             }
             load(quy, silent) {
                 this._check();
-                let me = this, query = J.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
+                let me = this, query = J.union(Http.toRequest(this._config.dataQuery), Http.toRequest(quy));
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
                 return new model_1.JsonProxy().execute(query).then(function (result) {
@@ -5715,7 +5039,7 @@ var JS;
             }
             _check() {
                 if (this.isDestroyed())
-                    throw new NotHandledError('The model was destroyed!');
+                    throw new RefusedError('The model was destroyed!');
             }
             addSorter(field, dir) {
                 this._check();
@@ -5792,7 +5116,7 @@ var JS;
             }
             load(quy, silent) {
                 this._check();
-                let me = this, query = J.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
+                let me = this, query = J.union(Http.toRequest(this._config.dataQuery), Http.toRequest(quy));
                 query.data = J.union(query.data, this._sortParams());
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
@@ -5883,7 +5207,7 @@ var JS;
                 if (!id || this.size() == 0)
                     return -1;
                 let idName = 'id';
-                if (this._modelKlass && Types.subKlass(this._modelKlass, model_2.Model)) {
+                if (this._modelKlass && Types.subklassOf(this._modelKlass, model_2.Model)) {
                     let model = Class.newInstance(this._modelKlass), field = model.getIdField();
                     if (field)
                         idName = field.alias();
@@ -5979,8 +5303,8 @@ var ListModel = JS.model.ListModel;
 var ListModelConfig = JS.model.ListModelConfig;
 var JS;
 (function (JS) {
-    let ui;
-    (function (ui) {
+    let util;
+    (function (util) {
         let LengthUnit;
         (function (LengthUnit) {
             LengthUnit["PCT"] = "%";
@@ -5993,12 +5317,12 @@ var JS;
             LengthUnit["PT"] = "pt";
             LengthUnit["PC"] = "pc";
             LengthUnit["REM"] = "rem";
-        })(LengthUnit = ui.LengthUnit || (ui.LengthUnit = {}));
+        })(LengthUnit = util.LengthUnit || (util.LengthUnit = {}));
         class Lengths {
             static toNumber(len, unit = LengthUnit.PX) {
                 if (len == void 0)
                     return 0;
-                if (Types.isNumeric(len))
+                if (util.Types.isNumeric(len))
                     return Number(len);
                 let le = String(len);
                 if (le.endsWith('%'))
@@ -6008,19 +5332,20 @@ var JS;
             static toCSS(len, defaultVal, unit) {
                 if (len == void 0)
                     return defaultVal || 'auto';
-                if (Types.isNumeric(len))
+                if (util.Types.isNumeric(len))
                     return Number(len) + '' + (unit || LengthUnit.PX);
                 return String(len);
             }
         }
-        ui.Lengths = Lengths;
-    })(ui = JS.ui || (JS.ui = {}));
+        util.Lengths = Lengths;
+    })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
-var Lengths = JS.ui.Lengths;
+var Lengths = JS.util.Lengths;
+var LengthUnit = JS.util.LengthUnit;
 var JS;
 (function (JS) {
-    let ui;
-    (function (ui) {
+    let util;
+    (function (util) {
         class Colors {
             static hex2rgba(hex) {
                 if (!hex)
@@ -6092,7 +5417,7 @@ var JS;
                     a: hsl.a
                 };
             }
-            static rgbTohsl(rgb) {
+            static rgb2hsl(rgb) {
                 if (!rgb)
                     return null;
                 let r = rgb.r, g = rgb.g, b = rgb.b;
@@ -6152,10 +5477,10 @@ var JS;
                 return null;
             }
         }
-        ui.Colors = Colors;
-    })(ui = JS.ui || (JS.ui = {}));
+        util.Colors = Colors;
+    })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
-var Colors = JS.ui.Colors;
+var Colors = JS.util.Colors;
 var JS;
 (function (JS) {
     let fx;
@@ -6212,7 +5537,7 @@ var JS;
                 this._config = null;
                 this._initialConfig = null;
                 this._isD = false;
-                this._i18nBundle = null;
+                this._i18nObj = null;
                 if (!cfg.id && cfg.renderTo) {
                     let wgt = $(cfg.renderTo);
                     if (wgt.length == 1) {
@@ -6358,24 +5683,30 @@ var JS;
             _fire(e, args) {
                 return this._eventBus.fire(e, args);
             }
-            _createBundle() {
-                let defaults = new Bundle(this.getClass().getKlass()['I18N'], this._config.locale);
-                if (!this._config.i18n)
-                    return defaults;
-                let b = new Bundle(this._config.i18n, this._config.locale);
-                return defaults ? defaults.set(J.union(defaults.get(), b.get())) : b;
+            _newI18N() {
+                let lc = this._config.locale, n = new I18N(lc), v = this.getClass().getKlass()['I18N'];
+                if (v)
+                    typeof v == 'string' ? n.load(v) : n.set(v);
+                let i18n = this._config.i18n;
+                if (i18n) {
+                    if (Types.isString(i18n)) {
+                        n.load(i18n, lc);
+                    }
+                    else {
+                        n.set(J.union(n.get(), i18n));
+                    }
+                }
+                this._i18nObj = n;
             }
             _i18n(key) {
-                if (!this._i18nBundle)
-                    this._i18nBundle = this._createBundle();
-                return this._i18nBundle ? this._i18nBundle.get(key) : undefined;
+                if (!this._i18nObj)
+                    this._newI18N();
+                return this._i18nObj.get(key);
             }
-            locale(locale) {
+            locale(lc) {
                 if (arguments.length == 0)
                     return this._config.locale;
-                this._config.locale = locale;
-                if (locale !== this._config.locale)
-                    this._i18nBundle = this._createBundle();
+                this._config.locale = lc;
                 return this;
             }
         };
@@ -6598,7 +5929,7 @@ var JS;
             }
             load(quy, silent) {
                 let cfg = this._config;
-                cfg.dataQuery = J.union(Ajax.toRequest(cfg.dataQuery), Ajax.toRequest(quy));
+                cfg.dataQuery = J.union(Http.toRequest(cfg.dataQuery), Http.toRequest(quy));
                 return this._dataModel.load(cfg.dataQuery, silent);
             }
             reload() {
@@ -6639,7 +5970,7 @@ var JS;
                 if (!vModel) {
                     this._valueModel = new Model();
                 }
-                else if (Types.subKlass(vModel, Model)) {
+                else if (Types.subklassOf(vModel, Model)) {
                     this._valueModel = Class.newInstance(vModel);
                 }
                 else {
@@ -7762,13 +7093,13 @@ var JS;
                 return id ? this._children : this._children[id];
             }
             _renderChildren() {
-                let els = this.widgetEl.find('div.modal-body div[jsfx-alias]');
+                let els = this.widgetEl.find(`div.modal-body div[${View.WIDGET_ATTRIBUTE}]`);
                 if (els.length < 1)
                     return;
                 this._children = {};
                 let wConfigs = this._config.childWidgets;
                 els.each((i, e) => {
-                    let el = $(e), name = el.attr('name'), id = el.attr('id'), alias = el.attr('jsfx-alias');
+                    let el = $(e), name = el.attr('name'), id = el.attr('id'), alias = el.attr(View.WIDGET_ATTRIBUTE);
                     let cfg = Jsons.union(wConfigs && wConfigs[id], { id: id, name: name });
                     this._children[id] = Class.aliasInstance(alias, cfg);
                 });
@@ -7899,13 +7230,14 @@ var JS;
             }
             load(quy, silent) {
                 this._check();
-                let me = this, query = Jsons.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
+                let me = this, query = Jsons.union(Http.toRequest(this._config.dataQuery), Http.toRequest(quy));
                 this._fire('loading', [query]);
                 me._config.dataQuery = query;
                 return new model.JsonProxy().execute({
                     method: query.method,
-                    url: query.url
-                }, me._newParams(query)).then(function (result) {
+                    url: query.url,
+                    data: me._newParams(query)
+                }).then(function (result) {
                     if (result.success()) {
                         me.total(result.total());
                         me.setData(result.data(), silent);
@@ -8054,7 +7386,7 @@ var JS;
                 cfg.dataQuery = Jsons.union({
                     page: 1,
                     pageSize: cfg.pageSizes ? cfg.pageSizes[0] : Infinity
-                }, Ajax.toRequest(cfg.dataQuery));
+                }, Http.toRequest(cfg.dataQuery));
                 cfg.dataModel = PageModel;
                 this._initDataModel();
             }
@@ -8084,14 +7416,14 @@ var JS;
                 if (!this._config.checkable)
                     return;
                 this._hChk = null;
-                let span = $(`#${this.id}_htable tr>th:first-child span[jsfx-alias=checkbox]`);
+                let span = $(`#${this.id}_htable tr>th:first-child span[${View.WIDGET_ATTRIBUTE}=checkbox]`);
                 this._newCheckbox(span, '-1');
             }
             _bindBodyCheckbox() {
                 if (!this._config.checkable)
                     return;
                 this._bChks = null;
-                let me = this, spans = $(`#${this.id}_btable tr>td:first-child span[jsfx-alias=checkbox]`);
+                let me = this, spans = $(`#${this.id}_btable tr>td:first-child span[${View.WIDGET_ATTRIBUTE}=checkbox]`);
                 spans.each(function (i) {
                     me._newCheckbox(this, $(this).attr('jsfx-id'), i + 1);
                 });
@@ -8224,14 +7556,14 @@ var JS;
                 if (col.sortable)
                     this._dataModel.addSorter(col.field, sortDir);
                 return `<th width="${width}" nowrap>
-                ${hasCheckbox ? `<div class="items-left items-middle"><span jsfx-alias="checkbox"/>${cell}</div>` : cell}
+                ${hasCheckbox ? `<div class="items-left items-middle"><span ${View.WIDGET_ATTRIBUTE}="checkbox"/>${cell}</div>` : cell}
                 </th>`;
             }
             _tdHtml(opt, html, title, col, row) {
                 let cfg = this._config, hasCheckbox = col == 0 && cfg.checkable, id = this.data()[row]['id'], width = Lengths.toCSS(opt.width, '100%'), cell = `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
                     ${html}</div>`;
                 return `<td width="${width}" nowrap>
-                ${hasCheckbox ? `<div class="items-left items-middle" jsfx-row="${row}" jsfx-col="${col}"><span jsfx-alias="checkbox" jsfx-id="${id}"/>${cell}</div>` : cell}
+                ${hasCheckbox ? `<div class="items-left items-middle" jsfx-row="${row}" jsfx-col="${col}"><span ${View.WIDGET_ATTRIBUTE}="checkbox" jsfx-id="${id}"/>${cell}</div>` : cell}
                 </td>`;
             }
             _headHtml(columns) {
@@ -8437,7 +7769,7 @@ var JS;
                 return this;
             }
             load(quy, silent) {
-                let cfg = this._config, oQuery = Ajax.toRequest(cfg.dataQuery), nQuery = Ajax.toRequest(quy);
+                let cfg = this._config, oQuery = Http.toRequest(cfg.dataQuery), nQuery = Http.toRequest(quy);
                 cfg.dataQuery = Jsons.union(oQuery, {
                     page: 1,
                     pageSize: Number($(`#${this.id}_pagesize`).text())
@@ -9319,7 +8651,7 @@ var JS;
             }
             load(api) {
                 if (this._config.autoSearch)
-                    throw new NotHandledError('The method be not supported when autoSearch is true!');
+                    throw new RefusedError('The method be not supported when autoSearch is true!');
                 return super.load(api);
             }
             iniValue(v, render) {
@@ -9420,7 +8752,7 @@ var JS;
                         delay: 500,
                         data: function () { return jsonParams ? jsonParams : {}; },
                         processResults: (res, params) => {
-                            let data = J.find(res, ResultSet.DEFAULT_FORMAT.recordsProperty);
+                            let data = J.find(res, ResultSet.DEFAULT_FORMAT.dataProperty);
                             this.data(data);
                             return {
                                 results: data
@@ -10383,58 +9715,23 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        class MimeFiles {
+        class FileTypes {
         }
-        MimeFiles.SOURCE_FILES = {
-            title: 'Source Files',
-            extensions: 'c,h,cpp,ini,idl,hpp,hxx,hp,hh,cxx,cc,s,asm,log,bak,' +
-                'as,ts,js,json,xml,html,htm,xhtml,xht,css,md,mkd,markdown,' +
-                'java,properties,jsp,vm,ftl,' +
-                'swift,m,mm,' +
-                'cgi,sh,applescript,bat,sql,rb,py,php,php3,php4,' +
-                'p,pp,pas,dpr,cls,frm,vb,bas,vbs,' +
-                'cs,config,asp,aspx,' +
-                'yaml,vhd,vhdl,cbl,cob,coffee,clj,lisp,lsp,cl,jl,el,erl,groovy,less,lua,go,ml,pl,pm,al,perl,r,scala,st,tcl,tk,itk,v,y,d,' +
-                'xq,xql,xqm,xqy,xquery',
-            mimeTypes: `text/plain`
-        };
-        MimeFiles.IMAGE_FILES = {
-            title: 'Image Files',
-            extensions: 'pic,jpg,jpeg,png,gif,bmp,webp,tif,tiff,svg,wbmp,tga,pcx,ico,psd,ai',
-            mimeTypes: 'image/x-pict,image/jpeg,image/png,image/gif,image/bmp,image/webp,image/tiff,image/svg+xml,image/vnd.wap.wbmp,image/x-targa,image/x-pcx,image/x-icon,image/x-photoshop,application/illustrator'
-        };
-        MimeFiles.DOC_FILES = {
-            title: 'Document Files',
-            extensions: 'html,htm,xhtml,xht,md,markdown,mbox,msg,eml,txt,rtf,pdf,doc,docx,csv,xls,xlsx,ppt,pptx,xml,wps',
-            mimeTypes: 'text/html,text/x-markdown,' +
-                'application/mbox,application/vnd.ms-outlook,message/rfc822,text/plain,application/rtf,application/pdf,' +
-                'application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,' +
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document,' +
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
-                'application/vnd.openxmlformats-officedocument.presentationml.presentation,' +
-                'text/xml,application/kswps'
-        };
-        MimeFiles.COMPRESSED_FILES = {
-            title: 'Compressed Files',
-            extensions: 'zip,7z,z,bz2,gz,tar,taz,tgz,rar,arj,lzh',
-            mimeTypes: 'application/zip,application/x-7z-compressed,application/x-compress,application/x-bzip2,application/x-gzip,application/x-tar,application/x-rar-compressed,application/arj,application/x-lzh'
-        };
-        MimeFiles.VIDEO_FILES = {
-            title: 'Video Files',
-            extensions: 'mp4,rm,rmvb,mpg,mpeg,mpg4,avi,3gpp,asf,asx,wma,wmv,qt',
-            mimeTypes: 'video/*,application/vnd.rn-realmedia,video/mpeg,video/x-msvideo,video/3gpp,video/x-ms-asf,audio/x-ms-wma,audio/x-ms-wmv,video/quicktime'
-        };
-        MimeFiles.AUDIO_FILES = {
-            title: 'Audio Files',
-            extensions: 'ogg,wav,mpga,mp2,mp3,au,snd,mid,midi,ra,ram,aif,aiff,webm',
-            mimeTypes: 'audio/ogg,audio/x-wav,audio/mpeg,audio/x-mpeg,audio/basic,audio/midi,audio/x-midi,audio/x-pn-realaudio,audio/x-aiff,audio/webm'
-        };
-        MimeFiles.WEB_FILES = {
-            title: 'Web Files',
-            extensions: 'html,htm,xhtml,xht,css,js,json,swf',
-            mimeTypes: 'text/html,text/css,application/json,text/javascript,application/x-shockwave-flash'
-        };
-        util.MimeFiles = MimeFiles;
+        FileTypes.CODES = 'c,h,cpp,ini,idl,hpp,hxx,hp,hh,cxx,cc,s,asm,log,bak,' +
+            'as,ts,js,json,xml,html,htm,xhtml,xht,css,md,mkd,markdown,' +
+            'java,properties,jsp,vm,ftl,' +
+            'swift,m,mm,' +
+            'cgi,sh,applescript,bat,sql,rb,py,php,php3,php4,' +
+            'p,pp,pas,dpr,cls,frm,vb,bas,vbs,' +
+            'cs,config,asp,aspx,' +
+            'yaml,vhd,vhdl,cbl,cob,coffee,clj,lisp,lsp,cl,jl,el,erl,groovy,less,lua,go,ml,pl,pm,al,perl,r,scala,st,tcl,tk,itk,v,y,d,' +
+            'xq,xql,xqm,xqy,xquery';
+        FileTypes.IMAGES = 'pic,jpg,jpeg,png,gif,bmp,webp,tif,tiff,svg,wbmp,tga,pcx,ico,psd,ai';
+        FileTypes.DOCS = 'md,markdown,msg,eml,txt,rtf,pdf,doc,docx,csv,xls,xlsx,ppt,pptx,wps';
+        FileTypes.ZIPS = 'zip,7z,z,bz2,gz,tar,taz,tgz,rar,arj,lzh';
+        FileTypes.VIDEOS = 'mp4,rm,rmvb,mpg,mpeg,mpg4,avi,dv,3gpp,asf,asx,wmv,qt,mov,ogv,flv,mkv,webm';
+        FileTypes.AUDIOS = 'ogg,wav,mpga,mp2,mp3,au,snd,mid,midi,ra,ram,aif,aiff,webm';
+        util.FileTypes = FileTypes;
         let FileSizeUnit;
         (function (FileSizeUnit) {
             FileSizeUnit["B"] = "B";
@@ -10450,38 +9747,17 @@ var JS;
                     return path;
                 return path.slice(pos + 1);
             }
-            static getExt(path) {
+            static getFileType(path) {
                 let pos = path.lastIndexOf('.');
                 if (pos < 0)
                     return '';
                 return path.slice(pos + 1);
             }
-            static isFileExt(path, exts) {
+            static isFileType(path, exts) {
                 if (!path || !exts)
                     return false;
-                let ext = this.getExt(path);
+                let ext = this.getFileType(path);
                 return ext ? (exts.toLowerCase() + ',').indexOf(ext + ',') >= 0 : false;
-            }
-            static isSourceFile(path) {
-                return this.isFileExt(path, MimeFiles.SOURCE_FILES.extensions);
-            }
-            static isImageFile(path) {
-                return this.isFileExt(path, MimeFiles.IMAGE_FILES.extensions);
-            }
-            static isDocFile(path) {
-                return this.isFileExt(path, MimeFiles.DOC_FILES.extensions);
-            }
-            static isAudioFile(path) {
-                return this.isFileExt(path, MimeFiles.AUDIO_FILES.extensions);
-            }
-            static isVideoFile(path) {
-                return this.isFileExt(path, MimeFiles.VIDEO_FILES.extensions);
-            }
-            static isCompressedFile(path) {
-                return this.isFileExt(path, MimeFiles.COMPRESSED_FILES.extensions);
-            }
-            static isWebFile(path) {
-                return this.isFileExt(path, MimeFiles.WEB_FILES.extensions);
             }
             static convertSize(size, orgUnit, tarUnit) {
                 if (!size)
@@ -10520,9 +9796,9 @@ var JS;
         util.Files = Files;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
-var MimeFiles = JS.util.MimeFiles;
 var FileSizeUnit = JS.util.FileSizeUnit;
 var Files = JS.util.Files;
+var FileTypes = JS.util.FileTypes;
 var JS;
 (function (JS) {
     let fx;
@@ -10826,31 +10102,31 @@ var JS;
             }
             _fileIcon(path) {
                 let icon = 'alt';
-                if (Files.isFileExt(path, 'pdf')) {
+                if (Files.isFileType(path, 'pdf')) {
                     icon = 'pdf';
                 }
-                else if (Files.isFileExt(path, 'doc,docx')) {
+                else if (Files.isFileType(path, 'doc,docx')) {
                     icon = 'word';
                 }
-                else if (Files.isFileExt(path, 'xls,xlsx')) {
+                else if (Files.isFileType(path, 'xls,xlsx')) {
                     icon = 'excel';
                 }
-                else if (Files.isFileExt(path, 'ppt,pptx')) {
+                else if (Files.isFileType(path, 'ppt,pptx')) {
                     icon = 'powerpoint';
                 }
-                else if (Files.isAudioFile(path)) {
+                else if (Files.isFileType(path, FileTypes.AUDIOS)) {
                     icon = 'audio';
                 }
-                else if (Files.isVideoFile(path)) {
+                else if (Files.isFileType(path, FileTypes.VIDEOS)) {
                     icon = 'video';
                 }
-                else if (Files.isCompressedFile(path)) {
+                else if (Files.isFileType(path, FileTypes.ZIPS)) {
                     icon = 'archive';
                 }
-                else if (Files.isSourceFile(path)) {
+                else if (Files.isFileType(path, FileTypes.CODES)) {
                     icon = 'code';
                 }
-                else if (Files.isImageFile(path)) {
+                else if (Files.isFileType(path, FileTypes.IMAGES)) {
                     icon = 'image';
                 }
                 return '<span><i class="far fa-file-' + icon + '"></i></span>';
@@ -10859,7 +10135,7 @@ var JS;
                 let file = this._toMimeFile(wuFile);
                 this._renderFile(file);
                 if (this._hasFaceMode(UploaderFaceMode.image)) {
-                    let isImage = Files.isImageFile(file.name);
+                    let isImage = Files.isFileType(file.name, FileTypes.IMAGES);
                     if (!file.uri && isImage) {
                         this._makeThumb(wuFile);
                     }
@@ -10916,7 +10192,7 @@ var JS;
                 fEl.on('click', !this._hasFaceMode(UploaderFaceMode.image) ? 'a' : 'a,.file-image', (e) => {
                     let src = this.widgetEl.find(`#${this.id}-${fileId}`).attr('src');
                     if (src) {
-                        (Files.isImageFile(src) || src.indexOf('data:image/') == 0) ? window.open().document.body.innerHTML = `<img src="${src}" >` : window.open(src);
+                        (Files.isFileType(src, FileTypes.IMAGES) || src.indexOf('data:image/') == 0) ? window.open().document.body.innerHTML = `<img src="${src}" >` : window.open(src);
                     }
                     else {
                         fx.Toast.show({
@@ -10966,7 +10242,7 @@ var JS;
                     id: cf.id,
                     type: cf.mime,
                     name: cf.name,
-                    ext: cf.ext || Files.getExt(cf.name),
+                    ext: cf.ext || Files.getFileType(cf.name),
                     size: cf.size || 1,
                     getRuid: () => { return ''; },
                     getSource: () => { return null; }
@@ -11390,7 +10666,7 @@ var JS;
             }
             _check() {
                 if (this._d)
-                    throw new NotHandledError();
+                    throw new RefusedError();
             }
             destroy() {
                 let T = this;
@@ -11754,6 +11030,631 @@ var JS;
 })(JS || (JS = {}));
 var JS;
 (function (JS) {
+    let util;
+    (function (util) {
+        class Functions {
+            static call(fb) {
+                let isFn = util.Types.isFunction(fb), fn = isFn ? fb : fb.fn, ctx = isFn ? undefined : fb.ctx, args = isFn ? undefined : fb.args;
+                return fn.apply(ctx, args);
+            }
+            static execute(code, ctx, argsExpression, args) {
+                let argsList = argsExpression || '';
+                return Function.constructor.apply(null, argsList.split(',').concat([code])).apply(ctx, util.Arrays.newArray(args));
+            }
+        }
+        util.Functions = Functions;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Functions = JS.util.Functions;
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        class Strings {
+            static padStart(text, maxLength, fill) {
+                let s = text || '';
+                if (s.length >= maxLength)
+                    return s;
+                let fs = fill ? fill : ' ';
+                for (let i = 0; i < maxLength; i++) {
+                    let tmp = fs + s, d = tmp.length - maxLength;
+                    if (d < 0) {
+                        s = tmp;
+                    }
+                    else {
+                        s = fs.substr(0, fs.length - d) + s;
+                        break;
+                    }
+                }
+                return s;
+            }
+            static padEnd(text, maxLength, fill) {
+                let s = text || '';
+                if (s.length >= maxLength)
+                    return s;
+                let fs = fill ? fill : ' ';
+                for (let i = 0; i < maxLength; i++) {
+                    let tmp = s + fs, d = tmp.length - maxLength;
+                    if (d < 0) {
+                        s = tmp;
+                    }
+                    else {
+                        s += fs.substr(0, fs.length - d);
+                        break;
+                    }
+                }
+                return s;
+            }
+            static nodeHTML(nodeType, attrs, text) {
+                let a = '';
+                if (attrs)
+                    util.Jsons.forEach(attrs, (v, k) => {
+                        if (v != void 0) {
+                            if (util.Types.isBoolean(v)) {
+                                if (v === true)
+                                    a += ` ${k}`;
+                            }
+                            else {
+                                a += ` ${k}="${v || ''}"`;
+                            }
+                        }
+                    });
+                return `<${nodeType}${a}>${text || ''}</${nodeType}>`;
+            }
+            static escapeHTML(html) {
+                if (!html)
+                    return '';
+                let chars = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;',
+                    '/': '&#x2F;',
+                    '`': '&#x60;',
+                    '=': '&#x3D;'
+                };
+                return html.replace(/[&<>"'`=\/]/g, function (s) {
+                    return chars[s];
+                });
+            }
+            static format(tpl, ...data) {
+                if (!tpl)
+                    return tpl;
+                let i = 0;
+                data = data || [];
+                return tpl.replace(/\%(%|s|b|d|f|n)/gm, (s, ...args) => {
+                    let v = i >= data.length ? '' : data[i++];
+                    switch (args[0]) {
+                        case 'b': {
+                            v = Boolean(v).toString();
+                            break;
+                        }
+                        case 'd': {
+                            v = Number(v).toInt().toString();
+                            break;
+                        }
+                        case 'f': {
+                            v = Number(v).stringify();
+                            break;
+                        }
+                        case 'n': {
+                            v = '\n';
+                            break;
+                        }
+                        case '%': {
+                            v = '%';
+                        }
+                    }
+                    return v;
+                });
+            }
+            static merge(tpl, data) {
+                if (!tpl || !data)
+                    return tpl;
+                return tpl.replace(/\{(\w+)\}/g, (str, ...args) => {
+                    let m = args[0], s = data[m];
+                    return s === undefined ? str : (util.Types.isFunction(s) ? s(data, str, m) : (s == null ? '' : String(s)));
+                });
+            }
+        }
+        util.Strings = Strings;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Strings = JS.util.Strings;
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        let LogLevel;
+        (function (LogLevel) {
+            LogLevel[LogLevel["ALL"] = 6] = "ALL";
+            LogLevel[LogLevel["TRACE"] = 5] = "TRACE";
+            LogLevel[LogLevel["DEBUG"] = 4] = "DEBUG";
+            LogLevel[LogLevel["INFO"] = 3] = "INFO";
+            LogLevel[LogLevel["WARN"] = 2] = "WARN";
+            LogLevel[LogLevel["ERROR"] = 1] = "ERROR";
+            LogLevel[LogLevel["OFF"] = 0] = "OFF";
+        })(LogLevel = util.LogLevel || (util.LogLevel = {}));
+        let LEVELS = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE', 'ALL'], STYLES = [
+            '',
+            'color:red;background-color:#fff0f0;',
+            'color:orange;background-color:#fffbe6;',
+            'color:black;background-color:white;',
+            'color:white;background-color:gray;',
+            'color:white;background-color:black;',
+            ''
+        ];
+        class ConsoleAppender {
+            constructor(name) {
+                this.name = '';
+                this.name = name;
+            }
+            log(level, ...data) {
+                this._log(LEVELS[level], STYLES[level], data);
+            }
+            _log(cmd, css, data) {
+                console.group(`%c${cmd} ${this.name ? '[' + this.name + '] ' : ''}${new Date().toISOString()}`, css);
+                if (data)
+                    data.forEach(a => {
+                        cmd != 'INFO' && cmd != 'WARN' ? util.Konsole.trace(a) : util.Konsole.print(a);
+                    });
+                console.groupEnd();
+            }
+        }
+        util.ConsoleAppender = ConsoleAppender;
+        class Log {
+            constructor(name, level, appender) {
+                this._appender = !appender ? new ConsoleAppender(name) : Reflect.construct(appender, name);
+                this.level = level || LogLevel.ALL;
+                this._name = name;
+            }
+            name() {
+                return this._name;
+            }
+            _log(level, data) {
+                if (level <= this.level) {
+                    this._appender.log.apply(this._appender, [level].concat(data));
+                }
+            }
+            trace(...data) {
+                this._log(LogLevel.TRACE, data);
+            }
+            debug(...data) {
+                this._log(LogLevel.DEBUG, data);
+            }
+            info(...data) {
+                this._log(LogLevel.INFO, data);
+            }
+            warn(...data) {
+                this._log(LogLevel.WARN, data);
+            }
+            error(...data) {
+                this._log(LogLevel.ERROR, data);
+            }
+            clear() {
+                this._appender.clear();
+            }
+        }
+        util.Log = Log;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var LogLevel = JS.util.LogLevel;
+var Log = JS.util.Log;
+let JSLogger = new Log(`JSDK ${JS.version}`, LogLevel.INFO);
+Konsole.text(`Powered by JSDK ${JS.version}`, 'font-weight:bold;');
+var JS;
+(function (JS) {
+    let sugar;
+    (function (sugar) {
+        let T = Types, R = Reflect;
+        let AnnotationTarget;
+        (function (AnnotationTarget) {
+            AnnotationTarget[AnnotationTarget["ANY"] = 1] = "ANY";
+            AnnotationTarget[AnnotationTarget["CLASS"] = 2] = "CLASS";
+            AnnotationTarget[AnnotationTarget["FIELD"] = 4] = "FIELD";
+            AnnotationTarget[AnnotationTarget["METHOD"] = 8] = "METHOD";
+            AnnotationTarget[AnnotationTarget["PARAMETER"] = 16] = "PARAMETER";
+        })(AnnotationTarget = sugar.AnnotationTarget || (sugar.AnnotationTarget = {}));
+        class Annotation extends Function {
+        }
+        sugar.Annotation = Annotation;
+        class Annotations {
+            static getPropertyType(obj, propertyKey) {
+                return R.getMetadata('design:type', obj, propertyKey);
+            }
+            static getValue(anno, obj, propertyKey) {
+                return R.getMetadata(anno.name, obj, propertyKey);
+            }
+            static setValue(annoName, metaValue, obj, propertyKey) {
+                R.defineMetadata(typeof annoName == 'string' ? annoName : annoName.name, metaValue, obj, propertyKey);
+            }
+            static hasAnnotation(anno, obj, propertyKey) {
+                return R.hasMetadata(anno.name, obj, propertyKey);
+            }
+            static getAnnotations(obj) {
+                return R.getMetadataKeys(obj);
+            }
+            static define(definition, params) {
+                let args = Arrays.newArray(params), isStr = T.isString(definition), annoName = isStr ? definition : definition.name, handler = isStr ? null : definition.handler, target = (isStr ? AnnotationTarget.ANY : definition.target) || AnnotationTarget.ANY, fn = function (anno, values, obj, key, d) {
+                    if (0 == (target & AnnotationTarget.ANY)) {
+                        if (T.equalKlass(obj)) {
+                            if (0 == (target & AnnotationTarget.CLASS))
+                                return _wrongTarget(anno, obj.name);
+                        }
+                        else if (key) {
+                            if (T.isFunction(obj[key])) {
+                                if (0 == (target & AnnotationTarget.METHOD))
+                                    return _wrongTarget(anno, obj.constructor.name, key, 'method');
+                            }
+                            else {
+                                if (0 == (target & AnnotationTarget.FIELD))
+                                    return _wrongTarget(anno, obj.constructor.name, key, 'field');
+                            }
+                        }
+                    }
+                    Annotations.setValue(anno, values, obj, key);
+                    if (handler)
+                        handler.apply(null, [anno, values, obj, key, d]);
+                };
+                if (T.equalKlass(args[0])) {
+                    let obj = args[0];
+                    let detor = function (tar) {
+                        fn.call(null, annoName, undefined, tar);
+                    };
+                    return R.decorate([detor], obj);
+                }
+                else if (args.length == 3 && args[0]['constructor']) {
+                    let obj = args[0], key = args[1], desc = args[2];
+                    let detor = function (tar, k) {
+                        fn.call(null, annoName, undefined, tar, k, desc);
+                    };
+                    return R.decorate([detor], obj, key);
+                }
+                let values = args;
+                return function (tar, key, d) {
+                    fn.call(null, annoName, values, tar, key, d);
+                };
+            }
+        }
+        sugar.Annotations = Annotations;
+        var _wrongTarget = function (anno, klass, key, type) {
+            JSLogger.error(key ?
+                `A [${anno}] annotation should not be marked on the '${key}' ${type} of ${klass}.`
+                :
+                    `A [${anno}] annotation should not be marked on the '${klass}' class.`);
+        };
+    })(sugar = JS.sugar || (JS.sugar = {}));
+})(JS || (JS = {}));
+var AnnotationTarget = JS.sugar.AnnotationTarget;
+var Annotation = JS.sugar.Annotation;
+var Annotations = JS.sugar.Annotations;
+var JS;
+(function (JS) {
+    let sugar;
+    (function (sugar) {
+        let Y = Types, J = Jsons;
+        function klass(fullName) {
+            return sugar.Annotations.define({
+                name: 'klass',
+                handler: (anno, values, obj) => {
+                    Class.reflect(obj, values[0]);
+                },
+                target: sugar.AnnotationTarget.CLASS
+            }, [fullName]);
+        }
+        sugar.klass = klass;
+        class Method {
+            constructor(clazz, name, isStatic, fn, paramTypes, returnType) {
+                this.isStatic = false;
+                this.annotations = [];
+                this.parameterAnnotations = [];
+                this.ownerClass = clazz;
+                this.name = name;
+                this.paramTypes = paramTypes;
+                this.returnType = returnType;
+                this.fn = fn;
+                this.isStatic = isStatic;
+            }
+            invoke(obj, ...args) {
+                let fn = this.isStatic ? this.ownerClass.getKlass() : this.fn, context = this.isStatic ? this.ownerClass.getKlass() : obj;
+                return Reflect.apply(fn, context, args);
+            }
+        }
+        sugar.Method = Method;
+        class Field {
+            constructor(clazz, name, isStatic, type) {
+                this.isStatic = false;
+                this.annotations = [];
+                this.ownerClass = clazz;
+                this.name = name;
+                this.type = type;
+                this.isStatic = isStatic;
+            }
+            set(value, obj) {
+                let target = this.isStatic ? this.ownerClass.getKlass() : obj;
+                target[this.name] = value;
+            }
+            get(obj) {
+                let target = this.isStatic ? this.ownerClass.getKlass() : obj;
+                return target[this.name];
+            }
+        }
+        sugar.Field = Field;
+        class Class {
+            constructor(name, klass) {
+                this._methods = {};
+                this._fields = {};
+                this.name = name;
+                klass.class = this;
+                this._klass = klass;
+                this.shortName = this._klass.name;
+                this._superklass = Class.getSuperklass(this._klass);
+                this._init();
+            }
+            static getSuperklass(klass) {
+                if (Object === klass)
+                    return null;
+                let sup = Object.getPrototypeOf(klass);
+                return Object.getPrototypeOf(Object) === sup ? Object : sup;
+            }
+            static _reflectable(obj, className) {
+                obj.className = className;
+                if (!obj.getClass) {
+                    obj.getClass = function () {
+                        return Class.forName(this.className);
+                    };
+                }
+            }
+            static byName(name) {
+                if (!name)
+                    return null;
+                var p = name.split('.'), len = p.length, p0 = p[0], b = window[p0] || eval(p0);
+                if (!b)
+                    throw new TypeError('Can\'t found class:' + name);
+                for (var i = 1; i < len; i++) {
+                    var pi = p[i];
+                    if (!pi)
+                        break;
+                    b[pi] = b[pi] || {};
+                    b = b[pi];
+                }
+                return b;
+            }
+            static newInstance(ctor, ...args) {
+                let tar = Y.isString(ctor) ? Class.byName(ctor) : ctor;
+                if (!tar)
+                    throw new NotFoundError(`The class<${ctor}> is not found!`);
+                return Reflect.construct(tar, J.clone(args));
+            }
+            static aliasInstance(alias, ...args) {
+                let cls = Class.forName(alias, true);
+                if (!cls)
+                    throw new NotFoundError(`The class<${alias}> is not found!`);
+                return cls.newInstance.apply(cls, args);
+            }
+            static aop(klass, method, advisor) {
+                let isStatic = klass.hasOwnProperty(method), m = isStatic ? klass[method] : klass.prototype[method];
+                if (!Y.isFunction(m))
+                    return;
+                let obj = isStatic ? klass : klass.prototype;
+                if (!obj.hasOwnProperty('__' + method))
+                    obj['__' + method] = m;
+                Object.defineProperty(obj, method, {
+                    value: m.aop(advisor),
+                    writable: true
+                });
+            }
+            static cancelAop(klass, method) {
+                let isStatic = klass.hasOwnProperty(method), m = isStatic ? klass[method] : klass.prototype[method];
+                if (!Y.isFunction(m))
+                    return;
+                let obj = isStatic ? klass : klass.prototype;
+                obj[method] = obj['__' + method];
+            }
+            aop(method, advisor) {
+                let m = this.method(method);
+                if (!m)
+                    return;
+                let pro = m.isStatic ? this._klass : this._klass.prototype;
+                pro[method] = m.fn.aop(advisor);
+            }
+            _cancelAop(m) {
+                let pro = m.isStatic ? this._klass : this._klass.prototype;
+                pro[m.name] = m.fn;
+            }
+            cancelAop(method) {
+                let ms = method ? [this.method(method)] : this.methods();
+                ms.forEach(m => {
+                    this._cancelAop(m);
+                });
+            }
+            equals(cls) {
+                if (!cls)
+                    return false;
+                return cls instanceof Class ? this.getKlass() === cls.getKlass() : this.getKlass() === cls;
+            }
+            subclassOf(cls) {
+                let klass = (cls.constructor && cls.constructor === Class) ? cls.getKlass() : cls;
+                return Y.subklassOf(this.getKlass(), klass);
+            }
+            newInstance(...args) {
+                let obj = Reflect.construct(this._klass, Arrays.newArray(arguments));
+                Class._reflectable(obj, this.name);
+                return obj;
+            }
+            getSuperclass() {
+                if (this === Object.class)
+                    return null;
+                return this._superklass ? this._superklass.class : Object.class;
+            }
+            getKlass() {
+                return this._klass.prototype.constructor;
+            }
+            _parseStaticMembers(ctor) {
+                let mKeys = ctor === Object ? ['class'] : Reflect.ownKeys(ctor);
+                for (let i = 0, len = mKeys.length; i < len; i++) {
+                    const key = mKeys[i].toString();
+                    if (!this._isValidStatic(key))
+                        continue;
+                    const obj = ctor[key];
+                    if (Y.isFunction(obj)) {
+                        this._methods[key] = new Method(this, key, true, obj, null, null);
+                    }
+                    else {
+                        this._fields[key] = new Field(this, key, true, Y.type(obj));
+                    }
+                }
+            }
+            _parseInstanceMembers(proto) {
+                let protoKeys = proto === Object.prototype ? ['toString'] : Reflect.ownKeys(proto);
+                for (let i = 0, len = protoKeys.length; i < len; i++) {
+                    const key = protoKeys[i].toString();
+                    if (!this._isValidInstance(key))
+                        continue;
+                    const obj = this._forceProto(proto, key);
+                    if (Y.isFunction(obj)) {
+                        this._methods[key] = new Method(this, key, false, obj, null, null);
+                    }
+                    else {
+                        this._fields[key] = new Field(this, key, false, Y.type(obj));
+                    }
+                }
+            }
+            _forceProto(proto, key) {
+                let rst;
+                try {
+                    rst = proto[key];
+                }
+                catch (e) {
+                    if (this._klass === File) {
+                        if (key == 'lastModified')
+                            return 0;
+                        if (key == 'lastModifiedDate')
+                            return new Date();
+                    }
+                    try {
+                        let obj = this.newInstance();
+                        return obj[key];
+                    }
+                    catch (e1) {
+                        return '';
+                    }
+                }
+                return rst;
+            }
+            _isValidStatic(mName) {
+                return ['prototype', 'name', 'length'].findIndex(v => {
+                    return v == mName;
+                }) < 0;
+            }
+            _isValidInstance(mName) {
+                return !mName.startsWith('__') && mName != 'constructor';
+            }
+            _init() {
+                this._parseStaticMembers(this._klass);
+                this._parseInstanceMembers(this._klass.prototype);
+            }
+            _toArray(json) {
+                let arr = [];
+                J.forEach(json, v => {
+                    arr[arr.length] = v;
+                });
+                return arr;
+            }
+            method(name) {
+                return this.methodsMap()[name];
+            }
+            methodsMap() {
+                return this._methods;
+            }
+            methods() {
+                return this._toArray(this.methodsMap());
+            }
+            field(name, instance) {
+                return this.fieldsMap(instance)[name];
+            }
+            _instanceFields(instance) {
+                let fs = {}, keys = Reflect.ownKeys(instance);
+                for (let i = 0; i < keys.length; i++) {
+                    const key = keys[i].toString();
+                    if (this._isValidInstance(key)) {
+                        const obj = instance[key];
+                        if (!Y.isFunction(obj))
+                            fs[key] = new Field(this, key, false, Y.type(obj));
+                    }
+                }
+                this._fields = J.union(fs, this._fields);
+            }
+            fieldsMap(instance, anno) {
+                if (instance)
+                    this._instanceFields(instance);
+                let fs = {};
+                if (anno && instance) {
+                    J.forEach(this._fields, (field, key) => {
+                        if (sugar.Annotations.hasAnnotation(anno, instance, key))
+                            fs[key] = field;
+                    });
+                }
+                else {
+                    fs = this._fields;
+                }
+                return fs;
+            }
+            fields(instance, anno) {
+                return this._toArray(this.fieldsMap(instance, anno));
+            }
+            static forName(name, isAlias) {
+                if (!name)
+                    return null;
+                let isStr = Y.isString(name);
+                if (!isStr && name.class)
+                    return name.class;
+                let classname = isStr ? name : name.name;
+                return isAlias ? this._ALIAS_MAP[classname] : this._MAP[classname];
+            }
+            static all() {
+                return this._MAP;
+            }
+            static reflect(klass, className, alias) {
+                let name = className || klass.name, cls = this.forName(name);
+                if (cls)
+                    return;
+                if (klass !== Object) {
+                    var $P = klass.prototype;
+                    $P.className = name;
+                    $P.getClass = function () { return Class.forName(name); };
+                }
+                let cs = new Class(name, klass);
+                this._MAP[name] = cs;
+                if (alias)
+                    this._ALIAS_MAP[alias] = cs;
+            }
+            static classesOf(ns) {
+                if (!ns)
+                    return null;
+                if (ns.endsWith('.*'))
+                    ns = ns.slice(0, ns.length - 2);
+                let a = [];
+                J.forEach(this._MAP, (cls, name) => {
+                    if (name.startsWith(ns))
+                        a.push(cls);
+                });
+                return a;
+            }
+        }
+        Class._MAP = {};
+        Class._ALIAS_MAP = {};
+        sugar.Class = Class;
+    })(sugar = JS.sugar || (JS.sugar = {}));
+})(JS || (JS = {}));
+var Method = JS.sugar.Method;
+var Field = JS.sugar.Field;
+var Class = JS.sugar.Class;
+var klass = JS.sugar.klass;
+Class.reflect(Object);
+var JS;
+(function (JS) {
     let ioc;
     (function (ioc) {
         class Components {
@@ -11825,7 +11726,7 @@ var JS;
                 name: 'component',
                 handler: (anno, values, obj) => {
                     let className = values[0];
-                    Class.register(obj, className);
+                    Class.reflect(obj, className);
                     ioc.Components.add(Class.forName(className).name);
                 }
             }, arguments);
@@ -11846,7 +11747,6 @@ var JS;
 (function (JS) {
     let lang;
     (function (lang) {
-        var Thread_1;
         let ThreadState;
         (function (ThreadState) {
             ThreadState["NEW"] = "NEW";
@@ -11880,7 +11780,7 @@ var JS;
         }, _findSystem = function () {
             if (SYS_URL)
                 return SYS_URL;
-            let p = self.__jsdk_sys_path;
+            let p = self.__jscore;
             if (p) {
                 SYS_URL = p;
                 return SYS_URL;
@@ -11889,7 +11789,7 @@ var JS;
             SYS_URL = _docSystem(document);
             return SYS_URL;
         };
-        let Thread = Thread_1 = class Thread {
+        class Thread {
             constructor(target, preload) {
                 this._bus = new EventBus(this);
                 this._state = ThreadState.NEW;
@@ -11915,7 +11815,7 @@ var JS;
             run() { }
             ;
             _define(fnName) {
-                let fn = Thread_1._defines[fnName], fnBody = fn.toString().replace(/^function/, '');
+                let fn = Thread._defines[fnName], fnBody = fn.toString().replace(/^function/, '');
                 return `this.${fnName}=function${fnBody}`;
             }
             _predefine(id) {
@@ -11923,7 +11823,7 @@ var JS;
                 return `
                 //@ sourceURL=thread-${id}.js
                 this.id="${id}";
-                this.__jsdk_sys_path="${sys}";
+                this.__jscore="${sys}";
                 importScripts("${sys}");
                 ${this._define('imports')}
                 ${this._define('onposted')}
@@ -12027,7 +11927,7 @@ var JS;
                 self.terminate = this._defines['terminate'];
                 return self;
             }
-        };
+        }
         Thread._defines = {
             imports: function (...urls) {
                 urls.forEach(u => {
@@ -12049,10 +11949,6 @@ var JS;
                 self.postMessage({ cmd: 'CLOSE' }, null);
             }
         };
-        Thread = Thread_1 = __decorate([
-            klass('JS.lang.Thread'),
-            __metadata("design:paramtypes", [Object, Object])
-        ], Thread);
         lang.Thread = Thread;
     })(lang = JS.lang || (JS.lang = {}));
 })(JS || (JS = {}));
@@ -12060,132 +11956,2208 @@ var Thread = JS.lang.Thread;
 var ThreadState = JS.lang.ThreadState;
 var JS;
 (function (JS) {
-    let media;
-    (function (media) {
-        let W = window, A = W.AudioContext || W['msAudioContext'], AC = new A();
-        class Sound {
-            constructor(cfg) {
-                this._bus = new EventBus(this);
-                this._d = false;
-                let T = this;
-                T._cfg = Jsons.union({
-                    volume: 1,
-                    loop: false
-                }, cfg);
-                if (T._cfg.on)
-                    Jsons.forEach(T._cfg.on, (v, k) => { T._bus.on(k, v); });
+    let math;
+    (function (math) {
+        class Coords2 {
+            static rotate(p, rad) {
+                let pt = this.rotateX(p, rad);
+                return this.rotateY(pt, rad);
             }
-            _check() {
-                if (this._d)
-                    throw new StateError('The object was destroyed!');
+            static rotateX(p, rad) {
+                let x = p[0], y = p[1];
+                return [x * Math.cos(rad) - y * Math.sin(rad), y];
             }
-            load(url) {
-                let T = this;
-                T._check();
-                return new Promise((resolve, reject) => {
-                    Ajax.get({
-                        url: url,
-                        type: 'arraybuffer',
-                        onSending: req => {
-                            if (T._cfg.on && T._cfg.on.loading)
-                                T._bus.fire('loading', [req]);
-                        },
-                        onCompleted: res => {
-                            AC.decodeAudioData(res.data, (buffer) => {
-                                T._src = url;
-                                T._buffer = buffer;
-                                resolve(T);
-                            }, err => {
-                                if (T._cfg.on && T._cfg.on.decode_error)
-                                    T._bus.fire('decode_error', [err]);
-                                reject(err);
-                            });
-                        },
-                        onError: res => {
-                            if (T._cfg.on && T._cfg.on.load_error)
-                                T._bus.fire('load_error', [res]);
-                            reject(res);
-                        }
-                    });
-                });
+            static rotateY(p, rad) {
+                let x = p[0], y = p[1];
+                return [x, x * Math.sin(rad) + y * Math.cos(rad)];
             }
-            on(type, fn, once) {
-                this._bus.on(type, fn, once);
-                return this;
+            static translate(p, dx, dy) {
+                let pt = this.translateX(p, dx);
+                return this.translateY(pt, dy);
             }
-            off(type, fn) {
-                this._bus.off(type, fn);
-                return this;
+            static translateX(p, delta) {
+                let x = p[0], y = p[1];
+                return [x + delta, y];
             }
-            loop(is) {
-                let T = this;
-                if (is == void 0)
-                    return T._cfg.loop;
-                T._cfg.loop = is;
-                return T;
-            }
-            src() {
-                return this._src;
-            }
-            play(delay, offset, duration) {
-                let T = this;
-                T._check();
-                T.stop();
-                T._gain = AC.createGain();
-                T._gain.gain.value = T._cfg.volume;
-                T._node = AC.createBufferSource();
-                T._node.buffer = T._buffer;
-                let c = T._cfg;
-                T._node.loop = c.loop;
-                if (c.on && c.on.ended)
-                    T._node.onended = e => {
-                        T._bus.fire('ended');
-                    };
-                T._node.connect(T._gain);
-                if (c.handler) {
-                    let node = c.handler.call(T, AC);
-                    T._gain.connect(node);
-                    node.connect(AC.destination);
-                }
-                else {
-                    T._gain.connect(AC.destination);
-                }
-                if (c.on && c.on.playing)
-                    T._bus.fire('playing', [AC, T._gain.gain]);
-                T._node.start(delay || 0, offset || 0, duration);
-            }
-            stop() {
-                this._check();
-                if (this._node)
-                    this._node.stop();
-            }
-            volume(n) {
-                let T = this;
-                T._check();
-                T._cfg.volume = n;
-                if (T._gain)
-                    T._gain.gain.value = n;
-            }
-            destroy() {
-                let T = this;
-                T._d = true;
-                T._cfg = null;
-                T._src = null;
-                T._buffer = null;
-                T._gain.disconnect();
-                T._node.disconnect();
-                T._bus.destroy();
+            static translateY(p, delta) {
+                let x = p[0], y = p[1];
+                return [x, y + delta];
             }
         }
-        media.Sound = Sound;
-    })(media = JS.media || (JS.media = {}));
+        math.Coords2 = Coords2;
+    })(math = JS.math || (JS.math = {}));
 })(JS || (JS = {}));
-var Sound = JS.media.Sound;
+var Coords2 = JS.math.Coords2;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        class Floats {
+            static equal(n1, n2, eps = this.EQUAL_PRECISION) {
+                let d = n1 - n2, n = d < 0 ? -d : d;
+                return n <= eps;
+            }
+            static greater(n1, n2, eps = this.EQUAL_PRECISION) {
+                if (this.equal(n1, n2, eps))
+                    return false;
+                return n1 > n2;
+            }
+            static greaterEqual(n1, n2, eps = this.EQUAL_PRECISION) {
+                if (this.equal(n1, n2, eps))
+                    return true;
+                return n1 > n2;
+            }
+            static less(n1, n2, eps = this.EQUAL_PRECISION) {
+                if (this.equal(n1, n2, eps))
+                    return false;
+                return n1 < n2;
+            }
+            static lessEqual(n1, n2, eps = this.EQUAL_PRECISION) {
+                if (this.equal(n1, n2, eps))
+                    return true;
+                return n1 < n2;
+            }
+        }
+        Floats.EQUAL_PRECISION = 0.0001;
+        math.Floats = Floats;
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Floats = JS.math.Floats;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        class Point2 {
+            constructor(x, y) {
+                this.x = x || 0;
+                this.y = y || 0;
+            }
+            static toPoint(p) {
+                return new Point2().set(p);
+            }
+            static toArray(p) {
+                return p instanceof Point2 ? p.toArray() : p;
+            }
+            static polar2xy(d, rad) {
+                let x, y;
+                switch (rad / Math.PI) {
+                    case 0:
+                        x = d;
+                        y = 0;
+                        break;
+                    case 0.5:
+                        x = 0;
+                        y = d;
+                        break;
+                    case 1:
+                        x = -d;
+                        y = 0;
+                        break;
+                    case 1.5:
+                        x = 0;
+                        y = -d;
+                        break;
+                    case 2:
+                        x = d;
+                        y = 0;
+                        break;
+                    default:
+                        x = d * Math.cos(rad);
+                        y = d * Math.sin(rad);
+                }
+                return [x, y];
+            }
+            static xy2polar(x, y) {
+                return {
+                    d: Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)),
+                    a: Point2.radian(x, y)
+                };
+            }
+            static equal(x1, y1, x2, y2) {
+                if (arguments.length > 3)
+                    return math.Floats.equal(x1, x2) && math.Floats.equal(y1, y2);
+                if (x1 == void 0 && x1 === y1)
+                    return true;
+                if (x1 == void 0 || y1 == void 0)
+                    return false;
+                let px1 = x1[0], py1 = x1[1], px2 = y1[0], py2 = y1[1];
+                return math.Floats.equal(px1, px2) && math.Floats.equal(py1, py2);
+            }
+            static isOrigin(x, y) {
+                return this.equal(x, y, 0, 0);
+            }
+            static distanceSq(x1, y1, x2, y2) {
+                let dx = x1 - x2, dy = y1 - y2;
+                return dx * dx + dy * dy;
+            }
+            static distance(x1, y1, x2, y2) {
+                return Math.sqrt(this.distanceSq(x1, y1, x2, y2));
+            }
+            static radian(x1, y1, x2, y2) {
+                let xx = x2 || 0, yy = y2 || 0;
+                if (Point2.isOrigin(x1, y1) && Point2.isOrigin(xx, yy))
+                    return 0;
+                let rad = Math.atan2(y1 - yy, x1 - xx);
+                return rad < 0 ? 2 * Math.PI + rad : rad;
+            }
+            set(p) {
+                if (Types.isArray(p)) {
+                    this.x = p[0];
+                    this.y = p[1];
+                }
+                else if ('x' in p) {
+                    this.x = p.x;
+                    this.y = p.y;
+                }
+                else {
+                    let pp = Point2.polar2xy(p.d, p.a);
+                    this.x = pp[0];
+                    this.y = pp[1];
+                }
+                return this;
+            }
+            toPolar() {
+                return Point2.xy2polar(this.x, this.y);
+            }
+            toArray() {
+                return [this.x, this.y];
+            }
+            clone() {
+                return new Point2(this.x, this.y);
+            }
+            equals(p) {
+                return math.Floats.equal(this.x, p.x) && math.Floats.equal(this.y, p.y);
+            }
+            radian() {
+                return Point2.radian(this.x, this.y);
+            }
+            distanceSq(x, y) {
+                return Point2.distanceSq(this.x, this.y, x, y);
+            }
+            distance(x, y) {
+                return Math.sqrt(this.distanceSq(x, y));
+            }
+            distanceL1(x, y) {
+                return Math.abs(this.x - x) + Math.abs(this.y - y);
+            }
+            distanceLinf(x, y) {
+                return Math.max(Math.abs(this.x - x), Math.abs(this.y - y));
+            }
+            translate(x, y) {
+                this.x += x;
+                this.y += y;
+                return this;
+            }
+            moveTo(x, y) {
+                this.x = x;
+                this.y = y;
+                return this;
+            }
+            clamp(min, max) {
+                let T = this;
+                if (T.x > max) {
+                    T.x = max;
+                }
+                else if (T.x < min) {
+                    T.x = min;
+                }
+                if (T.y > max) {
+                    T.y = max;
+                }
+                else if (T.y < min) {
+                    T.y = min;
+                }
+                return T;
+            }
+            clampMin(min) {
+                let T = this;
+                if (T.x < min)
+                    T.x = min;
+                if (T.y < min)
+                    T.y = min;
+                return T;
+            }
+            clampMax(max) {
+                let T = this;
+                if (T.x > max)
+                    T.x = max;
+                if (T.y > max)
+                    T.y = max;
+                return T;
+            }
+            toward(step, rad) {
+                let p = Point2.polar2xy(step, rad);
+                return this.translate(p[0], p[1]);
+            }
+        }
+        Point2.ORIGIN = new Point2(0, 0);
+        math.Point2 = Point2;
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Point2 = JS.math.Point2;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let M = Math;
+        class Point3 {
+            constructor(x, y, z) {
+                this.x = x || 0;
+                this.y = y || 0;
+                this.z = z || 0;
+            }
+            static toPoint(p) {
+                return new Point3().set(p);
+            }
+            static equal(x1, y1, z1, x2, y2, z2) {
+                return math.Floats.equal(x1, x2) && math.Floats.equal(y1, y2) && math.Floats.equal(z1, z2);
+            }
+            static isOrigin(x, y, z) {
+                return this.equal(x, y, z, 0, 0, 0);
+            }
+            static polar2xyz(d, az, ax) {
+                let tmp = d * M.sin(az);
+                return [tmp * M.cos(ax), tmp * M.sin(ax), d * M.cos(az)];
+            }
+            static xyz2polar(x, y, z) {
+                let d = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+                return {
+                    d: d,
+                    az: M.acos(z / d),
+                    ax: M.atan(y / x)
+                };
+            }
+            static distanceSq(x1, y1, z1, x2, y2, z2) {
+                let dx = x1 - x2, dy = y1 - y2, dz = z1 - z2;
+                return dx * dx + dy * dy + dz * dz;
+            }
+            static distance(x1, y1, z1, x2, y2, z2) {
+                return Math.sqrt(this.distanceSq(x1, y1, z1, x2, y2, z2));
+            }
+            set(p) {
+                if (Types.isArray(p)) {
+                    this.x = p[0];
+                    this.y = p[1];
+                    this.z = p[2];
+                }
+                else {
+                    p = p;
+                    this.x = p.x;
+                    this.y = p.y;
+                    this.z = p.z;
+                }
+                return this;
+            }
+            equals(p) {
+                return math.Floats.equal(this.x, p.x) && math.Floats.equal(this.y, p.y) && math.Floats.equal(this.z, p.z);
+            }
+            clone() {
+                return new Point3(this.x, this.y, this.z);
+            }
+            distanceSq(p) {
+                let dx = this.x - p.x, dy = this.y - p.y, dz = this.z - p.z;
+                return dx * dx + dy * dy + dz * dz;
+            }
+            distance(p) {
+                return Math.sqrt(this.distanceSq(p));
+            }
+            distanceL1(p) {
+                return Math.abs(this.x - p.x) + Math.abs(this.y - p.y) + Math.abs(this.z - p.z);
+            }
+            distanceLinf(p) {
+                let tmp = Math.max(Math.abs(this.x - p.x), Math.abs(this.y - p.y));
+                return Math.max(tmp, Math.abs(this.z - p.z));
+            }
+            toArray() {
+                return [this.x, this.y, this.z];
+            }
+            moveTo(x, y, z) {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+                return this;
+            }
+            clamp(min, max) {
+                let T = this;
+                if (T.x > max) {
+                    T.x = max;
+                }
+                else if (T.x < min) {
+                    T.x = min;
+                }
+                if (T.y > max) {
+                    T.y = max;
+                }
+                else if (T.y < min) {
+                    T.y = min;
+                }
+                if (T.z > max) {
+                    T.z = max;
+                }
+                else if (T.z < min) {
+                    T.z = min;
+                }
+                return T;
+            }
+            clampMin(min) {
+                let T = this;
+                if (T.x < min)
+                    T.x = min;
+                if (T.y < min)
+                    T.y = min;
+                if (T.z < min)
+                    T.z = min;
+                return T;
+            }
+            clampMax(max) {
+                let T = this;
+                if (T.x > max)
+                    T.x = max;
+                if (T.y > max)
+                    T.y = max;
+                if (T.z > max)
+                    T.z = max;
+                return T;
+            }
+        }
+        math.Point3 = Point3;
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Point3 = JS.math.Point3;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        class Radians {
+            static rad2deg(rad, limit) {
+                let r = rad * 180 / Math.PI;
+                return limit ? this.positive(r) : r;
+            }
+            static deg2rad(deg) {
+                return deg * Math.PI / 180;
+            }
+            static positive(rad) {
+                return rad < 0 ? this.ONE_CYCLE + rad : rad;
+            }
+            static equal(rad1, rad2) {
+                return math.Floats.equal(rad1, rad2, 1e-14);
+            }
+            static equalAngle(rad1, rad2) {
+                return this.equal(this.positive(rad1 % this.ONE_CYCLE), this.positive(rad2 % this.ONE_CYCLE));
+            }
+            static reverse(rad) {
+                return rad < Math.PI ? rad + Math.PI : rad - Math.PI;
+            }
+        }
+        Radians.EAST = 0;
+        Radians.SOUTH = 0.5 * Math.PI;
+        Radians.WEST = Math.PI;
+        Radians.NORTH = 1.5 * Math.PI;
+        Radians.ONE_CYCLE = 2 * Math.PI;
+        math.Radians = Radians;
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Radians = JS.math.Radians;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        class Vector2 {
+            constructor(x, y) {
+                this.x = x || 0;
+                this.y = y || 0;
+            }
+            static toVector(p1, p2) {
+                let l = arguments.length;
+                if (l == 1) {
+                    let line = p1;
+                    return new Vector2().set(line.p1(), line.p2());
+                }
+                else {
+                    return new Vector2().set(p1, p2);
+                }
+            }
+            static whichSide(p1, p2, p) {
+                let v1 = Vector2.toVector(p1, p), v2 = Vector2.toVector(p2, p), rst = Vector2.cross(v1, v2);
+                if (math.Floats.equal(0, rst))
+                    return 0;
+                return rst > 0 ? 1 : -1;
+            }
+            static cross(v1, v2) {
+                return v1.x * v2.y - v2.x * v1.y;
+            }
+            static lerp(from, to, amount) {
+                if (amount < 0 || amount > 1)
+                    throw new RangeError();
+                let x = from.x + amount * (to.x - from.x), y = from.y + amount * (to.y - from.y);
+                return new Vector2(x, y);
+            }
+            set(f, t) {
+                let l = arguments.length, isA = Types.isArray(f);
+                this.x = l == 1 ? f.x : isA ? t[0] - f[0] : t.x - f.x;
+                this.y = l == 1 ? f.y : isA ? t[1] - f[1] : t.y - f.y;
+                return this;
+            }
+            equals(v) {
+                if (this.isZero() && v.isZero())
+                    return true;
+                if (this.isZero() || v.isZero())
+                    return false;
+                return math.Floats.equal(v.lengthSq(), this.lengthSq()) && math.Radians.equal(v.radian(), this.radian());
+            }
+            toString() {
+                return "(" + this.x + "," + this.y + ")";
+            }
+            toArray() {
+                return [this.x, this.y];
+            }
+            clone() {
+                return new Vector2(this.x, this.y);
+            }
+            negate() {
+                this.x = -this.x;
+                this.y = -this.y;
+                return this;
+            }
+            add(v) {
+                this.x += v.x;
+                this.y += v.y;
+                return this;
+            }
+            sub(v) {
+                this.x -= v.x;
+                this.y -= v.y;
+                return this;
+            }
+            mul(n) {
+                this.x *= n;
+                this.y *= n;
+                return this;
+            }
+            div(n) {
+                this.x /= n;
+                this.y /= n;
+                return this;
+            }
+            lengthSq() {
+                return this.x * this.x + this.y * this.y;
+            }
+            length() {
+                return Math.sqrt(this.lengthSq());
+            }
+            dot(v) {
+                return this.x * v.x + this.y * v.y;
+            }
+            normalize() {
+                return this.div(this.length());
+            }
+            radian() {
+                return math.Point2.radian(this.x, this.y);
+            }
+            angle(v) {
+                if (v && v.isZero())
+                    throw new RangeError('Use zero vector');
+                let vv = v || Vector2.UnitX, vDot = this.dot(vv) / (this.length() * vv.length());
+                if (vDot < -1.0)
+                    vDot = -1.0;
+                if (vDot > 1.0)
+                    vDot = 1.0;
+                return Math.acos(vDot);
+            }
+            isZero() {
+                return this.x == 0 && this.y == 0;
+            }
+            verticalTo(v) {
+                return this.angle(v) == Math.PI / 2;
+            }
+            parallelTo(v) {
+                let a = this.angle(v);
+                return a == 0 || a == Math.PI;
+            }
+            getNormL() {
+                return new Vector2(this.y, -this.x);
+            }
+            getNormR() {
+                return new Vector2(-this.y, this.x);
+            }
+            getProject(v) {
+                var dp = this.dot(v), vv = v.lengthSq();
+                return new Vector2((dp / vv) * v.x, (dp / vv) * v.y);
+            }
+            _rebound(v, leftSide) {
+                if (this.parallelTo(v))
+                    return this.clone();
+                let n = leftSide ? v.getNormL() : v.getNormR(), p = this.getProject(n);
+                return p.sub(this).mul(2).add(this);
+            }
+            getReboundL(v) {
+                return this._rebound(v, true);
+            }
+            getReboundR(v) {
+                return this._rebound(v, false);
+            }
+            abs() {
+                this.x = Math.abs(this.x);
+                this.y = Math.abs(this.y);
+                return this;
+            }
+        }
+        Vector2.Zero = new Vector2(0, 0);
+        Vector2.One = new Vector2(1, 1);
+        Vector2.UnitX = new Vector2(1, 0);
+        Vector2.UnitY = new Vector2(0, 1);
+        math.Vector2 = Vector2;
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Vector2 = JS.math.Vector2;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        class Vector3 {
+            constructor(x, y, z) {
+                this.x = x || 0;
+                this.y = y || 0;
+                this.z = z || 0;
+            }
+            static toVector(p1, p2) {
+                return new Vector3().set(p1, p2);
+            }
+            static cross(v1, v2) {
+                let x = v1.y * v2.z - v1.z * v2.y, y = v2.x * v1.z - v2.z * v1.x, z = v1.x * v2.y - v1.y * v2.x;
+                return new Vector3(x, y, z);
+            }
+            static lerp(from, to, amount) {
+                if (amount < 0 || amount > 1)
+                    throw new RangeError();
+                let x = from.x + amount * (to.x - from.x), y = from.y + amount * (to.y - from.y), z = from.z + amount * (to.z - from.z);
+                return new Vector3(x, y, z);
+            }
+            set(f, t) {
+                if (t == void 0) {
+                    this.x = f.x;
+                    this.y = f.y;
+                    this.z = f.z;
+                }
+                else {
+                    let is = Types.isArray(f), ff = is ? math.Point3.toPoint(f) : f, tt = is ? math.Point3.toPoint(t) : t;
+                    this.x = tt.x - ff.x;
+                    this.y = tt.y - ff.y;
+                    this.z = tt.z - ff.z;
+                }
+                return this;
+            }
+            equals(v) {
+                return math.Floats.equal(v.lengthSq(), this.lengthSq()) && this.x / v.x == this.y / v.y && this.y / v.y == this.z / v.z;
+            }
+            toString() {
+                return "(" + this.x + "," + this.y + "," + this.z + ")";
+            }
+            toArray() {
+                return [this.x, this.y, this.z];
+            }
+            clone() {
+                return new Vector3(this.x, this.y, this.z);
+            }
+            negate() {
+                this.x = -this.x;
+                this.y = -this.y;
+                this.z = -this.z;
+                return this;
+            }
+            add(v) {
+                this.x += v.x;
+                this.y += v.y;
+                this.z += v.z;
+                return this;
+            }
+            sub(v) {
+                this.x -= v.x;
+                this.y -= v.y;
+                this.z -= v.z;
+                return this;
+            }
+            mul(n) {
+                this.x *= n;
+                this.y *= n;
+                this.z *= n;
+                return this;
+            }
+            div(n) {
+                this.x /= n;
+                this.y /= n;
+                this.z /= n;
+                return this;
+            }
+            lengthSq() {
+                return (this.x * this.x + this.y * this.y + this.z * this.z);
+            }
+            length() {
+                return Math.sqrt(this.lengthSq());
+            }
+            dot(v) {
+                return this.x * v.x + this.y * v.y + this.z * v.z;
+            }
+            normalize() {
+                return this.div(this.length());
+            }
+            abs() {
+                this.x = Math.abs(this.x);
+                this.y = Math.abs(this.y);
+                this.z = Math.abs(this.z);
+                return this;
+            }
+        }
+        Vector3.Zero = new Vector3(0, 0, 0);
+        Vector3.One = new Vector3(1, 1, 1);
+        Vector3.UnitX = new Vector3(1, 0, 0);
+        Vector3.UnitY = new Vector3(0, 1, 0);
+        Vector3.UnitZ = new Vector3(0, 0, 1);
+        math.Vector3 = Vector3;
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Vector3 = JS.math.Vector3;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let geom;
+        (function (geom) {
+            let AngleType;
+            (function (AngleType) {
+                AngleType[AngleType["ACUTE"] = 0] = "ACUTE";
+                AngleType[AngleType["RIGHT"] = 1] = "RIGHT";
+                AngleType[AngleType["OBTUSE"] = 2] = "OBTUSE";
+                AngleType[AngleType["UNKNOWN"] = 3] = "UNKNOWN";
+            })(AngleType = geom.AngleType || (geom.AngleType = {}));
+            let ArcType;
+            (function (ArcType) {
+                ArcType[ArcType["OPEN"] = 0] = "OPEN";
+                ArcType[ArcType["PIE"] = 1] = "PIE";
+            })(ArcType = geom.ArcType || (geom.ArcType = {}));
+            let M = Math, P = math.Point2, V = math.Vector2;
+            class Shapes {
+                static crossPoints(line, sh, unClosed) {
+                    let isLine = !(line instanceof geom.Segment), vs = sh.vertexes(), ps = [], size = vs.length, isCollinear = vs.some((p1, i) => {
+                        let b;
+                        if (unClosed) {
+                            if (i == size - 1)
+                                return false;
+                            b = new geom.Segment().set(p1, vs[i + 1]);
+                        }
+                        else {
+                            b = new geom.Segment().set(p1, vs[i < size - 1 ? i + 1 : 0]);
+                        }
+                        if (geom.Line.isCollinearLine(b, line))
+                            return true;
+                        let cp = isLine ? b.crossLine(line) : b.crossSegment(line);
+                        if (cp && ps.findIndex(p => {
+                            return P.equal(p, cp);
+                        }) < 0)
+                            ps.push(cp);
+                        return false;
+                    });
+                    return isCollinear ? [] : ps;
+                }
+                static inShape(p, sh, unClosed) {
+                    let vs = sh.vertexes(), size = vs.length, p0 = p instanceof P ? p.toArray() : p, first = 0;
+                    return vs.every((p1, i) => {
+                        let p2;
+                        if (unClosed) {
+                            if (i == size - 1)
+                                return true;
+                            p2 = vs[i + 1];
+                        }
+                        else {
+                            p2 = vs[i < size - 1 ? i + 1 : 0];
+                        }
+                        let s = V.whichSide(p1, p2, p0);
+                        if (s == 0)
+                            return false;
+                        if (i == 0)
+                            first = s;
+                        return s * first > 0;
+                    });
+                }
+                static onShape(p, sh, unClosed) {
+                    let vs = sh.vertexes(), size = vs.length, p0 = p instanceof P ? p.toArray() : p;
+                    if (size == 2) {
+                        let p1 = vs[0], p2 = vs[1];
+                        return geom.Segment.inSegment(p1, p2, p0);
+                    }
+                    return vs.some((p1, i) => {
+                        let p2;
+                        if (unClosed) {
+                            if (i == size - 1)
+                                return false;
+                            p2 = vs[i + 1];
+                        }
+                        else {
+                            p2 = vs[i < size - 1 ? i + 1 : 0];
+                        }
+                        return geom.Segment.inSegment(p1, p2, p0);
+                    });
+                }
+            }
+            geom.Shapes = Shapes;
+        })(geom = math.geom || (math.geom = {}));
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Shapes = JS.math.geom.Shapes;
+var AngleType = JS.math.geom.AngleType;
+var ArcType = JS.math.geom.ArcType;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let P = math.Point2, V = math.Vector2;
+        let geom;
+        (function (geom) {
+            class Line {
+                constructor(x1, y1, x2, y2) {
+                    this.x1 = x1 || 0;
+                    this.y1 = y1 || 0;
+                    this.x2 = x2 || 0;
+                    this.y2 = y2 || 0;
+                }
+                static toLine(p1, p2) {
+                    return new Line().set(p1, p2);
+                }
+                static slope(p1, p2) {
+                    let a = p2[0] - p1[0], b = p2[1] - p1[1];
+                    return a == 0 ? null : b / a;
+                }
+                static position(p1, p2, p3, p4) {
+                    let T = this, same1 = P.equal(p1, p2), same2 = P.equal(p3, p4);
+                    if (same1 && same2)
+                        return 0;
+                    if (same1 && !same2)
+                        return T.isCollinear(p1, p3, p4) ? 0 : -1;
+                    if (!same1 && same2)
+                        return T.isCollinear(p1, p2, p3) ? 0 : -1;
+                    let k1 = T.slope(p1, p2), k2 = T.slope(p3, p4);
+                    if ((k1 == null && k2 === 0) || (k2 == null && k1 === 0))
+                        return 2;
+                    if ((k1 == null && k2 == null) || math.Floats.equal(k1, k2)) {
+                        return V.whichSide(p1, p2, p3) == 0 ? 0 : -1;
+                    }
+                    else {
+                        return math.Floats.equal(k1 * k2, -1) ? 2 : 1;
+                    }
+                }
+                static isCollinear(p1, p2, p3) {
+                    return V.whichSide(p1, p2, p3) == 0;
+                }
+                static isCollinearLine(l1, l2) {
+                    let p1 = l1.p1(), p2 = l1.p2(), p3 = l2.p1(), p4 = l2.p2();
+                    return this.isCollinear(p1, p2, p3) && this.isCollinear(p1, p2, p4);
+                }
+                static distanceSqToPoint(p1, p2, p) {
+                    let x1 = p1[0], y1 = p1[1], x2 = p2[0], y2 = p2[1], px = p[0], py = p[1];
+                    x2 -= x1;
+                    y2 -= y1;
+                    px -= x1;
+                    py -= y1;
+                    let dot = px * x2 + py * y2, proj = dot * dot / (x2 * x2 + y2 * y2), lenSq = px * px + py * py - proj;
+                    if (lenSq < 0)
+                        lenSq = 0;
+                    return lenSq;
+                }
+                static distanceToPoint(p1, p2, p) {
+                    return Math.sqrt(this.distanceSqToPoint(p1, p2, p));
+                }
+                toSegment() {
+                    return new geom.Segment(this.x1, this.y1, this.x2, this.y2);
+                }
+                toVector() {
+                    return new V(this.x2 - this.x1, this.y2 - this.y1);
+                }
+                p1(x, y) {
+                    if (x == void 0)
+                        return [this.x1, this.y1];
+                    this.x1 = x;
+                    this.y1 = y;
+                    return this;
+                }
+                p2(x, y) {
+                    if (x == void 0)
+                        return [this.x2, this.y2];
+                    this.x2 = x;
+                    this.y2 = y;
+                    return this;
+                }
+                vertexes(ps) {
+                    if (arguments.length == 0) {
+                        return [this.p1(), this.p2()];
+                    }
+                    let p1 = ps[0], p2 = ps[1];
+                    this.p1(p1[0], p1[1]);
+                    return this.p2(p2[0], p2[1]);
+                }
+                set(pt1, pt2) {
+                    let len = arguments.length, p1 = len == 1 ? pt1.p1() : pt1, p2 = len == 1 ? pt1.p2() : pt2;
+                    this.x1 = p1[0];
+                    this.y1 = p1[1];
+                    this.x2 = p2[0];
+                    this.y2 = p2[1];
+                    return this;
+                }
+                clone() {
+                    return new Line(this.x1, this.y1, this.x2, this.y2);
+                }
+                equals(s) {
+                    return Line.position(s.p1(), s.p2(), this.p1(), this.p2()) == 0;
+                }
+                isEmpty() {
+                    return this.x1 == 0 && this.y1 == 0 && this.x2 == 0 && this.y2 == 0;
+                }
+                inside(s) {
+                    let T = this;
+                    if (!s || T.isEmpty())
+                        return false;
+                    if (Types.isArray(s))
+                        return Line.isCollinear(T.p1(), T.p2(), s);
+                    if (s.isEmpty())
+                        return false;
+                    return s.vertexes().every(p => {
+                        return T.inside(p);
+                    });
+                }
+                onside(p) {
+                    return this.inside(p);
+                }
+                intersects(s) {
+                    if (!s || this.isEmpty() || s.isEmpty())
+                        return false;
+                    let pos = Line.position(this.p1(), this.p2(), s.p1(), s.p2());
+                    if (pos < 0)
+                        return false;
+                    if (s instanceof geom.Segment) {
+                        return s.crossLine(this) != null;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+                bounds() {
+                    return null;
+                }
+                slope() {
+                    return (this.y2 - this.y1) / (this.x2 - this.x1);
+                }
+                perimeter() {
+                    return Infinity;
+                }
+                _cpOfLinePoint(p1, p2, p3) {
+                    let p1p2 = V.toVector(p1, p2), p1p3 = V.toVector(p1, p3), p = p1p3.getProject(p1p2), d = p.length(), pp = P.polar2xy(d, p.radian());
+                    return [pp[0] + p1[0], pp[1] + p1[1]];
+                }
+                _cpOfLineLine(p1, p2, p3, p4) {
+                    let x1 = p1[0], y1 = p1[1], x2 = p2[0], y2 = p2[1], x3 = p3[0], y3 = p3[1], x4 = p4[0], y4 = p4[1];
+                    if (Line.position(p1, p2, p3, p4) < 1)
+                        return null;
+                    let x = ((x1 - x2) * (x3 * y4 - x4 * y3) - (x3 - x4) * (x1 * y2 - x2 * y1)) / ((x3 - x4) * (y1 - y2) - (x1 - x2) * (y3 - y4)), y = ((y1 - y2) * (x3 * y4 - x4 * y3) - (x1 * y2 - x2 * y1) * (y3 - y4)) / ((y1 - y2) * (x3 - x4) - (x1 - x2) * (y3 - y4));
+                    return [x, y];
+                }
+                _cpOfLineRay(p1, p2, p3, rad) {
+                    let p4 = P.toPoint(p3).toward(10, rad).toArray(), p = this._cpOfLineLine(p1, p2, p3, p4);
+                    if (!p)
+                        return null;
+                    return V.toVector(p3, p4).angle(V.toVector(p3, p)) == 0 ? p : null;
+                }
+                crossPoint(p) {
+                    return this._cpOfLinePoint(this.p1(), this.p2(), p);
+                }
+                crossLine(l) {
+                    return this._cpOfLineLine(this.p1(), this.p2(), l.p1(), l.p2());
+                }
+                crossRay(p, rad) {
+                    return this._cpOfLineRay(this.p1(), this.p2(), p, rad);
+                }
+            }
+            Line.X = new Line(0, 0, 1, 0);
+            Line.Y = new Line(0, 0, 0, 1);
+            geom.Line = Line;
+        })(geom = math.geom || (math.geom = {}));
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Line = JS.math.geom.Line;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let geom;
+        (function (geom) {
+            let M = Math, P = math.Point2, L = geom.Line, V = math.Vector2;
+            let relativeCCW = function (x1, y1, x2, y2, px, py) {
+                x2 -= x1;
+                y2 -= y1;
+                px -= x1;
+                py -= y1;
+                let ccw = px * y2 - py * x2;
+                if (ccw == 0.0) {
+                    ccw = px * x2 + py * y2;
+                    if (ccw > 0.0) {
+                        px -= x2;
+                        py -= y2;
+                        ccw = px * x2 + py * y2;
+                        if (ccw < 0.0) {
+                            ccw = 0.0;
+                        }
+                    }
+                }
+                return (ccw < 0.0) ? -1 : ((ccw > 0.0) ? 1 : 0);
+            }, inDiagonalRect = (p1, p2, p) => {
+                if (P.equal(p, p1) || P.equal(p, p2))
+                    return true;
+                return M.min(p1[0], p2[0]) <= p[0] && p[0] <= M.max(p1[0], p2[0])
+                    && M.min(p1[1], p2[1]) <= p[1] && p[1] <= M.max(p1[1], p2[1]);
+            };
+            class Segment extends geom.Line {
+                static toSegment(p1, p2) {
+                    return new Segment().set(p1, p2);
+                }
+                static inSegment(p1, p2, p) {
+                    return inDiagonalRect(p1, p2, p) && V.whichSide(p1, p2, p) == 0;
+                }
+                static distanceSqToPoint(p1, p2, p) {
+                    let x1 = p1[0], y1 = p1[1], x2 = p2[0], y2 = p2[1], px = p[0], py = p[1];
+                    x2 -= x1;
+                    y2 -= y1;
+                    px -= x1;
+                    py -= y1;
+                    let dot = px * x2 + py * y2, proj;
+                    if (dot <= 0.0) {
+                        proj = 0.0;
+                    }
+                    else {
+                        px = x2 - px;
+                        py = y2 - py;
+                        dot = px * x2 + py * y2;
+                        if (dot <= 0.0) {
+                            proj = 0.0;
+                        }
+                        else {
+                            proj = dot * dot / (x2 * x2 + y2 * y2);
+                        }
+                    }
+                    let lenSq = px * px + py * py - proj;
+                    if (lenSq < 0)
+                        lenSq = 0;
+                    return lenSq;
+                }
+                static distanceToPoint(p1, p2, p) {
+                    return M.sqrt(this.distanceSqToPoint(p1, p2, p));
+                }
+                static intersect(p1, p2, p3, p4) {
+                    let x1 = p1[0], y1 = p1[1], x2 = p2[0], y2 = p2[1], x3 = p3[0], y3 = p3[1], x4 = p4[0], y4 = p4[1];
+                    return ((relativeCCW(x1, y1, x2, y2, x3, y3) *
+                        relativeCCW(x1, y1, x2, y2, x4, y4) <= 0)
+                        && (relativeCCW(x3, y3, x4, y4, x1, y1) *
+                            relativeCCW(x3, y3, x4, y4, x2, y2) <= 0));
+                }
+                toLine() {
+                    return new geom.Line(this.x1, this.y1, this.x2, this.y2);
+                }
+                equals(s, isStrict) {
+                    let p1 = [this.x1, this.y1], p2 = [this.x2, this.y2], p3 = [s.x1, s.y1], p4 = [s.x2, s.y2];
+                    if (isStrict)
+                        return P.equal(p1, p3) && P.equal(p2, p4);
+                    return (P.equal(p1, p3) && P.equal(p2, p4)) || (P.equal(p1, p4) && P.equal(p2, p3));
+                }
+                inside(s) {
+                    let T = this;
+                    if (!s || T.isEmpty())
+                        return false;
+                    if (Types.isArray(s))
+                        return geom.Shapes.onShape(s, T);
+                    if (s.isEmpty())
+                        return false;
+                    if (s instanceof Segment)
+                        return T.inside([s.x1, s.y1]) && T.inside([s.x2, s.y2]);
+                }
+                intersects(s) {
+                    if (!s || this.isEmpty() || s.isEmpty())
+                        return false;
+                    let pos = L.position(this.p1(), this.p2(), s.p1(), s.p2());
+                    if (pos < 0)
+                        return false;
+                    if (s instanceof Segment) {
+                        return s.crossSegment(this) != null;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+                bounds() {
+                    let T = this, minX = M.min(T.x1, T.x2), maxX = M.max(T.x1, T.x2), minY = M.min(T.y1, T.y2), maxY = M.max(T.y1, T.y2);
+                    return new geom.Rect(minX, minY, maxX - minX, maxY - minY);
+                }
+                perimeter() {
+                    return P.distance(this.x1, this.y1, this.x2, this.y2);
+                }
+                ratioPoint(ratio) {
+                    let p1 = this.p1(), p2 = this.p2();
+                    return [(p1[0] + ratio * p2[0]) / (1 + ratio),
+                        (p1[1] + ratio * p2[1]) / (1 + ratio)];
+                }
+                midPoint() {
+                    return this.ratioPoint(1);
+                }
+                _cpOfSS(s1, s2) {
+                    let p = s1.toLine().crossLine(s2.toLine());
+                    if (!p)
+                        return null;
+                    return s1.inside(p) && s2.inside(p) ? p : null;
+                }
+                _cpOfSL(s1, s2) {
+                    let p = s1.toLine().crossLine(s2);
+                    if (!p)
+                        return null;
+                    return s1.inside(p) ? p : null;
+                }
+                _cpOfSR(s1, p3, rad) {
+                    let p4 = P.toPoint(p3).toward(10, rad).toArray(), p = this._cpOfSL(s1, L.toLine(p3, p4));
+                    if (!p)
+                        return null;
+                    return V.toVector(p3, p4).angle(V.toVector(p3, p)) == 0 ? p : null;
+                }
+                crossSegment(s) {
+                    return this._cpOfSS(this, s);
+                }
+                crossLine(l) {
+                    return this._cpOfSL(this, l);
+                }
+                crossRay(p, rad) {
+                    return this._cpOfSR(this, p, rad);
+                }
+            }
+            geom.Segment = Segment;
+        })(geom = math.geom || (math.geom = {}));
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Segment = JS.math.geom.Segment;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let geom;
+        (function (geom) {
+            let M = Math, F = math.Floats, P = math.Point2, V = math.Vector2, R = math.Radians, S = geom.Segment;
+            class CirArc {
+                constructor(type, x, y, r, sAngle, eAngle, dir = 1) {
+                    this.type = type || geom.ArcType.OPEN;
+                    this.x = x || 0;
+                    this.y = y || 0;
+                    this.r = r || 0;
+                    this.sAngle = sAngle || 0;
+                    this.eAngle = eAngle || 0;
+                    this.dir = dir == void 0 ? 1 : dir;
+                }
+                static toArc(type, c, r, sAngle, eAngle, dir = 1) {
+                    return new CirArc(type, c[0], c[1], r, sAngle, eAngle, dir);
+                }
+                isEmpty() {
+                    return this.r <= 0 || this.sAngle === this.eAngle;
+                }
+                center(x, y) {
+                    if (x == void 0)
+                        return [this.x, this.y];
+                    this.x = x;
+                    this.y = y;
+                    return this;
+                }
+                set(s) {
+                    this.type = s.type;
+                    this.x = s.x;
+                    this.y = s.y;
+                    this.r = s.r;
+                    this.sAngle = s.sAngle;
+                    this.eAngle = s.eAngle;
+                    this.dir = s.dir;
+                    return this;
+                }
+                clone() {
+                    return new CirArc(this.type, this.x, this.y, this.r, this.sAngle, this.eAngle, this.dir);
+                }
+                equals(s) {
+                    return s.type == this.type && P.equal(s.x, s.y, this.x, this.y) && F.equal(this.r, s.r) && F.equal(this.sAngle, s.sAngle) && F.equal(this.eAngle, s.eAngle) && this.dir === s.dir;
+                }
+                _inAngle(p, ps, cache) {
+                    let pc = ps[0], pa = ps[1], pb = ps[2];
+                    if (S.inSegment(pc, pa, p) || S.inSegment(pc, pb, p))
+                        return false;
+                    let va = !cache ? V.toVector(pc, pa) : cache.va, vb = !cache ? V.toVector(pc, pb) : cache.vb, vp = V.toVector(pc, p), realAngle = !cache ? R.deg2rad(this.angle()) : cache.realRad, minAngle = !cache ? va.angle(vb) : cache.minRad, is = R.equal(minAngle, vp.angle(va) + vp.angle(vb));
+                    return F.equal(realAngle, minAngle) ? is : !is;
+                }
+                inside(s) {
+                    if (!s || this.isEmpty())
+                        return false;
+                    if (Types.isArray(s)) {
+                        if (this.type == geom.ArcType.OPEN) {
+                            return (F.equal(this.r * this.r, P.distanceSq(s[0], s[1], this.x, this.y))) && this._inAngle(s, this.vertexes());
+                        }
+                        else {
+                            return new geom.Circle(this.x, this.y, this.r).inside(s) && this._inAngle(s, this.vertexes());
+                        }
+                    }
+                    if (s.isEmpty())
+                        return false;
+                    return s.vertexes().every(p => {
+                        return this.inside(p);
+                    });
+                }
+                onside(p) {
+                    if (this.isEmpty())
+                        return false;
+                    if (!F.equal(this.r * this.r, P.distanceSq(p[0], p[1], this.x, this.y)))
+                        return false;
+                    let isIn = this._inAngle(p, this.vertexes());
+                    if (!isIn)
+                        return false;
+                    if (this.type == geom.ArcType.OPEN)
+                        return true;
+                    let ps = this.vertexes(), pc = ps[0], pa = ps[1], pb = ps[2];
+                    return S.inSegment(pc, pa, p) || S.inSegment(pc, pb, p);
+                }
+                intersects(s) {
+                    throw new Error("Method not implemented.");
+                }
+                _crossByRay(rad) {
+                    return P.toPoint(this.center()).toward(this.r, rad).toArray();
+                }
+                _bounds(ps) {
+                    let minX, minY, maxX, maxY, aX = [], aY = [];
+                    ps.forEach(p => {
+                        aX.push(p[0]);
+                        aY.push(p[1]);
+                    });
+                    minX = M.min.apply(M, aX);
+                    maxX = M.max.apply(M, aX);
+                    minY = M.min.apply(M, aY);
+                    maxY = M.max.apply(M, aY);
+                    return new geom.Rect(minX, minY, maxX - minX, maxY - minY);
+                }
+                bounds() {
+                    if (this.isEmpty())
+                        return null;
+                    let ps = this.vertexes(), pc = ps[0], a = [ps[1], ps[2]], p, va = V.toVector(pc, ps[1]), vb = V.toVector(pc, ps[2]), realAngle = R.deg2rad(this.angle()), minAngle = va.angle(vb), cache = {
+                        va: va,
+                        vb: vb,
+                        realRad: realAngle,
+                        minRad: minAngle
+                    };
+                    if (this.type == geom.ArcType.PIE)
+                        a.push(pc);
+                    p = this._crossByRay(R.EAST);
+                    if (this._inAngle(p, ps, cache))
+                        a.push(p);
+                    p = this._crossByRay(R.SOUTH);
+                    if (this._inAngle(p, ps, cache))
+                        a.push(p);
+                    p = this._crossByRay(R.WEST);
+                    if (this._inAngle(p, ps, cache))
+                        a.push(p);
+                    p = this._crossByRay(R.NORTH);
+                    if (this._inAngle(p, ps, cache))
+                        a.push(p);
+                    return this._bounds(a);
+                }
+                arcLength() {
+                    return this.r * M.abs(this.eAngle - this.sAngle);
+                }
+                perimeter() {
+                    return this.type == geom.ArcType.OPEN ? this.arcLength() : 2 * this.r + this.arcLength();
+                }
+                area() {
+                    return this.type == geom.ArcType.OPEN ? 0 : M.abs(this.eAngle - this.sAngle) * this.r * this.r * 0.5;
+                }
+                vertexes(ps) {
+                    if (arguments.length == 0) {
+                        let pc = [this.x, this.y], pa = P.toPoint(P.polar2xy(this.r, this.sAngle)).translate(this.x, this.y), pb = P.toPoint(P.polar2xy(this.r, this.eAngle)).translate(this.x, this.y);
+                        return [pc, [pa.x, pa.y], [pb.x, pb.y]];
+                    }
+                    let p1 = ps[0], pa = ps[1], pb = ps[2];
+                    this.x = p1[0];
+                    this.y = p1[1];
+                    this.r = P.distance(pa[0], pa[1], this.x, this.y);
+                    this.sAngle = V.toVector([this.x, this.y], pa).radian();
+                    this.eAngle = V.toVector([this.x, this.y], pb).radian();
+                    return this;
+                }
+                angle() {
+                    let dif = math.Radians.positive(this.eAngle) - math.Radians.positive(this.sAngle), d = R.rad2deg(dif) % 360;
+                    return this.dir == 1 ? d : 360 - d;
+                }
+                moveTo(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    return this;
+                }
+            }
+            geom.CirArc = CirArc;
+        })(geom = math.geom || (math.geom = {}));
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var CirArc = JS.math.geom.CirArc;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let geom;
+        (function (geom) {
+            let P = math.Point2, F = math.Floats, L = geom.Line, S = geom.Segment;
+            class Circle {
+                constructor(x, y, r) {
+                    this.x = x || 0;
+                    this.y = y || 0;
+                    this.r = r || 0;
+                }
+                static toCircle(c, r) {
+                    return new Circle(c[0], c[1], r);
+                }
+                set(c, r) {
+                    if (arguments.length == 1) {
+                        this.x = c.x;
+                        this.y = c.y;
+                        this.r = c.r;
+                    }
+                    else {
+                        let p = P.toArray(c);
+                        this.x = p[0];
+                        this.y = p[1];
+                        this.r = r;
+                    }
+                    return this;
+                }
+                isEmpty() {
+                    return this.r <= 0;
+                }
+                clone() {
+                    return new Circle(this.x, this.y, this.r);
+                }
+                equals(s) {
+                    return F.equal(this.x, s.x) && F.equal(this.y, s.y) && F.equal(this.r, s.r);
+                }
+                inside(s) {
+                    if (!s || this.isEmpty())
+                        return false;
+                    if (Types.isArray(s))
+                        return F.greater(this.r * this.r, P.distanceSq(this.x, this.y, s[0], s[1]));
+                    if (s.isEmpty())
+                        return false;
+                    if (s instanceof geom.Rect || s instanceof S || s instanceof geom.Triangle)
+                        return s.vertexes().every(p => {
+                            return this.inside(p);
+                        });
+                    let dd = P.distanceSq(this.x, this.y, s.x, s.y), rr = this.r - s.r;
+                    return F.less(dd, rr * rr);
+                }
+                onside(p) {
+                    return !this.isEmpty() && F.equal(this.r * this.r, P.distanceSq(this.x, this.y, p[0], p[1]));
+                }
+                intersects(s) {
+                    if (!s || this.isEmpty() || s.isEmpty())
+                        return false;
+                    if (s instanceof L) {
+                        let d = L.distanceSqToPoint(s.p1(), s.p2(), [this.x, this.y]), rr = this.r * this.r;
+                        if (F.greaterEqual(d, rr))
+                            return false;
+                        if (!(s instanceof S))
+                            return true;
+                        return F.equal(d, S.distanceSqToPoint(s.p1(), s.p2(), [this.x, this.y]));
+                    }
+                    if (s instanceof Circle) {
+                        let dd = P.distanceSq(this.x, this.y, s.x, s.y), rr = this.r + s.r;
+                        return F.less(dd, rr * rr);
+                    }
+                    if (s.inside(this) || this.inside(s))
+                        return true;
+                    return s.edges().some(b => {
+                        return this.intersects(b);
+                    });
+                }
+                bounds() {
+                    return new geom.Rect(this.x - this.r, this.y - this.r, 2 * this.r, 2 * this.r);
+                }
+                moveTo(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    return this;
+                }
+                perimeter() {
+                    return 2 * this.r * Math.PI;
+                }
+                area() {
+                    return this.r * this.r * Math.PI;
+                }
+                vertexes(ps) {
+                    throw new Error("Method not implemented.");
+                }
+            }
+            geom.Circle = Circle;
+        })(geom = math.geom || (math.geom = {}));
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Circle = JS.math.geom.Circle;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let geom;
+        (function (geom) {
+            let P = math.Point2, F = math.Floats, L = geom.Line, S = geom.Segment;
+            class Ellipse {
+                constructor(x, y, rx, ry) {
+                    this.x = x || 0;
+                    this.y = y || 0;
+                    this.rx = rx || 0;
+                    this.ry = ry || 0;
+                }
+                static toEllipse(c, rx, ry) {
+                    return new Ellipse(c[0], c[1], rx, ry);
+                }
+                set(c, rx, ry) {
+                    if (arguments.length == 1) {
+                        this.x = c.x;
+                        this.y = c.y;
+                        this.rx = c.rx;
+                        this.ry = c.ry;
+                    }
+                    else {
+                        let p = P.toArray(c);
+                        this.x = p[0];
+                        this.y = p[1];
+                        this.rx = rx;
+                        this.ry = ry;
+                    }
+                    return this;
+                }
+                isEmpty() {
+                    return this.rx <= 0 || this.ry <= 0;
+                }
+                clone() {
+                    return new Ellipse(this.x, this.y, this.rx, this.ry);
+                }
+                equals(s) {
+                    return F.equal(this.x, s.x) && F.equal(this.y, s.y) && F.equal(this.rx, s.rx) && F.equal(this.ry, s.ry);
+                }
+                inside(s) {
+                    if (!s || this.isEmpty())
+                        return false;
+                    if (Types.isArray(s)) {
+                        let dx = s[0] - this.x, dy = s[1] - this.y, rxx = this.rx * this.rx, ryy = this.ry * this.ry;
+                        return !this.isEmpty() && F.greater(1, (dx * dx) / rxx + (dy * dy) / ryy);
+                    }
+                    if (s.isEmpty())
+                        return false;
+                    return s.vertexes().every(p => {
+                        return this.inside(p);
+                    });
+                }
+                onside(p) {
+                    if (this.isEmpty())
+                        return false;
+                    let dx = p[0] - this.x, dy = p[1] - this.y, rxx = this.rx * this.rx, ryy = this.ry * this.ry;
+                    return !this.isEmpty() && F.equal(1, (dx * dx) / rxx + (dy * dy) / ryy);
+                }
+                intersects(s) {
+                    throw new Error("Method not implemented.");
+                }
+                bounds() {
+                    return new geom.Rect(this.x - this.rx, this.y - this.ry, 2 * this.rx, 2 * this.ry);
+                }
+                moveTo(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    return this;
+                }
+                perimeter() {
+                    let a = this.rx, b = this.ry;
+                    return Math.PI * (3 / 2 * (a + b) - Math.sqrt(a * b));
+                }
+                area() {
+                    return this.rx * this.ry * Math.PI;
+                }
+                vertexes(ps) {
+                    throw new Error("Method not implemented.");
+                }
+            }
+            geom.Ellipse = Ellipse;
+        })(geom = math.geom || (math.geom = {}));
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Ellipse = JS.math.geom.Ellipse;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let geom;
+        (function (geom) {
+            let M = Math, N = Number;
+            class Polygon {
+                constructor(points) {
+                    this._points = points || [];
+                }
+                isEmpty() {
+                    return this._points.length == 0;
+                }
+                numberVertexes() {
+                    return this._points.length;
+                }
+                clone() {
+                    return new Polygon(this._points.slice());
+                }
+                _contains(x, y) {
+                    let T = this, len = T.numberVertexes();
+                    if (len <= 2 || !T.bounds().inside([x, y]))
+                        return false;
+                    let hits = 0, lastx = T._points[len - 1][0], lasty = T._points[len - 1][1], curx, cury;
+                    for (let i = 0; i < len; lastx = curx, lasty = cury, i++) {
+                        let pi = T._points[i], pj = T._points[i < len - 1 ? i + 1 : 0];
+                        if (geom.Segment.inSegment(pi, pj, [x, y]))
+                            return false;
+                        curx = pi[0];
+                        cury = pi[1];
+                        if (cury == lasty) {
+                            continue;
+                        }
+                        let leftx;
+                        if (curx < lastx) {
+                            if (x >= lastx) {
+                                continue;
+                            }
+                            leftx = curx;
+                        }
+                        else {
+                            if (x >= curx) {
+                                continue;
+                            }
+                            leftx = lastx;
+                        }
+                        let test1, test2;
+                        if (cury < lasty) {
+                            if (y < cury || y >= lasty) {
+                                continue;
+                            }
+                            if (x < leftx) {
+                                hits++;
+                                continue;
+                            }
+                            test1 = x - curx;
+                            test2 = y - cury;
+                        }
+                        else {
+                            if (y < lasty || y >= cury) {
+                                continue;
+                            }
+                            if (x < leftx) {
+                                hits++;
+                                continue;
+                            }
+                            test1 = x - lastx;
+                            test2 = y - lasty;
+                        }
+                        if (test1 < (test2 / (lasty - cury) * (lastx - curx))) {
+                            hits++;
+                        }
+                    }
+                    return ((hits & 1) != 0);
+                }
+                inside(s) {
+                    return s && !this.isEmpty() && this._contains(s[0], s[1]);
+                }
+                onside(p) {
+                    return !this.isEmpty() && geom.Shapes.onShape(p, this);
+                }
+                intersects(s) {
+                    if (!s || this.isEmpty() || s.isEmpty())
+                        return false;
+                    let size = this.numberVertexes();
+                    return this._points.some((p, i) => {
+                        let x1 = p[0], y1 = p[1], px = this._points[i < size - 1 ? (i + 1) : 0];
+                        return s.intersects(new geom.Segment(x1, y1, px[0], px[1]));
+                    });
+                }
+                bounds() {
+                    if (this.numberVertexes() == 0)
+                        return new geom.Rect();
+                    if (this._bounds == null)
+                        this._calculateBounds();
+                    return this._bounds.bounds();
+                }
+                _calculateBounds() {
+                    let minX = N.MAX_VALUE, minY = N.MAX_VALUE, maxX = N.MIN_VALUE, maxY = N.MIN_VALUE;
+                    this._points.forEach(p => {
+                        minX = M.min(minX, p[0]);
+                        maxX = M.max(maxX, p[0]);
+                        minY = M.min(minY, p[1]);
+                        maxY = M.max(maxY, p[1]);
+                    });
+                    this._bounds = new geom.Rect(minX, minY, maxX - minX, maxY - minY);
+                }
+                _updateBounds(x, y) {
+                    let T = this;
+                    if (x < T._bounds.x) {
+                        T._bounds.w = T._bounds.w + (T._bounds.x - x);
+                        T._bounds.x = x;
+                    }
+                    else {
+                        T._bounds.w = M.max(T._bounds.w, x - T._bounds.x);
+                    }
+                    if (y < T._bounds.y) {
+                        T._bounds.h = T._bounds.h + (T._bounds.y - y);
+                        T._bounds.y = y;
+                    }
+                    else {
+                        T._bounds.h = M.max(T._bounds.h, y - T._bounds.y);
+                    }
+                }
+                addPoint(x, y) {
+                    this._points.push([x, y]);
+                    if (this._bounds != null)
+                        this._updateBounds(x, y);
+                    return this;
+                }
+                vertexes(ps) {
+                    if (arguments.length == 0)
+                        return this._points;
+                    this._points = ps;
+                    return this;
+                }
+                perimeter() {
+                    if (this._len != void 0)
+                        return this._len;
+                    this._len = 0;
+                    let size = this.numberVertexes();
+                    if (size < 2)
+                        return 0;
+                    this._points.forEach((p, i) => {
+                        let x1 = p[0], y1 = p[1], px = this._points[i < size - 1 ? (i + 1) : 0];
+                        this._len += math.Point2.distance(x1, y1, px[0], px[1]);
+                    });
+                    return this._len;
+                }
+                equals(s) {
+                    let ps = s.vertexes();
+                    if (ps.length != this.numberVertexes())
+                        return false;
+                    return this._points.every((p, i) => {
+                        let pi = ps[i];
+                        return math.Point2.equal(p[0], p[1], pi[0], pi[1]);
+                    });
+                }
+            }
+            geom.Polygon = Polygon;
+        })(geom = math.geom || (math.geom = {}));
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Polygon = JS.math.geom.Polygon;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let geom;
+        (function (geom) {
+            class Polyline extends geom.Polygon {
+                clone() {
+                    return new Polyline(this._points);
+                }
+                inside(s) {
+                    return false;
+                }
+                onside(p) {
+                    return !this.isEmpty() && geom.Shapes.onShape(p, this, true);
+                }
+                intersects(s) {
+                    if (!s || this.isEmpty() || s.isEmpty())
+                        return false;
+                    let size = this.numberVertexes();
+                    return this._points.some((p, i) => {
+                        if (i >= size - 1)
+                            return false;
+                        let x1 = p[0], y1 = p[1], px = this._points[i + 1];
+                        return s.intersects(new geom.Segment(x1, y1, px[0], px[1]));
+                    });
+                }
+                perimeter() {
+                    if (this._len != void 0)
+                        return this._len;
+                    this._len = 0;
+                    let size = this.numberVertexes();
+                    if (size < 2)
+                        return 0;
+                    this._points.forEach((p, i) => {
+                        if (i < size - 1) {
+                            let x1 = p[0], y1 = p[1], px = this._points[i + 1];
+                            this._len += math.Point2.distance(x1, y1, px[0], px[1]);
+                        }
+                    });
+                    return this._len;
+                }
+                equals(s) {
+                    return super.equals(s);
+                }
+            }
+            geom.Polyline = Polyline;
+        })(geom = math.geom || (math.geom = {}));
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Polyline = JS.math.geom.Polyline;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let geom;
+        (function (geom) {
+            let M = Math, S = geom.Segment, N = Number;
+            class Rect {
+                constructor(x, y, w, h) {
+                    this.set(x, y, w, h);
+                }
+                static toRect(p, w, h) {
+                    return new Rect(p[0], p[1], w, h);
+                }
+                static centerTo(rect1, rect2) {
+                    let w1 = rect1.w, h1 = rect1.h, w2 = rect2.w, h2 = rect2.h;
+                    rect1.x = rect2.x + (w2 - w1) / 2;
+                    rect1.y = rect2.y + (h2 - h1) / 2;
+                }
+                static limitIn(rect1, rect2) {
+                    if (rect1.x < rect2.x) {
+                        rect1.x = rect2.x;
+                    }
+                    else if (rect1.x > (rect2.x + rect2.w - rect1.w)) {
+                        rect1.x = rect2.x + rect2.w - rect1.w;
+                    }
+                    ;
+                    if (rect1.y < rect2.y) {
+                        rect1.y = rect2.y;
+                    }
+                    else if (rect1.y > (rect2.y + rect2.h - rect1.h)) {
+                        rect1.y = rect2.y + rect2.h - rect1.h;
+                    }
+                }
+                minX() {
+                    return this.x;
+                }
+                minY() {
+                    return this.y;
+                }
+                maxX() {
+                    return this.x + this.w;
+                }
+                maxY() {
+                    return this.y + this.h;
+                }
+                centerX() {
+                    return this.x + this.w / 2;
+                }
+                centerY() {
+                    return this.y + this.h / 2;
+                }
+                clone() {
+                    return new Rect(this.x, this.y, this.w, this.h);
+                }
+                equals(s) {
+                    let T = this;
+                    if (T.w != s.w || T.h != s.h)
+                        return false;
+                    return math.Floats.equal(T.x, s.x) && math.Floats.equal(T.y, s.y);
+                }
+                set(xx, yy, ww, hh) {
+                    let len = arguments.length, x = len == 1 ? xx.x : xx, y = len == 1 ? xx.y : yy, w = len == 1 ? xx.w : ww, h = len == 1 ? xx.h : hh;
+                    this.x = Number(x || 0).round(3);
+                    this.y = Number(y || 0).round(3);
+                    this.w = Number(w || 0).round(3);
+                    this.h = Number(h || 0).round(3);
+                    return this;
+                }
+                isEmpty() {
+                    return this.w <= 0 || this.h <= 0;
+                }
+                size(w, h) {
+                    if (w == void 0)
+                        return { w: this.w, h: this.h };
+                    this.w = w < 0 ? 0 : w;
+                    this.h = h < 0 ? 0 : h;
+                    return this;
+                }
+                moveTo(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    return this;
+                }
+                area() {
+                    return this.w * this.h;
+                }
+                perimeter() {
+                    return 2 * (this.w + this.h);
+                }
+                vertexes(ps) {
+                    if (arguments.length == 0) {
+                        let T = this, a = [T.x, T.y], b = [T.x + T.w, T.y], c = [T.x + T.w, T.y + T.h], d = [T.x, T.y + T.h];
+                        return [a, b, c, d];
+                    }
+                    let p1 = ps[0], p2 = ps[1], p3 = ps[2];
+                    this.x = p1[0];
+                    this.y = p1[1];
+                    this.w = p2[0] - p1[0];
+                    this.h = p3[1] - p2[1];
+                    return this;
+                }
+                _inside(x, y) {
+                    let T = this;
+                    return x > T.x && x < (T.x + T.w) && y > T.y && y < (T.y + T.h);
+                }
+                inside(s) {
+                    if (!s || this.isEmpty())
+                        return false;
+                    if (Types.isArray(s))
+                        return this._inside(s[0], s[1]);
+                    if (s.isEmpty())
+                        return false;
+                    if (s instanceof geom.Segment) {
+                        let vs = s.vertexes();
+                        return vs.every(v => {
+                            return this.inside(v);
+                        });
+                    }
+                    if (s instanceof Rect) {
+                        let rect1 = this, rect2 = s;
+                        return (rect2.x >= rect1.x && rect2.y >= rect1.y &&
+                            (rect2.x + rect2.w) <= (rect1.x + rect1.w) &&
+                            (rect2.y + rect2.h) <= (rect1.y + rect1.h));
+                    }
+                    let c = s;
+                    if (!geom.Shapes.inShape([c.x, c.y], this))
+                        return false;
+                    let rr = c.r * c.r;
+                    return this.edges().every(b => {
+                        return math.Floats.greaterEqual(geom.Line.distanceSqToPoint(b.p1(), b.p2(), [c.x, c.y]), rr);
+                    });
+                }
+                onside(p) {
+                    return !this.isEmpty() && geom.Shapes.onShape(p, this);
+                }
+                intersects(s) {
+                    let T = this;
+                    if (!s || T.isEmpty() || s.isEmpty())
+                        return false;
+                    if (s instanceof Rect) {
+                        let x = s.x, y = s.y, w = s.w, h = s.h, x0 = T.x, y0 = T.y;
+                        return (x + w > x0 &&
+                            y + h > y0 &&
+                            x < x0 + T.w &&
+                            y < y0 + T.h);
+                    }
+                    let ps = geom.Shapes.crossPoints(s, T), len = ps.length;
+                    if (len == 0)
+                        return false;
+                    if (len == 1) {
+                        if (!(s instanceof geom.Segment))
+                            return false;
+                        let p1 = s.p1(), p2 = s.p2();
+                        return T._inside(p1[0], p1[1]) || T._inside(p2[0], p2[1]);
+                    }
+                    return true;
+                }
+                intersection(rect) {
+                    if (this.isEmpty() || rect.isEmpty())
+                        return null;
+                    let rect1 = this, rect2 = rect, t = M.max(rect1.y, rect2.y), r = M.min(rect1.x + rect1.w, rect2.x + rect2.w), b = M.min(rect1.y + rect1.h, rect2.y + rect2.h), l = M.max(rect1.x, rect2.x);
+                    return (b > t && r > l) ? new Rect(l, t, r - l, b - t) : null;
+                }
+                bounds() {
+                    return this.clone();
+                }
+                edges() {
+                    let p4 = this.vertexes();
+                    return [
+                        S.toSegment(p4[0], p4[1]),
+                        S.toSegment(p4[1], p4[2]),
+                        S.toSegment(p4[2], p4[3]),
+                        S.toSegment(p4[3], p4[0])
+                    ];
+                }
+                union(r) {
+                    let T = this, tx2 = T.w, ty2 = T.h;
+                    if ((tx2 | ty2) < 0) {
+                        return r.clone();
+                    }
+                    let rx2 = r.w, ry2 = r.h;
+                    if ((rx2 | ry2) < 0) {
+                        return T.clone();
+                    }
+                    let tx1 = T.x, ty1 = T.y;
+                    tx2 += tx1;
+                    ty2 += ty1;
+                    let rx1 = r.x, ry1 = r.y;
+                    rx2 += rx1;
+                    ry2 += ry1;
+                    if (tx1 > rx1)
+                        tx1 = rx1;
+                    if (ty1 > ry1)
+                        ty1 = ry1;
+                    if (tx2 < rx2)
+                        tx2 = rx2;
+                    if (ty2 < ry2)
+                        ty2 = ry2;
+                    tx2 -= tx1;
+                    ty2 -= ty1;
+                    return new Rect(tx1, ty1, tx2, ty2);
+                }
+            }
+            geom.Rect = Rect;
+        })(geom = math.geom || (math.geom = {}));
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Rect = JS.math.geom.Rect;
+var JS;
+(function (JS) {
+    let math;
+    (function (math) {
+        let geom;
+        (function (geom) {
+            let P = math.Point2, V = math.Vector2, N = Numbers, S = geom.Segment;
+            class Triangle {
+                constructor(x1, y1, x2, y2, x3, y3) {
+                    this.x1 = x1 || 0;
+                    this.y1 = y1 || 0;
+                    this.x2 = x2 || 0;
+                    this.y2 = y2 || 0;
+                    this.x3 = x3 || 0;
+                    this.y3 = y3 || 0;
+                }
+                static toTri(p1, p2, p3) {
+                    return new Triangle().set(p1, p2, p3);
+                }
+                isEmpty() {
+                    return geom.Line.isCollinear(this.p1(), this.p2(), this.p3());
+                }
+                p1(x, y) {
+                    if (x == void 0)
+                        return [this.x1, this.y1];
+                    this.x1 = x;
+                    this.y1 = y;
+                    return this;
+                }
+                p2(x, y) {
+                    if (x == void 0)
+                        return [this.x2, this.y2];
+                    this.x2 = x;
+                    this.y2 = y;
+                    return this;
+                }
+                p3(x, y) {
+                    if (x == void 0)
+                        return [this.x3, this.y3];
+                    this.x3 = x;
+                    this.y3 = y;
+                    return this;
+                }
+                set(p1, p2, p3) {
+                    if (arguments.length == 1)
+                        return this.vertexes(p1.vertexes());
+                    return this.vertexes([p1, p2, p3]);
+                }
+                vertexes(ps) {
+                    let T = this;
+                    if (arguments.length == 0)
+                        return [[T.x1, T.y1], [T.x2, T.y2], [T.x3, T.y3]];
+                    let p1 = ps[0], p2 = ps[1], p3 = ps[2];
+                    this.x1 = p1[0];
+                    this.y1 = p1[1];
+                    this.x2 = p2[0];
+                    this.y2 = p2[1];
+                    this.x3 = p3[0];
+                    this.y3 = p3[1];
+                    return this;
+                }
+                clone() {
+                    let T = this;
+                    return new Triangle(T.x1, T.y1, T.x2, T.y2, T.x3, T.y3);
+                }
+                equals(s) {
+                    if (this.isEmpty() && s.isEmpty())
+                        return true;
+                    return Arrays.same(this.vertexes(), s.vertexes(), (p1, p2) => { return P.equal(p1, p2); });
+                }
+                inside(s) {
+                    let T = this;
+                    if (!s || T.isEmpty())
+                        return false;
+                    if (Types.isArray(s))
+                        return geom.Shapes.inShape(s, this);
+                    if (s.isEmpty())
+                        return false;
+                    if (s instanceof geom.Circle) {
+                        let c = s;
+                        if (!geom.Shapes.inShape([c.x, c.y], this))
+                            return false;
+                        let rr = c.r * c.r;
+                        return this.edges().every(b => {
+                            return math.Floats.greaterEqual(geom.Line.distanceSqToPoint(b.p1(), b.p2(), [c.x, c.y]), rr);
+                        });
+                    }
+                    return s.vertexes().every(p => {
+                        return T.inside(p) || T.onside(p);
+                    });
+                }
+                onside(p) {
+                    return !this.isEmpty() && geom.Shapes.onShape(p, this);
+                }
+                _addPoint(a, p) {
+                    if (p && a.findIndex(b => { return P.equal(b, p); }) < 0)
+                        a.push(p);
+                }
+                intersects(s) {
+                    let T = this;
+                    if (!s || T.isEmpty() || s.isEmpty())
+                        return false;
+                    if (s instanceof geom.Rect) {
+                        if (T.inside(s))
+                            return true;
+                        let ps = [];
+                        T.edges().forEach(b => {
+                            let cps = geom.Shapes.crossPoints(b, s);
+                            cps.forEach(it => {
+                                T._addPoint(ps, it);
+                            });
+                        });
+                        return ps.length >= 2;
+                    }
+                    let ps = geom.Shapes.crossPoints(s, T), len = ps.length;
+                    if (len == 0)
+                        return false;
+                    if (len >= 2)
+                        return true;
+                    if (!(s instanceof S))
+                        return false;
+                    let p1 = s.p1(), p2 = s.p2();
+                    return T.inside(p1) || T.inside(p2);
+                }
+                bounds() {
+                    let T = this, minX = N.min(T.x1, T.x2, T.x3), minY = N.min(T.y1, T.y2, T.y3), maxX = N.max(T.x1, T.x2, T.x3), maxY = N.max(T.y1, T.y2, T.y3), w = maxX - minX, h = maxY - minY, x = minX, y = minY;
+                    return new geom.Rect(x, y, w, h);
+                }
+                edges() {
+                    let ps = this.vertexes(), p1 = ps[0], p2 = ps[1], p3 = ps[2], a = new S(p1[0], p1[1], p2[0], p2[1]), b = new S(p2[0], p2[1], p3[0], p3[1]), c = new S(p3[0], p3[1], p1[0], p1[1]);
+                    return [a, b, c];
+                }
+                _sides() {
+                    let ps = this.vertexes(), p1 = ps[0], p2 = ps[1], p3 = ps[2], a = P.distance(p1[0], p1[1], p2[0], p2[1]), b = P.distance(p2[0], p2[1], p3[0], p3[1]), c = P.distance(p3[0], p3[1], p1[0], p1[1]);
+                    return [a, b, c];
+                }
+                perimeter() {
+                    if (this.isEmpty())
+                        return 0;
+                    let s = this._sides();
+                    return s[0] + s[1] + s[2];
+                }
+                angles() {
+                    let T = this;
+                    if (T.isEmpty())
+                        return [];
+                    let a1 = new V().set(T.p1(), T.p2()).angle(new V().set(T.p1(), T.p3())), a2 = new V().set(T.p2(), T.p1()).angle(new V().set(T.p2(), T.p3())), d1 = math.Radians.rad2deg(a1), d2 = math.Radians.rad2deg(a2), d3 = 180 - d1 - d2;
+                    return [d1, d2, d3];
+                }
+                angleType() {
+                    if (this.isEmpty())
+                        return geom.AngleType.UNKNOWN;
+                    let as = this.angles(), d1 = as[0] - 90, d2 = as[1] - 90, d3 = as[2] - 90;
+                    if (d1 == 0 || d2 == 0 || d3 == 0)
+                        return geom.AngleType.RIGHT;
+                    if (d1 < 0 || d2 < 0 || d3 < 0)
+                        return geom.AngleType.ACUTE;
+                    return geom.AngleType.OBTUSE;
+                }
+                area() {
+                    if (this.isEmpty())
+                        return 0;
+                    let s = this._sides(), a = s[0], b = s[1], c = s[2], p = (a + b + c) / 2;
+                    return Math.sqrt(p * (p - a) * (p - b) * (p - c));
+                }
+                gravityPoint() {
+                    let T = this;
+                    if (T.isEmpty())
+                        return null;
+                    let p1 = T.p1(), p2 = T.p2(), p3 = T.p3();
+                    return [(p1[0] + p2[0] + p3[0]) / 3, (p1[1] + p2[1] + p3[1]) / 3];
+                }
+            }
+            geom.Triangle = Triangle;
+        })(geom = math.geom || (math.geom = {}));
+    })(math = JS.math || (JS.math = {}));
+})(JS || (JS = {}));
+var Triangle = JS.math.geom.Triangle;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var JS;
 (function (JS) {
     let media;
     (function (media) {
-        class Video {
+        class AudioCache {
+            constructor(init) {
+                this._init = init;
+                this._cache = new DataCache({
+                    name: init.name
+                });
+            }
+            _load(id, url) {
+                let m = this;
+                return Promises.create(function () {
+                    Http.get({
+                        url: url,
+                        responseType: 'arraybuffer',
+                        success: res => {
+                            m.set(id, res.data).then(() => {
+                                this.resolve();
+                            });
+                        }
+                    }).catch(res => {
+                        if (m._init.loaderror)
+                            m._init.loaderror.call(m, res);
+                    });
+                });
+            }
+            load(imgs) {
+                let ms = Types.isArray(imgs) ? imgs : [imgs], plans = [];
+                ms.forEach(img => {
+                    plans.push(Promises.newPlan(this._load, [img.id, img.url], this));
+                });
+                return Promises.order(plans);
+            }
+            get(id) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    return yield this._cache.read(id);
+                });
+            }
+            set(id, data) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    return yield this._cache.write({
+                        id: id,
+                        data: data
+                    });
+                });
+            }
+            has(id) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    return yield this._cache.hasKey(id);
+                });
+            }
+            clear() {
+                return __awaiter(this, void 0, void 0, function* () {
+                    yield this._cache.clear();
+                });
+            }
+            destroy() {
+                return __awaiter(this, void 0, void 0, function* () {
+                    yield this._cache.destroy();
+                });
+            }
+        }
+        media.AudioCache = AudioCache;
+    })(media = JS.media || (JS.media = {}));
+})(JS || (JS = {}));
+var AudioCache = JS.media.AudioCache;
+var JS;
+(function (JS) {
+    let media;
+    (function (media) {
+        let W = window, A = W.AudioContext || W['msAudioContext'], AC = new A();
+        class AudioPro {
+            constructor(init) {
+                this._init = Jsons.union({
+                    volume: 1,
+                    loop: false
+                }, init);
+            }
+            static play(id, cache) {
+                new AudioPro().play(id, cache);
+            }
+            loop(is) {
+                let m = this;
+                if (is == void 0)
+                    return m._init.loop;
+                m._init.loop = is;
+                m._node.loop = is;
+                return m;
+            }
+            _play(a) {
+                let m = this;
+                m.stop();
+                m._gain = AC.createGain();
+                m._gain.gain.value = m._init.volume;
+                m._node = AC.createBufferSource();
+                m._node.buffer = a;
+                let c = m._init;
+                m._node.loop = c.loop;
+                if (c.played)
+                    m._node.onended = e => {
+                        m._dispose();
+                        c.played.call(m);
+                    };
+                m._node.connect(m._gain);
+                if (c.handler) {
+                    let node = c.handler.call(m, AC);
+                    m._gain.connect(node);
+                    node.connect(AC.destination);
+                }
+                else {
+                    m._gain.connect(AC.destination);
+                }
+                if (c.playing)
+                    c.playing.call(m);
+                m._node.start();
+            }
+            play(a, cache) {
+                if (typeof a == 'string') {
+                    cache.get(a).then(buf => {
+                        this.play(buf);
+                    });
+                }
+                else {
+                    if (a)
+                        AC.decodeAudioData(a, (buffer) => {
+                            this._play(buffer);
+                        }, err => {
+                            JSLogger.error('Decode audio buffer fail!');
+                        });
+                }
+            }
+            stop() {
+                if (this._node)
+                    this._node.stop();
+            }
+            volume(n) {
+                let m = this;
+                m._init.volume = n;
+                if (m._gain)
+                    m._gain.gain.value = n;
+            }
+            _dispose() {
+                let m = this;
+                m._gain.disconnect();
+                m._node.disconnect();
+            }
+        }
+        media.AudioPro = AudioPro;
+    })(media = JS.media || (JS.media = {}));
+})(JS || (JS = {}));
+var AudioPro = JS.media.AudioPro;
+var JS;
+(function (JS) {
+    let media;
+    (function (media) {
+        class VideoPlayer {
             constructor(c) {
                 let T = this;
                 T._c = Jsons.union({
@@ -12293,10 +14265,10 @@ var JS;
                 this._el['on' + e] = fn;
             }
         }
-        media.Video = Video;
+        media.VideoPlayer = VideoPlayer;
     })(media = JS.media || (JS.media = {}));
 })(JS || (JS = {}));
-var Video = JS.media.Video;
+var VideoPlayer = JS.media.VideoPlayer;
 var JS;
 (function (JS) {
     let store;
@@ -12398,6 +14370,222 @@ var JS;
 (function (JS) {
     let store;
     (function (store) {
+        class DataCache {
+            constructor(init) {
+                this._init = init;
+                this._tName = init.name;
+            }
+            destroy() {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        db.deleteObjectStore(me._tName);
+                        this.resolve();
+                    });
+                });
+            }
+            _open() {
+                let me = this;
+                return Promises.create(function () {
+                    let dbReq = window.indexedDB.open(me._tName, 1);
+                    dbReq.onupgradeneeded = (e) => {
+                        let db = dbReq.result;
+                        db.onerror = () => { this.reject(null); };
+                        if (!db.objectStoreNames.contains(me._tName))
+                            db.createObjectStore(me._tName, { keyPath: 'id', autoIncrement: false });
+                    };
+                    dbReq.onsuccess = (e) => {
+                        let db = e.target['result'];
+                        this.resolve(db);
+                    };
+                });
+            }
+            keys() {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let tx = db.transaction(me._tName, 'readonly'), table = tx.objectStore(me._tName), req = table.getAllKeys();
+                        req.onsuccess = (e) => {
+                            let rst = e.target['result'];
+                            db.close();
+                            this.resolve(rst);
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                        };
+                    });
+                });
+            }
+            hasKey(id) {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let tx = db.transaction(me._tName, 'readonly'), table = tx.objectStore(me._tName), req = table.getKey(id);
+                        req.onsuccess = (e) => {
+                            let rst = e.target['result'];
+                            db.close();
+                            this.resolve(rst !== undefined);
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                        };
+                    });
+                });
+            }
+            write(d) {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let tx = db.transaction(me._tName, 'readwrite'), table = tx.objectStore(me._tName), req = table.put(d);
+                        req.onsuccess = (e) => {
+                            db.close();
+                            this.resolve();
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                            if (me._init.onWriteFail)
+                                me._init.onWriteFail.call(me, e);
+                        };
+                    });
+                });
+            }
+            delete(id) {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let table = db.transaction(me._tName, 'readwrite').objectStore(me._tName), req = table.delete(id);
+                        req.onsuccess = (e) => {
+                            db.close();
+                            this.resolve();
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                            if (me._init.onWriteFail)
+                                me._init.onWriteFail.call(me, e);
+                            this.reject();
+                        };
+                    }).catch(() => {
+                        this.reject();
+                    });
+                });
+            }
+            clear() {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let table = db.transaction(me._tName, 'readwrite').objectStore(me._tName), req = table.clear();
+                        req.onsuccess = (e) => {
+                            db.close();
+                            this.resolve();
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                            if (me._init.onWriteFail)
+                                me._init.onWriteFail.call(me, e);
+                        };
+                    });
+                });
+            }
+            read(id) {
+                let me = this;
+                return Promises.create(function () {
+                    me._open().then(db => {
+                        let table = db.transaction(me._tName, 'readonly').objectStore(me._tName), req = table.get(id);
+                        req.onsuccess = (e) => {
+                            let file = e.target['result'];
+                            db.close();
+                            if (file) {
+                                this.resolve(file.data);
+                            }
+                            else {
+                                if (me._init.onReadFail)
+                                    me._init.onReadFail.call(me, e);
+                            }
+                        };
+                        req.onerror = (e) => {
+                            db.close();
+                            if (me._init.onReadFail)
+                                me._init.onReadFail.call(me, e);
+                        };
+                    });
+                });
+            }
+            load(d) {
+                let me = this;
+                return Promises.create(function () {
+                    Http.get({
+                        url: d.url,
+                        responseType: d.type,
+                        error: res => {
+                            if (me._init.onLoadFail)
+                                me._init.onLoadFail.call(me, res);
+                            this.reject(me);
+                        },
+                        success: res => {
+                            me.write({
+                                id: d.id,
+                                data: res.raw
+                            }).then(() => {
+                                this.resolve(me);
+                            }).catch(() => {
+                                this.reject(me);
+                            });
+                        }
+                    });
+                });
+            }
+        }
+        store.DataCache = DataCache;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var DataCache = JS.store.DataCache;
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
+        class ImageCache {
+            constructor() {
+                this._map = {};
+            }
+            _load(id, url) {
+                let m = this;
+                return Promises.create(function () {
+                    let img = new Image();
+                    img.onload = () => {
+                        m.set(id, img);
+                        this.resolve();
+                    };
+                    img.src = url;
+                });
+            }
+            load(imgs) {
+                let ms = Types.isArray(imgs) ? imgs : [imgs], plans = [];
+                ms.forEach(img => {
+                    plans.push(Promises.newPlan(this._load, [img.id, img.url], this));
+                });
+                return Promises.all(plans);
+            }
+            set(id, img) {
+                this._map[id] = img;
+            }
+            get(id) {
+                return this._map[id];
+            }
+            has(id) {
+                return this._map.hasOwnProperty(id);
+            }
+            clear() {
+                this._map = {};
+            }
+        }
+        store.ImageCache = ImageCache;
+    })(store = JS.store || (JS.store = {}));
+})(JS || (JS = {}));
+var ImageCache = JS.store.ImageCache;
+var JS;
+(function (JS) {
+    let store;
+    (function (store) {
         let L = localStorage;
         class LocalStore {
             static get(key) {
@@ -12470,6 +14658,119 @@ var JS;
     })(store = JS.store || (JS.store = {}));
 })(JS || (JS = {}));
 var SessionStore = JS.store.SessionStore;
+var JS;
+(function (JS) {
+    let sugar;
+    (function (sugar) {
+        let T = Types;
+        function deprecated(info) {
+            return sugar.Annotations.define({
+                name: 'deprecated',
+                handler: (anno, values, obj, propertyKey) => {
+                    let info = values ? (values[0] || '') : '', text = null;
+                    if (T.equalKlass(obj)) {
+                        text = `The [${obj.name}] class`;
+                    }
+                    else {
+                        let klass = obj.constructor;
+                        text = `The [${propertyKey}] ${T.isFunction(obj[propertyKey]) ? 'method' : 'field'} of ${klass.name}`;
+                    }
+                    JSLogger.warn(text + ' has been deprecated. ' + info);
+                }
+            }, arguments);
+        }
+        sugar.deprecated = deprecated;
+        var _aop = function (args, fn, anno) {
+            return sugar.Annotations.define({
+                name: anno,
+                handler: (anno, values, obj, methodName) => {
+                    let adv = {};
+                    if (T.isFunction(values[0])) {
+                        adv[anno] = values[0];
+                    }
+                    else {
+                        adv = values[0];
+                        if (!adv)
+                            return;
+                    }
+                    sugar.Class.aop(obj.constructor, methodName, adv);
+                },
+                target: sugar.AnnotationTarget.METHOD
+            }, args);
+        };
+        function before(fn) {
+            return _aop(arguments, fn, 'before');
+        }
+        sugar.before = before;
+        function after(fn) {
+            return _aop(arguments, fn, 'after');
+        }
+        sugar.after = after;
+        function around(fn) {
+            return _aop(arguments, fn, 'around');
+        }
+        sugar.around = around;
+        function throws(fn) {
+            return _aop(arguments, fn, 'throws');
+        }
+        sugar.throws = throws;
+    })(sugar = JS.sugar || (JS.sugar = {}));
+})(JS || (JS = {}));
+(function () {
+    let $F = Function.prototype;
+    $F.aop = function (advisor, that) {
+        let old = this, fn = function () {
+            let args = Arrays.newArray(arguments), ctx = that || this, rst = undefined;
+            if (advisor.before)
+                advisor.before.apply(ctx, args);
+            try {
+                rst = advisor.around ? advisor.around.apply(ctx, [old].concat(args)) : old.apply(ctx, args);
+            }
+            catch (e) {
+                if (advisor.throws)
+                    advisor.throws.apply(ctx, [e]);
+            }
+            if (advisor.after)
+                advisor.after.apply(ctx, [rst]);
+            return rst;
+        };
+        return fn;
+    };
+    $F.mixin = function (kls, methodNames) {
+        if (!kls)
+            return;
+        let kp = kls.prototype, tp = this.prototype, ms = Reflect.ownKeys(kp);
+        for (let i = 0, len = ms.length; i < len; i++) {
+            let m = ms[i];
+            if ('constructor' != m && !tp[m]) {
+                if (methodNames) {
+                    if (methodNames.findIndex(v => { return v == m; }) > -1)
+                        tp[m] = kp[m];
+                }
+                else {
+                    tp[m] = kp[m];
+                }
+            }
+        }
+    };
+})();
+var __decorate = function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+        r = Reflect.decorate(decorators, target, key, desc);
+    else
+        for (var i = decorators.length - 1; i >= 0; i--)
+            if (d = decorators[i])
+                r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    if (key && r && typeof target[key] == 'function')
+        delete r.value;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var deprecated = JS.sugar.deprecated;
+var before = JS.sugar.before;
+var after = JS.sugar.after;
+var around = JS.sugar.around;
+var throws = JS.sugar.throws;
 var JS;
 (function (JS) {
     let ui;
@@ -12812,18 +15113,18 @@ var JS;
             _addTest(test) {
                 if (!test)
                     return;
-                let T = this;
+                let m = this;
                 if (Y.ofKlass(test, TestSuite_1)) {
-                    T._cases = T._cases.concat(test.getTestCases());
+                    m._cases = m._cases.concat(test.getTestCases());
                 }
                 else if (Y.ofKlass(test, unit.TestCase)) {
-                    T._cases[T._cases.length] = test;
+                    m._cases[m._cases.length] = test;
                 }
-                else if (Y.subClass(test, TestSuite_1.class)) {
-                    T._cases = T._cases.concat(Class.newInstance(test.name).getTestCases());
+                else if (test.subclassOf(TestSuite_1.class)) {
+                    m._cases = m._cases.concat(Class.newInstance(test.name).getTestCases());
                 }
-                else if (Y.subClass(test, unit.TestCase.class)) {
-                    T._cases[T._cases.length] = Class.newInstance(test.name);
+                else if (test.subclassOf(unit.TestCase.class)) {
+                    m._cases[m._cases.length] = Class.newInstance(test.name);
                 }
             }
             _addTestMethods() {
@@ -13307,35 +15608,6 @@ var JS;
 (function (JS) {
     let view;
     (function (view) {
-        class PageView extends view.View {
-            load(api) {
-                return this.getWidget(this._config.id).load(api);
-            }
-            reload() {
-                this.getWidget(this._config.id).reload();
-                return this;
-            }
-            _render() {
-                if (this._config) {
-                    this._fire('widgetiniting', [this._config.klass, this._config]);
-                    let wgt = Class.aliasInstance(this._config.klass, this._config);
-                    this._fire('widgetinited', [wgt]);
-                    this._model = wgt.dataModel();
-                    this._model.on('dataupdated', (e, data) => {
-                        this._fire('dataupdated', [data]);
-                    });
-                    this.addWidget(wgt);
-                }
-            }
-        }
-        view.PageView = PageView;
-    })(view = JS.view || (JS.view = {}));
-})(JS || (JS = {}));
-var PageView = JS.view.PageView;
-var JS;
-(function (JS) {
-    let view;
-    (function (view) {
         class SimpleView extends view.View {
             _render() {
                 if (this._config) {
@@ -13381,7 +15653,7 @@ var JS;
                     ctr.off().innerHTML = html;
                     let wConfigs = cfg.widgetConfigs;
                     if (!Check.isEmpty(wConfigs))
-                        ctr.findAll('[jsfx-alias]').forEach((el) => {
+                        ctr.findAll(`[${view.View.WIDGET_ATTRIBUTE}]`).forEach((el) => {
                             let realId = $1(el).attr('id'), prefixId = realId.replace(/(\d)*/g, '');
                             this.addWidget(this._newWidget(realId, wConfigs[prefixId], cfg.defaultConfig));
                         });

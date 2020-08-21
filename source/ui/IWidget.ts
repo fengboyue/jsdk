@@ -18,7 +18,7 @@ module JS {
             hide(): this
             isShown(): boolean;
             locale(): string;
-            locale(locale: string): this;
+            locale(locale: string):this;
             on(type: string, fn: EventHandler<this>): this;
             off(type?: string): this;
             destroy(): void;
@@ -38,7 +38,7 @@ module JS {
         export interface IDataWidget extends IWidget {
             data<T>(): T;
             data(data: any, silent?: boolean): this;
-            load<T>(api: string | AjaxRequest): Promise<ResultSet<T>>;
+            load<T>(api: string | HttpRequest): Promise<ResultSet<T>>;
             reload(): this;
             dataModel<M>(): M;
         }
@@ -59,7 +59,7 @@ module JS {
                 handler: (anno: string, values: Array<string>, obj: Function | object) => {
                     let ctor = <Function>obj, name = values[0];
                     //注册类名与别名
-                    Class.register(ctor, name, alias ? alias : (name.slice(name.lastIndexOf('.')+1)).toLowerCase());
+                    Class.reflect(ctor, name, alias ? alias : (name.slice(name.lastIndexOf('.')+1)).toLowerCase());
                 },
                 target: AnnotationTarget.CLASS
             }, [fullName]);

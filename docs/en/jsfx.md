@@ -1,4 +1,4 @@
-JS FaceX, its short name is jsfx, is a set of widgets provided by JSDK.
+JS FaceX its short name is <b>JSFX</b>, is a set of widgets provided by JSDK.
 > The JSFX widgets require the browser to support CSS3.
 > 
 > The JSFX library depends on jQuery(v3.2.1+) and Bootstrap(v4+).
@@ -42,7 +42,7 @@ Toast|toast||auto message box|$jsfx.toast
 Sider|sider||float side window|$jsfx.sider
 
 
-## Use of widget
+## Usage of widget
 1. Add a div tag as widget tag in HTML and give its id.
 
 ```html
@@ -108,7 +108,7 @@ Most form widgets of JSFX provide:
 * *If you need to customize the size or color or face, you can rewrite the css file of the widget or give new values to style vars predefined in the widget css.*
 
 ### Inner Layouts
-Any form widget consists of two parts: title and body. You can assign their width values or percentages.
+Any form widget consists of two parts: <code>title</code> and <code>body</code>. You can assign their width values or percentages.
 
 The title has two types of relative position:
 - top: on the body
@@ -154,7 +154,7 @@ wgt.value('2');//set value 2 of wgt
 ```
 
 ### Data binding & Value binding
-The form widgets of JSFX have two built-in properties: dataModel/valueModel, which provide the functions of data binding and value binding.
+The form widgets of JSFX have two built-in properties: <code>dataModel/valueModel</code>, which provide the functions of data binding and value binding.
 
 For example, if you modify the value of a widget object, the selected value of the widget on page will also be changed.
 ```javascript
@@ -168,8 +168,8 @@ console.log(wgt.value());//select a new value on page first
 ```
 
 ### Value/iniValue and Reset
-The value is the current value of a widget, the iniValue is the default value when a widget be initiated.
-After reset, the value of a widget will be overwritten by its iniValue.
+The value is the current value of a widget, the <code>iniValue</code> is default value when a widget be initiated.
+After reset, the value of a widget will be overwritten by its <code>iniValue</code>.
 
 Sample code:
 
@@ -230,7 +230,7 @@ let chk = new Checkbox({
 });
 ```
 
-JSFX supports five types of validators:
+JSFX supports five types of <code>validators</code>:
 > required
 >
 > format
@@ -246,18 +246,18 @@ JSFX supports five types of validators:
 
 ### Form View
 There are usually many widgets in a form. If each widget is instantiated like the above code, a lot of redundant code will be written.
-So JSDK provides the FormView class to manage all widgets in a form, batch simplifies the following operations: instantiation, destruction, value reading and writing, value reset, value validating, etc.
+So JSDK provides <b>FormView</b> class to manage all widgets in a form, batch simplifies the following operations: instantiation, destruction, value reading and writing, value reset, value validating, etc.
 
 1. Add a form container and widget tags in HTML:
 
 ```html
 <div id="fv1">
-    <div id="first_name" jsfx-alias="textinput" /> <!-- The "jsfx-alias" attribute should be filled in the alias of widget. -->
-    <div id="last_name" jsfx-alias="textinput" />
-    <div id="submit" jsfx-alias="button" />    
+    <div id="first_name" js-wgt="textinput" /> <!-- The "js-wgt" attribute should be filled in the alias of widget. -->
+    <div id="last_name" js-wgt="textinput" />
+    <div id="submit" js-wgt="button" />    
 </div>
 ```
-2. Define MyFormView class in TS: 
+2. Define <b>MyFormView</b> class in TS: 
 
 ```javascript
 module JS {
@@ -306,7 +306,7 @@ module JS {
 import MyFormView = JS.examples.MyFormView;
 ```
 
-3. Use MyFormView in TS/JS:
+3. Use <b>MyFormView</b> in TS/JS:
 
 ```javascript
 JS.imports([
@@ -327,14 +327,14 @@ JS.imports([
 
 ## I18N
 The config item <code>i18n</code> of a widget is its i18n resources, the config item <code>locale</code> of a widget is its locale.
-Within JSFX widgets, use the <b>JS.util.Bundle</b> class to read international texts from resource.
+Within JSFX widgets, use the <b>JS.util.I18N</b> class to read international texts from resource.
 
 ### Definition of resource
-For example, the <code>i18n</code> item of Grid only defines English resource by default.
+For example, the <code>i18n</code> item of <b>Grid</b> only defines English resource by default.
 Suppose you need to add Chinese resource for displaying Chinese text, there are two ways.
 
 <b>[Way 1]</b><br>  
-Add Chinese resource data for Grid in JS code.
+Add Chinese resource data for <b>Grid</b> in JS code.
 
 You can add to the static resource property of Grid class (effective for all grids):
 ```javascript
@@ -387,7 +387,7 @@ let grid = new Grid({
 ```
 
 <b>[Way 2]</b><br>  
-Add resource files for Grid, which is recommended.
+Add resource files for <b>Grid</b>, which is recommended.
 
 Add the following two resource files to "/libs/jsdk/grid/".
 1. <code>grid_en.json</code>
@@ -422,7 +422,7 @@ Grid.I18N = '/libs/jsdk/grid/grid.json'; //web server path
 ```
 
 ### Display in language
-We initialize a Grid object and set it to display in Chinese:
+We initialize a grid object and set it to display in Chinese:
 ```javascript
 let grid = new Grid({
     locale: 'zh'
@@ -478,17 +478,17 @@ new Button({
 ```
 <br>   
 
-*If predefined variables of the widget can not meet your custom requirements, you can also try the following ways:*<br>
-* *Load a new css file, overwrite the styles in jsfx.css*<br>
-* *Or modify the SCSS file of a widget and recompile it to jsfx.css (It's a bad practice)*<br>
-* *Or email me to describe your requirements*
+*If predefined variables of a widget can not meet your custom requirements, you can also try the following ways:*<br>
+* *Load a new css file, overwrite the styles in jsfx.css.*<br>
+* *Modify its SCSS file of the widget and recompile it to jsfx.css. But you should understand that this is a temporary approach.*<br>
+* *Email me to describe your special requirements. Maybe I can or can't solve it.*
 
 ## Custom Widget
 Suppose you want to wrap your own widget or an open widget to a JSFX widget.
 
-For example, you want to wrap "xpicker"(a fictitious open source time-picker) to a JSFX form widget.
+For example, you want to wrap <code>xpicker</code>(a fictitious open source time-picker) to a JSFX form widget.
 
-1. Place its source files in the "libs" directory:
+1. Place its source files in the <code>libs</code> directory:
 
 ```
 - libs/        
@@ -599,7 +599,7 @@ The compile config file <code>xpicker.json</code>:
 } 
 ```
 
-5. Use the new XPicker class in TS/JS code:
+5. Use <b>XPicker</b> class in TS/JS code:
 
 ```javascript
 JS.imports([

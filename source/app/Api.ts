@@ -10,7 +10,7 @@ module JS {
 
     export namespace app {
 
-        export interface Api<T> extends AjaxRequest{
+        export interface Api<T> extends HttpRequest{
             dataKlass?: Klass<T>;
         }
     }

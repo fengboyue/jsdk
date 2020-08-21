@@ -6,6 +6,8 @@
  * @version 2.1.0
  * @author Frank.Feng
  */
+/// <reference path="FrameAnim.ts" />
+
 module JS {
 
     export namespace an {
@@ -18,9 +20,16 @@ module JS {
             aY?: number,
             aZ?: number
         };
-        export type RotateKeyFrames = JsonObject<RotateKeyFrame>;
+        export type RotateKeyFrames = 
+        {
+            from?: RotateKeyFrame,
+            to?: RotateKeyFrame,
+            "0%"?: RotateKeyFrame,
+            "100%"?: RotateKeyFrame,
+            [key: string]: RotateKeyFrame
+        }
 
-        export class RotateAnimConfig extends ElementAnimConfig {
+        export class RotateAnimInit extends FrameAnimInit {
             frames: RotateKeyFrames
         }
 
@@ -28,9 +37,9 @@ module JS {
          * Rotate Animation.<br>
          * Rotate a element by 2D or 3D angles.
          */
-        export class RotateAnim extends ElementAnim {
+        export class RotateAnim extends FrameAnim {
 
-            constructor(cfg: RotateAnimConfig) {
+            constructor(cfg: RotateAnimInit) {
                 super(cfg);
             }
 
@@ -52,7 +61,7 @@ module JS {
                 }
             }
 
-            protected _resetInitial(){
+            protected _resetEl(){
                 this._el.style.transform = `rotate(0deg)`
             }
         }
@@ -60,5 +69,5 @@ module JS {
 }
 import RotateKeyFrame = JS.an.RotateKeyFrame;
 import RotateKeyFrames = JS.an.RotateKeyFrames;
-import RotateAnimConfig = JS.an.RotateAnimConfig;
+import RotateAnimInit = JS.an.RotateAnimInit;
 import RotateAnim = JS.an.RotateAnim;

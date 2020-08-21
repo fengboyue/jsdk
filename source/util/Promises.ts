@@ -42,7 +42,7 @@ module JS {
          * A promised task<br>
          * 一个Promise计划
          */
-        export type PromisePlan<T> = (value?:any)=>Promise<T>;
+        export type PromisePlan<T> = (...args:any[])=>Promise<T>;
         /**
          * A queue of promised tasks<br>
          * 一组Promise计划
@@ -128,7 +128,7 @@ module JS {
                 plans.forEach(task => {
                     rst.push(task())
                 })
-                return Promise.all(rst)
+                return Promise.all<T>(rst)
             }
             /**
              * Parallel execute and returns when any plan be executed.<br>

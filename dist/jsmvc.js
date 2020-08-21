@@ -1,6 +1,6 @@
-//# sourceURL=jsmvc.js
+//# sourceURL=../dist/jsmvc.js
 /**
-* JSDK 2.4.0 
+* JSDK 2.5.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -14,7 +14,7 @@ var JS;
                 name: 'component',
                 handler: (anno, values, obj) => {
                     let className = values[0];
-                    Class.register(obj, className);
+                    Class.reflect(obj, className);
                     ioc.Components.add(Class.forName(className).name);
                 }
             }, arguments);
@@ -121,7 +121,6 @@ var JS;
         class Field {
             constructor(config) {
                 this._cfg = Jsons.union({
-                    type: 'string',
                     isId: false,
                     nullable: true,
                     defaultValue: null
@@ -149,9 +148,6 @@ var JS;
             defaultValue() {
                 return this._cfg.defaultValue;
             }
-            type() {
-                return this._cfg.type;
-            }
             nullable() {
                 return this._cfg.nullable;
             }
@@ -161,19 +157,6 @@ var JS;
                     throw new TypeError(`This Field<${T.name()}> must be not null`);
                 let fn = T._cfg.setter, v = fn ? fn.apply(T, [val]) : val;
                 return v === undefined ? T._cfg.defaultValue : v;
-            }
-            compare(v1, v2) {
-                let ret = 0;
-                if (this._cfg.comparable) {
-                    ret = this._cfg.comparable(v1, v2);
-                }
-                else {
-                    ret = (v1 === v2) ? 0 : ((v1 < v2) ? -1 : 1);
-                }
-                return ret;
-            }
-            isEqual(v1, v2) {
-                return this.compare(v1, v2) === 0;
             }
             validate(value, errors) {
                 let cfg = this._cfg, vts = cfg.validators, rst, ret = '';
@@ -206,15 +189,15 @@ var JS;
             constructor() {
                 super();
             }
-            execute(query, data) {
+            execute(query) {
                 var req = Jsons.union({
                     method: 'GET'
-                }, Ajax.toRequest(query, data), {
+                }, Http.toRequest(query), {
                     async: true,
-                    type: 'json'
+                    responseType: 'json'
                 });
                 return new Promise(function (resolve, reject) {
-                    Ajax.send(req).always((res) => {
+                    Http.send(req).always((res) => {
                         let result = model.ResultSet.parseJSON(res.data);
                         result && result.success() ? resolve(result) : reject(res);
                     });
@@ -263,7 +246,7 @@ var JS;
             }
             _check() {
                 if (this.isDestroyed())
-                    throw new NotHandledError('The model was destroyed!');
+                    throw new RefusedError('The model was destroyed!');
             }
             addSorter(field, dir) {
                 this._check();
@@ -340,7 +323,7 @@ var JS;
             }
             load(quy, silent) {
                 this._check();
-                let me = this, query = J.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
+                let me = this, query = J.union(Http.toRequest(this._config.dataQuery), Http.toRequest(quy));
                 query.data = J.union(query.data, this._sortParams());
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
@@ -431,7 +414,7 @@ var JS;
                 if (!id || this.size() == 0)
                     return -1;
                 let idName = 'id';
-                if (this._modelKlass && Types.subKlass(this._modelKlass, model_1.Model)) {
+                if (this._modelKlass && Types.subklassOf(this._modelKlass, model_1.Model)) {
                     let model = Class.newInstance(this._modelKlass), field = model.getIdField();
                     if (field)
                         idName = field.alias();
@@ -555,7 +538,7 @@ var JS;
             }
             _check() {
                 if (this.isDestroyed())
-                    throw new NotHandledError('The model was destroyed!');
+                    throw new RefusedError('The model was destroyed!');
             }
             _newField(cfg) {
                 let tField = null;
@@ -633,7 +616,7 @@ var JS;
             }
             load(quy, silent) {
                 this._check();
-                let me = this, query = J.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
+                let me = this, query = J.union(Http.toRequest(this._config.dataQuery), Http.toRequest(quy));
                 this._fire('loading', [query]);
                 this._config.dataQuery = query;
                 return new model_2.JsonProxy().execute(query).then(function (result) {
@@ -849,13 +832,14 @@ var JS;
             }
             load(quy, silent) {
                 this._check();
-                let me = this, query = Jsons.union(Ajax.toRequest(this._config.dataQuery), Ajax.toRequest(quy));
+                let me = this, query = Jsons.union(Http.toRequest(this._config.dataQuery), Http.toRequest(quy));
                 this._fire('loading', [query]);
                 me._config.dataQuery = query;
                 return new model.JsonProxy().execute({
                     method: query.method,
-                    url: query.url
-                }, me._newParams(query)).then(function (result) {
+                    url: query.url,
+                    data: me._newParams(query)
+                }).then(function (result) {
                     if (result.success()) {
                         me.total(result.total());
                         me.setData(result.data(), silent);
@@ -1014,7 +998,7 @@ var JS;
                 result.message(F(root, fmt.messageProperty));
                 result.version(F(root, fmt.versionProperty));
                 result.success(fmt.isSuccess ? fmt.isSuccess(root) : (root[fmt.successProperty] === (fmt.successCode || true)));
-                result.data(F(root, fmt.recordsProperty));
+                result.data(F(root, fmt.dataProperty));
                 result.rawObject(root);
                 result.page(F(root, fmt.pageProperty));
                 result.pageSize(F(root, fmt.pageSizeProperty));
@@ -1024,7 +1008,7 @@ var JS;
         }
         ResultSet.DEFAULT_FORMAT = {
             rootProperty: undefined,
-            recordsProperty: 'data',
+            dataProperty: 'data',
             totalProperty: 'paging.total',
             pageProperty: 'paging.page',
             pageSizeProperty: 'paging.pageSize',
@@ -1280,7 +1264,7 @@ var JS;
                     JSLogger.error('The widget\'s id was empty when be inited!');
                     return null;
                 }
-                let vconfig = cfg, newConfig = Jsons.union(defaults, vconfig, { id: id }), klass = newConfig.klass || $1('#' + id).attr('jsfx-alias');
+                let vconfig = cfg, newConfig = Jsons.union(defaults, vconfig, { id: id }), klass = newConfig.klass || $1('#' + id).attr(View.WIDGET_ATTRIBUTE);
                 if (!klass) {
                     JSLogger.error(`The widget<${id}> was not configured for its klass type!`);
                     return null;
@@ -1291,6 +1275,7 @@ var JS;
                 return wgt;
             }
         }
+        View.WIDGET_ATTRIBUTE = 'js-wgt';
         view.View = View;
     })(view = JS.view || (JS.view = {}));
 })(JS || (JS = {}));
@@ -1410,35 +1395,6 @@ var JS;
 (function (JS) {
     let view;
     (function (view) {
-        class PageView extends view.View {
-            load(api) {
-                return this.getWidget(this._config.id).load(api);
-            }
-            reload() {
-                this.getWidget(this._config.id).reload();
-                return this;
-            }
-            _render() {
-                if (this._config) {
-                    this._fire('widgetiniting', [this._config.klass, this._config]);
-                    let wgt = Class.aliasInstance(this._config.klass, this._config);
-                    this._fire('widgetinited', [wgt]);
-                    this._model = wgt.dataModel();
-                    this._model.on('dataupdated', (e, data) => {
-                        this._fire('dataupdated', [data]);
-                    });
-                    this.addWidget(wgt);
-                }
-            }
-        }
-        view.PageView = PageView;
-    })(view = JS.view || (JS.view = {}));
-})(JS || (JS = {}));
-var PageView = JS.view.PageView;
-var JS;
-(function (JS) {
-    let view;
-    (function (view) {
         class SimpleView extends view.View {
             _render() {
                 if (this._config) {
@@ -1484,7 +1440,7 @@ var JS;
                     ctr.off().innerHTML = html;
                     let wConfigs = cfg.widgetConfigs;
                     if (!Check.isEmpty(wConfigs))
-                        ctr.findAll('[jsfx-alias]').forEach((el) => {
+                        ctr.findAll(`[${view.View.WIDGET_ATTRIBUTE}]`).forEach((el) => {
                             let realId = $1(el).attr('id'), prefixId = realId.replace(/(\d)*/g, '');
                             this.addWidget(this._newWidget(realId, wConfigs[prefixId], cfg.defaultConfig));
                         });

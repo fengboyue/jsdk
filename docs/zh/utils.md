@@ -16,7 +16,7 @@ Konsole.print(1, 2, 3);
 Konsole.clear();
 ```
 
-## 日志管理
+## 日志
 ### 使用日志类
 在需要日志输出的地方，实例化一个日志类：
 ```javascript
@@ -75,7 +75,7 @@ export class AjaxAppender implements LogAppender {
         this.name = name;
     }
     public log(level: LogLevel.TRACE | LogLevel.DEBUG | LogLevel.INFO | LogLevel.WARN | LogLevel.ERROR, ...data: any[]) {
-        Ajax.send({
+        Http.send({
             url: 'xxxx',
             data: {
                 name: this.name,
@@ -97,7 +97,7 @@ JSDK提供了<b>JS.lang.JSError</b>类作为自定义Error的父类（继承自�
 ### 预定义Error
 JSDK预定义了7个Error类，继承自JSError类。你可以直接使用这些Error，它们分别是：
 ```text
-NotHandledError
+RefusedError
 NotFoundError
 ArithmeticError
 ArgumentError
@@ -129,60 +129,62 @@ throw new MyError('xxxxx');
 > 3. 非必要时尽量不抛出异常；方法可以尽量设计成以返回null或false表示执行失败，同时考虑日志打印异常上下文信息以方便调试。
 
 ## 国际化
-JSDK提供工具类<b>JS.util.Bundle</b>来管理国际化资源。
+JSDK提供工具类<b>JS.util.I18N</b>来管理国际化资源。
 
 ### 资源的加载
-Bundle类允许以两种方式加载资源：JSON格式的资源数据或JSON格式的资源文件。
+I18N类允许以两种方式加载JSON格式的资源：本地的资源数据或远程的资源文件。
 
-<b>1. 加载资源数据</b>
+<b>1. 加载本地的资源数据</b>
 
 ```javascript
-let bundle = new Bundle({
-    'zh': { //将加载key为'zh'的这块数据
+let i18n = new I18N('zh-CN').set({
+    'zh': { 
         k1: '中文'
     },
-    'zh-CN': {
+    'zh-CN': {//将加载这块数据
         k1: '中文，中国'
-    }
-    ,
+    },
     'CN': {
         k1: '中国'
     }
-}, 'zh'); //指定时区='zh'
+}); 
 ```
 
-Bundle类会以下顺序去查找资源数据中的键（假设时区为"zh-CN"），找到后加载其值：
+<code>set</code>方法会以下顺序去查找资源数据中的键（假设当前时区为"zh-CN"），找到后加载数据：
 <p class="warn">
 zh_CN<br>
 zh
 </p>
 
-* *当前键不存在则自动查找下一级键。如果最终所有这些键都不存在，则Bundle类会自动装载整个JSON数据。*
+* *当前键不存在则自动查找下一级键。如果最终所有这些键都不存在，则I8N类会自动装载整个JSON数据。*
 
-<b>2. 加载资源文件</b>
+<b>2. 加载远程的资源文件</b>
 
 ```javascript
-//未指定时区，则缺省时区为系统时区：System.info().locale
-let bundle = new Bundle('http://mydomain/xxx.yyy'); 
+let i18n = new I18N(); //缺省为系统时区：System.info().locale
+i18n.load('http://mydomain/xxx.yyy', 'zh-CN'); //当前时区为zh-CN
 ```
-* *xxx.yyy文件内容与上述JSON数据格式相同*
+<code>xxx.yyy</code>文件是一个JSON格式的资源文件：
+```text
+{
+    "k1": "中文，中国"
+}
+```
 
-Bundle类会以下顺序去查找资源文件名（假设时区为"zh-CN"），找到后以Ajax方式加载文件：
+<code>load</code>方法会以下顺序去依次查找资源文件名（假设当前时区为"zh-CN"），找到后以Ajax方式加载数据：
 <p class="warn">
 xxx_zh_CN.yyy<br>
 xxx_zh.yyy<br>
 xxx.yyy
 </p>
 
-* *当前文件不存在则自动查找下一级文件。如果最终所有这些文件都不存在，则Bundle类会打印错误日志：未找到资源文件。*
+* *当前文件不存在则自动查找下一级文件。如果最终所有这些文件都不存在，则会打印错误日志：未找到任何可用的资源文件。*
 
 ### 资源的使用
 
 ```javascript
-let bundle = new Bundle(...);
-
-bundle.get('k1'); //Read the value of "k1"
-bundle.get(); //Read all values
+i18n.get('k1'); //Read the value of "k1" in current locale
+i18n.get(); //Read all key-value pairs in current locale
 ```
 
 ## 事件总线
@@ -260,3 +262,72 @@ Bom.ready(() => {
 <br><br>
 请不要在线程代码中使用HTMLElement的扩展方法以及JS.util.Dom类，也不要尝试执行任何与DOM相关的API，否则会直接导致线程脚本错误。因为WebWorker规范禁止在线程代码中读写DOM。
 </p>
+
+## Promise助手
+HTML5提供了 <b>Promise</b> 来更好的支持异步回调式编程。
+例如，我们实例化一个 <b>Promise</b> 对象：
+```javascript
+let p = new Promise<T>((resolve, reject) => {
+    ...
+    resolve(1);
+    ...
+    reject(2);
+})
+```
+上述代码显得不够简明且产生了硬值依赖，JSDK提供了助手类 <b>JS.util.Promises</b> 可以实现更好的写法：
+```javascript
+let p = Promises.create(function(a, b){
+    ...
+    this.resolve(a);
+    ...
+    this.reject(b);
+}, 1, 2)
+```
+
+### 计划与计划队列
+JSDK将返回Promise类型的函数定义为 <b>PromisePlan</b>：
+```javascript
+export type PromisePlan<T> = (...args:any[])=>Promise<T>;
+```
+而将一组 <b>PromisePlan</b> 定义为 <b>PromisePlans</b> 计划队列：
+```javascript
+export type PromisePlans<T> = Array<PromisePlan<T>>;
+```
+
+### 计划队列的执行
+一个异步计划的执行很简单，一组异步计划的执行与结果返回才是难点。<br>
+
+原生的 <b>Promise</b> 类已提供两种队列执行模式：
+* <b>all</b>: 并行执行，所有异步执行都完成才返回。
+* <b>race</b>: 并行执行，任一个异步执行完成就返回。
+
+现实情况下，我们常常需要第三种执行模式：
+* <b>order</b>: 串行执行，执行完一个异步才能执行下一个异步。最后一个执行完毕才返回。
+
+<b>Promises</b> 类提供了对以上三种执行模式的支持：
+```javascript
+//PromisePlan a
+let a = Promises.createPlan<string>(function () {
+    this.resolve('a');
+});
+
+//PromisePlan b
+let b = Promises.createPlan<string>(function (s) {
+    this.resolve(s+'b');
+});
+
+//PromisePlan c
+let c = Promises.createPlan<string>(function (s) {
+    this.resolve(s+'c');
+});
+
+Promises.order([a, b, c]).then((s) => {
+    Konsole.print('The result of order mode = ' + s);
+});
+Promises.all([a, b, c]).then((s) => {
+    Konsole.print('The result of all mode = ' + s);
+});
+Promises.race([a, b, c]).then((s) => {
+    Konsole.print('The result of race mode = ' + s);
+});
+```

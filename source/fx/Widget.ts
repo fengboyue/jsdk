@@ -25,22 +25,22 @@ module JS {
             protected _initialConfig: WidgetConfig<Widget> = null;//初始配置
 
             constructor(cfg: WidgetConfig<Widget>) {
-                if(!cfg.id && cfg.renderTo) {
+                if (!cfg.id && cfg.renderTo) {
                     let wgt = $(cfg.renderTo);
-                    if(wgt.length==1) {
+                    if (wgt.length == 1) {
                         this.widgetEl = wgt;
                         let id = wgt.attr('id');
-                        if(id){
+                        if (id) {
                             this.id = id
-                        }else{
-                            this.id = Random.uuid(4,10).toString();
+                        } else {
+                            this.id = Random.uuid(4, 10).toString();
                             wgt.attr('id', this.id);
                         }
                     }
-                }else{
-                    this.id = cfg.id || Random.uuid(4,10).toString();
+                } else {
+                    this.id = cfg.id || Random.uuid(4, 10).toString();
                 }
-                
+
                 this._initConfig(cfg);
                 this._onBeforeInit();
                 this._initDom();
@@ -61,7 +61,7 @@ module JS {
              */
             protected _initDom(): void {
                 let cfg = this._config;
-                this.widgetEl = $('#'+this.id);
+                this.widgetEl = $('#' + this.id);
 
                 if (this.widgetEl.length == 0) {
                     this.widgetEl = $('<div />', {
@@ -71,15 +71,15 @@ module JS {
                         title: cfg.tip,
                         style: cfg.style,
                         'klass-name': this.className
-                    }).appendTo(cfg.appendTo||'body');
-                }else{
+                    }).appendTo(cfg.appendTo || 'body');
+                } else {
                     let attrs = {};
                     if (cfg.tip) attrs['title'] = cfg.tip;
                     if (cfg.style) attrs['style'] = (this.widgetEl.attr('style') || '') + cfg.style;
-                    if(!Check.isEmpty(attrs)) this.widgetEl.attr(attrs);
+                    if (!Check.isEmpty(attrs)) this.widgetEl.attr(attrs);
                     if (cfg.width) this.widgetEl.css('width', cfg.width);
                 }
-                    
+
                 this._eventBus = new EventBus(this);
 
                 //监听渲染事件
@@ -90,7 +90,7 @@ module JS {
 
             private _initConfig(cfg: WidgetConfig<Widget>) {
                 let defaultCfg = Class.newInstance<WidgetConfig<Widget>>(this.className + 'Config');
-                cfg.name = cfg.name||this.id;
+                cfg.name = cfg.name || this.id;
                 this._config = J.union(defaultCfg, cfg);
                 this._initialConfig = J.clone(this._config);
             }
@@ -109,9 +109,9 @@ module JS {
                 this.widgetEl.off().empty();
                 //添加组件缺省样式
                 let cfg = this._config;
-                this.widgetEl.addClass(`jsfx-${(<Object>this).getClass().shortName.toLowerCase()} ${cfg.colorMode?'color-'+cfg.colorMode:''} size-${cfg.sizeMode} ${cfg.cls||''}`);
+                this.widgetEl.addClass(`jsfx-${(<Object>this).getClass().shortName.toLowerCase()} ${cfg.colorMode ? 'color-' + cfg.colorMode : ''} size-${cfg.sizeMode} ${cfg.cls || ''}`);
                 let is = this._render();
-                
+
                 //渲染后重新注册事件监听
                 let lts = cfg.listeners || {};
                 J.forEach(<any>lts, function (handler: EventHandler<Widget>, type: string) {
@@ -131,7 +131,7 @@ module JS {
              * 返回控件name属性
              */
             public name() {
-                return this._config.name||'';
+                return this._config.name || '';
             }
 
             /**
@@ -141,7 +141,7 @@ module JS {
              */
             protected _hasFaceMode(key: string, cfg?: WidgetConfig<Widget>): boolean {
                 cfg = cfg || this._config;
-                let t:any = cfg.faceMode;
+                let t: any = cfg.faceMode;
                 if (!t) return false;
 
                 return t == key || t[key] === true || $.inArray(key, t) != -1;
@@ -196,7 +196,7 @@ module JS {
                 return this.widgetEl.css('display') != 'none'
             }
 
-            public on<H = EventHandler<this>>(types: string, fn: H, once?:boolean) {
+            public on<H = EventHandler<this>>(types: string, fn: H, once?: boolean) {
                 this._eventBus.on(types, fn, once);
                 return this
             }
@@ -208,29 +208,40 @@ module JS {
                 return this._eventBus.fire(<any>e, args);
             }
 
-            public static I18N: Resource = null;
-            private _i18nBundle: Bundle = null;
-            private _createBundle() {
-                let defaults = new Bundle((<Object>this).getClass().getKlass<Widget>()['I18N'], this._config.locale);
-                if(!this._config.i18n) return defaults;
-                let b = new Bundle(this._config.i18n, this._config.locale);
-                return defaults? defaults.set(J.union(defaults.get(), b.get())):b
+            public static I18N: I18NResource|URLString = null;
+            private _i18nObj: I18N = null;
+            private _newI18N() {
+                let lc = this._config.locale,
+                n = new I18N(lc),
+                v:I18NResource|URLString = (<Object>this).getClass().getKlass<Widget>()['I18N'];
+                if(v) typeof v == 'string'?n.load(v):n.set(v);
+
+                let i18n = this._config.i18n;
+                if (i18n) {
+                    if (Types.isString(i18n)) {
+                        n.load(<string>i18n, lc);
+                    } else {
+                        n.set(J.union(n.get(), <JsonObject>i18n))
+                    }
+                }
+
+                this._i18nObj = n
             }
-            
+
             protected _i18n(): JsonObject
             protected _i18n<T>(key: string): T
-            protected _i18n(key?: string): any {
-                if (!this._i18nBundle) this._i18nBundle = this._createBundle();
-                return this._i18nBundle? this._i18nBundle.get(<any>key) : undefined;
+            protected _i18n(key?: string) {
+                if (!this._i18nObj) this._newI18N();
+                return this._i18nObj.get(<any>key)
             }
 
-            public locale(): string
-            public locale(locale: string): this
-            public locale(locale?: string): any {
+            locale(): string
+            locale(locale: string): this
+            locale(lc?: string) {
                 if (arguments.length == 0) return this._config.locale;
 
-                this._config.locale = locale;
-                if (locale !== this._config.locale) this._i18nBundle = this._createBundle();
+                // if (locale != this._config.locale) await this._newI18N();
+                this._config.locale = lc;
                 return this
             }
 

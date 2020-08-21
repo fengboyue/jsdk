@@ -16,7 +16,6 @@ module JS {
 
     export namespace lang {
 
-        @klass('JS.lang.AssertError')
         export class AssertError extends JSError { }
 
         let T = Types, F = Functions;
@@ -53,9 +52,26 @@ module JS {
              * Asserts that two objects are equal.
              * @throw AssertError if they are not
              */
+            public static equal(expected: object, actual: object, msg?: string); 
+            /**
+             * Asserts that two dates are equal.
+             * @throw AssertError if they are not
+             */
             public static equal(expected: Date, actual: Date, msg?: string); 
-            public static equal(expected: any[], actual: any[], msg?: string);
-            public static equal(expected: JsonObject, actual: JsonObject, msg?: string); 
+            /**
+             * Asserts that two simple arrays are equal.
+             * @throw AssertError if they are not
+             */
+            public static equal(expected: PrimitiveType[], actual: PrimitiveType[], msg?: string);
+            /**
+             * Asserts that two simple jsons are equal.
+             * @throw AssertError if they are not
+             */
+            public static equal(expected: JsonObject<PrimitiveType>, actual: JsonObject<PrimitiveType>, msg?: string); 
+            /**
+             * Asserts that two primitive types are equal.
+             * @throw AssertError if they are not
+             */
             public static equal(expected: PrimitiveType, actual: PrimitiveType, msg?: string); 
             public static equal(expected: any, actual: any, msg?: string) {
                 if (this._equal(expected,actual)) return
@@ -67,8 +83,20 @@ module JS {
              * @throw AssertError if they are equal
              */
             public static notEqual(expected: Date, actual: Date, msg?: string); 
-            public static notEqual(expected: any[], actual: any[], msg?: string);
-            public static notEqual(expected: JsonObject, actual: JsonObject, msg?: string); 
+            /**
+             * Asserts that two simple arrays are not equal. 
+             * @throw AssertError if they are equal
+             */
+            public static notEqual(expected: PrimitiveType[], actual: PrimitiveType[], msg?: string);
+            /**
+             * Asserts that two simple jsons are not equal. 
+             * @throw AssertError if they are equal
+             */
+            public static notEqual(expected: JsonObject<PrimitiveType>, actual: JsonObject<PrimitiveType>, msg?: string); 
+            /**
+             * Asserts that two primitive types are not equal. 
+             * @throw AssertError if they are equal
+             */
             public static notEqual(expected: PrimitiveType, actual: PrimitiveType, msg?: string); 
             public static notEqual(expected: any, actual: any, msg?: string) {
                 if (!this._equal(expected,actual)) return

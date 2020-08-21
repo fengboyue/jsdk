@@ -10,18 +10,18 @@ module JS {
 
     export namespace an {
 
-        export class ParallelAnimConfig extends AnimConfig {
+        export class ParallelAnimInit extends AnimInit {
             anims: Anim[];
-            el?: HTMLElement|string
+            target?: HTMLElement|string
         }
 
         let E = Check.isEmpty;
         export class ParallelAnim extends Anim {
-            protected _cfg: ParallelAnimConfig;
+            protected _cfg: ParallelAnimInit;
             private _plans: PromisePlans<void>;
             private _sta = AnimState.STOPPED;
 
-            constructor(cfg: ParallelAnimConfig) {
+            constructor(cfg: ParallelAnimInit) {
                 super(cfg)
             }
 
@@ -29,9 +29,9 @@ module JS {
                 return this._sta
             }
 
-            public config(): ParallelAnimConfig
-            public config(cfg: ParallelAnimConfig): this
-            public config(cfg?: ParallelAnimConfig): any {
+            public config(): ParallelAnimInit
+            public config(cfg: ParallelAnimInit): this
+            public config(cfg?: ParallelAnimInit): any {
                 let T = this;
                 if (!cfg) return T._cfg;
 
@@ -95,5 +95,5 @@ module JS {
         }
     }
 }
-import ParallelAnimConfig = JS.an.ParallelAnimConfig;
+import ParallelAnimInit = JS.an.ParallelAnimInit;
 import ParallelAnim = JS.an.ParallelAnim;

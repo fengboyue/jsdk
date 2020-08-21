@@ -1,5 +1,5 @@
-JSUnit is a unit test framework in JSDK, which can help you write and run test cases to improve your code quality.
-* *You can visit the [JSDK Self-Tests](http://fengboyue.github.io/jsdk/tests/), it is an visual example of JSUnit.*
+JSUnit is a unit test framework in JSDK, which can help you to write and run test cases to improve your code quality.
+* *You can visit the [JSDK Self-Tests](http://fengboyue.github.io/jsdk/tests/), it is a best example of JSUnit.*
 
 Let's learn how to write test cases in JSUnit and how to run them.<br>
 1. Create a testcase in the file: <code>MyTest1.ts</code> .
@@ -28,9 +28,9 @@ export class MyTest1 extends TestCase {
 export class SimpleTestSuite extends TestSuite {
     constructor() {
         super([
-                MyTest4.class, //This suite contains three test cases by default
-                MyTest5.class,
-                MyTest6.class,
+            MyTest4.class, //This suite contains three test cases by default
+            MyTest5.class,
+            MyTest6.class,
         ])
     }
 }
@@ -62,4 +62,4 @@ Finall remove old code and add new code in <code>index.html</code>:
 </script>
 ```
 
-4. Open a browser and visit the html on web server, then you can see the test result of automatic running.
+4. Open a browser and visit the html on web server, you will see the tested result.

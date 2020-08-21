@@ -113,4 +113,4 @@ anim.play();
 ```
 
 ## More Examples
-Please see more animation examples in <code>examples</code> directory.
+Please see more animation examples in <code>examples/jsan</code> directory.

@@ -7,7 +7,7 @@
  * @author Frank.Feng
  */
 /// <reference path="../lang/System.ts"/>
-/// <reference path="../reflect/Class.ts"/>
+/// <reference path="../sugar/Class.ts"/>
 /// <reference path="Annotation.ts"/>
 
 module JS {

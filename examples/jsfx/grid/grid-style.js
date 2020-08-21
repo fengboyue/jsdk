@@ -182,7 +182,7 @@ JS.imports([
             {
                 text: 'CREATED DATE*', field: 'gmtCreated', width: 100,
                 renderer: function (val, col, row) {
-                    return val ? `<div jsfx-alias="button" data="${new Date(val).format('YY-MM-DD')}"></div>` : '';
+                    return val ? `<div ${View.WIDGET_ATTRIBUTE}="button" data="${new Date(val).format('YY-MM-DD')}"></div>` : '';
                 }
             },
             { text: 'HANDLER', field: 'handlerNickName' }
@@ -190,7 +190,7 @@ JS.imports([
         data: data,
         listeners: {
             rendered: function () {
-                this.widgetEl.find('[jsfx-alias=button]').each((i, el) => {
+                this.widgetEl.find(`[${View.WIDGET_ATTRIBUTE}=button]`).each((i, el) => {
                     new Button({
                         renderTo: el,
                         text: $(el).attr('data'),

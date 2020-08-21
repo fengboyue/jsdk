@@ -11,7 +11,7 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
-/// <reference path="Bundle.ts"/>
+/// <reference path="I18N.ts"/>
 
 /**
  * Add some helpful methods for Date.prototype
@@ -180,7 +180,7 @@ module JS {
          */
         export class Dates {
 
-            public static I18N_RESOURCE: Resource = {
+            public static I18N_RESOURCE: I18NResource = {
                 AM: 'AM',
                 PM: 'PM',
                 WEEK_DAY_NAMES: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -391,7 +391,7 @@ import Dates = JS.util.Dates;
 
     $P.format = function (format?: string, locale?: Locale) {
         let T = this, fmt = format || 'YYYY-MM-DD HH:mm:ss',
-            bundle = new Bundle(Dates.I18N_RESOURCE, locale);
+            i18n = new I18N(locale).set(Dates.I18N_RESOURCE);
         return fmt.replace(/YYYY|YY|MMMM|MMM|MM|M|DD|D|hh|h|HH|H|mm|m|ss|s|dddd|ddd|A/g,
             function (m) {
                 switch (m) {
@@ -400,9 +400,9 @@ import Dates = JS.util.Dates;
                     case "YY":
                         return pad(T.getFullYear());
                     case "MMMM":
-                        return bundle.get('MONTH_NAMES')[T.getMonth()];
+                        return i18n.get('MONTH_NAMES')[T.getMonth()];
                     case "MMM":
-                        return bundle.get('MONTH_SHORT_NAMES')[T.getMonth()];
+                        return i18n.get('MONTH_SHORT_NAMES')[T.getMonth()];
                     case "MM":
                         return pad((T.getMonth() + 1));
                     case "M":
@@ -434,11 +434,11 @@ import Dates = JS.util.Dates;
                     case "s":
                         return T.getSeconds();
                     case "dddd":
-                        return bundle.get('WEEK_DAY_NAMES')[T.getDay()];
+                        return i18n.get('WEEK_DAY_NAMES')[T.getDay()];
                     case "ddd":
-                        return bundle.get('WEEK_DAY_SHORT_NAMES')[T.getDay()];
+                        return i18n.get('WEEK_DAY_SHORT_NAMES')[T.getDay()];
                     case "A":
-                        return bundle.get(T.getHours() < 12 ? 'AM' : 'PM');
+                        return i18n.get(T.getHours() < 12 ? 'AM' : 'PM');
                     default:
                         return m;
                 }
@@ -446,4 +446,3 @@ import Dates = JS.util.Dates;
         )
     }
 }())
-Class.register(Date);

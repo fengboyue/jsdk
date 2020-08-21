@@ -1,60 +1,60 @@
 /// <reference path='../../dist/jsdk.d.ts' /> 
-let fn = (res:AjaxResponse)=>{
+let fn = (res:HttpResponse)=>{
     JSLogger.info(res)
 }
 
 $1('#text1').on('click',()=>{
-    Ajax.send({
+    Http.send({
         url:'ajax.js',
-        type: 'text'
+        responseType: 'text'
     }).then(fn)
 })
 $1('#text2').on('click',()=>{
-    Ajax.send({
+    Http.send({
         url:'ajax.js',
-        type: 'text',
+        responseType: 'text',
         async: false
     }).then(fn)
 })
 
 $1('#html1').on('click',()=>{
-    Ajax.send({
+    Http.send({
         url:'ajax.html',
-        type: 'html'
+        responseType: 'html'
     }).then(fn)
 })
 $1('#html2').on('click',()=>{
-    Ajax.send({
+    Http.send({
         url:'ajax.html',
-        type: 'html',
+        responseType: 'html',
         async:false
     }).then(fn)
 })
 
 $1('#json1').on('click',()=>{
-    Ajax.send({
+    Http.send({
         url:'result-array.json',
-        type: 'json'
+        responseType: 'json'
     }).then(fn)
 })
 $1('#json2').on('click',()=>{
-    Ajax.send({
+    Http.send({
         url:'result-array.json',
-        type: 'json',
+        responseType: 'json',
         async:false
     }).then(fn)
 })
 
 $1('#xml1').on('click',()=>{
-    Ajax.send({
+    Http.send({
         url:'ajax.xml',
-        type: 'xml'
+        responseType: 'xml'
     }).then(fn)
 })
 $1('#xml2').on('click',()=>{
-    Ajax.send({
+    Http.send({
         url:'ajax.xml',
-        type: 'xml',
+        responseType: 'xml',
         async: false
     }).then(fn)
 })

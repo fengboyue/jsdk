@@ -1,6 +1,6 @@
 /// <reference path='../../dist/jsdk.d.ts' /> 
 JS.imports('$jsan').then(() => {
-    let cfg = <AnimConfig>{
+    let cfg = <AnimInit>{
         autoReverse: true,
         autoReset: true,
         duration: 5000,
@@ -46,8 +46,8 @@ JS.imports('$jsan').then(() => {
 
     easings.forEach(a => {
         html += `${a.fn}:<div id="${a.el}" class="brick"></div>`;
-        anims.push(new MoveAnim(<any>Jsons.union(cfg, <MoveAnimConfig>{
-            el: '#' + a.el,
+        anims.push(new MoveAnim(<any>Jsons.union(cfg, <MoveAnimInit>{
+            target: '#' + a.el,
             easing: Easings[a.fn]
         })))
     })

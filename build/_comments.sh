@@ -2,7 +2,7 @@
 sed -i '' "1i\ 
 /**
 1i\ 
- * JSDK 2.4.0 
+ * JSDK 2.5.0 
 1i\ 
  * https://github.com/fengboyue/jsdk/
 1i\ 
@@ -11,4 +11,4 @@ sed -i '' "1i\
  * MIT license
 1i\ 
  */
-" ../dist/$1
+" $1

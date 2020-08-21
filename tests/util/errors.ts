@@ -7,17 +7,17 @@ module JS {
         @klass('JS.test.ErrorsTest')
         export class ErrorsTest extends TestCase {
 
-            public test1() {
+            test1() {
                 Assert.equalError(TypeError, ()=>{
                     throw new TypeError()
                 });
             }
-            public test2() {
+            test2() {
                 Assert.equalError(TypeError, ()=>{
                     throw new TypeError('xxx')
                 });
             }
-            public test3() {
+            test3() {
                 Assert.equalError(JSError, ()=>{
                     throw new JSError('xxx', new TypeError())
                 });

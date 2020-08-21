@@ -7,7 +7,6 @@
  * @author Frank.Feng
  */
 /// <reference path="Kernel.ts"/>
-/// <reference path="../reflect/Enhance.ts"/>
 
 /// <reference path="../util/Dates.ts"/>
 /// <reference path="../util/Numbers.ts"/>

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AnimTimer | JSDK 2.4.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.4.0 API">
+	<title>AnimTimer | JSDK 2.5.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.5.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.4.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.5.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -146,7 +146,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Anim<wbr>Timer<span class="tsd-signature-symbol">(</span>tick<span class="tsd-signature-symbol">: </span><a href="../modules/js.util.html#timertask" class="tsd-signature-type">TimerTask</a>, cfg<span class="tsd-signature-symbol">?: </span><a href="../modules/js.an.html#animtimerconfig" class="tsd-signature-type">AnimTimerConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.an.animtimer.html" class="tsd-signature-type">AnimTimer</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Anim<wbr>Timer<span class="tsd-signature-symbol">(</span>tick<span class="tsd-signature-symbol">: </span><a href="../modules/js.util.html#timertask" class="tsd-signature-type">TimerTask</a>, cfg<span class="tsd-signature-symbol">?: </span><a href="../modules/js.an.html#animtimerinit" class="tsd-signature-type">AnimTimerInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="js.an.animtimer.html" class="tsd-signature-type">AnimTimer</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -159,7 +159,7 @@
 									<h5>tick: <a href="../modules/js.util.html#timertask" class="tsd-signature-type">TimerTask</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> cfg: <a href="../modules/js.an.html#animtimerconfig" class="tsd-signature-type">AnimTimerConfig</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> cfg: <a href="../modules/js.an.html#animtimerinit" class="tsd-signature-type">AnimTimerInit</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="js.an.animtimer.html" class="tsd-signature-type">AnimTimer</a></h4>
@@ -180,7 +180,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
 					<a name="_cfg" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _cfg</h3>
-					<div class="tsd-signature tsd-kind-icon">_cfg<span class="tsd-signature-symbol">:</span> <a href="../modules/js.an.html#animtimerconfig" class="tsd-signature-type">AnimTimerConfig</a></div>
+					<div class="tsd-signature tsd-kind-icon">_cfg<span class="tsd-signature-symbol">:</span> <a href="../modules/js.an.html#animtimerinit" class="tsd-signature-type">AnimTimerInit</a></div>
 					<aside class="tsd-sources">
 						<p>Overrides <a href="js.util.timer.html">Timer</a>.<a href="js.util.timer.html#_cfg">_cfg</a></p>
 					</aside>
@@ -336,15 +336,15 @@
 					<a name="config" class="tsd-anchor"></a>
 					<h3>config</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/js.util.html#timerconfig" class="tsd-signature-type">TimerConfig</a></li>
-						<li class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">(</span>cfg<span class="tsd-signature-symbol">?: </span><a href="../modules/js.util.html#timerconfig" class="tsd-signature-type">TimerConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+						<li class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/js.util.html#timerinit" class="tsd-signature-type">TimerInit</a></li>
+						<li class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">(</span>cfg<span class="tsd-signature-symbol">?: </span><a href="../modules/js.util.html#timerinit" class="tsd-signature-type">TimerInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="js.an.animtimer.html">AnimTimer</a>.<a href="js.an.animtimer.html#config">config</a></p>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="../modules/js.util.html#timerconfig" class="tsd-signature-type">TimerConfig</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/js.util.html#timerinit" class="tsd-signature-type">TimerInit</a></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
@@ -353,7 +353,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> cfg: <a href="../modules/js.util.html#timerconfig" class="tsd-signature-type">TimerConfig</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> cfg: <a href="../modules/js.util.html#timerinit" class="tsd-signature-type">TimerInit</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
@@ -562,16 +562,22 @@
 								<a href="../modules/js.lang.html">lang</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.math.html">math</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.media.html">media</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.model.html">model</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-								<a href="../modules/js.reflect.html">reflect</a>
+								<a href="../modules/js.net.html">net</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.store.html">store</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="../modules/js.sugar.html">sugar</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="../modules/js.ui.html">ui</a>

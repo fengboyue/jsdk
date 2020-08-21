@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>store | JSDK 2.4.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.4.0 API">
+	<title>store | JSDK 2.5.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.5.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.4.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.5.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -77,14 +77,29 @@
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.store.cookiestore.html" class="tsd-kind-icon">Cookie<wbr>Store</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.store.datacache.html" class="tsd-kind-icon">Data<wbr>Cache</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.store.imagecache.html" class="tsd-kind-icon">Image<wbr>Cache</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.store.localstore.html" class="tsd-kind-icon">Local<wbr>Store</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.store.sessionstore.html" class="tsd-kind-icon">Session<wbr>Store</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-namespace"><a href="../classes/js.store.storehelper.html" class="tsd-kind-icon">Store<wbr>Helper</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-namespace"><a href="../interfaces/js.store.datacacheinit.html" class="tsd-kind-icon">Data<wbr>Cache<wbr>Init</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter"><a href="../interfaces/js.store.localcacheddata.html" class="tsd-kind-icon">Local<wbr>Cached<wbr>Data</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-namespace"><a href="../interfaces/js.store.remotecacheddata.html" class="tsd-kind-icon">Remote<wbr>Cached<wbr>Data</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-namespace"><a href="../interfaces/js.store.remoteimage.html" class="tsd-kind-icon">Remote<wbr>Image</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.store.html#arraycacheprimitivetype" class="tsd-kind-icon">Array<wbr>Cache<wbr>Primitive<wbr>Type</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.store.html#cachedatatype" class="tsd-kind-icon">Cache<wbr>Data<wbr>Type</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.store.html#cacheprimitivetype" class="tsd-kind-icon">Cache<wbr>Primitive<wbr>Type</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.store.html#jsoncacheprimitivetype" class="tsd-kind-icon">Json<wbr>Cache<wbr>Primitive<wbr>Type</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.store.html#storedatatype" class="tsd-kind-icon">Store<wbr>Data<wbr>Type</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported"><a href="js.store.html#storeprimitivetype" class="tsd-kind-icon">Store<wbr>Primitive<wbr>Type</a></li>
 							</ul>
@@ -105,6 +120,34 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported">
+					<a name="arraycacheprimitivetype" class="tsd-anchor"></a>
+					<h3>Array<wbr>Cache<wbr>Primitive<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Array<wbr>Cache<wbr>Primitive<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="../interfaces/array.html" class="tsd-signature-type">Array</a><span class="tsd-signature-symbol">&lt;</span><a href="js.store.html#cacheprimitivetype" class="tsd-signature-type">CachePrimitiveType</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
+					<a name="cachedatatype" class="tsd-anchor"></a>
+					<h3>Cache<wbr>Data<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Cache<wbr>Data<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="js.store.html#cacheprimitivetype" class="tsd-signature-type">CachePrimitiveType</a><span class="tsd-signature-symbol"> | </span><a href="js.store.html#arraycacheprimitivetype" class="tsd-signature-type">ArrayCachePrimitiveType</a><span class="tsd-signature-symbol"> | </span><a href="js.store.html#jsoncacheprimitivetype" class="tsd-signature-type">JsonCachePrimitiveType</a></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported">
+					<a name="cacheprimitivetype" class="tsd-anchor"></a>
+					<h3>Cache<wbr>Primitive<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Cache<wbr>Primitive<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="js.lang.html#primitivetype" class="tsd-signature-type">PrimitiveType</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Blob</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported">
+					<a name="jsoncacheprimitivetype" class="tsd-anchor"></a>
+					<h3>Json<wbr>Cache<wbr>Primitive<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Json<wbr>Cache<wbr>Primitive<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="js.lang.html#jsonobject" class="tsd-signature-type">JsonObject</a><span class="tsd-signature-symbol">&lt;</span><a href="js.store.html#cacheprimitivetype" class="tsd-signature-type">CachePrimitiveType</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
 					<a name="storedatatype" class="tsd-anchor"></a>
 					<h3>Store<wbr>Data<wbr>Type</h3>
@@ -197,16 +240,22 @@
 								<a href="js.lang.html">lang</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.math.html">math</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.media.html">media</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.model.html">model</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
-								<a href="js.reflect.html">reflect</a>
+								<a href="js.net.html">net</a>
 							</li>
 							<li class="current tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.store.html">store</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.sugar.html">sugar</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.ui.html">ui</a>
@@ -230,6 +279,12 @@
 						<a href="../classes/js.store.cookiestore.html" class="tsd-kind-icon">Cookie<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.store.datacache.html" class="tsd-kind-icon">Data<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
+						<a href="../classes/js.store.imagecache.html" class="tsd-kind-icon">Image<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-namespace">
 						<a href="../classes/js.store.localstore.html" class="tsd-kind-icon">Local<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
@@ -237,6 +292,30 @@
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-namespace">
 						<a href="../classes/js.store.storehelper.html" class="tsd-kind-icon">Store<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="../interfaces/js.store.datacacheinit.html" class="tsd-kind-icon">Data<wbr>Cache<wbr>Init</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
+						<a href="../interfaces/js.store.localcacheddata.html" class="tsd-kind-icon">Local<wbr>Cached<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="../interfaces/js.store.remotecacheddata.html" class="tsd-kind-icon">Remote<wbr>Cached<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+						<a href="../interfaces/js.store.remoteimage.html" class="tsd-kind-icon">Remote<wbr>Image</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="js.store.html#arraycacheprimitivetype" class="tsd-kind-icon">Array<wbr>Cache<wbr>Primitive<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="js.store.html#cachedatatype" class="tsd-kind-icon">Cache<wbr>Data<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="js.store.html#cacheprimitivetype" class="tsd-kind-icon">Cache<wbr>Primitive<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace tsd-is-not-exported">
+						<a href="js.store.html#jsoncacheprimitivetype" class="tsd-kind-icon">Json<wbr>Cache<wbr>Primitive<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="js.store.html#storedatatype" class="tsd-kind-icon">Store<wbr>Data<wbr>Type</a>
