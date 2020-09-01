@@ -1,8 +1,10 @@
 #!/bin/bash
+source ./_version.sh
+
 sed -i '' "1i\ 
 /**
 1i\ 
- * JSDK 2.5.0 
+ * JSDK $VER 
 1i\ 
  * https://github.com/fengboyue/jsdk/
 1i\ 

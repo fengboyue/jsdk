@@ -32,17 +32,7 @@ td::before {
     content: none !important;
 }
 
-/* .sidebar-nav>ul>li:nth-child(9)>a::after,
-.sidebar-nav>ul>li:nth-child(9)>ul>li:nth-child(6) ::after,
-.sidebar-nav>ul>li:nth-child(9)>ul>li:nth-child(7) ::after{
-    color: red;
-    content: " New!";
-    font-style: italic;
-    font-size: smaller;
-} */
-
-.sidebar-nav>ul>li:nth-child(4)>a::after,
-.sidebar-nav>ul>li:nth-child(8)>a::after {
+.sidebar-nav>ul>li:nth-child(3)>a::after {
     color: #ff00ff;
     content: "  Update";
     font-style: italic;
@@ -50,8 +40,7 @@ td::before {
     font-weight: 500;
 } 
 
-.sidebar-nav>ul>li:nth-child(6)>a::after,
-.sidebar-nav>ul>li:nth-child(11)>a::after {
+.sidebar-nav>ul>li:nth-child(12)>a::after {
     color: red;
     content: "  New";
     font-style: italic;

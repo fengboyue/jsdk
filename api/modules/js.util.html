@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>util | JSDK 2.5.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.5.0 API">
+	<title>util | JSDK 2.6.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.6.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.5.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.6.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -120,6 +120,7 @@
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#color" class="tsd-kind-icon">Color</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="js.util.html#cssoffsetvalue" class="tsd-kind-icon">Css<wbr>Offset<wbr>Value</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter"><a href="js.util.html#eventhandler" class="tsd-kind-icon">Event<wbr>Handler</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter"><a href="js.util.html#eventhandler1" class="tsd-kind-icon">Event<wbr>Handler1</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter"><a href="js.util.html#eventhandler2" class="tsd-kind-icon">Event<wbr>Handler2</a></li>
@@ -191,6 +192,19 @@
 					<div class="tsd-signature tsd-kind-icon">Color<span class="tsd-signature-symbol">:</span> <a href="js.util.html#hex" class="tsd-signature-type">HEX</a><span class="tsd-signature-symbol"> | </span><a href="js.util.html#rgba" class="tsd-signature-type">RGBA</a><span class="tsd-signature-symbol"> | </span><a href="js.util.html#hsla" class="tsd-signature-type">HSLA</a></div>
 					<aside class="tsd-sources">
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
+					<a name="cssoffsetvalue" class="tsd-anchor"></a>
+					<h3>Css<wbr>Offset<wbr>Value</h3>
+					<div class="tsd-signature tsd-kind-icon">Css<wbr>Offset<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The css offset value is a string starting with += or -= to increment or decrement the current value.
+							For example, if an element&#39;s padding-left was 10px, .css( &quot;padding-left&quot;, &quot;+=15&quot; ) would result in a total padding-left of 25px.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter">
 					<a name="eventhandler" class="tsd-anchor"></a>
@@ -666,9 +680,15 @@ Opacity %   255 Step        2 digit HEX prefix
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
 					<a name="timerevents" class="tsd-anchor"></a>
 					<h3>Timer<wbr>Events</h3>
-					<div class="tsd-signature tsd-kind-icon">Timer<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"starting"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"finished"</span></div>
+					<div class="tsd-signature tsd-kind-icon">Timer<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"starting"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"finished"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"looping"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"looped"</span></div>
 					<aside class="tsd-sources">
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The looping and looped events are fired when an loop of a Timer ends, and another one begins.
+							This two events does not occur at the same time as the finished event, and therefore does not occur for an loop-count of one.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
 					<a name="timerinit" class="tsd-anchor"></a>
@@ -1129,6 +1149,9 @@ Opacity %   255 Step        2 digit HEX prefix
 								<a href="js.app.html">app</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.d2.html">d2</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.ds.html">ds</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
@@ -1265,6 +1288,9 @@ Opacity %   255 Step        2 digit HEX prefix
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="js.util.html#color" class="tsd-kind-icon">Color</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="js.util.html#cssoffsetvalue" class="tsd-kind-icon">Css<wbr>Offset<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace tsd-has-type-parameter">
 						<a href="js.util.html#eventhandler" class="tsd-kind-icon">Event<wbr>Handler</a>

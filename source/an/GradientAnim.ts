@@ -103,15 +103,12 @@ module JS {
             protected _onUpdate(j: JsonObject<TRGBA>) {
                 let el = this._el;
                 J.forEach(j,(v,k)=>{
-                    el.style[k] = Colors.rgba2css(v)
+                    el.css(k,Colors.rgba2css(v))
                 })
             }
 
             protected _resetEl(){
-                let el = this._el, c = this._cls;
-                J.forEach(c, (v,k)=>{
-                    el.style[k] = v
-                })
+                this._el.css(this._cls)
             }
         }
     }

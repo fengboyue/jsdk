@@ -232,7 +232,7 @@ interface HTMLElement {
     find(selector:string):HTMLElement;
     findAll(selector:string):NodeListOf<HTMLElement>;
 
-    computedStyle(pseudo?:string):CSSStyleDeclaration;
+    ......
 }
 ```
 * *你可以在DOM对象上直接使用上述方法。*

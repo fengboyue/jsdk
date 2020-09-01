@@ -3,7 +3,7 @@ JSDK 2.0+是最全面的TS/JS框架，包括了从最底层到最上层的大量
 
 主要支持以下特性： 
 <p class="warn">
-注解、反射、切面、组件与依赖注入、线程、定时器、单元测试、事件总线、动画库、应用框架，还提供一组高级UI组件及强大的工具箱。
+注解、反射、切面、组件与依赖注入、线程、定时器、单元测试、事件总线、动画库、2D绘图、应用框架，还提供一组高级UI组件及强大的工具箱。
 </p>
 基于JSDK来开发你的类库、组件、应用甚至游戏，你的开发工作将得到巨大的助力。
 
@@ -26,9 +26,9 @@ JSDK 2.0+是基于 <code>ES6 / TypeScript 2.0+</code> 编写的。
 > VSCode开发工具的安装与设置，工程的配置与编译
 
 *备注：*
-* *如果你仅在普通JS工程中使用JSDK，则无需学习 TypeScript和 VSCode*
+* *如果你仅在普通JS工程中使用JSDK，则无需学习 TypeScript 和 VSCode*
 * *我<b>强烈建议你在TS工程中使用JSDK</b>，这将让JSDK的全部特性都生效*
-* *如果你需要在不支持ES6的浏览器上运行JSDK，请使用 [Babel](https://babeljs.io/docs/en/)*
+* *如果你需要在不支持ES6的浏览器上运行JSDK，请先加载 [Babel](https://babeljs.io/docs/en/) 或 [es6-shim](https://github.com/paulmillr/es6-shim)*
 
 ## 在线资源
 你可以访问以下在线资源了解更多：
@@ -54,7 +54,12 @@ JSDK自2.0版开始支持MIT许可协议。
 
 ## 更新日志
 
-### v2.5.0 Milestone
+### v2.6.0 - 2020/9/1
+- Add val|css|empty|remove methods for HTMLElement.
+- Bugfix the return values by box() of HTMLElement.
+- New "js2d" module for 2D drawing.
+
+### v2.5.0 Milestone - 2020/8/21
 - Now "cachedImport" of global configuration supports custom timestamp string.
 - New "math" module for vector and geometry calculations.
 - New "jsugar" module for containing advanced syntax featues that already exists.
@@ -98,7 +103,6 @@ JSDK自2.0版开始支持MIT许可协议。
 
 ### v2.1.0 - 2020/7/11
 - New "animation" module.
-- Add computedStyle method on HTMLElement.prototype.
 - Add some useful methods to Colors class.
 - Add Type.json from Type.object which only presents class instance now.
 - Remove and modified some unused methods of Dates class and Date.prototye.

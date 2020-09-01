@@ -10,12 +10,6 @@ module JS {
 
     export namespace an {
 
-        /**
-         * The looped event is fired when an loop of an Animation ends, and another one begins. 
-         * This event does not occur at the same time as the finished event, and therefore does not occur for animations with an animation-loop-count of one.
-         */
-        export type AnimTimerEvents = TimerEvents | 'looping' | 'looped';
-
         export type AnimTimerInit = {
             /**
              * Delays (ms) the start of this animation.
@@ -51,15 +45,18 @@ module JS {
             protected _loop(begin?:boolean) {
                 if (this._sta != TimerState.RUNNING) return;
 
-                let p = <number>this._cfg.loop, d = this._cfg.duration, t0 = System.highResTime(), t = t0 - this._ts0;
+                let p = <number>this._cfg.loop;
                 if (this._count < p) {
                     //update time
+                    let d = this._cfg.duration, t0 = System.highResTime(), t = t0 - this._ts0;
                     this._et = t0 - this._ts;
-                    if(begin) this._bus.fire(<AnimTimerEvents>'looping', [this._count+1]);
+                    let looping = this._count>1 && this._count<=(p-1);
+                    if(begin && looping) this._bus.fire(<TimerEvents>'looping', [this._count+1]);
                         
                     let lp = false;
                     if (t > d) {
-                        this._bus.fire(<AnimTimerEvents>'looped', [++this._count]);
+                        ++this._count;
+                        if(looping) this._bus.fire(<TimerEvents>'looped', [this._count]);
                         //reset time
                         this._ts0 = t0;
                         lp = true;
@@ -91,4 +88,3 @@ module JS {
 
 import AnimTimer = JS.an.AnimTimer;
 import AnimTimerInit = JS.an.AnimTimerInit;
-import AnimTimerEvents = JS.an.AnimTimerEvents;

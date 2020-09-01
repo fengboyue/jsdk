@@ -5,6 +5,7 @@ echo '开始构建'
 ./build-module.sh jsds
 ./build-module.sh jsugar
 ./build-module.sh jsmath
+./build-module.sh js2d
 ./build-module.sh jsmedia
 ./build-module.sh jsui
 ./build-module.sh jsan

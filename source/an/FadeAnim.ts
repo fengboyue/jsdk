@@ -53,11 +53,11 @@ module JS {
             }
 
             protected _onUpdate(f: FadeKeyFrame) {
-                this._el.style.opacity = f+'';
+                this._el.css('opacity', f+'')
             }
 
             protected _resetEl(){
-                this._el.style.opacity = this._o;
+                this._el.css('opacity', this._o)
             }
         }
     }

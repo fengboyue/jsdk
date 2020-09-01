@@ -44,8 +44,11 @@ module JS {
             intervalMode?: 'OF'|'BF'
         }
 
-
-        export type TimerEvents = 'starting' | 'finished'
+        /**
+         * The looping and looped events are fired when an loop of a Timer ends, and another one begins. 
+         * This two events does not occur at the same time as the finished event, and therefore does not occur for an loop-count of one.
+         */
+        export type TimerEvents = 'starting' | 'finished'| 'looping' | 'looped'
 
         export enum TimerState {STOPPED, RUNNING, PAUSED}
 
@@ -125,7 +128,7 @@ module JS {
                 m._pt = 0;
             }
             public stop() {
-                this._reset();
+                this._finish();
                 return this
             }
             protected _finish() {
@@ -153,15 +156,21 @@ module JS {
             protected _cycle(skip?: boolean) {
                 if (this._sta != TimerState.RUNNING) return;//暂停时停止执行此函数
 
-                if (this._count < this._cfg.loop) {
+                let p = <number>this._cfg.loop;
+                if (this._count < p) {
                     let t = 0, opts = this._cfg, t0 = System.highResTime();
                     this._et = t0 - this._ts;//update frame time
                     
                     if (!skip) {
-                        this._count++;
+                        let looping = this._count>1 && this._count<=(p-1);
+                        if(looping) this._bus.fire(<TimerEvents>'looping', [this._count+1]);
+                    
+                        ++this._count;
                         this._tick.call(this, this._et);
                         let t1 = System.highResTime();
                         t = t1 - t0;
+
+                        if(looping) this._bus.fire(<TimerEvents>'looped', [this._count]);
                     } 
                     //update timestamp
                     this._ts = t0;

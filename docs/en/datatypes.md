@@ -202,14 +202,17 @@ Assert.equal(Numbers.algebra(' a*(0.3894567-1.5908+d)/(+b-c)', {
 > Base on Number/Numbers of JSDK helps you develop better JS calculators.
 
 
-## Data Caching
-### Data Persistence
+## Data Persistence Caching
+### Create Cache Database
 When you have lots of binary big data, you should persist it to <b>JS.store.DataCache</b>(based on local database IndexDB) instead of keeping them in memory:
 ```javascript
 let cache = new DataCache({
-    name: 'MyCache'
+    name: 'MyCache' //Create or Reopen the cache database named MyCache
 });
+```
 
+### Write Data
+```javascript
 Http.get({
     url: 'xxx.doc',
     responseType: 'blob',
@@ -231,25 +234,25 @@ cache.read('1').then((data: Blob)=>{
 })
 ```
 
-### Empty Cache
-Clear the cache table of <code>MyCache</code> : 
+### Empty Cache Database
+Clear the cache database of <code>MyCache</code> : 
 ```javascript
 cache.clear().then((data: Blob)=>{
     //do your next
 })
 ```
 
-### Destroy Cache
-Destroy the cache table of <code>MyCache</code> :
+### Destroy Cache Database
+Destroy the cache database of <code>MyCache</code> :
 ```javascript
 cache.destroy().then((data: Blob)=>{
     //do your next
 })
 ```
-* The destroyed cache will no longer be able to read and write.
+* The destroyed instance will no longer be able to read and write.
 
-## Image Caching
-### Preload Images
+## Image Memory Caching
+### Create & Preload
 When you need to display a lot of pictures, you can use <b>JS.store.ImageCache</b> to preload before using:
 ```javascript
 let cache = new ImageCache();
@@ -261,13 +264,13 @@ cache.load([
 ])
 ```
 
-### Display Cached Images
-Display cached images on document when you need:
+### Display Cached Image
+Display above cached image on document when you need:
 ```javascript
 (<HTMLImageElement>$1('#img1')).src = cache.get('1').src;
 ```
 
-### Empty Images Index
+### Empty Images
 ```javascript
 cache.clear()
 ```

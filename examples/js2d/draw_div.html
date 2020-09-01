@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <script src="/jsdk/dist/jscore.js?_=2"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+
+</head>
+
+
+<body>
+    <button id="btnClear">Clear</button>
+    <br>
+    <hr/>
+    StrokeColor:
+    <select id="strokeColor">
+        <option value=""></option>
+        <option value="red">red</option>
+        <option value="yellow">yellow</option>
+        <option value="white">white</option>
+    </select>
+    FillColor:
+    <select id="fillColor">
+        <option value="red">red</option>
+        <option value="yellow">yellow</option>
+        <option value="white">white</option>
+    </select>
+    <br>
+    <button id="btnText1">Draw Text: undraggable</button>
+    <button id="btnText2">Draw Text: draggable</button>
+    <br>
+    <button id="btnChangeText">Update Text</button>
+    <br>
+
+    <hr/>
+    <button id="btnImage1">Draw Fighter: undraggable</button>
+    <button id="btnImage2">Draw Fighter: draggable</button>
+    <br>
+    <button id="btnFlyFighter">Flying Fighter[0]</button>
+    <button id="btnMoveFighter">Moving Fighter[0]</button>
+    <br>
+
+    <div id="container"></div>
+
+    <script src="../env.js"></script>
+    <script src="draw_div.js?_=1"></script>
+</body>
+
+</html>

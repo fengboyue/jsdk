@@ -1,9 +1,4 @@
-/**
-* JSDK 2.5.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.6.0
 JS.config({
     closeImport: false,
     cachedImport: true,
@@ -19,6 +14,10 @@ JS.config({
         ],
         'jsmath': [
             '!/jsmath.js'
+        ],
+        'js2d': [
+            '$jsmath',
+            '!/js2d.js'
         ],
         'jsmedia': [
             '$jsds',
@@ -45,7 +44,7 @@ JS.config({
             '$ua-parser#async',
             '!/jsunit.js'
         ],
-        //3rd library maybe required by the system
+        //3rd libraries maybe required some modules
         'ua-parser':'~/ua-parser/0.7.20/ua-parser.js',
         'handlebars': '~/handlebars/4.1.2/handlebars.js',
         'handlebars-runtime': '~/handlebars/4.1.2/handlebars.runtime.js',
@@ -119,7 +118,7 @@ JS.config({
             '$blockui#async',
             '$jsfx.only'
         ],
-        //3rd of jsfx
+        //3rd libraries using by jsfx
         'font-awesome': [
             '~/font-awesome/5.9.0/css/all.css',
             '~/font-awesome/5.9.0/css/v4-shims.css'

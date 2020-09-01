@@ -1,7 +1,7 @@
 {
   "name": "jsdk-offical",
-  "version": "2.5.0",
-  "description": "JSDK is one of the most comprehensive JS/TS framework, like JDK.",
+  "version": "2.6.0",
+  "description": "JSDK is the most comprehensive TypeScript framework, like JDK.",
   "main": "index.js",
   "directories": {
     "doc": "docs",
@@ -20,11 +20,11 @@
     "Annotation",
     "Reflection",
     "AOP",
-    "IOC",
     "DI",
     "Thread",
     "Timer",
-    "JSINPUT",
+    "JS2D",
+    "JSMVC",
     "JSAN",
     "JSVP",
     "JSFX",

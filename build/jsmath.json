@@ -10,7 +10,6 @@
         "../source/math/geom/Shape.ts",
         "../source/math/geom/Line.ts",
         "../source/math/geom/Segment.ts",
-        "../source/math/geom/Sector.ts",
         "../source/math/geom/Polygon.ts",
         "../source/math/**/*.ts"
     ]

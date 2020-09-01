@@ -1,12 +1,11 @@
-
 JSDK 2.0+ is the most comprehensive TS/JS framework, including lots of features, frameworks and tools from the bottom to top layers. It is very suitable to be the cornerstone of any JS library, like JDK for Java.
 
 It supports such following features:
 <p class="warn">
-Annotation, Reflection, AOP, Component & Dependency Injection, Thread, Timer, Unit-Test, Event-Bus, Animations, Application Framework. A group of advanced widgets and more powerful tools are also provided.
+Annotation, Reflection, AOP, Component & Dependency Injection, Thread, Timer, Unit-Test, Event-Bus, Animations, 2D-Drawing, Application Framework. A group of advanced widgets and more powerful tools are also provided.
 </p>
 
-JSDK will greatly help you to develop libraries, components, widgets, applications and even games.
+JSDK can greatly help you to develop libraries, components, widgets, applications and even games.
 
 ## Download
 Via <code>Github</code>: https://github.com/fengboyue/jsdk/releases
@@ -29,7 +28,7 @@ If you touch JSDK for the first time, you need to have these following basic kno
 *Remarks*
 * *If you only use JSDK in ordinary JS projects, you do not need to learn TypeScript and VSCode.*
 * *It is <b>strongly recommended to use JSDK in TS projects</b>, which will make all features of JSDK effective.*
-* *If you need to run JSDK on a browser that does not support ES6, please use [Babel](https://babeljs.io/docs/en/).*
+* *If you need to run JSDK on a browser that does not support ES6, please load [Babel](https://babeljs.io/docs/en/) or [es6-shim](https://github.com/paulmillr/es6-shim) before using JSDK.*
 
 ## Online Resources 
 You can visit the following online resources on Github to know more:
@@ -55,7 +54,12 @@ JSDK is licensed under the MIT license since version 2.0.
 
 ## Updates
 
-### v2.5.0 Milestone
+### v2.6.0 - 2020/9/1
+- Add val|css|empty|remove methods for HTMLElement.
+- Bugfix the return values by box() of HTMLElement.
+- New "js2d" module for 2D drawing.
+
+### v2.5.0 Milestone - 2020/8/21
 - Now "cachedImport" of global configuration supports custom timestamp string.
 - New "math" module for vector and geometry calculations.
 - New "jsugar" module for containing advanced syntax featues that already exists.
@@ -99,7 +103,6 @@ JSDK is licensed under the MIT license since version 2.0.
 
 ### v2.1.0 - 2020/7/11
 - New "animation" module.
-- Add computedStyle method on HTMLElement.prototype.
 - Add some useful methods to Colors class.
 - Add Type.json from Type.object which only presents class instance now.
 - Remove and modified some unused methods of Dates class and Date.prototye.

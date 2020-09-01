@@ -9,6 +9,7 @@
 -   [Input Events](input)
 -   [Animations](jsan)
 -   [Math Tools](math)
+-   [2D Drawing](js2d)
 -   [Model & View & Component](mvc)
 -   [JSVP App Framework](jsvp)
 -   [JSFX Widgets](jsfx)

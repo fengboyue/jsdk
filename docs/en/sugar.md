@@ -52,7 +52,7 @@ export function version(ver: string): any {
 }
 ```
 
-2. Use new annotation
+2. Read annotation value
 ```javascript
 @version('1.2.3')
 export class MyClass {

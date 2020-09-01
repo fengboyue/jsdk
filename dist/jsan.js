@@ -1,6 +1,6 @@
 //# sourceURL=../dist/jsan.js
 /**
-* JSDK 2.5.0 
+* JSDK 2.6.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -97,14 +97,18 @@ var JS;
             _loop(begin) {
                 if (this._sta != TimerState.RUNNING)
                     return;
-                let p = this._cfg.loop, d = this._cfg.duration, t0 = System.highResTime(), t = t0 - this._ts0;
+                let p = this._cfg.loop;
                 if (this._count < p) {
+                    let d = this._cfg.duration, t0 = System.highResTime(), t = t0 - this._ts0;
                     this._et = t0 - this._ts;
-                    if (begin)
+                    let looping = this._count > 1 && this._count <= (p - 1);
+                    if (begin && looping)
                         this._bus.fire('looping', [this._count + 1]);
                     let lp = false;
                     if (t > d) {
-                        this._bus.fire('looped', [++this._count]);
+                        ++this._count;
+                        if (looping)
+                            this._bus.fire('looped', [this._count]);
                         this._ts0 = t0;
                         lp = true;
                     }
@@ -344,10 +348,10 @@ var JS;
                 return m;
             }
             _onUpdate(f) {
-                this._el.style.opacity = f + '';
+                this._el.css('opacity', f + '');
             }
             _resetEl() {
-                this._el.style.opacity = this._o;
+                this._el.css('opacity', this._o);
             }
         }
         an.FadeAnim = FadeAnim;
@@ -559,14 +563,11 @@ var JS;
             _onUpdate(j) {
                 let el = this._el;
                 J.forEach(j, (v, k) => {
-                    el.style[k] = Colors.rgba2css(v);
+                    el.css(k, Colors.rgba2css(v));
                 });
             }
             _resetEl() {
-                let el = this._el, c = this._cls;
-                J.forEach(c, (v, k) => {
-                    el.style[k] = v;
-                });
+                this._el.css(this._cls);
             }
         }
         an.GradientAnim = GradientAnim;

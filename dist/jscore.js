@@ -1,6 +1,6 @@
 //# sourceURL=../dist/jscore.js
 /**
-* JSDK 2.5.0 
+* JSDK 2.6.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -1914,7 +1914,7 @@ var JS;
 var EventBus = JS.util.EventBus;
 if (self['HTMLElement'])
     (function () {
-        const D = document, HP = HTMLElement.prototype, oa = HP.append, op = HP.prepend, _ad = function (html) {
+        const D = document, HP = HTMLElement.prototype, oa = HP.append, op = HP.prepend, or = HP.remove, _ad = function (html) {
             if (!html)
                 return;
             let div = D.createElement('div'), nodes = null, fg = D.createDocumentFragment();
@@ -1950,12 +1950,12 @@ if (self['HTMLElement'])
             });
         };
         HP.box = function () {
-            let box = this.getBoundingClientRect();
+            let box = this.computedStyle();
             return {
-                x: box.x + System.display().docScrollX,
-                y: box.x + System.display().docScrollY,
-                w: box.width,
-                h: box.height
+                x: parseFloat(box.left) + System.display().docScrollX,
+                y: parseFloat(box.top) + System.display().docScrollY,
+                w: parseFloat(box.width),
+                h: parseFloat(box.height)
             };
         };
         HP.attr = function (key, val) {
@@ -1981,35 +1981,33 @@ if (self['HTMLElement'])
             });
             return this;
         };
-        let _rm = function (type, fn) {
+        let _rm = function (type, fn, opts) {
             if (!fn)
                 return;
-            if (this.removeEventListener) {
-                this.removeEventListener(type, fn, true);
-                this.removeEventListener(type, fn, false);
-            }
-        }, _rms = function (type, fns) {
+            if (this.removeEventListener)
+                this.removeEventListener(type, fn, opts || false);
+        }, _rms = function (type, fns, opts) {
             if (fns)
-                fns.forEach(f => { _rm.call(this, type, f); });
-        }, _off = function (type, fn) {
+                fns.forEach(f => { _rm.call(this, type, f, opts); });
+        }, _off = function (type, fn, opts) {
             let bus = this['_bus'];
             if (bus) {
                 let oFn = fn ? bus.original(type, fn['euid']) : undefined;
                 bus.off(type, oFn);
-                _rm.call(this, type, oFn);
+                _rm.call(this, type, oFn, opts);
             }
             else {
-                _rm.call(this, type, fn);
+                _rm.call(this, type, fn, opts);
             }
         };
-        HP.off = function (type, fn) {
+        HP.off = function (type, fn, capture) {
             if (!type) {
                 let bus = this['_bus'];
                 if (bus) {
                     let types = bus.types();
                     for (let i = 0, len = types.length; i < len; i++) {
                         let ty = types[i];
-                        _rms.call(this, ty, bus.original(ty));
+                        _rms.call(this, ty, bus.original(ty), capture);
                     }
                     bus.off();
                 }
@@ -2017,7 +2015,7 @@ if (self['HTMLElement'])
             else {
                 let types = type.split(' ');
                 types.forEach(t => {
-                    _off.call(this, t, fn);
+                    _off.call(this, t, fn, capture);
                 });
             }
             return this;
@@ -2026,6 +2024,161 @@ if (self['HTMLElement'])
         HP.findAll = HP.querySelectorAll;
         HP.computedStyle = function (p) {
             return document.defaultView.getComputedStyle(this, p || null);
+        };
+        let _getV = function () {
+            if (this instanceof HTMLTextAreaElement) {
+                return this.value || '';
+            }
+            else if (this instanceof HTMLInputElement) {
+                if (this.type == 'checkbox') {
+                    let chks = document.getElementsByName(this.name);
+                    if (chks.length > 0) {
+                        let a = [];
+                        [].forEach.call(chks, function (chk) {
+                            if (chk.checked)
+                                a.push(chk.value);
+                        });
+                        return a;
+                    }
+                    return this.checked ? [this.value] : [];
+                }
+                if (this.type == 'radio') {
+                    let rds = document.getElementsByName(this.name);
+                    if (rds.length > 0) {
+                        for (let i = 0, l = rds.length; i < l; i++) {
+                            let rd = rds.item(i);
+                            if (rd.checked)
+                                return rd.value;
+                        }
+                        return null;
+                    }
+                    return this.checked ? this.value : null;
+                }
+                return this.value || '';
+            }
+            else if (this instanceof HTMLSelectElement) {
+                let opts = this.findAll('option:checked');
+                if (opts.length > 0) {
+                    let a = [];
+                    for (let i = 0, l = opts.length; i < l; i++) {
+                        let opt = opts.item(i);
+                        if (this.multiple) {
+                            if (opt.selected)
+                                a.push(opt.value);
+                        }
+                        else {
+                            if (opt.selected)
+                                return opt.value;
+                        }
+                    }
+                    return a;
+                }
+                return [];
+            }
+            return undefined;
+        }, _setV = function (v) {
+            if (this instanceof HTMLTextAreaElement) {
+                this.value = v || '';
+            }
+            else if (this instanceof HTMLInputElement) {
+                if (this.type == 'checkbox') {
+                    let chks = document.getElementsByName(this.name), vs = v;
+                    if (chks.length > 0) {
+                        [].forEach.call(chks, function (chk) {
+                            chk.checked = vs.indexOf(chk.value) > -1;
+                        });
+                    }
+                    else {
+                        if (vs.indexOf(this.value) > -1)
+                            this.checked = true;
+                    }
+                    return this;
+                }
+                if (this.type == 'radio') {
+                    let rds = document.getElementsByName(this.name);
+                    if (rds.length > 0) {
+                        for (let i = 0, l = rds.length; i < l; i++) {
+                            let rd = rds.item(i);
+                            if (v == rd.value) {
+                                rd.checked = true;
+                                return this;
+                            }
+                        }
+                    }
+                    else {
+                        if (v == this.value)
+                            this.checked = true;
+                    }
+                    return this;
+                }
+                this.value = v;
+            }
+            else if (this instanceof HTMLSelectElement) {
+                let opts = this.findAll('option'), vs = typeof v == 'string' ? [v] : v;
+                if (opts.length > 0) {
+                    for (let i = 0, l = opts.length; i < l; i++) {
+                        let opt = opts.item(i);
+                        opt.selected = vs.indexOf(opt.value) > -1;
+                    }
+                }
+            }
+            return this;
+        };
+        HP.val = function (v) {
+            return arguments.length == 0 ? _getV.call(this) : _setV.call(this, v);
+        };
+        let hyphenCase = (name) => {
+            return name.replace(/([A-Z])/g, (a, b) => { return '-' + b.toLowerCase(); });
+        }, setCssValue = (st, k, v) => {
+            if (v === undefined) {
+                st.removeProperty(hyphenCase(k));
+            }
+            else if (v != null) {
+                st.setProperty(hyphenCase(k), absVal(v, k, st), v.endsWith(' !important') ? 'important' : '');
+            }
+        }, absVal = (v, k, st) => {
+            if (v.startsWith('+=') || v.startsWith('-=')) {
+                let ov = parseFloat(st.getPropertyValue(k)), nv = parseFloat(v.replace('=', ''));
+                return ov + nv + 'px';
+            }
+            return v;
+        };
+        HP.css = function (name, val) {
+            if (arguments.length == 1) {
+                if (typeof name == 'string') {
+                    return this.style.getPropertyValue(hyphenCase(name));
+                }
+                else {
+                    let s = '';
+                    Jsons.forEach(name, (v, k) => {
+                        if (v === undefined) {
+                            this.style.removeProperty(hyphenCase(k));
+                        }
+                        else if (v != null) {
+                            s += `${hyphenCase(k)}:${absVal(v, k, this.style)};`;
+                        }
+                    });
+                    this.style.cssText += s;
+                }
+            }
+            else {
+                setCssValue(this.style, name, val + '');
+            }
+            return this;
+        };
+        HP.empty = function (s) {
+            let chs = this.findAll(s || '*');
+            if (chs.length > 0)
+                [].forEach.call(chs, function (node) {
+                    if (node.nodeType == 1)
+                        node.off().remove();
+                });
+            return this;
+        };
+        HP.remove = function (s) {
+            this.empty.call(this, s);
+            if (!s)
+                or.call(this.off());
         };
         let DP = Document.prototype;
         DP.on = HP.addEventListener;
@@ -2379,7 +2532,7 @@ var Lengths = JS.util.Lengths;
 var LengthUnit = JS.util.LengthUnit;
 var JS;
 (function (JS) {
-    JS.version = '2.5.0';
+    JS.version = '2.6.0';
     function config(d, v) {
         let l = arguments.length;
         if (l == 0)
@@ -3044,7 +3197,7 @@ var JS;
                 m._pt = 0;
             }
             stop() {
-                this._reset();
+                this._finish();
                 return this;
             }
             _finish() {
@@ -3064,14 +3217,20 @@ var JS;
             _cycle(skip) {
                 if (this._sta != TimerState.RUNNING)
                     return;
-                if (this._count < this._cfg.loop) {
+                let p = this._cfg.loop;
+                if (this._count < p) {
                     let t = 0, opts = this._cfg, t0 = System.highResTime();
                     this._et = t0 - this._ts;
                     if (!skip) {
-                        this._count++;
+                        let looping = this._count > 1 && this._count <= (p - 1);
+                        if (looping)
+                            this._bus.fire('looping', [this._count + 1]);
+                        ++this._count;
                         this._tick.call(this, this._et);
                         let t1 = System.highResTime();
                         t = t1 - t0;
+                        if (looping)
+                            this._bus.fire('looped', [this._count]);
                     }
                     this._ts = t0;
                     let d = opts.interval - t, needSkip = opts.intervalMode == 'OF' && d < 0;

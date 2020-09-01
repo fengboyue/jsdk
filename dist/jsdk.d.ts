@@ -1,5 +1,5 @@
 /**
-* JSDK 2.5.0 
+* JSDK 2.6.0 
 * https://github.com/fengboyue/jsdk/
 * (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
 * MIT license
@@ -65,7 +65,6 @@ import AnimInit = JS.an.AnimInit;
 import Anim = JS.an.Anim;
 declare module JS {
     namespace an {
-        type AnimTimerEvents = TimerEvents | 'looping' | 'looped';
         type AnimTimerInit = {
             delay?: number;
             duration?: number;
@@ -82,7 +81,6 @@ declare module JS {
 }
 import AnimTimer = JS.an.AnimTimer;
 import AnimTimerInit = JS.an.AnimTimerInit;
-import AnimTimerEvents = JS.an.AnimTimerEvents;
 declare module JS {
     namespace an {
         type EasingFunction = (t: number, b: number, c: number, d: number, ...args: any[]) => number;
@@ -813,10 +811,17 @@ interface HTMLElement {
         once?: boolean;
         passive?: boolean;
     }): this;
-    off(type?: string, listener?: (this: HTMLElement, e: Event) => boolean | void): this;
+    off(type?: string, listener?: (this: HTMLElement, e: Event) => boolean | void, capture?: boolean): this;
     find(selector: string): HTMLElement;
     findAll(selector: string): NodeListOf<HTMLElement>;
     computedStyle(pseudo?: string): CSSStyleDeclaration;
+    val(): string | string[];
+    val(v: string | string[]): this;
+    css(name: string): string;
+    css(name: string, val: string | number | JS.util.CssOffsetValue): this;
+    css(props: JsonObject<string>): this;
+    empty(): this;
+    remove(selector?: string): void;
 }
 interface Document {
     on(type: string, listener: (this: Document, e: Event) => boolean | void, useCapture?: boolean): this;
@@ -838,6 +843,7 @@ interface Window {
 }
 declare module JS {
     namespace util {
+        type CssOffsetValue = string;
         class Dom {
             static $1(selector: string | HTMLElement): HTMLElement;
             static $L(selector: string): NodeListOf<HTMLElement>;
@@ -1496,6 +1502,163 @@ declare module JS {
     }
 }
 import Service = JS.app.Service;
+declare module JS {
+    namespace math {
+        type ArrayPoint2 = [number, number];
+        type ArrayPoint3 = [number, number, number];
+        type PolarPoint2 = {
+            d: number;
+            a: number;
+        };
+        type PolarPoint3 = {
+            d: number;
+            ax: number;
+            az: number;
+        };
+    }
+}
+import ArrayPoint2 = JS.math.ArrayPoint2;
+import ArrayPoint3 = JS.math.ArrayPoint3;
+import PolarPoint2 = JS.math.PolarPoint2;
+import PolarPoint3 = JS.math.PolarPoint3;
+declare module JS {
+    namespace d2 {
+        type D2Line = [ArrayPoint2, ArrayPoint2];
+        type D2Rect = [number, number, number, number];
+        type D2Triangle = [ArrayPoint2, ArrayPoint2, ArrayPoint2];
+        type D2CirArc = [ArrayPoint2, number, number, number, boolean];
+        type D2Circle = [ArrayPoint2, number];
+        type D2Path = ArrayPoint2[];
+        type D2Text = [string, ArrayPoint2] | [string, ArrayPoint2, number];
+        type D2CssColor = string | 'transparent';
+        type D2FillPattern = {
+            image: HTMLImageElement | SVGImageElement | HTMLVideoElement;
+            repeat?: 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat';
+        };
+        type D2CssLinearGradient = {
+            dir: 'left' | 'right' | 'top' | 'bottom';
+            colors: Array<{
+                stop?: number;
+                color: string;
+            }>;
+        };
+        interface D2ElementAttributes {
+            x?: number | JS.util.CssOffsetValue;
+            y?: number | JS.util.CssOffsetValue;
+            opacity?: number | JS.util.CssOffsetValue;
+            zIndex?: number;
+            style?: string;
+            draggable?: boolean;
+        }
+        interface D2NewElementAttributes extends D2ElementAttributes {
+            id?: string;
+        }
+    }
+}
+import D2Line = JS.d2.D2Line;
+import D2Rect = JS.d2.D2Rect;
+import D2Triangle = JS.d2.D2Triangle;
+import D2CirArc = JS.d2.D2CirArc;
+import D2Circle = JS.d2.D2Circle;
+import D2Path = JS.d2.D2Path;
+import D2Text = JS.d2.D2Text;
+declare module JS {
+    namespace d2 {
+        interface DrawStyle {
+            lineWidth?: number;
+            strokeStyle?: D2CssColor;
+            shadowStyle?: {
+                color?: D2CssColor;
+                blur?: number;
+                offsetX?: number;
+                offsetY?: number;
+            };
+        }
+        interface TransformDrawStyle extends DrawStyle {
+            translate?: [number, number];
+            rotate?: number;
+            scale?: [number, number];
+            transform?: [number, number, number, number, number, number];
+        }
+        interface RectDrawStyle extends TransformDrawStyle {
+            fillStyle?: D2CssColor | D2CssLinearGradient | D2FillPattern;
+            strokeStyle?: D2CssColor;
+        }
+        interface TextDrawStyle extends TransformDrawStyle {
+            fillStyle?: D2CssColor | D2CssLinearGradient;
+            strokeStyle?: D2CssColor;
+            textStyle?: {
+                font?: string;
+                align?: 'center' | 'left' | 'right';
+            };
+        }
+        interface DisplayConfig {
+            holder?: string | HTMLElement;
+            id: string;
+            x?: number;
+            y?: number;
+            zIndex?: number;
+            width?: number;
+            height?: number;
+            cssStyle?: string;
+            drawStyle?: DrawStyle;
+            mode: 'canvas' | 'div';
+        }
+        class Display {
+            protected _cfg: DisplayConfig;
+            protected _ctx: CanvasRenderingContext2D;
+            protected _div: HTMLElement;
+            protected _dStyle: DrawStyle;
+            constructor(cfg: DisplayConfig);
+            clear(rect?: D2Rect): void;
+            private _check;
+            private _canvasLG;
+            private _applyDrawStyle;
+            private _applyDrawingStyle;
+            private _textDrawingStyle;
+            private _transformStyle;
+            config(): DisplayConfig;
+            config(cfg: DisplayConfig): this;
+            setDrawStyle(style?: DrawStyle): this;
+            private _drawLine;
+            drawLine(line: D2Line | Line | Segment, style?: TransformDrawStyle): void;
+            drawCircle(arc: D2Circle | Circle, style?: TransformDrawStyle): void;
+            drawArc(arc: D2CirArc | CirArc, style?: TransformDrawStyle): void;
+            private _fillStyle;
+            drawRect(rect: D2Rect | Rect, style?: RectDrawStyle): void;
+            drawTri(tri: D2Triangle | Triangle, style?: TransformDrawStyle): void;
+            drawPath(p: D2Path, style?: TransformDrawStyle): void;
+            private _setAttrs;
+            drawText(t: D2Text, style?: TextDrawStyle, a?: D2NewElementAttributes): void;
+            changeText(id: string, text: string): void;
+            drawImage(img: HTMLImageElement | {
+                src: HTMLImageElement;
+                x: number;
+                y: number;
+                w: number;
+                h: number;
+            }, a?: D2NewElementAttributes): void;
+            changeImage(id: string, newImg: HTMLImageElement | {
+                src?: HTMLImageElement;
+                x: number;
+                y: number;
+                w?: number;
+                h?: number;
+            }): void;
+            updateChild(id: string, a: D2ElementAttributes): void;
+            removeChild(id: string): void;
+            appendChild(node: string | Node): this;
+            find(selector: string): HTMLElement;
+            findAll(selector: string): NodeListOf<HTMLElement>;
+        }
+    }
+}
+import DrawStyle = JS.d2.DrawStyle;
+import TransformDrawStyle = JS.d2.TransformDrawStyle;
+import TextDrawStyle = JS.d2.TextDrawStyle;
+import RectDrawStyle = JS.d2.RectDrawStyle;
+import DisplayConfig = JS.d2.DisplayConfig;
+import Display = JS.d2.Display;
 declare module JS {
     namespace ds {
         class BiMap<K, V> {
@@ -4152,25 +4315,6 @@ import ThreadState = JS.lang.ThreadState;
 import ThreadPreload = JS.lang.ThreadPreload;
 declare module JS {
     namespace math {
-        type ArrayPoint2 = [number, number];
-        type ArrayPoint3 = [number, number, number];
-        type PolarPoint2 = {
-            d: number;
-            a: number;
-        };
-        type PolarPoint3 = {
-            d: number;
-            ax: number;
-            az: number;
-        };
-    }
-}
-import ArrayPoint2 = JS.math.ArrayPoint2;
-import ArrayPoint3 = JS.math.ArrayPoint3;
-import PolarPoint2 = JS.math.PolarPoint2;
-import PolarPoint3 = JS.math.PolarPoint3;
-declare module JS {
-    namespace math {
         class Coords2 {
             static rotate(p: ArrayPoint2, rad: number): ArrayPoint2;
             static rotateX(p: ArrayPoint2, rad: number): ArrayPoint2;
@@ -5190,7 +5334,7 @@ declare module JS {
             interval?: number;
             intervalMode?: 'OF' | 'BF';
         };
-        type TimerEvents = 'starting' | 'finished';
+        type TimerEvents = 'starting' | 'finished' | 'looping' | 'looped';
         enum TimerState {
             STOPPED = 0,
             RUNNING = 1,

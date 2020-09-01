@@ -8,6 +8,7 @@
  */
 /// <reference path="../net/Http.ts"/>
 /// <reference path="EventBus.ts"/>
+
 /**
  * Add methods for Dom object
  */
@@ -24,7 +25,7 @@ interface HTMLElement {
         once?: boolean,
         passive?: boolean
     }): this;
-    off(type?: string, listener?: (this: HTMLElement, e: Event) => boolean | void): this;
+    off(type?: string, listener?: (this: HTMLElement, e: Event) => boolean | void, capture?: boolean): this;
 
     find(selector: string): HTMLElement;
     findAll(selector: string): NodeListOf<HTMLElement>;
@@ -34,6 +35,62 @@ interface HTMLElement {
      * @param pseudo 
      */
     computedStyle(pseudo?: string): CSSStyleDeclaration;
+
+    /**
+     * Gets the selected or inputed values of form elements such as input, select and textarea. 
+     * When called on a non-form element, it returns undefined.
+     * When the value of this element is an empty string, it returns ''.
+     * 
+     * When this element is a select-multiple (i.e., a select element with the multiple attribute set), 
+     * it returns an array containing the value of each selected option. 
+     * If no options are selected, it returns an empty array.
+     * 
+     * When this element is a checkbox, it returns the selected values of all same-name elements.
+     * When all checkboxes are not checked, it returns an empty array.
+     * 
+     * When this element is a radio, it returns the selected value of all same-name elements.
+     * When all radio are not checked, it returns null.
+     */
+    val(): string | string[];
+    /**
+     * Sets the form element's value such as input, select and textarea. 
+     * 
+     * When this element is a checkbox, it will select some same-name elements.
+     * 
+     * When this element is a radio, it will select one same-name element.
+     */
+    val(v: string | string[]): this;
+
+    /**
+     * Gets the value of css name.
+     * @param name 
+     */
+    css(name: string): string;
+    /**
+     * Sets the value of css name.
+     * Note:
+     * 1. The val accepts !important declarations. So, the statement $1( "p" ).css( "color", "red !important" ) can be set to its css name.
+     * 2. The val accepts offset value. Offset value is a string starting with += or -= to increment or decrement the current value. For example, if an element's padding-left was 10px, .css( "padding-left", "+=15" ) would result in a total padding-left of 25px.
+     * @param name
+     * @param val 
+     */
+    css(name: string, val: string | number | JS.util.CssOffsetValue): this;
+    /**
+     * Sets a set of css name-value pairs
+     * @param props 
+     */
+    css(props: JsonObject<string>): this;
+
+    /**
+     * Removes ll children nodes and unbinds all their events binding with the on method.
+     * @param selector 
+     */
+    empty(): this;
+    /**
+     * Removes self or all children nodes of special selector and unbinds all their events binding with the on method.
+     * @param selector 
+     */
+    remove(selector?: string): void;
 }
 /**
  * Add methods for document object
@@ -66,6 +123,7 @@ if (self['HTMLElement']) //当前不在worker线程中
             HP = HTMLElement.prototype,
             oa = HP.append,
             op = HP.prepend,
+            or = HP.remove,
             _ad = function (this: HTMLElement, html: string) {
                 if (!html) return;
                 let div = D.createElement('div'),
@@ -109,13 +167,13 @@ if (self['HTMLElement']) //当前不在worker线程中
             })
         }
 
-        HP.box = function () {
-            let box = this.getBoundingClientRect();
+        HP.box = function (this: HTMLElement) {
+            let box = this.computedStyle();
             return {
-                x: box.x + System.display().docScrollX,
-                y: box.x + System.display().docScrollY,
-                w: box.width,
-                h: box.height
+                x: parseFloat(box.left) + System.display().docScrollX,
+                y: parseFloat(box.top) + System.display().docScrollY,
+                w: parseFloat(box.width),
+                h: parseFloat(box.height)
             }
         }
 
@@ -152,42 +210,39 @@ if (self['HTMLElement']) //当前不在worker线程中
             })
             return this
         }
-        let _rm = function (this: EventTarget, type, fn?: Function) {
+        let _rm = function (this: EventTarget, type, fn: Function, opts: boolean) {
             if (!fn) return;
             //所有主流浏览器，除了IE8及更早IE版本
-            if (this.removeEventListener) {
-                this.removeEventListener(type, <any>fn, true);
-                this.removeEventListener(type, <any>fn, false)
-            }
+            if (this.removeEventListener) this.removeEventListener(type, <any>fn, opts || false)
         },
-            _rms = function (this: EventTarget, type, fns: Function[]) {
-                if (fns) fns.forEach(f => { _rm.call(this, type, f) })
+            _rms = function (this: EventTarget, type, fns: Function[], opts: boolean) {
+                if (fns) fns.forEach(f => { _rm.call(this, type, f, opts) })
             },
-            _off = function (this: EventTarget, type: string, fn) {
+            _off = function (this: EventTarget, type: string, fn, opts: boolean) {
                 let bus = <EventBus>this['_bus'];
                 if (bus) {
                     let oFn = fn ? bus.original(type, fn['euid']) : undefined;
                     bus.off(type, oFn);
-                    _rm.call(this, type, oFn);
+                    _rm.call(this, type, oFn, opts);
                 } else {
-                    _rm.call(this, type, fn);
+                    _rm.call(this, type, fn, opts);
                 }
             }
-        HP.off = function (type?: string, fn?: Function) {
+        HP.off = function (type?: string, fn?: Function, capture?: boolean) {
             if (!type) {
                 let bus = <EventBus>this['_bus'];
                 if (bus) {
                     let types = bus.types();
                     for (let i = 0, len = types.length; i < len; i++) {
                         let ty = types[i];
-                        _rms.call(this, ty, bus.original(ty));
+                        _rms.call(this, ty, bus.original(ty), capture);
                     }
                     bus.off();
                 }
             } else {
                 let types = type.split(' ');
                 types.forEach(t => {
-                    _off.call(this, t, fn)
+                    _off.call(this, t, fn, capture)
                 })
             }
             return this
@@ -198,6 +253,147 @@ if (self['HTMLElement']) //当前不在worker线程中
 
         HP.computedStyle = function (p?: string) {
             return document.defaultView.getComputedStyle(this, p || null)
+        }
+
+        let _getV = function (this: HTMLElement): string | string[] {
+            if (this instanceof HTMLTextAreaElement) {
+                return this.value || ''
+            } else if (this instanceof HTMLInputElement) {
+                if (this.type == 'checkbox') {
+                    let chks = document.getElementsByName(this.name);
+                    if (chks.length > 0) {
+                        let a = [];
+                        [].forEach.call(chks, function (chk: HTMLInputElement) {
+                            if (chk.checked) a.push(chk.value)
+                        });
+                        return a
+                    }
+                    return this.checked ? [this.value] : []
+                } if (this.type == 'radio') {
+                    let rds = document.getElementsByName(this.name);
+                    if (rds.length > 0) {
+                        for (let i = 0, l = rds.length; i < l; i++) {
+                            let rd = <HTMLInputElement>rds.item(i);
+                            if (rd.checked) return rd.value
+                        }
+                        return null
+                    }
+                    return this.checked ? this.value : null
+                }
+                return this.value || ''
+            } else if (this instanceof HTMLSelectElement) {
+                let opts = this.findAll('option:checked');
+                if (opts.length > 0) {
+                    let a = [];
+                    for (let i = 0, l = opts.length; i < l; i++) {
+                        let opt = <HTMLOptionElement>opts.item(i);
+                        if (this.multiple) {
+                            if (opt.selected) a.push(opt.value)
+                        } else {
+                            if (opt.selected) return opt.value
+                        }
+                    }
+                    return a
+                }
+                return []
+            }
+
+            return undefined
+        }, _setV = function (this: HTMLElement, v: string | string[]) {
+            if (this instanceof HTMLTextAreaElement) {
+                this.value = <any>v || ''
+            } else if (this instanceof HTMLInputElement) {
+                if (this.type == 'checkbox') {
+                    let chks = document.getElementsByName(this.name), vs = <string[]>v;
+                    if (chks.length > 0) {
+                        [].forEach.call(chks, function (chk: HTMLInputElement) {
+                            chk.checked = vs.indexOf(chk.value) > -1
+                        })
+                    } else {
+                        if (vs.indexOf(this.value) > -1) this.checked = true
+                    }
+                    return this
+                } if (this.type == 'radio') {
+                    let rds = document.getElementsByName(this.name);
+                    if (rds.length > 0) {
+                        for (let i = 0, l = rds.length; i < l; i++) {
+                            let rd = <HTMLInputElement>rds.item(i);
+                            if (v == rd.value) {
+                                rd.checked = true;
+                                return this
+                            }
+                        }
+                    } else {
+                        if (v == this.value) this.checked = true
+                    }
+                    return this
+                }
+                this.value = <string>v
+            } else if (this instanceof HTMLSelectElement) {
+                let opts = this.findAll('option'), vs = typeof v == 'string' ? [v] : <string[]>v;
+                if (opts.length > 0) {
+                    for (let i = 0, l = opts.length; i < l; i++) {
+                        let opt = <HTMLOptionElement>opts.item(i);
+                        opt.selected = vs.indexOf(opt.value) > -1
+                    }
+                }
+            }
+
+            return this
+        }
+        HP.val = function (v?: string | string[]) {
+            return arguments.length == 0 ? _getV.call(this) : _setV.call(this, v);
+        }
+
+        /** Convert 'backgroundColor' to 'background-color' */
+        let hyphenCase = (name: string) => {
+            return name.replace(/([A-Z])/g, (a, b: string) => { return '-' + b.toLowerCase() })
+        }, setCssValue = (st: CSSStyleDeclaration, k: string, v: string) => {
+            if (v === undefined) {
+                st.removeProperty(hyphenCase(k))
+            } else if (v != null) {
+                st.setProperty(hyphenCase(k), absVal(v, k, st), v.endsWith(' !important') ? 'important' : '')
+            }
+        }, absVal = (v: string, k: string, st: CSSStyleDeclaration): string => {
+            if (v.startsWith('+=') || v.startsWith('-=')) {
+                let ov = parseFloat(st.getPropertyValue(k)), nv = parseFloat(v.replace('=', ''));
+                return ov + nv + 'px'
+            }
+            return v
+        }
+        HP.css = function (this: HTMLElement, name: string | JsonObject<string>, val?: string | number): any {
+            if (arguments.length == 1) {
+                if (typeof name == 'string') {
+                    return this.style.getPropertyValue(hyphenCase(<string>name))
+                } else {
+                    let s = '';
+                    Jsons.forEach(name, (v, k) => {
+                        if (v === undefined) {
+                            this.style.removeProperty(hyphenCase(k))
+                        } else if (v != null) {
+                            s += `${hyphenCase(k)}:${absVal(v, k, this.style)};`
+                        }
+                    })
+                    this.style.cssText += s
+                }
+            } else {
+                setCssValue(this.style, <string>name, val + '')
+            }
+
+            return this
+        }
+
+        HP.empty = function (this: HTMLElement, s?: string) {
+            let chs = this.findAll(s || '*');
+            if (chs.length > 0) [].forEach.call(chs, function (node: HTMLElement) {
+                if (node.nodeType == 1) node.off().remove()
+            });
+
+            return this
+        }
+        HP.remove = function (this: HTMLElement, s?: string) {
+            this.empty.call(this, s);
+            if (!s) or.call(this.off())
         }
 
         let DP = Document.prototype;
@@ -212,6 +408,12 @@ if (self['HTMLElement']) //当前不在worker线程中
 module JS {
 
     export namespace util {
+
+        /**
+         * The css offset value is a string starting with += or -= to increment or decrement the current value. 
+         * For example, if an element's padding-left was 10px, .css( "padding-left", "+=15" ) would result in a total padding-left of 25px.
+         */
+        export type CssOffsetValue = string;
 
         let D: Document,
             _head = () => { return D.querySelector('head') },

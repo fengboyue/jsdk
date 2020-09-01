@@ -134,17 +134,17 @@ module JS {
                         duration: c.duration,
                         loop: c.loop
                     });
-                    if (c.onStarting) r.on(<AnimTimerEvents>'starting', () => {
+                    if (c.onStarting) r.on(<TimerEvents>'starting', () => {
                         c.onStarting.call(T);
                         T._resetFrame()
                     });
-                    r.on(<AnimTimerEvents>'looping', (e, ct: number) => {
+                    r.on(<TimerEvents>'looping', (e, ct: number) => {
                         T._loop = ct;
                         T._reset4loop();
                         if (ct>1 && c.autoReverse) T.direction(T._dir == 'backward' ? 'forward' : 'backward');
                         if(!c.autoReverse) T._resetFrame()
                     });
-                    r.on(<AnimTimerEvents>'finished', () => {
+                    r.on(<TimerEvents>'finished', () => {
                         if(c.autoReset) T._resetEl()
                         if (c.onFinished) c.onFinished.call(T);
                         T._reset();

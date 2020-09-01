@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>JS | JSDK 2.5.0 API</title>
-	<meta name="description" content="Documentation for JSDK 2.5.0 API">
+	<title>JS | JSDK 2.6.0 API</title>
+	<meta name="description" content="Documentation for JSDK 2.6.0 API">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">JSDK 2.5.0 API</a>
+					<a href="../index.html" class="title">JSDK 2.6.0 API</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -82,7 +82,16 @@
 						<dd><p>Frank.Feng</p>
 						</dd>
 						<dt>email</dt>
-						<dd><p><a href="mailto:&#x62;&#111;&#x79;&#x75;&#101;&#46;&#x66;&#x65;&#x6e;&#103;&#64;&#102;&#111;&#120;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#x63;&#111;&#x6d;">&#x62;&#111;&#x79;&#x75;&#101;&#46;&#x66;&#x65;&#x6e;&#103;&#64;&#102;&#111;&#120;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#x63;&#111;&#x6d;</a></p>
+						<dd><p><a href="mailto:&#x62;&#111;&#x79;&#x75;&#101;&#46;&#x66;&#x65;&#110;&#x67;&#64;&#102;&#x6f;&#120;&#109;&#97;&#x69;&#108;&#x2e;&#99;&#111;&#109;">&#x62;&#111;&#x79;&#x75;&#101;&#46;&#x66;&#x65;&#110;&#x67;&#64;&#102;&#x6f;&#120;&#109;&#97;&#x69;&#108;&#x2e;&#99;&#111;&#109;</a></p>
+						</dd>
+						<dt>version</dt>
+						<dd><p>2.6.0</p>
+						</dd>
+						<dt>date</dt>
+						<dd><p>2020/9/5</p>
+						</dd>
+						<dt>update</dt>
+						<dd><p>New js2d module</p>
 						</dd>
 						<dt>version</dt>
 						<dd><p>2.5.0</p>
@@ -212,6 +221,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="js.an.html" class="tsd-kind-icon">an</a></li>
 								<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="js.app.html" class="tsd-kind-icon">app</a></li>
+								<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="js.d2.html" class="tsd-kind-icon">d2</a></li>
 								<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="js.ds.html" class="tsd-kind-icon">ds</a></li>
 								<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="js.fx.html" class="tsd-kind-icon">fx</a></li>
 								<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="js.input.html" class="tsd-kind-icon">input</a></li>
@@ -322,7 +332,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-namespace">
 					<a name="version" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagLet">Let</span> version</h3>
-					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;2.5.0&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;2.6.0&quot;</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
@@ -540,9 +550,11 @@ $moduleName
 JLU Format 3:
 ~/libName/x.y.z/xxx.[js|css|html](#async)
 </pre>
-									<p>Example Urls:</p>
+									<p>Sample JLUs:</p>
 									<pre>
-https://mycdn.net/jsdk/2.0.0/jscore.js
+$jsvp
+~/coolbutton/1.0.0/cool-button.css
+~/coolbutton/1.0.0/cool-button.js
 http://mycom.net/myapp/1.0.0/home.js
 http://mycom.net/myapp/1.0.0/home.css
 http://mycom.net/myapp/1.0.0/model.js#async
@@ -576,6 +588,9 @@ http://mycom.net/myapp/1.0.0/template.html
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.app.html">app</a>
+							</li>
+							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+								<a href="js.d2.html">d2</a>
 							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 								<a href="js.ds.html">ds</a>

@@ -6,6 +6,10 @@
  * @author Frank.Feng
  * @email boyue.feng@foxmail.com
  * 
+ * @version 2.6.0
+ * @date 2020/9/5
+ * @update New js2d module
+ * 
  * @version 2.5.0
  * @date 2020/8/20
  * @update Milestone for new jsmath and jsugar
@@ -65,7 +69,7 @@
 
 module JS {
 
-    export let version = '2.5.0';
+    export let version = '2.6.0';
 
     export type JSDKConfig = {
         closeImport?: boolean;
@@ -186,9 +190,11 @@ module JS {
      * JLU Format 3:
      * ~/libName/x.y.z/xxx.[js|css|html](#async)
      * </pre>
-     * Example Urls:
+     * Sample JLUs:
      * <pre>
-     * https://mycdn.net/jsdk/2.0.0/jscore.js
+     * $jsvp
+     * ~/coolbutton/1.0.0/cool-button.css
+     * ~/coolbutton/1.0.0/cool-button.js
      * http://mycom.net/myapp/1.0.0/home.js
      * http://mycom.net/myapp/1.0.0/home.css
      * http://mycom.net/myapp/1.0.0/model.js#async

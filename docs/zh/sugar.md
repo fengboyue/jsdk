@@ -52,7 +52,7 @@ export function version(ver: string): any {
 }
 ```
 
-2. 使用此注解
+2. 读取注解的值
 ```javascript
 @version('1.2.3')
 export class MyClass {
@@ -122,8 +122,8 @@ Konsole.print(cls.fields(c));  //print all static fields and instance fields
 let c = Class.newInstance('WHO.virus.Convid19'); //equals: new Convid19();
 ```
 
-## AOP切面
-切面是对原函数或方法的一种替换机制，可在切入点植入新函数用于修改其原有行为。
+## 切面
+切面（AOP）是对原函数或方法的一种替换机制，可在切入点植入新函数用于修改其原有行为。
 
 <b>jsugar</b> 支持以下切入点：
 - before
@@ -170,7 +170,7 @@ Date.class.aop('format', {//The 'format' method of Date class be changed.
 Date.class.cancelAop('format');
 ```
 
-还可以用AOP注解，对可反射类的方法切面：
+还可以用切面注解，对可反射类的方法切面：
 ```javascript
 class Me {
     @before((s)=>{return s+'\n'})

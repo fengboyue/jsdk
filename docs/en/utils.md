@@ -232,8 +232,8 @@ interface HTMLElement {
     find(selector:string):HTMLElement;
     findAll(selector:string):NodeListOf<HTMLElement>;
 
-    computedStyle(pseudo?:string):CSSStyleDeclaration;
-}
+    ......
+}    
 ```
 * *You can use these methods directly on native DOM object.*
 

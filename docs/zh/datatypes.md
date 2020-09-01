@@ -201,14 +201,17 @@ Assert.equal(Numbers.algebra(' a*(0.3894567-1.5908+d)/(+b-c)', {
 >
 > 基于 JSDK 的 Number/Numbers，有助于你开发更好的JS计算器。
 
-## 数据缓存
-### 数据持久化
+## 数据持久化缓存
+### 创建缓存数据库
 当你有很多二进制大数据的时候，你应该将其持久化至 <b>JS.store.DataCache</b>（基于本地持久化数据库IndexDB）中，而不是保留在内存中：
 ```javascript
 let cache = new DataCache({
-    name: 'MyCache'
+    name: 'MyCache' //创建或重新打开一个名为MyCache的本地数据库
 });
+```
 
+### 写入数据
+```javascript
 Http.get({
     url: 'xxx.doc',
     responseType: 'blob',
@@ -230,25 +233,25 @@ cache.read('1').then((data: Blob)=>{
 })
 ```
 
-### 清空缓存区
-清空 <code>MyCache</code> 缓存区：
+### 清空缓存数据库
+清空 <code>MyCache</code> 缓存数据库：
 ```javascript
 cache.clear().then((data: Blob)=>{
     //do your next
 })
 ```
 
-### 销毁缓存区
-销毁 <code>MyCache</code> 缓存区：
+### 销毁缓存数据库
+销毁 <code>MyCache</code> 缓存数据库：
 ```javascript
 cache.destroy().then((data: Blob)=>{
     //do your next
 })
 ```
-* 销毁后的 MyCache 缓存将无法再读写
+* 销毁后的 MyCache 实例将无法再读写，除非你重新再创建
 
-## 图像缓存
-### 预加载图片
+## 图像内存缓存
+### 创建与预加载
 当你需要显示很多图片时，可以用 <b>JS.store.ImageCache</b> 提前预加载：
 ```javascript
 let cache = new ImageCache();
@@ -266,7 +269,7 @@ cache.load([
 (<HTMLImageElement>$1('#img1')).src = cache.get('1').src;
 ```
 
-### 清空图片索引
+### 清空所有图片
 ```javascript
 cache.clear()
 ```

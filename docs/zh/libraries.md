@@ -95,18 +95,19 @@ JSDK被划分成多个模块（类库）。最底层的核心模块是<b>jscore<
 ### 模块清单
 模块名|备注|所含包|依赖自身模块|是否依赖第三方库|最小尺寸
 ---|---|---|---|---|---
-jscore|core module|JS.util.* <br>JS.net.* <br>JS.lang.*  ||No|73 kb
+jscore|core module|JS.util.* <br>JS.net.* <br>JS.lang.*  ||No|76 kb
 jsugar|syntax sugars:<br>reflect/annotation/aop/mixin|JS.sugar.* |jscore|No|28 kb
 jsds|data structures+stores|JS.ds.*<br>JS.store.* |jscore |No|13 kb
 jsmedia|audio+video|JS.media.* |jsds |No|5 kb
 jsmath|math tools|JS.math.* |jscore |No|38 kb
-jsui|ui+events|JS.input.*<br>JS.ui.* |jsds |No|16 kb
-jsmvc|model&views&component|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsugar<br>jsui |No|29 kb
+js2d|2d drawing|JS.d2.* |jsmath |No|9 kb
+jsui|ui+events|JS.input.*<br>JS.ui.* |jsds |Optional:<br>clipboard/polymer|16 kb
+jsmvc|model+views+component|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsugar<br>jsui |Optional:<br>handlebars|29 kb
 jsan|animations|JS.an.* |jsui |No|17 kb
 jsfx|widgets |JS.fx.* |jsmvc|Yes|js: 112 kb<br>css: 104 kb
 jsvp|app framework|JS.app.* |jsmvc|No|4 kb
-jsunit|unit-test framework|JS.unit.* |jsugar|No|js: 9 kb<br>css: 669 b
-jsdk|all above modules|JS.* ||Yes|js: 322 kb
+jsunit|unit-test framework|JS.unit.* |jsugar|Optional:<br>ua-parser|js: 9 kb<br>css: 669 b
+jsdk|all above modules|JS.* ||Yes|js: 334 kb
 
 ### 自定义模块
 当你需要更小尺寸的模块文件，你可以修改build/目录下的构建脚本，去掉不需要用到的类或包，重新构建出自定义的模块文件。
