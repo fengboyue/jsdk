@@ -12,8 +12,7 @@
 /// <reference path="../lang/System.ts"/>
 /// <reference path="../model/Model.ts"/>
 /// <reference path="../model/ListModel.ts"/>
-/// <reference path="../util/Lengths.ts"/>
-/// <reference path="../util/Colors.ts"/>
+/// <reference path="../util/CssTool.ts"/>
 /// <reference path='../ui/Placements.ts'/>
 /// <reference path="../ui/IWidget.ts"/>
 /// <reference path="../net/URI.ts"/>

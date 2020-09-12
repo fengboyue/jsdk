@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css?_=11" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?_=1"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">TWEEN ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                    <div class="line">
+                        <div class="label"></div>
+                        <div class="square shadow"></div>
+                        <div class="square el"></div>
+                    </div>
+                    <div class="line controls">
+                        <button class="play">Play</button>
+                        <button class="pause">Pause</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Events</h2>
+            </header>
+            <div class="info-output">
+                <p>Listen an animation with events.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>name</td>
+                            <td>parameters</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>starting</td>
+                            <td>(this: Anim, e: CustomEvent)</td>
+                        </tr>
+                        <tr>
+                            <td>finished</td>
+                            <td>(this: Anim, e: CustomEvent)</td>
+                        </tr>
+                        <tr>
+                            <td>pausing</td>
+                            <td>(this: Anim, e: CustomEvent)</td>
+                        </tr>
+                        <tr>
+                            <td>paused</td>
+                            <td>(this: Anim, e: CustomEvent)</td>
+                        </tr>
+                        <tr>
+                            <td>looping</td>
+                            <td>(this: Anim, e: CustomEvent, loop: number)</td>
+                        </tr>
+                        <tr>
+                            <td>looped</td>
+                            <td>(this: Anim, e: CustomEvent, loop: number)</td>
+                        </tr>
+                        <tr>
+                            <td>updating</td>
+                            <td>(this: Anim, e: CustomEvent, elapsedTime: number, duration: number, loop: number)</td>
+                        </tr>
+                        <tr>
+                            <td>updated</td>
+                            <td>(this: Anim, e: CustomEvent, elapsedTime: number, duration: number, loop: number)</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">let anim = new TweenAnim({
+    keys: {
+            translateX: 250
+        },
+        direction: 'alternate',
+        loop: true,
+        duration: 10000
+}).targets($L('.el')).on('updated', (e, t, d, i)=>{
+    $1('.label').innerHTML = `loop: ${i}, progress: ${Number(t/d*100).round(0)}%`
+}).on('paused', ()=>{
+    $1('.label').innerHTML += ' PAUSING...'
+})</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="tween_events.js"></script>
+</body>
+
+</html>

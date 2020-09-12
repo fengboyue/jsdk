@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css?_=11" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?_=33"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+    
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">TWEEN ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                    <div class="line">
+                        <div class="square shadow"></div>
+                        <div class="square el"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Keys: CSS Properties</h2>
+            </header>
+            <div class="info-output">
+                <p>Animate CSS transforms properties at same time.</p>
+                <table>
+                    <thead>
+                      <tr><td>Valid properties</td>
+                      <td>Default unit</td>
+                    </tr></thead>
+                    <tbody><tr><td>'translateX'</td><td>'px'</td></tr>
+                    <tr><td>'translateY'</td><td>'px'</td></tr>
+                    <tr><td>'translateZ'</td><td>'px'</td></tr>
+                    <tr><td>'rotate'</td><td>'deg'</td></tr>
+                    <tr><td>'rotateX'</td><td>'deg'</td></tr>
+                    <tr><td>'rotateY'</td><td>'deg'</td></tr>
+                    <tr><td>'rotateZ'</td><td>'deg'</td></tr>
+                    <tr><td>'scale'</td><td><code class="hljs">—</code></td></tr>
+                    <tr><td>'scaleX'</td><td><code class="hljs">—</code></td></tr>
+                    <tr><td>'scaleY'</td><td><code class="hljs">—</code></td></tr>
+                    <tr><td>'scaleZ'</td><td><code class="hljs">—</code></td></tr>
+                    <tr><td>'skew'</td><td>'deg'</td></tr>
+                    <tr><td>'skewX'</td><td>'deg'</td></tr>
+                    <tr><td>'skewY'</td><td>'deg'</td></tr>
+                    <tr><td>'perspective'</td><td>'px'</td></tr>
+                  </tbody></table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">new TweenAnim({
+    keys: {
+        translateX: 250,
+        scale: 2,
+        rotate: '1turn'
+    },
+    easing: 'BACK_IN_OUT'
+}).targets('.el');</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="tween_keys_transform.js?_=3"></script>
+</body>
+
+</html>

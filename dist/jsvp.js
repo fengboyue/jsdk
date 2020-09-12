@@ -1,10 +1,5 @@
 //# sourceURL=../dist/jsvp.js
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 var JS;
 (function (JS) {
     let app;
@@ -106,7 +101,7 @@ var JS;
                 this._bus.off(e);
             }
             static init(page) {
-                let T = this, p = Components.get(page);
+                let T = this, p = Compos.get(page);
                 T._page = p;
                 T._bus.context(T._page);
                 Bom.ready(() => {
@@ -117,13 +112,13 @@ var JS;
                 return this._page;
             }
             static view(v) {
-                return Components.get(v);
+                return Compos.get(v);
             }
             static redirect(url, query) {
                 let T = this, p = T._page;
                 if (p) {
                     T.fireEvent('leaving', [p]);
-                    Components.remove(p.className);
+                    Compos.remove(p.className);
                 }
                 let uri = new URI(url);
                 if (query)

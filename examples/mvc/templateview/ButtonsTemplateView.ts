@@ -4,7 +4,7 @@ module JS {
 
     export namespace examples {
 
-            @component('JS.examples.ButtonsTemplateView')
+            @compo('JS.examples.ButtonsTemplateView')
             export class ButtonsTemplateView extends TemplateView {
 
                 initialize() {

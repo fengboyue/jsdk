@@ -46,9 +46,9 @@ module JS {
             colors: Array<{ stop?: number, color: string }>
         }
         export interface D2ElementAttributes {
-            x?: number | JS.util.CssOffsetValue
-            y?: number | JS.util.CssOffsetValue
-            opacity?: number | JS.util.CssOffsetValue
+            x?: number | CssValueString
+            y?: number | CssValueString
+            opacity?: number | CssValueString
             zIndex?: number
             style?: string
             draggable?: boolean

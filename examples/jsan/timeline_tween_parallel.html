@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css?_=1" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?_=34"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+    
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">Timeline ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                    <div class="line">
+                        <div class="square shadow"></div>
+                        <div class="square el-1"></div>
+                    </div>
+                    <div class="line">
+                        <div class="small square shadow"></div>
+                        <div class="small square el-2"></div>
+                        <pre class="log">Click to play</pre>
+                    </div>
+                    <div class="line">
+                        <div class="circle shadow"></div>
+                        <div class="circle el-1"></div>
+                    </div>
+                    <div class="line">
+                        <div class="small circle shadow"></div>
+                        <div class="small circle el-2"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Parallel Play</h2>
+            </header>
+            <div class="info-output">
+                <p><p>Add a child animation to a timeline with fixed time:</p>
+                <pre><code class="hljs javascript">myTimeline.add(animInit, fixedTime);</code></pre>
+                <p>fixedTime:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Type</td>
+                            <td>example</td>
+                            <td>Info</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>number</td>
+                            <td>500</td>
+                            <td>Starts at 500ms, reagardless of the animtion position in the timeline</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">let anim = new Timeline({
+    duration: 800,
+    autoreset: true
+})
+.add({
+    type: 'tween',
+    targets: '.square.el-1',
+    keys: { left: '+=250' },
+    duration: 500,
+    endDelay: 1300
+}, 0)
+.add({
+    type: 'tween',
+    targets: '.circle.el-1',
+    keys: { left: '+=250' },
+    endDelay: 500
+}, 500)
+.add({
+    type: 'tween',
+    targets: '.square.el-2',
+    keys: { left: '+=250' }
+})
+.add({
+    type: 'tween',
+    targets: '.circle.el-2',
+    keys: { left: '+=250' },
+    endDelay: 1000
+}, 0)
+
+$1('#demo').on('click', () => {
+    anim.play()
+})</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="timeline_tween_parallel.js"></script>
+</body>
+
+</html>

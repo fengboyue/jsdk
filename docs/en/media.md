@@ -1,7 +1,9 @@
 ## Audio
 <b>JS.media.AudioPro</b> class supports playing multiple audio in the meantime, and can perform effects processing such as mixing, rhythm, filtering, etc. But native <b>Audio</b> class can't.
 
-*Note: <b>AudioPro</b> class has no player UI, so you need <code>audio</code> tag or <b>Audio</b> class when your users only need to play one audio in the meantime and control it in player UI.*
+<b>Note:</b>  
+- AudioPro class has no player UI unless you write a player UI for it.
+- You need <code>audio</code> tag or <b>Audio</b> class when your users only need to play one audio in one time and control it in the default player UI of the browser.
 
 ### Audio Files Preload
 When multiple audio files will need to be played, you should first load them into the persistent cache using <b>AudioCache</b> class, rather than keeping them in memory.
@@ -58,7 +60,7 @@ let s1 = new Sound({
 
 ## Video
 
-### Instantiation
+### Initialize
 If the page already has a <code>video</code> tag:
 ```html
 <video id="v1" width="200" height="200"></video>

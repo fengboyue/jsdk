@@ -76,7 +76,7 @@ module JS {
 
             }
 
-            let M = Math, P = Point2, V = Vector2;
+            let P = Point2, V = Vector2;
 
             export class Shapes {
 

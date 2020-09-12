@@ -1,10 +1,5 @@
 //# sourceURL=../dist/jsds.js
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 var JS;
 (function (JS) {
     let store;
@@ -231,12 +226,13 @@ var JS;
             constructor() {
                 this._map = {};
             }
-            _load(id, url) {
+            _load(id, url, uncached) {
                 let m = this;
                 return Promises.create(function () {
                     let img = new Image();
                     img.onload = () => {
-                        m.set(id, img);
+                        if (!uncached)
+                            m.set(id, img);
                         this.resolve();
                     };
                     img.src = url;

@@ -3,167 +3,111 @@
  * @license MIT
  * @website https://github.com/fengboyue/jsdk
  * 
+ * @version 2.7.0
+ * @update New designed class for image frames animation
+ * 
  * @version 2.1.0
  * @author Frank.Feng
  */
+/// <reference path="../util/Images.ts"/>
+
 module JS {
 
     export namespace an {
 
-        let J = Jsons;
         export class FrameAnimInit extends AnimInit {
-            frames: KeyFrames;
-            /**
-             * The default easing function is LINEAR.
-             */
-            easing?: EasingFunction = Easings.LINEAR;
+            frames: ImageFrameSet;
+            onUpdateImage?: (el: HTMLElement | object, fr: ImageFrame) => void;
         }
 
-        export abstract class FrameAnim extends Anim {
+        export class FrameAnim extends Anim {
             protected _cfg: FrameAnimInit;
-            protected _el: HTMLElement;
-            protected _frame: KeyFrame;//前一个指定帧
-            private _from: KeyFrame;
-            private _to: KeyFrame;
-
-            private _frames: KeyFrames; //frames副本
+            private _frames: ImageFrame[] = [];
 
             constructor(cfg: FrameAnimInit) {
-                super(cfg);
+                super(<FrameAnimInit>Jsons.union(new FrameAnimInit(), cfg));
+
+                this._frames = Images.parseFrames(this._cfg.frames)
             }
 
-            protected abstract _onUpdate(newFrame: KeyFrame) :void;
-            
-            private _parseFrames(frames) {
-                let T = this;
-                J.some(frames, (v, k) => {
-                    if (k == 'from' || k == '0%') {
-                        T._from = this._convertFrame(v)
-                    } else if (k == 'to' || k == '100%') {
-                        T._to = this._convertFrame(v)
-                    }
-                    return T._from!=void 0 && T._to!=void 0
+            private _updateImage(el: HTMLElement, fr: ImageFrame) {
+                let json = {
+                    backgroundImage: `url("${fr.src}")`,
+                    backgroundPosition: `-${fr.x}px -${fr.y}px`,
+                    width: fr.w != void 0 ? (fr.w + 'px') : null,
+                    height: fr.h != void 0 ? (fr.h + 'px') : null
+                };
+                el.css(json)
+            }
+
+            //frame index
+            private _fi = -1;
+            protected _reset() {
+                super._reset();
+                this._fi = -1;
+            }
+            protected _resetTargets() {
+                let fn = this._cfg.onUpdateImage || this._updateImage, i = this._cfg.direction == 'backward' ? this._frames.length - 1 : 0;
+                this._targets.forEach(ta => {
+                    fn(ta, this._frames[i]);
                 })
             }
 
-            public config<T extends FrameAnimInit>(): T
-            public config<T extends FrameAnimInit>(cfg: T): this
-            public config(cfg?: FrameAnimInit): any {
-                if (!cfg) return this._cfg;
-
-                if(cfg.target) this._el = $1(cfg.target);
-                if (cfg.frames) this._parseFrames(cfg.frames);
-                
-                return super.config(cfg)
-            }
-            
-            private _num(k:string){
-                return k?Number(k.substr(0, k.length - 1)):0
+            private _updateFrame(dt: number) {
+                let m = this, c = m._cfg, size = m._frames.length, fn = c.onUpdateImage || m._updateImage;
+                this._targets.forEach(ta => {
+                    fn(ta, m._frames[m._fi]);
+                    m._dir == 'forward' ? m._fi++ : m._fi--;
+                })
             }
 
-            protected _newFrame(from:KeyFrame, to:KeyFrame, t:number, d:number, e:EasingFunction):number|JsonObject<number>|JsonObject<JsonObject<number>>{
-                if(Types.isNumber(from)){
-                    return this._newVal(t, d, from, to, e, this._frame);
-                }else{
-                    let json = {};
-                    J.forEach(<JsonObject>from, (v, k) => {
-                        json[k] = this._newVal(t, d, from[k], to[k], e, this._frame==void 0?null:this._frame[k])
-                    })
-                    return json
-                }
-            }
-            protected _newVal(t: number, d:number, from: number, to: number, e:EasingFunction, base: number):number {
-                let n = e.call(null, t, from, to - from, d);
-                if(base==void 0) return n;
-                let tx = from>=to?'min':'max';
-                return Math[tx](n, base)
-            }
-            private _calc(d: number, t: number, e: EasingFunction): KeyFrame {
-                let T = this,
-                    fwd = T._dir == 'forward';
-
-                if(!Check.isEmpty(T._frames)) {
-                    let n = Number(t * 100 / d).round(2), key, delKeys=[];
-                    J.forEach(T._frames, (v, k) => {
-                        let nk = T._num(k);
-                        if (!nk.isNaN() && nk.round(2) <= n) {
-                            delKeys.push(k);
-                            if(nk > T._num(key)) key = k
-                        }
-                    })
-                    if (key) {
-                        T._frame = T._convertFrame(T._frames[key]);
-                        delKeys.forEach((v)=>{delete T._frames[v]});
-                        return T._frame
+            private _lt = 0;
+            protected _setupTimer() {
+                super._setupTimer();
+                let m = this, c = m._cfg, r = m._timer, size = m._frames.length;
+                r.on(<TimerEvents>'looping', (e, loop: number)=> {
+                    if ((loop - 1) % size == 0) {
+                        if (loop > 1 && c.direction == 'alternate') m._dir = m._dir == 'backward' ? 'forward' : 'backward';
+                        m._fi = m._dir == 'backward' ? size - 1 : 0;
+                        m._lt = e.timeStamp;
+                        m._bus.fire('looping', [(loop - 1) / size + 1])
                     }
-                }
-
-                let from = fwd ? T._from : T._to, to = fwd ? T._to : T._from;
-                return T._newFrame(from, to, t, d, e)
+                    m._bus.fire('updating', [e.timeStamp-m._lt, c.duration])
+                });
+                r.on(<TimerEvents>'looped', (e, loop: number) => {
+                    m._bus.fire('updated', [e.timeStamp-m._lt, c.duration])
+                    if (loop % size == 0) {
+                        m._loop = loop / size;
+                        m._bus.fire('looped', [m._loop])
+                    }
+                });
             }
 
-            private _reset4loop(){
-                let T = this;
-                T._frame = null;
-                T._frames = J.clone(T._cfg.frames);
-                delete T._frames.from;
-                delete T._frames.to;
-                delete T._frames['0%'];
-                delete T._frames['100%'];
-            }
-            protected _reset(){
-                let T = this;
-                T._frame = null;
-                T._frames = null;
-                super._reset()
-            }
+            play(): Promise<boolean> {
+                let m = this, c = m._cfg, l = c.loop,
+                    maxLoop = l == false || l < 0 ? 0 : (l === true ? Infinity : l),
+                    framesSize = m._frames.length;
 
-            private _resetFrame(){
-                this._onUpdate(this._dir == 'forward'?this._from:this._to);
-            }
-            
-            public play() {
-                let T = this, r = T._timer, c = T._cfg;
-                if (!r) {
-                    T._reset();
-                
-                    r = new AnimTimer((t) => {
-                        T._onUpdate.call(T, T._calc(c.duration, t, c.easing));
-                    }, {
-                        delay: c.delay,
-                        duration: c.duration,
-                        loop: c.loop
+                return Promises.create<boolean>(function () {
+                    if (m.isRunning() || m._frames.length == 0) this.resolve(false);
+
+                    m._loop = 0;
+                    if (!m._timer) {
+                        m._timer = new Timer((t) => {
+                            m._updateFrame(t)
+                        }, {
+                            intervalMode: 'BF',
+                            delay: c.delay || 0,
+                            loop: maxLoop * framesSize,
+                            interval: (c.duration + c.endDelay) / framesSize
+                        });
+                        m._setupTimer();
+                    }
+                    m._timer.on(<TimerEvents>'finished', () => {
+                        this.resolve(true);
                     });
-                    if (c.onStarting) r.on(<TimerEvents>'starting', () => {
-                        c.onStarting.call(T);
-                        T._resetFrame()
-                    });
-                    r.on(<TimerEvents>'looping', (e, ct: number) => {
-                        T._loop = ct;
-                        T._reset4loop();
-                        if (ct>1 && c.autoReverse) T.direction(T._dir == 'backward' ? 'forward' : 'backward');
-                        if(!c.autoReverse) T._resetFrame()
-                    });
-                    r.on(<TimerEvents>'finished', () => {
-                        if(c.autoReset) T._resetEl()
-                        if (c.onFinished) c.onFinished.call(T);
-                        T._reset();
-                    });
-
-                    T._timer = r;
-                }
-                if(T.getState()==AnimState.RUNNING) return T; 
-
-                if(T._from==void 0||T._to==void 0) throw new NotFoundError('Not found "from" or "to"!');
-                r.start();
-                return T
-            }
-
-            public stop() {
-                super.stop()
-                let T = this, c = T._cfg;
-                if(c.autoReset) T._resetEl()
-                return T
+                    m._timer.start()
+                })
             }
 
         }

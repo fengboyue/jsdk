@@ -1,4 +1,4 @@
-<b>js2d</b> 模块的核心类<b>JS.d2.Display</b>提供了二维图形、文本、图像的绘制、更新与清除等功能。
+<b>JS2D</b> 模块的核心类<b>JS.d2.Display</b>提供了二维图形、文本、图像的绘制、更新与清除等功能。
 <b>Display</b>类可以看作是一块二维画布，它支持两种绘图模式：<code>canvas</code>与<code>div</code>。
 
 在<code>canvas</code>模式下：<br>

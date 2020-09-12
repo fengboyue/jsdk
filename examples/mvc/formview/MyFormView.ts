@@ -4,7 +4,7 @@ module JS {
 
     export namespace examples {
 
-        @component('JS.examples.MyFormView')
+        @compo('JS.examples.MyFormView')
         export class MyFormView extends FormView {
 
             initialize() {

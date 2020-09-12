@@ -48,6 +48,6 @@ JS.imports([
     let fv = new MyFormView();
     fv.initialize();
     fv.render();
-    //or: Components.get<MyFormView>(MyFormView);
+    //or: Compos.get<MyFormView>(MyFormView);
 
 })

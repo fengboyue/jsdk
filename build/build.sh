@@ -2,6 +2,7 @@
 echo '开始构建'
 ./build-module.sh jsdk
 ./build-module.sh jscore
+./build-module.sh jslang
 ./build-module.sh jsds
 ./build-module.sh jsugar
 ./build-module.sh jsmath

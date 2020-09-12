@@ -1,10 +1,5 @@
 //# sourceURL=../dist/jsdk.js
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 var JS;
 (function (JS) {
     let an;
@@ -17,34 +12,63 @@ var JS;
         })(AnimState = an.AnimState || (an.AnimState = {}));
         class AnimInit {
             constructor() {
-                this.autoReverse = false;
-                this.autoReset = false;
-                this.duration = 3000;
-                this.loop = 1;
+                this.duration = 1000;
                 this.delay = 0;
+                this.endDelay = 0;
+                this.autoreset = false;
                 this.direction = 'forward';
+                this.loop = 1;
             }
         }
         an.AnimInit = AnimInit;
         class Anim {
             constructor(cfg) {
                 this._timer = null;
-                this._dir = 'forward';
                 this._loop = 0;
-                this._init();
-                this.config(cfg);
-            }
-            _init() {
-                this.config(new AnimInit());
-            }
-            _convertFrame(f) {
-                return f;
-            }
-            config(cfg) {
-                if (!cfg)
-                    return this._cfg;
+                this._targets = [];
+                this._bus = new EventBus(this);
                 this._cfg = Jsons.union(this._cfg, cfg);
-                this.direction(this._cfg.direction);
+                this.targets(this._cfg.targets);
+                this.direction(this._cfg.direction == 'backward' ? 'backward' : 'forward');
+                if (this._cfg.on)
+                    Jsons.forEach(this._cfg.on, (v, k) => {
+                        this.on(k, v);
+                    });
+            }
+            config() {
+                return Jsons.clone(this._cfg);
+            }
+            on(ev, fn) {
+                this._bus.on(ev, fn);
+                return this;
+            }
+            off(ev) {
+                this._bus.off(ev);
+                return this;
+            }
+            _tars(t) {
+                if (Types.isArrayLike(t)) {
+                    if (t instanceof NodeList)
+                        return Arrays.newArray(t);
+                    let as = [];
+                    t.forEach((a) => {
+                        typeof a == 'string' ? as.add(Arrays.newArray($L(a))) : as.add(a);
+                    });
+                    return as;
+                }
+                else if (typeof t == 'string') {
+                    return Arrays.newArray($L(t));
+                }
+                else if (t instanceof HTMLElement) {
+                    return [t];
+                }
+                return t instanceof Object ? [t] : [];
+            }
+            targets(t) {
+                let els = this._tars(t);
+                els.forEach(el => {
+                    this._targets.add(el);
+                });
                 return this;
             }
             direction(d) {
@@ -56,17 +80,41 @@ var JS;
             getState() {
                 return this._timer ? this._timer.getState() : AnimState.STOPPED;
             }
+            isRunning() {
+                return this.getState() == AnimState.RUNNING;
+            }
             getLooped() {
                 return this._loop;
             }
-            _resetEl() { }
-            ;
             _reset() {
                 let T = this;
                 T._loop = 0;
-                T._dir = T._cfg.direction;
-                if (T._timer)
-                    T._timer.stop();
+                T._dir = T._cfg.direction == 'backward' ? 'backward' : 'forward';
+            }
+            _resetTargets() { }
+            _setupTimer() {
+                let T = this, r = T._timer, c = T._cfg;
+                r.on('starting', () => {
+                    T._reset();
+                    T._bus.fire('starting');
+                });
+                r.on('pausing', () => {
+                    T._bus.fire('pausing');
+                });
+                r.on('paused', () => {
+                    T._bus.fire('paused');
+                });
+                r.on('updating', (e, t, d, l) => {
+                    T._bus.fire('updating', [t, d, l]);
+                });
+                r.on('updated', (e, t, d, l) => {
+                    T._bus.fire('updated', [t, d, l]);
+                });
+                r.on('finished', () => {
+                    T._bus.fire('finished');
+                    if (c.autoreset)
+                        T._resetTargets();
+                });
             }
             pause() {
                 if (this._timer)
@@ -74,8 +122,15 @@ var JS;
                 return this;
             }
             stop() {
-                this._reset();
-                return this;
+                let T = this;
+                if (T._timer)
+                    T._timer.stop();
+                T._reset();
+                return T;
+            }
+            replay() {
+                this.stop();
+                this.play();
             }
         }
         an.Anim = Anim;
@@ -91,48 +146,88 @@ var JS;
         class AnimTimer extends Timer {
             constructor(tick, cfg) {
                 super(tick, cfg);
-                let c = this._cfg;
-                c.duration = c.duration || 1;
+                this._loopEnd = false;
             }
-            _loop(begin) {
-                if (this._sta != TimerState.RUNNING)
+            _runTask(t) {
+                let T = this, d = T._cfg.duration;
+                T._bus.fire('updating', [t, d, T._count + 1]);
+                T._task(t);
+                T._bus.fire('updated', [t, d, T._count + 1]);
+            }
+            _loopTick(t) {
+                if (!this.isRunning())
                     return;
-                let p = this._cfg.loop;
-                if (this._count < p) {
-                    let d = this._cfg.duration, t0 = System.highResTime(), t = t0 - this._ts0;
-                    this._et = t0 - this._ts;
-                    let looping = this._count > 1 && this._count <= (p - 1);
-                    if (begin && looping)
-                        this._bus.fire('looping', [this._count + 1]);
-                    let lp = false;
-                    if (t > d) {
-                        ++this._count;
-                        if (looping)
-                            this._bus.fire('looped', [this._count]);
-                        this._ts0 = t0;
-                        lp = true;
+                var T = this, c = T._cfg, p = c.loop;
+                if (T._count < p) {
+                    var d = c.duration, delay = T._count == 0 ? 0 : (c.delay || 0), endDelay = c.endDelay || 0, et = t - T._ts;
+                    T._et = et;
+                    if (et >= delay && et < (d + delay)) {
+                        if (T._loopEnd) {
+                            T._loopEnd = false;
+                            T._bus.fire('looping', [T._count + 1]);
+                        }
+                        T._runTask(et - delay);
                     }
-                    else {
-                        this._tick.call(this, t);
+                    else if (et >= (d + delay)) {
+                        if (!T._loopEnd) {
+                            T._runTask(d);
+                            T._loopEnd = true;
+                        }
+                        if (et >= (d + delay + endDelay)) {
+                            ++T._count;
+                            T._ts = t;
+                            T._bus.fire('looped', [T._count]);
+                        }
                     }
-                    this._ts = t0;
-                    this._timer = requestAnimationFrame(() => {
-                        this._loop(lp);
-                    });
                 }
                 else {
-                    this._finish();
+                    T._finish();
                 }
-            }
-            _cycle() {
-                this._timer = requestAnimationFrame(() => {
-                    this._loop(true);
-                });
             }
             _cancelTimer() {
                 if (this._timer)
                     cancelAnimationFrame(this._timer);
                 this._timer = null;
+            }
+            pause() {
+                this._cancelTimer();
+                super.pause();
+                return this;
+            }
+            tick(ts) {
+                let T = this;
+                if (this._et == 0) {
+                    this._ts0 = ts;
+                    this._ts = ts;
+                    this._count = 0;
+                    this._pt = 0;
+                    T._bus.fire('starting');
+                    this._loopEnd = true;
+                    T._state(TimerState.RUNNING);
+                }
+                if (T.getState() == TimerState.PAUSED) {
+                    let dt = ts - T._pt;
+                    T._ts0 += dt;
+                    T._ts += dt;
+                    T._pt = 0;
+                    T._state(TimerState.RUNNING);
+                }
+                if (this.isRunning())
+                    this._loopTick(System.highResTime());
+            }
+            _loop(t) {
+                this.tick(t);
+                if (this.isRunning())
+                    this._timer = requestAnimationFrame(function (ts) {
+                        this._loop(ts);
+                    }.bind(this));
+            }
+            start() {
+                if (this.isRunning())
+                    return;
+                this._timer = requestAnimationFrame((t) => {
+                    this._loop(t);
+                });
             }
         }
         an.AnimTimer = AnimTimer;
@@ -144,6 +239,9 @@ var JS;
     let an;
     (function (an) {
         const PI = Math.PI, pow = Math.pow, sqrt = Math.sqrt, abs = Math.abs, sin = Math.sin, cos = Math.cos, asin = Math.asin;
+        let minMax = (n, min, max) => {
+            return Math.min(Math.max(n, min), max);
+        };
         class Easings {
         }
         Easings.LINEAR = function (t, b, c, d) {
@@ -324,154 +422,132 @@ var JS;
                 return Easings.BOUNCE_IN(t * 2, 0, c, d) * .5 + b;
             return Easings.BOUNCE_OUT(t * 2 - d, 0, c, d) * .5 + c * .5 + b;
         };
+        Easings.STEPS = function (t, b, c, d, steps) {
+            steps = steps == void 0 ? 10 : (steps < 1 ? 1 : steps);
+            let m = Math.ceil((minMax(t / d, 0.000001, 1)) * steps) * (1 / steps);
+            return b + c * m;
+        };
         an.Easings = Easings;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
 var Easings = JS.an.Easings;
 var JS;
 (function (JS) {
+    let util;
+    (function (util) {
+        class Images {
+            static parseFrames(frames) {
+                let frs = [], items = frames.items, isA = util.Types.isArray(items), len = isA ? items.length : items.total;
+                for (let i = 0; i < len; i++) {
+                    let x, y;
+                    if (isA) {
+                        x = items[0];
+                        y = items[1];
+                    }
+                    else {
+                        let offs = items, axis = offs.axis, sign = axis.startsWith('-') ? -1 : 1;
+                        x = axis.endsWith('x') ? (offs.ox + sign * i * (frames.w + (offs.split || 0))) : offs.ox;
+                        y = axis.endsWith('y') ? (offs.oy + sign * i * (frames.h + (offs.split || 0))) : offs.oy;
+                    }
+                    frs.push({
+                        src: frames.src,
+                        w: frames.w,
+                        h: frames.h,
+                        x: x,
+                        y: y
+                    });
+                }
+                return frs;
+            }
+        }
+        util.Images = Images;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Images = JS.util.Images;
+var JS;
+(function (JS) {
     let an;
     (function (an) {
-        let J = Jsons;
         class FrameAnimInit extends an.AnimInit {
-            constructor() {
-                super(...arguments);
-                this.easing = an.Easings.LINEAR;
-            }
         }
         an.FrameAnimInit = FrameAnimInit;
         class FrameAnim extends an.Anim {
             constructor(cfg) {
-                super(cfg);
+                super(Jsons.union(new FrameAnimInit(), cfg));
+                this._frames = [];
+                this._fi = -1;
+                this._lt = 0;
+                this._frames = Images.parseFrames(this._cfg.frames);
             }
-            _parseFrames(frames) {
-                let T = this;
-                J.some(frames, (v, k) => {
-                    if (k == 'from' || k == '0%') {
-                        T._from = this._convertFrame(v);
-                    }
-                    else if (k == 'to' || k == '100%') {
-                        T._to = this._convertFrame(v);
-                    }
-                    return T._from != void 0 && T._to != void 0;
-                });
-            }
-            config(cfg) {
-                if (!cfg)
-                    return this._cfg;
-                if (cfg.target)
-                    this._el = $1(cfg.target);
-                if (cfg.frames)
-                    this._parseFrames(cfg.frames);
-                return super.config(cfg);
-            }
-            _num(k) {
-                return k ? Number(k.substr(0, k.length - 1)) : 0;
-            }
-            _newFrame(from, to, t, d, e) {
-                if (Types.isNumber(from)) {
-                    return this._newVal(t, d, from, to, e, this._frame);
-                }
-                else {
-                    let json = {};
-                    J.forEach(from, (v, k) => {
-                        json[k] = this._newVal(t, d, from[k], to[k], e, this._frame == void 0 ? null : this._frame[k]);
-                    });
-                    return json;
-                }
-            }
-            _newVal(t, d, from, to, e, base) {
-                let n = e.call(null, t, from, to - from, d);
-                if (base == void 0)
-                    return n;
-                let tx = from >= to ? 'min' : 'max';
-                return Math[tx](n, base);
-            }
-            _calc(d, t, e) {
-                let T = this, fwd = T._dir == 'forward';
-                if (!Check.isEmpty(T._frames)) {
-                    let n = Number(t * 100 / d).round(2), key, delKeys = [];
-                    J.forEach(T._frames, (v, k) => {
-                        let nk = T._num(k);
-                        if (!nk.isNaN() && nk.round(2) <= n) {
-                            delKeys.push(k);
-                            if (nk > T._num(key))
-                                key = k;
-                        }
-                    });
-                    if (key) {
-                        T._frame = T._convertFrame(T._frames[key]);
-                        delKeys.forEach((v) => { delete T._frames[v]; });
-                        return T._frame;
-                    }
-                }
-                let from = fwd ? T._from : T._to, to = fwd ? T._to : T._from;
-                return T._newFrame(from, to, t, d, e);
-            }
-            _reset4loop() {
-                let T = this;
-                T._frame = null;
-                T._frames = J.clone(T._cfg.frames);
-                delete T._frames.from;
-                delete T._frames.to;
-                delete T._frames['0%'];
-                delete T._frames['100%'];
+            _updateImage(el, fr) {
+                let json = {
+                    backgroundImage: `url("${fr.src}")`,
+                    backgroundPosition: `-${fr.x}px -${fr.y}px`,
+                    width: fr.w != void 0 ? (fr.w + 'px') : null,
+                    height: fr.h != void 0 ? (fr.h + 'px') : null
+                };
+                el.css(json);
             }
             _reset() {
-                let T = this;
-                T._frame = null;
-                T._frames = null;
                 super._reset();
+                this._fi = -1;
             }
-            _resetFrame() {
-                this._onUpdate(this._dir == 'forward' ? this._from : this._to);
+            _resetTargets() {
+                let fn = this._cfg.onUpdateImage || this._updateImage, i = this._cfg.direction == 'backward' ? this._frames.length - 1 : 0;
+                this._targets.forEach(ta => {
+                    fn(ta, this._frames[i]);
+                });
+            }
+            _updateFrame(dt) {
+                let m = this, c = m._cfg, size = m._frames.length, fn = c.onUpdateImage || m._updateImage;
+                this._targets.forEach(ta => {
+                    fn(ta, m._frames[m._fi]);
+                    m._dir == 'forward' ? m._fi++ : m._fi--;
+                });
+            }
+            _setupTimer() {
+                super._setupTimer();
+                let m = this, c = m._cfg, r = m._timer, size = m._frames.length;
+                r.on('looping', (e, loop) => {
+                    if ((loop - 1) % size == 0) {
+                        if (loop > 1 && c.direction == 'alternate')
+                            m._dir = m._dir == 'backward' ? 'forward' : 'backward';
+                        m._fi = m._dir == 'backward' ? size - 1 : 0;
+                        m._lt = e.timeStamp;
+                        m._bus.fire('looping', [(loop - 1) / size + 1]);
+                    }
+                    m._bus.fire('updating', [e.timeStamp - m._lt, c.duration]);
+                });
+                r.on('looped', (e, loop) => {
+                    m._bus.fire('updated', [e.timeStamp - m._lt, c.duration]);
+                    if (loop % size == 0) {
+                        m._loop = loop / size;
+                        m._bus.fire('looped', [m._loop]);
+                    }
+                });
             }
             play() {
-                let T = this, r = T._timer, c = T._cfg;
-                if (!r) {
-                    T._reset();
-                    r = new an.AnimTimer((t) => {
-                        T._onUpdate.call(T, T._calc(c.duration, t, c.easing));
-                    }, {
-                        delay: c.delay,
-                        duration: c.duration,
-                        loop: c.loop
-                    });
-                    if (c.onStarting)
-                        r.on('starting', () => {
-                            c.onStarting.call(T);
-                            T._resetFrame();
+                let m = this, c = m._cfg, l = c.loop, maxLoop = l == false || l < 0 ? 0 : (l === true ? Infinity : l), framesSize = m._frames.length;
+                return Promises.create(function () {
+                    if (m.isRunning() || m._frames.length == 0)
+                        this.resolve(false);
+                    m._loop = 0;
+                    if (!m._timer) {
+                        m._timer = new Timer((t) => {
+                            m._updateFrame(t);
+                        }, {
+                            intervalMode: 'BF',
+                            delay: c.delay || 0,
+                            loop: maxLoop * framesSize,
+                            interval: (c.duration + c.endDelay) / framesSize
                         });
-                    r.on('looping', (e, ct) => {
-                        T._loop = ct;
-                        T._reset4loop();
-                        if (ct > 1 && c.autoReverse)
-                            T.direction(T._dir == 'backward' ? 'forward' : 'backward');
-                        if (!c.autoReverse)
-                            T._resetFrame();
+                        m._setupTimer();
+                    }
+                    m._timer.on('finished', () => {
+                        this.resolve(true);
                     });
-                    r.on('finished', () => {
-                        if (c.autoReset)
-                            T._resetEl();
-                        if (c.onFinished)
-                            c.onFinished.call(T);
-                        T._reset();
-                    });
-                    T._timer = r;
-                }
-                if (T.getState() == an.AnimState.RUNNING)
-                    return T;
-                if (T._from == void 0 || T._to == void 0)
-                    throw new NotFoundError('Not found "from" or "to"!');
-                r.start();
-                return T;
-            }
-            stop() {
-                super.stop();
-                let T = this, c = T._cfg;
-                if (c.autoReset)
-                    T._resetEl();
-                return T;
+                    m._timer.start();
+                });
             }
         }
         an.FrameAnim = FrameAnim;
@@ -482,422 +558,634 @@ var FrameAnim = JS.an.FrameAnim;
 var JS;
 (function (JS) {
     let an;
-    (function (an) {
-        class FadeAnimInit extends an.FrameAnimInit {
+    (function (an_1) {
+        let J = Jsons, first = (a) => {
+            return a.length == 0 ? null : a[0];
+        }, last = (a) => {
+            return a.length == 0 ? null : a[a.length - 1];
+        };
+        class TimelineInit {
+            constructor() {
+                this.duration = 1000;
+                this.delay = 0;
+                this.endDelay = 0;
+                this.autoreset = false;
+            }
         }
-        an.FadeAnimInit = FadeAnimInit;
-        class FadeAnim extends an.FrameAnim {
+        an_1.TimelineInit = TimelineInit;
+        class Timeline {
             constructor(cfg) {
-                super(cfg);
+                this._seqAnims = [];
+                this._synAnims = [];
+                this._bus = new EventBus(this);
+                this._isRunning = false;
+                this._seqFinished = false;
+                this._synFinished = false;
+                this._cfg = J.union(new TimelineInit(), cfg);
+                this._targets = [];
+                let els = this._tars(this._cfg.targets);
+                els.forEach(el => {
+                    this._targets.add(el);
+                });
             }
-            config(cfg) {
-                if (!cfg)
-                    return this._cfg;
-                let m = super.config(cfg);
-                if (this._el)
-                    this._o = this._el.computedStyle().opacity || '1';
-                return m;
+            on(ev, fn) {
+                this._bus.on(ev, fn);
+                return this;
             }
-            _onUpdate(f) {
-                this._el.css('opacity', f + '');
+            off(ev) {
+                this._bus.off(ev);
+                return this;
             }
-            _resetEl() {
-                this._el.css('opacity', this._o);
+            _tars(t) {
+                if (Types.isArrayLike(t)) {
+                    if (t instanceof NodeList)
+                        return Arrays.newArray(t);
+                    let as = [];
+                    t.forEach((a) => {
+                        typeof a == 'string' ? as.add(Arrays.newArray($L(a))) : as.add(a);
+                    });
+                    return as;
+                }
+                else if (typeof t == 'string') {
+                    return Arrays.newArray($L(t));
+                }
+                else if (t instanceof HTMLElement) {
+                    return [t];
+                }
+                return t instanceof Object ? [t] : [];
+            }
+            add(a, start) {
+                let c = this._cfg;
+                a = J.union({
+                    targets: this._targets,
+                    duration: c.duration,
+                    endDelay: c.endDelay,
+                    autoreset: c.autoreset
+                }, a, {
+                    delay: (start || 0) + (a.delay || c.delay || 0)
+                });
+                let anim = (a.type == 'tween' ? new an_1.TweenAnim(a) : new an_1.FrameAnim(a));
+                if (this._synAnims.length == 0 || start != void 0) {
+                    this._synAnims.add(anim);
+                }
+                else {
+                    let anims = this._seqAnims, lastAnim;
+                    if (anims.length < 1) {
+                        lastAnim = first(this._synAnims);
+                    }
+                    else {
+                        lastAnim = anims[anims.length - 1];
+                    }
+                    lastAnim.on('finished', () => {
+                        anim.play();
+                    });
+                    this._seqAnims.add(anim);
+                }
+                return this;
+            }
+            _resolve(ctx, f) {
+                if (f)
+                    this._isRunning = false;
+                ctx.resolve(f);
+            }
+            play() {
+                let m = this;
+                return Promises.create(function () {
+                    if (m._isRunning)
+                        m._resolve(this, false);
+                    m._isRunning = true;
+                    m._seqFinished = false;
+                    m._synFinished = false;
+                    m._bus.fire('starting');
+                    if (m._synAnims.length == 0) {
+                        m._bus.fire('finished');
+                        m._resolve(this, false);
+                    }
+                    let lastAnim = last(m._seqAnims);
+                    if (lastAnim)
+                        lastAnim.on('finished', () => {
+                            m._seqFinished = true;
+                            if (m._synFinished) {
+                                m._bus.fire('finished');
+                                m._resolve(this, true);
+                            }
+                        });
+                    let plans = [];
+                    m._synAnims.forEach(an => {
+                        plans.push(Promises.createPlan(function () {
+                            an.play().then(() => {
+                                this.resolve();
+                            });
+                        }));
+                    });
+                    Promises.all(plans).then(() => {
+                        m._synFinished = true;
+                        if (m._seqFinished) {
+                            m._bus.fire('finished');
+                            m._resolve(this, true);
+                        }
+                    });
+                });
             }
         }
-        an.FadeAnim = FadeAnim;
+        an_1.Timeline = Timeline;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var FadeAnimInit = JS.an.FadeAnimInit;
-var FadeAnim = JS.an.FadeAnim;
+var TimelineInit = JS.an.TimelineInit;
+var Timeline = JS.an.Timeline;
 var JS;
 (function (JS) {
     let an;
     (function (an) {
         let J = Jsons;
-        class GradientAnimInit extends an.FrameAnimInit {
-        }
-        an.GradientAnimInit = GradientAnimInit;
-        class GradientAnim extends an.FrameAnim {
-            constructor(cfg) {
-                super(cfg);
-            }
-            config(cfg) {
-                if (!cfg)
-                    return this._cfg;
-                let m = super.config(cfg);
-                if (this._el) {
-                    let s = this._el.computedStyle();
-                    this._cls = {
-                        color: s.color,
-                        backgroundColor: s.backgroundColor,
-                        borderColor: s.borderColor,
-                        borderTopColor: s.borderTopColor,
-                        borderRightColor: s.borderRightColor,
-                        borderBottomColor: s.borderBottomColor,
-                        borderLeftColor: s.borderLeftColor
-                    };
-                }
-                return m;
-            }
-            _newColor(t, d, from, to, k, e, base) {
-                return this._newVal(t, d, from[k], to[k], e, base == null ? null : base[k]);
-            }
-            _convertFrame(f) {
-                let json = {};
-                J.forEach(f, (v, k) => {
-                    json[k] = Colors.hex2rgba(v);
-                });
-                return json;
-            }
-            _newFrame(from, to, t, d, e) {
-                let json = {};
-                J.forEach(from, (v, k) => {
-                    json[k] = {};
-                    J.forEach(from[k], (vv, kk) => {
-                        json[k][kk] = this._newColor(t, d, from[k], to[k], kk, e, this._frame == void 0 ? null : this._frame[k]);
-                    });
-                });
-                return json;
-            }
-            _onUpdate(j) {
-                let el = this._el;
-                J.forEach(j, (v, k) => {
-                    el.css(k, Colors.rgba2css(v));
-                });
-            }
-            _resetEl() {
-                this._el.css(this._cls);
-            }
-        }
-        an.GradientAnim = GradientAnim;
-    })(an = JS.an || (JS.an = {}));
-})(JS || (JS = {}));
-var GradientAnimInit = JS.an.GradientAnimInit;
-var GradientAnim = JS.an.GradientAnim;
-var JS;
-(function (JS) {
-    let an;
-    (function (an) {
-        class MoveAnimInit extends an.FrameAnimInit {
-        }
-        an.MoveAnimInit = MoveAnimInit;
-        class MoveAnim extends an.FrameAnim {
-            constructor(cfg) {
-                super(cfg);
-            }
-            config(cfg) {
-                if (!cfg)
-                    return this._cfg;
-                let m = super.config(cfg);
-                if (this._el) {
-                    let s = this._el.computedStyle();
-                    this._xy = {
-                        x: Lengths.toNumber(s.left),
-                        y: Lengths.toNumber(s.top)
-                    };
-                }
-                return m;
-            }
-            _onUpdate(f) {
-                let el = this._el;
-                if (f.x != void 0)
-                    el.style.left = f.x + 'px';
-                if (f.y != void 0)
-                    el.style.top = f.y + 'px';
-            }
-            _resetEl() {
-                let el = this._el, xy = this._xy;
-                el.style.left = xy.x + 'px';
-                el.style.top = xy.y + 'px';
-            }
-        }
-        an.MoveAnim = MoveAnim;
-    })(an = JS.an || (JS.an = {}));
-})(JS || (JS = {}));
-var MoveAnimInit = JS.an.MoveAnimInit;
-var MoveAnim = JS.an.MoveAnim;
-var JS;
-(function (JS) {
-    let an;
-    (function (an) {
-        class ParallelAnimInit extends an.AnimInit {
-        }
-        an.ParallelAnimInit = ParallelAnimInit;
-        let E = Check.isEmpty;
-        class ParallelAnim extends an.Anim {
-            constructor(cfg) {
-                super(cfg);
-                this._sta = an.AnimState.STOPPED;
-            }
-            getState() {
-                return this._sta;
-            }
-            config(cfg) {
-                let T = this;
-                if (!cfg)
-                    return T._cfg;
-                super.config(cfg);
-                let c = T._cfg, as = c.anims;
-                if (!E(as)) {
-                    T._plans = [];
-                    as.forEach(a => {
-                        a.config(Jsons.union(c, a.config()));
-                        T._plans.push(Promises.createPlan(function () {
-                            a.config({
-                                onFinished: () => { this.resolve(); }
-                            });
-                            a.play();
-                        }));
-                    });
-                }
-                return T;
-            }
-            play() {
-                let T = this, c = T._cfg;
-                if (E(c.anims) || T.getState() == an.AnimState.RUNNING)
-                    return T;
-                T._sta = an.AnimState.RUNNING;
-                Promises.all(T._plans).always(() => {
-                    if (c.onFinished)
-                        c.onFinished.call(T);
-                });
-                return T;
-            }
-            pause() {
-                let T = this, c = T._cfg;
-                if (T._sta != an.AnimState.RUNNING)
-                    return T;
-                T._sta = an.AnimState.PAUSED;
-                if (!E(c.anims)) {
-                    c.anims.forEach(a => {
-                        a.pause();
-                    });
-                }
-                return T;
-            }
-            stop() {
-                let T = this, c = T._cfg;
-                T._sta = an.AnimState.STOPPED;
-                if (!E(c.anims)) {
-                    c.anims.forEach(a => {
-                        a.stop();
-                    });
-                }
-                return T;
-            }
-        }
-        an.ParallelAnim = ParallelAnim;
-    })(an = JS.an || (JS.an = {}));
-})(JS || (JS = {}));
-var ParallelAnimInit = JS.an.ParallelAnimInit;
-var ParallelAnim = JS.an.ParallelAnim;
-var JS;
-(function (JS) {
-    let an;
-    (function (an) {
-        class RotateAnimInit extends an.FrameAnimInit {
-        }
-        an.RotateAnimInit = RotateAnimInit;
-        class RotateAnim extends an.FrameAnim {
-            constructor(cfg) {
-                super(cfg);
-            }
-            _newVal(t, d, from, to, e, base) {
-                let v = super._newVal(t, d, from, to, e, base);
-                return v < 0 ? 0 : (v > 360 ? 360 : v);
-            }
-            _onUpdate(v) {
-                let el = this._el;
-                if (!Types.isNumber(v)) {
-                    let x = v.x, y = v.y, z = v.z;
-                    if (x != void 0)
-                        el.style.transform = ` rotateX(${x}deg)`;
-                    if (y != void 0)
-                        el.style.transform += ` rotateY(${y}deg)`;
-                    if (z != void 0)
-                        el.style.transform += ` rotateZ(${z}deg)`;
-                }
-                else {
-                    el.style.transform = `rotate(${v}deg)`;
-                }
-            }
-            _resetEl() {
-                this._el.style.transform = `rotate(0deg)`;
-            }
-        }
-        an.RotateAnim = RotateAnim;
-    })(an = JS.an || (JS.an = {}));
-})(JS || (JS = {}));
-var RotateAnimInit = JS.an.RotateAnimInit;
-var RotateAnim = JS.an.RotateAnim;
-var JS;
-(function (JS) {
-    let an;
-    (function (an) {
-        class ScaleAnimInit extends an.FrameAnimInit {
-        }
-        an.ScaleAnimInit = ScaleAnimInit;
-        class ScaleAnim extends an.FrameAnim {
-            constructor(cfg) {
-                super(cfg);
-            }
-            _resetEl() {
-                this._el.style.transform = `scaleX(1) scaleY(1) scaleZ(1)`;
-            }
-            _onUpdate(v) {
-                let x, y, z;
-                if (!Types.isNumber(v)) {
-                    x = v.x;
-                    y = v.y;
-                    z = v.z;
-                }
-                else {
-                    x = v;
-                    y = y;
-                }
-                this._el.style.transform = `scaleX(${x == void 0 ? 1 : x}) scaleY(${y == void 0 ? 1 : y}) scaleZ(${z == void 0 ? 1 : z})`;
-            }
-        }
-        an.ScaleAnim = ScaleAnim;
-    })(an = JS.an || (JS.an = {}));
-})(JS || (JS = {}));
-var ScaleAnimInit = JS.an.ScaleAnimInit;
-var ScaleAnim = JS.an.ScaleAnim;
-var JS;
-(function (JS) {
-    let an;
-    (function (an) {
-        class SequentialAnimInit extends an.AnimInit {
-        }
-        an.SequentialAnimInit = SequentialAnimInit;
-        let E = Check.isEmpty;
-        class SequentialAnim extends an.Anim {
-            constructor(cfg) {
-                super(cfg);
-                this._i = 0;
-                this._sta = an.AnimState.STOPPED;
-            }
-            config(cfg) {
-                if (!cfg)
-                    return this._cfg;
-                super.config(cfg);
-                let c = this._cfg, as = c.anims;
-                if (!E(as)) {
-                    as.forEach((a, i) => {
-                        a.config(Jsons.union(c, a.config()));
-                        if (i < as.length - 1) {
-                            a.config({
-                                onFinished: () => {
-                                    as[i + 1].play();
-                                }
-                            });
-                        }
-                        else {
-                            a.config({
-                                onFinished: () => {
-                                    if (c.onFinished)
-                                        c.onFinished.call(this);
-                                }
-                            });
-                        }
-                        a.config({
-                            onStarting: () => { this._i = i; }
-                        });
-                    });
-                }
-                return this;
-            }
-            play() {
-                let T = this, c = T._cfg;
-                if (E(c.anims) || T.getState() == an.AnimState.RUNNING)
-                    return T;
-                c.anims[T._i].play();
-                return T;
-            }
-            pause() {
-                let T = this, c = T._cfg;
-                if (T._sta != an.AnimState.RUNNING)
-                    return T;
-                T._sta = an.AnimState.PAUSED;
-                if (!E(c.anims))
-                    c.anims[T._i].pause();
-                return T;
-            }
-            stop() {
-                let T = this, c = T._cfg;
-                T._sta = an.AnimState.STOPPED;
-                if (!E(c.anims))
-                    c.anims[T._i].stop();
-                T._i = 0;
-                return T;
-            }
-        }
-        an.SequentialAnim = SequentialAnim;
-    })(an = JS.an || (JS.an = {}));
-})(JS || (JS = {}));
-var SequentialAnimInit = JS.an.SequentialAnimInit;
-var SequentialAnim = JS.an.SequentialAnim;
-var JS;
-(function (JS) {
-    let an;
-    (function (an) {
-        class SkewAnimInit extends an.FrameAnimInit {
+        class TweenAnimInit extends an.AnimInit {
             constructor() {
                 super(...arguments);
-                this.firstMode = 'both';
+                this.easing = 'LINEAR';
+                this.round = 3;
             }
         }
-        an.SkewAnimInit = SkewAnimInit;
-        class SkewAnim extends an.FrameAnim {
+        an.TweenAnimInit = TweenAnimInit;
+        let ValidTransforms = ['translateX', 'translateY', 'translateZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 'scale', 'scaleX', 'scaleY', 'scaleZ', 'skew', 'skewX', 'skewY', 'perspective', 'matrix', 'matrix3d'], has = (s, w) => {
+            return s.indexOf(w) > -1;
+        }, isDom = (a) => {
+            return a.nodeType || a instanceof SVGElement;
+        }, parseEasingParameters = (string) => {
+            var match = /\(([^)]+)\)/.exec(string);
+            return match ? match[1].split(',').map(function (p) { return parseFloat(p); }) : [];
+        }, getAnimationType = (el, key) => {
+            if (isDom(el) && el.hasAttribute(key))
+                return 'attribute';
+            if (isDom(el) && ValidTransforms.indexOf(key) > -1)
+                return 'transform';
+            if (isDom(el) && key !== 'transform' && key in el.style)
+                return 'css';
+            return 'property';
+        }, getTargetVal = (key, el) => {
+            let type = getAnimationType(el, key), n;
+            if (type == 'property') {
+                n = el[key];
+            }
+            else if (type == 'attribute') {
+                n = el.attr(key);
+            }
+            else if (type == 'css') {
+                n = el.css(key);
+            }
+            else if (type == 'transform' && ValidTransforms.indexOf(key) > -1) {
+                n = getTransformValue(el, key);
+            }
+            return {
+                key: key,
+                type: type,
+                val: n || '0'
+            };
+        }, parseTransform = (el) => {
+            if (!isDom(el)) {
+                return;
+            }
+            let str = el.style.transform || '', reg = /(\w+)\(([^)]*)\)/g, transforms = new Map(), m;
+            while (m = reg.exec(str)) {
+                transforms.set(m[1], m[2]);
+            }
+            return transforms;
+        }, getTransformUnit = (key) => {
+            if (has(key, 'translate') || key === 'perspective')
+                return 'px';
+            if (has(key, 'rotate') || has(key, 'skew'))
+                return 'deg';
+            return null;
+        }, getTransformValue = (el, key) => {
+            return parseTransform(el).get(key) || defaultTransformValue(key);
+        }, defaultTransformValue = (key) => {
+            return has(key, 'scale') ? '1' : 0 + getTransformUnit(key);
+        }, setTargetVals = (kvs, el) => {
+            let trans = [];
+            kvs.forEach((kv, i) => {
+                let type = kv.type, v = `${kv.val}`;
+                if (type == 'property') {
+                    el[kv.key] = kv.val;
+                }
+                else if (type == 'attribute') {
+                    el.attr(kv.key, v);
+                }
+                else if (type == 'css') {
+                    el.css(kv.key, v);
+                }
+                else if (type == 'transform') {
+                    trans.add(i);
+                }
+            });
+            let s = '';
+            trans.forEach(j => {
+                let kv = kvs[j];
+                s += `${kv.key}(${kv.val})`;
+            });
+            if (s)
+                el.style.transform = s;
+        }, degUnit = (key, v) => {
+            if (typeof v !== 'string')
+                return v + '';
+            if (key.startsWith('rotate') || key.startsWith('skew')) {
+                if (v.endsWith('rad'))
+                    return (parseFloat(v) * 180 / Math.PI) + 'deg';
+                if (v.endsWith('turn'))
+                    return (parseFloat(v) * 360) + 'deg';
+                return v;
+            }
+            else
+                return v;
+        }, setTargetVal = (val, key, type, el) => {
+            if (type == 'property') {
+                el[key] = val;
+            }
+            else if (type == 'attribute') {
+                el.attr(key, val == void 0 ? val : (val + ''));
+            }
+            else if (type == 'css') {
+                el.css(key, val);
+            }
+        };
+        class TweenAnim extends an.Anim {
             constructor(cfg) {
-                super(cfg);
+                super(Jsons.union(new TweenAnimInit(), cfg));
+                this._iniValues = [];
             }
-            _init() {
-                this.config(new SkewAnimInit());
+            _getValues(ta) {
+                let a = [];
+                Jsons.forEach(this._cfg.keys, (v, k) => {
+                    a.add(getTargetVal(k, ta));
+                });
+                return a;
             }
-            _resetEl() {
-                this._el.style.transform = `skew(0deg,0deg)`;
+            _saveIniValues() {
+                if (this._iniValues.length == 0) {
+                    this._iniValues = [];
+                    this._targets.forEach(ta => {
+                        this._iniValues.push(this._getValues(ta));
+                    });
+                }
             }
-            _onUpdate(f) {
-                let m = this._cfg.firstMode, el = this._el;
-                if (m == 'both') {
-                    el.style.transform = `skew(${f.aX || 0}deg,${f.aY || 0}deg)`;
+            _resetTargets() {
+                if (this._iniValues.length >= this._targets.length)
+                    this._targets.forEach((ta, i) => {
+                        let kvs = this._iniValues[i];
+                        setTargetVals(kvs, ta);
+                    });
+            }
+            _calc(from, to, t, d, target, i, total) {
+                let cfg = this._cfg, b, c, n;
+                if (this._dir == 'forward') {
+                    b = from;
+                    c = to - from;
                 }
                 else {
-                    let sx = `skewX(${f.aX || 0}deg)`, sy = `skewY(${f.aY || 0}deg)`;
-                    el.style.transform = m == 'x' ? `${sx} ${sy}` : `${sy} ${sx}`;
+                    b = to;
+                    c = from - to;
+                }
+                if (typeof cfg.easing == 'string') {
+                    let fn = an.Easings[cfg.easing], args = [t, b, c, d];
+                    if (!Types.isFunction(fn)) {
+                        let name = cfg.easing.split('(')[0], a = parseEasingParameters(cfg.easing);
+                        fn = an.Easings[name];
+                        args.add(a);
+                    }
+                    n = fn.apply(null, args);
+                }
+                else {
+                    let fn = cfg.easing.call(null, target, i, total);
+                    n = fn(t, b, c, d);
+                }
+                return n.round(cfg.round);
+            }
+            _calcColor(el, i, total, key, type, from, to, t, d) {
+                let fromCol = CssTool.convertToRGB(from), toCol = CssTool.convertToRGB(to), newR = this._calc(fromCol.r, toCol.r, t, d, el, i, total), newG = this._calc(fromCol.g, toCol.g, t, d, el, i, total), newB = this._calc(fromCol.b, toCol.b, t, d, el, i, total), newCol = CssTool.rgbString({ r: newR, g: newG, b: newB });
+                setTargetVal(newCol, key, type, el);
+            }
+            _calcPercent(el, i, total, key, type, from, to, t, d) {
+                let newV = this._calc(parseFloat(from), parseFloat(to), t, d, el, i, total);
+                setTargetVal(newV + '%', key, type, el);
+            }
+            _calcNormal(el, i, total, key, type, from, to, t, d) {
+                setTargetVal(this._calcNormalVal(el, i, total, key, from, to, t, d), key, type, el);
+            }
+            _calcNormalVal(el, i, total, key, from, to, t, d) {
+                let toVal = Types.isNumber(to) ? to : CssTool.numberOf(degUnit(key, CssTool.calcValue(to, from)));
+                return this._calc(CssTool.numberOf(degUnit(key, from)), toVal, t, d, el, i, total);
+            }
+            _updateTargets(t) {
+                let total = this._targets.length, d = this._cfg.duration;
+                this._targets.forEach((ta, i) => {
+                    let trans = '';
+                    Jsons.forEach(this._cfg.keys, (v, k) => {
+                        let oKV = this._iniValues[i].find((v) => {
+                            return v.key == k;
+                        }), newVal, oldVal;
+                        if (Types.isArray(v)) {
+                            oldVal = v[0];
+                            newVal = v[1];
+                        }
+                        else if (Types.isFunction(v)) {
+                            let rst = v.call(null, ta, i, total);
+                            if (Types.isArray(rst)) {
+                                oldVal = rst[0];
+                                newVal = rst[1];
+                            }
+                            else {
+                                oldVal = oKV.val;
+                                newVal = rst;
+                            }
+                        }
+                        else {
+                            oldVal = oKV.val;
+                            newVal = v;
+                        }
+                        if (CssTool.isColor(newVal)) {
+                            this._calcColor(ta, i, total, k, oKV.type, oldVal, newVal, t, d);
+                        }
+                        else if (Types.isString(newVal) && newVal.endsWith('%')) {
+                            this._calcPercent(ta, i, total, k, oKV.type, oldVal, newVal, t, d);
+                        }
+                        else if (oKV.type == 'transform') {
+                            let val = this._calcNormalVal(ta, i, total, k, oldVal, newVal, t, d);
+                            v = CssTool.normValue(val, defaultTransformValue(k), getTransformUnit(k));
+                            trans += ` ${k}(${v})`;
+                        }
+                        else
+                            this._calcNormal(ta, i, total, k, oKV.type, oldVal, newVal, t, d);
+                    });
+                    if (trans)
+                        ta.style.transform = trans;
+                });
+            }
+            seek(dt) {
+                if (this._iniValues.length == 0) {
+                    this._targets.forEach(ta => {
+                        this._iniValues.push(this._getValues(ta));
+                    });
+                }
+                this._updateTargets(dt);
+            }
+            _setupTimer() {
+                super._setupTimer();
+                let T = this, c = T._cfg, r = T._timer;
+                r.on('looping', (e, loop) => {
+                    if (loop > 1 && c.direction == 'alternate')
+                        T._dir = T._dir == 'backward' ? 'forward' : 'backward';
+                    T._bus.fire('looping', [loop]);
+                });
+                r.on('looped', (e, loop) => {
+                    T._loop = loop;
+                    T._bus.fire('looped', [loop]);
+                });
+            }
+            _prepare() {
+                let T = this, c = T._cfg;
+                if (!T._timer) {
+                    T._timer = new an.AnimTimer((t) => {
+                        T._updateTargets(t);
+                    }, {
+                        delay: c.delay,
+                        endDelay: c.endDelay,
+                        duration: c.duration,
+                        loop: c.loop
+                    });
+                    T._setupTimer();
                 }
             }
+            play() {
+                let T = this, c = T._cfg;
+                return Promises.create(function () {
+                    if (T.isRunning())
+                        this.resolve(false);
+                    T._prepare();
+                    T._timer.on('finished', () => {
+                        this.resolve(true);
+                    });
+                    T._saveIniValues();
+                    T._timer.start();
+                });
+            }
         }
-        an.SkewAnim = SkewAnim;
+        an.TweenAnim = TweenAnim;
     })(an = JS.an || (JS.an = {}));
 })(JS || (JS = {}));
-var SkewAnimInit = JS.an.SkewAnimInit;
-var SkewAnim = JS.an.SkewAnim;
+var TweenAnimInit = JS.an.TweenAnimInit;
+var TweenAnim = JS.an.TweenAnim;
+Promise.prototype.always = function (fn) {
+    return this.then((t1) => {
+        return fn.call(this, t1, true);
+    }).catch((t2) => {
+        return fn.call(this, t2, false);
+    });
+};
 var JS;
 (function (JS) {
-    let an;
-    (function (an) {
-        class TranslateAnimInit extends an.FrameAnimInit {
+    let core;
+    (function (core) {
+        let AS = Array.prototype.slice, newArray = (a, from) => {
+            return a == void 0 ? [] : AS.apply(a, [from == void 0 ? 0 : from]);
+        };
+        class Promises {
+            static create(fn, ...args) {
+                return new Promise((resolve, reject) => {
+                    fn.apply({
+                        resolve: resolve,
+                        reject: reject
+                    }, newArray(arguments, 1));
+                });
+            }
+            static createPlan(fn) {
+                return function () {
+                    return Promises.create.apply(Promises, [fn].concat(Array.prototype.slice.apply(arguments)));
+                };
+            }
+            static newPlan(p, args, ctx) {
+                return () => { return p.apply(ctx || p, args); };
+            }
+            static resolvePlan(v) {
+                return () => { return Promise.resolve(v); };
+            }
+            static rejectPlan(v) {
+                return () => { return Promise.reject(v); };
+            }
+            static order(ps) {
+                var seq = Promise.resolve();
+                ps.forEach(plan => {
+                    seq = seq.then(plan);
+                });
+                return seq;
+            }
+            static all(ps) {
+                var a = [];
+                ps.forEach(task => {
+                    a.push(task());
+                });
+                return Promise.all(a);
+            }
+            static race(ps) {
+                var a = [];
+                ps.forEach(task => {
+                    a.push(task());
+                });
+                return Promise.race(a);
+            }
         }
-        an.TranslateAnimInit = TranslateAnimInit;
-        class TranslateAnim extends an.FrameAnim {
-            constructor(cfg) {
-                super(cfg);
-            }
-            _resetEl() {
-                this._el.style.transform = `translateX(0px) translateY(0px) translateZ(0px)`;
-            }
-            _onUpdate(f) {
-                this._el.style.transform = `translateX(${f.oX || 0}px) translateY(${f.oY || 0}px) translateZ(${f.oZ || 0}px)`;
-            }
-        }
-        an.TranslateAnim = TranslateAnim;
-    })(an = JS.an || (JS.an = {}));
+        core.Promises = Promises;
+    })(core = JS.core || (JS.core = {}));
 })(JS || (JS = {}));
-var TranslateAnimInit = JS.an.TranslateAnimInit;
-var TranslateAnim = JS.an.TranslateAnim;
+var Promises = JS.core.Promises;
+var JS;
+(function (JS) {
+    let core;
+    (function (core) {
+        let D, _head = () => { return D.querySelector('head'); }, _uncached = (u) => {
+            return `${u}${u.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
+        }, _loading = (k, a, b) => {
+            if (!a) {
+                k['onreadystatechange'] = () => {
+                    if (k['readyState'] == 'loaded' || k['readyState'] == 'complete')
+                        b();
+                };
+                k.onload = k.onerror = b;
+            }
+        };
+        if (self['HTMLElement'])
+            D = document;
+        class Loader {
+            static css(url, async = false, uncached) {
+                if (!url)
+                    return Promise.reject(null);
+                return core.Promises.create(function () {
+                    let k = D.createElement('link'), back = () => {
+                        k.onload = k.onerror = k['onreadystatechange'] = null;
+                        k = null;
+                        this.resolve(url);
+                    };
+                    k.type = 'text/css';
+                    k.rel = 'stylesheet';
+                    k.charset = 'utf-8';
+                    _loading(k, async, back);
+                    k.href = uncached ? _uncached(url) : url;
+                    _head().appendChild(k);
+                    if (async)
+                        back();
+                });
+            }
+            static js(url, async = false, uncached) {
+                if (!url)
+                    return Promise.reject(null);
+                return core.Promises.create(function () {
+                    let s = D.createElement('script'), back = () => {
+                        s.onload = s.onerror = s['onreadystatechange'] = null;
+                        s = null;
+                        this.resolve(url);
+                    };
+                    s.type = 'text/javascript';
+                    s.async = async;
+                    _loading(s, async, back);
+                    s.src = uncached ? _uncached(url) : url;
+                    _head().appendChild(s);
+                    if (async)
+                        back();
+                });
+            }
+        }
+        core.Loader = Loader;
+    })(core = JS.core || (JS.core = {}));
+})(JS || (JS = {}));
+var Loader = JS.core.Loader;
+var JS;
+(function (JS) {
+    JS.version = '2.7.0';
+    function config(d, v) {
+        let l = arguments.length;
+        if (l == 0)
+            return _cfg;
+        if (!d)
+            return;
+        if (typeof d === 'string') {
+            if (l == 1) {
+                return _cfg[d];
+            }
+            else {
+                _cfg[d] = v;
+                return;
+            }
+        }
+        else {
+            for (let k in d) {
+                if (d.hasOwnProperty(k))
+                    _cfg[k] = d[k];
+            }
+        }
+    }
+    JS.config = config;
+    let P = Promises, _cfg = {}, _ldd = {}, _ts = (u) => {
+        let c = JS.config('cachedImport');
+        if (c === true)
+            return u;
+        let s = '_=' + (c ? c : '' + Date.now());
+        return u.lastIndexOf('?') > 0 ? `${u}&${s}` : `${u}?${s}`;
+    }, _min = (u, t) => {
+        if (JS.config('minImport')) {
+            if (u.endsWith('.min.' + t))
+                return u;
+            if (u.endsWith('.' + t))
+                return u.slice(0, u.length - t.length - 1) + '.min.' + t;
+        }
+        else
+            return u;
+    }, _impLib = (v) => {
+        let a = v.endsWith('#async'), n = a ? v.slice(0, v.length - 6) : v, c = JS.config('libs')[n];
+        if (c) {
+            let ps = typeof c == 'string' ? [c] : c, tasks = [];
+            ps.forEach(path => {
+                if (path.startsWith('$')) {
+                    tasks.push(_impLib(path.slice(1)));
+                }
+                else {
+                    tasks.push(_impFile(path + (a ? '#async' : '')));
+                }
+            });
+            return P.newPlan(P.order, [tasks]);
+        }
+        else {
+            console.error('Not found the <' + n + '> library in JSDK settings.');
+            return P.resolvePlan(null);
+        }
+    }, _impFile = (s) => {
+        let u = s;
+        if (s.startsWith('!')) {
+            let jr = JS.config('jsdkRoot');
+            jr = jr ? jr : (JS.config('libRoot') + '/jsdk/' + JS.version);
+            u = jr + s.slice(1);
+        }
+        else if (s.startsWith('~')) {
+            u = JS.config('libRoot') + s.slice(1);
+        }
+        let us = u.split('#'), len = us.length, u0 = us[0], ayc = len > 1 && us[1] == 'async';
+        if (_ldd[u0])
+            return P.resolvePlan(null);
+        _ldd[u0] = 1;
+        if (u0.endsWith('.js')) {
+            return P.newPlan(Loader.js, [_ts(_min(u0, 'js')), ayc]);
+        }
+        else if (u0.endsWith('.css')) {
+            return P.newPlan(Loader.css, [_ts(_min(u0, 'css')), ayc]);
+        }
+    };
+    function imports(url) {
+        if (JS.config('closeImport'))
+            return Promise.resolve();
+        let us = typeof url === 'string' ? [url] : url, tasks = [];
+        us.forEach(uri => {
+            tasks.push(uri.startsWith('$') ? _impLib(uri.slice(1)) : _impFile(uri));
+        });
+        return P.order(tasks);
+    }
+    JS.imports = imports;
+})(JS || (JS = {}));
 var JS;
 (function (JS) {
     let lang;
@@ -1008,6 +1296,12 @@ var JS;
             }
             static isArray(obj) {
                 return Array.isArray(obj) || obj instanceof Array;
+            }
+            static isArrayLike(obj) {
+                if (this.isString(obj))
+                    return false;
+                let l = obj && obj['length'] || null;
+                return typeof l == 'number' && l >= 0 && l <= Number.MAX_SAFE_INTEGER;
             }
             static isError(obj) {
                 return _of(obj, 'Error');
@@ -1218,144 +1512,6 @@ var JS;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
 var Check = JS.util.Check;
-(function () {
-    var AP = Array.prototype;
-    AP.add = function (obj, from) {
-        let m = this;
-        if (obj == void 0)
-            return m;
-        let a = obj instanceof Array ? obj : [obj], i = from == void 0 ? m.length : (from < 0 ? 0 : from);
-        AP.splice.apply(m, [i, 0].concat(a));
-        return m;
-    };
-    AP.remove = function (f) {
-        let i = typeof f === 'number' ? f : this.findIndex(f);
-        if (i < 0 || i >= this.length)
-            return false;
-        this.splice(i, 1);
-        return true;
-    };
-}());
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        let E = util.Check.isEmpty, AS = Array.prototype.slice;
-        class Arrays {
-            static newArray(a, from) {
-                return a == void 0 ? [] : AS.apply(a, [from == void 0 ? 0 : from]);
-            }
-            static toArray(a) {
-                return a == void 0 ? [] : (util.Types.isArray(a) ? a : [a]);
-            }
-            static equal(a1, a2, eq) {
-                if (a1 === a2)
-                    return true;
-                let y1 = E(a1), y2 = E(a2);
-                if (y1 && y2)
-                    return true;
-                if (y1 !== y2)
-                    return false;
-                if (a1.length != a2.length)
-                    return false;
-                return a1.every((item1, i) => {
-                    return eq ? eq(item1, a2[i], i) : item1 === a2[i];
-                });
-            }
-            static equalToString(a1, a2) {
-                if (a1 === a2)
-                    return true;
-                if (a1 == void 0 && a2 == void 0)
-                    return true;
-                if (!a1 || !a2)
-                    return false;
-                if (a1.length != a2.length)
-                    return false;
-                return a1.toString() == a2.toString();
-            }
-            static same(a1, a2, eq) {
-                if (a1 === a2 || (E(a1) && E(a2)))
-                    return true;
-                if (a1.length != a2.length)
-                    return false;
-                let na = a2.slice(), fail = a1.some(t1 => {
-                    let r = na.remove(t2 => {
-                        return eq ? eq(t1, t2) : t1 === t2;
-                    });
-                    return !r;
-                });
-                if (fail)
-                    return false;
-                return na.length == 0;
-            }
-            static slice(args, fromIndex, endIndex) {
-                return AS.apply(args, [fromIndex || 0, endIndex || args.length]);
-            }
-        }
-        util.Arrays = Arrays;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Arrays = JS.util.Arrays;
-Promise.prototype.always = function (fn) {
-    return this.then((t1) => {
-        return fn.call(this, t1, true);
-    }).catch((t2) => {
-        return fn.call(this, t2, false);
-    });
-};
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        class Promises {
-            static create(fn, ...args) {
-                return new Promise((resolve, reject) => {
-                    fn.apply({
-                        resolve: resolve,
-                        reject: reject
-                    }, util.Arrays.newArray(arguments, 1));
-                });
-            }
-            static createPlan(fn) {
-                return function () {
-                    return Promises.create.apply(Promises, [fn].concat(Array.prototype.slice.apply(arguments)));
-                };
-            }
-            static newPlan(p, args, ctx) {
-                return () => { return p.apply(ctx || p, args); };
-            }
-            static resolvePlan(v) {
-                return () => { return Promise.resolve(v); };
-            }
-            static rejectPlan(v) {
-                return () => { return Promise.reject(v); };
-            }
-            static order(plans) {
-                var seq = Promise.resolve();
-                plans.forEach(plan => {
-                    seq = seq.then(plan);
-                });
-                return seq;
-            }
-            static all(plans) {
-                var rst = [];
-                plans.forEach(task => {
-                    rst.push(task());
-                });
-                return Promise.all(rst);
-            }
-            static race(plans) {
-                var rst = [];
-                plans.forEach(task => {
-                    rst.push(task());
-                });
-                return Promise.race(rst);
-            }
-        }
-        util.Promises = Promises;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Promises = JS.util.Promises;
 var JS;
 (function (JS) {
     let util;
@@ -1559,999 +1715,6 @@ var JS;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
 var Jsons = JS.util.Jsons;
-var JS;
-(function (JS) {
-    let net;
-    (function (net) {
-        class MIME {
-        }
-        MIME.exe = 'application/octet-stream';
-        MIME.bin = 'application/octet-stream';
-        MIME.eps = 'application/postscript';
-        MIME.word = 'application/vnd.ms-word';
-        MIME.xls = 'application/vnd.ms-excel';
-        MIME.ppt = 'application/vnd.ms-powerpoint';
-        MIME.mdb = 'application/x-msaccess';
-        MIME.pdf = 'application/pdf';
-        MIME.odt = 'application/vnd.oasis.opendocument.text';
-        MIME.swf = 'application/x-shockwave-flash';
-        MIME.apk = 'application/vnd.android.package-archive';
-        MIME.jar = 'application/java-archive';
-        MIME.dll = 'application/x-msdownload';
-        MIME.class = 'application/octet-stream';
-        MIME.gz = 'application/x-gzip';
-        MIME.tgz = 'application/x-gzip';
-        MIME.bz = 'application/x-bzip2';
-        MIME.zip = 'application/zip';
-        MIME.rar = 'application/x-rar';
-        MIME.tar = 'application/x-tar';
-        MIME.z = 'application/x-compress';
-        MIME.z7 = 'application/x-7z-compressed';
-        MIME.arj = 'application/arj';
-        MIME.lzh = 'application/x-lzh';
-        MIME.ZIPS = MIME.gz + ',' + MIME.tgz + ',' + MIME.bz + ',' + MIME.zip
-            + ',' + MIME.rar + ',' + MIME.tar + ',' + MIME.z + ',' + MIME.z7 + ',' + MIME.arj + ',' + MIME.lzh;
-        MIME.text = 'text/plain';
-        MIME.md = 'text/x-markdown';
-        MIME.html = 'text/html';
-        MIME.xml = 'text/xml';
-        MIME.css = 'text/css';
-        MIME.json = 'application/json,text/json';
-        MIME.js = 'application/javascript,text/javascript,application/ecmascript,application/x-ecmascript';
-        MIME.rtf = 'text/rtf';
-        MIME.rtfd = 'text/rtfd';
-        MIME.sql = 'text/x-sql';
-        MIME.sh = 'application/x-sh';
-        MIME.csv = 'text/csv';
-        MIME.svg = 'image/svg+xml';
-        MIME.jpg = 'image/jpeg';
-        MIME.gif = 'image/gif';
-        MIME.png = 'image/png';
-        MIME.webp = 'image/webp';
-        MIME.bmp = 'image/bmp,image/x-ms-bmp';
-        MIME.tif = 'image/tiff';
-        MIME.tga = 'image/x-targa';
-        MIME.pcx = 'image/x-pcx';
-        MIME.pic = 'image/x-pict';
-        MIME.ico = 'image/x-icon';
-        MIME.ai = 'application/illustrator';
-        MIME.psd = 'image/vnd.adobe.photoshop,image/x-photoshop';
-        MIME.WEB_IMAGES = MIME.svg + ',' + MIME.jpg + ',' + MIME.gif + ',' + MIME.png + ',' + MIME.webp;
-        MIME.IMAGES = MIME.WEB_IMAGES + ',' + MIME.bmp + ',' + MIME.tif + ',' + MIME.tga + ',' + MIME.pcx
-            + ',' + MIME.pic + ',' + MIME.ico + ',' + MIME.ai + ',' + MIME.psd;
-        MIME.wav = 'audio/wav,audio/x-wav';
-        MIME.ogg = 'audio/ogg';
-        MIME.mp4_a = 'audio/mp4';
-        MIME.webm_a = 'audio/webm';
-        MIME.wma = 'audio/x-ms-wma';
-        MIME.mp3 = 'audio/mpeg';
-        MIME.mid = 'audio/midi,audio/x-midi';
-        MIME.au = 'audio/basic';
-        MIME.aif = 'audio/x-aiff';
-        MIME.H5_AUDIOS = MIME.ogg + ',' + MIME.wav + ',' + MIME.mp4_a + ',' + MIME.webm_a;
-        MIME.AUDIOS = MIME.H5_AUDIOS + ',' + MIME.mp3 + ',' + MIME.mid + ',' + MIME.wma + ',' + MIME.au + ',' + MIME.aif;
-        MIME.ogv = 'video/ogg';
-        MIME.mp4_v = 'video/mp4';
-        MIME.webm_v = 'video/webm';
-        MIME.avi = 'video/x-msvideo';
-        MIME.dv = 'video/x-dv';
-        MIME.mpeg = 'video/mpeg';
-        MIME.mov = 'video/quicktime';
-        MIME.wmv = 'video/x-ms-wmv';
-        MIME.asf = 'video/x-ms-asf';
-        MIME.flv = 'video/x-flv';
-        MIME.mkv = 'video/x-matroska';
-        MIME.gpp3 = 'video/3gpp';
-        MIME.rm = 'application/vnd.rn-realmedia';
-        MIME.H5_VIDEOS = MIME.ogv + ',' + MIME.mp4_v + ',' + MIME.webm_v;
-        MIME.VIDEOS = MIME.H5_VIDEOS + ',' + MIME.avi + ',' + MIME.dv + ',' + MIME.mpeg + ',' + MIME.mov
-            + ',' + MIME.wmv + ',' + MIME.asf + ',' + MIME.flv + ',' + MIME.mkv + ',' + MIME.gpp3 + ',' + MIME.rm;
-        net.MIME = MIME;
-    })(net = JS.net || (JS.net = {}));
-})(JS || (JS = {}));
-var MIME = JS.net.MIME;
-var JS;
-(function (JS) {
-    let net;
-    (function (net) {
-        let Y = Types, J = Jsons, _judgeType = (t, dt) => {
-            if (net.MIME.text == t)
-                return 'text';
-            if (net.MIME.html = t)
-                return 'html';
-            if (net.MIME.xml == t)
-                return 'xml';
-            if (net.MIME.json.indexOf(t) > -1)
-                return 'json';
-            return dt;
-        }, _headers = (xhr) => {
-            let headers = {}, hString = xhr.getAllResponseHeaders(), hRegexp = /([^\s]*?):[ \t]*([^\r\n]*)/mg, match = null;
-            while ((match = hRegexp.exec(hString))) {
-                headers[match[1]] = match[2];
-            }
-            return headers;
-        }, _response = (req, xhr, error) => {
-            let type = req.responseType, headers = _headers(xhr);
-            if (!type && xhr.status > 0)
-                type = _judgeType(headers['Content-Type'], type);
-            return {
-                request: req,
-                url: xhr.responseURL,
-                raw: xhr.response,
-                type: type,
-                data: xhr.response,
-                status: xhr.status,
-                statusText: error || (xhr.status == 0 ? 'error' : xhr.statusText),
-                headers: headers,
-                xhr: xhr
-            };
-        }, _parseResponse = function (res, req, xhr) {
-            try {
-                let raw = req.responseType == 'xml' ? xhr.responseXML : xhr.response, cvt = req.converts && req.converts[res.type];
-                if (req.responseFilter)
-                    raw = req.responseFilter(raw, res.type);
-                res.data = cvt ? cvt(raw, res) : raw;
-            }
-            catch (e) {
-                res.statusText = 'parseerror';
-                if (req.error)
-                    req.error(res);
-                if (Http._ON['error'])
-                    Http._ON['error'](res);
-                this.reject(res);
-            }
-        }, _error = function (req, xhr, error) {
-            let res = _response(req, xhr, error);
-            if (req.error)
-                req.error(res);
-            if (Http._ON['error'])
-                Http._ON['error'](res);
-            this.reject(res);
-        }, CACHE = {
-            lastModified: {},
-            etag: {}
-        }, _done = function (oURL, req, xhr) {
-            if (xhr['_isTimeout'])
-                return;
-            let status = xhr.status, isSucc = status >= 200 && status < 300 || status === 304, res = _response(req, xhr);
-            if (isSucc) {
-                let modified = null;
-                if (req.ifModified) {
-                    modified = xhr.getResponseHeader('Last-Modified');
-                    if (modified)
-                        CACHE.lastModified[oURL] = modified;
-                    modified = xhr.getResponseHeader('etag');
-                    if (modified)
-                        CACHE.etag[oURL] = modified;
-                }
-                if (status === 204 || req.method === "HEAD") {
-                    res.statusText = 'nocontent';
-                }
-                else if (status === 304) {
-                    res.statusText = 'notmodified';
-                }
-                _parseResponse.call(this, res, req, xhr);
-            }
-            if (req.complete)
-                req.complete(res);
-            if (Http._ON['complete'])
-                Http._ON['complete'](res);
-            if (isSucc) {
-                if (req.success)
-                    req.success(res);
-                if (Http._ON['success'])
-                    Http._ON['success'](res);
-                this.resolve(res);
-            }
-            else
-                this.reject(res);
-        }, _queryString = function (data) {
-            if (Y.isString(data)) {
-                return encodeURI(data);
-            }
-            else if (Y.isJsonObject(data)) {
-                let str = '';
-                J.forEach(data, (v, k) => {
-                    str += `&${k}=${encodeURIComponent(v)}`;
-                });
-                return str;
-            }
-            return '';
-        }, _queryURL = (req) => {
-            let url = req.url.replace(/^\/\//, location.protocol + '//');
-            if (!Check.isEmpty(req.data))
-                url = `${url}${url.indexOf('?') < 0 ? '?' : ''}${_queryString(req.data)}`;
-            return url;
-        }, _finalURL = (url, cache) => {
-            url = url.replace(/([?&])_=[^&]*/, '$1');
-            if (!cache)
-                url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${Date.now()}`;
-            return url;
-        }, _send = function (req) {
-            if (!req.url)
-                JSLogger.error('Sent an ajax request without URL.');
-            req = J.union({
-                method: 'GET',
-                crossCookie: false,
-                async: true,
-                responseType: 'text',
-                cache: true
-            }, req);
-            let xhr = new XMLHttpRequest(), oURL = _queryURL(req), url = _finalURL(oURL, req.cache), reqType = req.requestMime, resType = req.responseType, headers = req.headers || {};
-            if (!reqType && (Y.isString(req.data) || Y.isJsonObject(req.data)))
-                reqType = 'application/x-www-form-urlencoded;charset=UTF-8';
-            xhr.open(req.method, url, req.async, req.username, req.password);
-            xhr.setRequestHeader('Accept', resType && net.MIME[resType] ? net.MIME[resType] + ',*/*;q=0.01' : '*/*');
-            if (reqType)
-                xhr.setRequestHeader('Content-Type', reqType);
-            if (!headers['X-Requested-With'])
-                headers['X-Requested-With'] = "XMLHttpRequest";
-            if (req.overrideResponseMime && xhr.overrideMimeType)
-                xhr.overrideMimeType(req.overrideResponseMime);
-            if (req.ifModified) {
-                if (CACHE.lastModified[oURL])
-                    xhr.setRequestHeader('If-Modified-Since', CACHE.lastModified[oURL]);
-                if (CACHE.etag[oURL])
-                    xhr.setRequestHeader('If-None-Match', CACHE.etag[oURL]);
-            }
-            for (let h in headers)
-                xhr.setRequestHeader(h, headers[h]);
-            if (req.progress)
-                xhr.onprogress = function (e) { req.progress(e, xhr); };
-            xhr.onerror = (e) => {
-                _error.call(this, req, xhr, 'error');
-            };
-            xhr.withCredentials = req.crossCookie;
-            let oAbort = xhr.abort;
-            xhr.abort = function () {
-                _error.call(this, req, xhr, xhr['_isTimeout'] ? 'timeout' : 'abort');
-                oAbort.call(this);
-            };
-            if (req.async) {
-                xhr.responseType = (resType == 'html' || resType == 'xml') ? 'document' : resType;
-                xhr.timeout = req.timeout || 0;
-                xhr.ontimeout = () => {
-                    _error.call(this, req, xhr, 'timeout');
-                };
-                xhr.onreadystatechange = () => {
-                    if (xhr.readyState == 4 && xhr.status > 0)
-                        _done.call(this, oURL, req, xhr);
-                };
-            }
-            let data = null;
-            if (req.method != 'HEAD' && req.method != 'GET') {
-                data = Y.isJsonObject(req.data) ? J.stringify(req.data) : req.data;
-            }
-            try {
-                if (req.async && req.timeout > 0) {
-                    var timer = self.setTimeout(function () {
-                        xhr['_isTimeout'] = true;
-                        xhr.abort();
-                        self.clearTimeout(timer);
-                    }, req.timeout);
-                }
-                xhr['timestamp'] = new Date().getTime();
-                xhr.send(data);
-            }
-            catch (e) {
-                _error.call(this, req, xhr, 'error');
-            }
-            if (!req.async && xhr.status > 0)
-                _done.call(this, oURL, req, xhr);
-        };
-        class Http {
-            static toRequest(quy) {
-                return Y.isString(quy) ? { url: quy } : quy;
-            }
-            static send(req) {
-                let q = this.toRequest(req);
-                return q.thread ? this._inThread(req) : this._inMain(req);
-            }
-            static _inMain(req) {
-                return Promises.create(function () {
-                    _send.call(this, req);
-                });
-            }
-            static get(req) {
-                let r = this.toRequest(req);
-                r.method = 'GET';
-                return this.send(r);
-            }
-            static post(req) {
-                let r = this.toRequest(req);
-                r.method = 'POST';
-                return this.send(r);
-            }
-            static upload(file, url) {
-                let fm;
-                if (file instanceof FormData) {
-                    fm = file;
-                }
-                else {
-                    fm = new FormData();
-                    fm.append(file.postName || 'file', file.data, file.fileName);
-                }
-                return this.send({
-                    url: url,
-                    method: 'POST',
-                    data: fm,
-                    requestMime: 'multipart/form-data'
-                });
-            }
-            static on(ev, fn) {
-                this._ON[ev] = fn;
-            }
-            static sendBeacon(e, fn, scope) {
-                window.addEventListener('unload', scope ? fn : function (e) { fn.call(scope, e); }, false);
-            }
-            static _inThread(req) {
-                let r = this.toRequest(req);
-                r.url = net.URI.toAbsoluteURL(r.url);
-                return Promises.create(function () {
-                    let ctx = this;
-                    new Thread({
-                        run: function () {
-                            this.onposted((request) => {
-                                self.Http._inMain(request).then((res) => {
-                                    delete res.xhr;
-                                    this.postMain(res);
-                                });
-                            });
-                        }
-                    }, typeof r.thread === 'boolean' ? null : r.thread).on('message', function (e, res) {
-                        ctx.resolve(res);
-                        this.terminate();
-                    }).start().postThread(r);
-                });
-            }
-        }
-        Http._ON = {};
-        net.Http = Http;
-    })(net = JS.net || (JS.net = {}));
-})(JS || (JS = {}));
-var Http = JS.net.Http;
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        let EUID = 1, E = util.Check.isEmpty;
-        class EventBus {
-            constructor(context) {
-                this._isD = false;
-                this._map = new Map();
-                this._ctx = util.Jsons.clone(context);
-            }
-            context(ctx) {
-                if (arguments.length == 0)
-                    return this._ctx;
-                this._ctx = ctx;
-            }
-            destroy() {
-                this.off();
-                this._ctx = null;
-                this._isD = true;
-            }
-            isDestroyed() {
-                return this._isD;
-            }
-            _add(type, h) {
-                let fns = this._map.get(type) || [];
-                fns[fns.length] = h;
-                this._map.set(type, fns);
-            }
-            _remove(type, h) {
-                if (!h) {
-                    this._map.set(type, []);
-                }
-                else {
-                    let fns = this._map.get(type);
-                    if (!E(fns)) {
-                        fns.remove(fn => {
-                            return fn['euid'] === h['euid'];
-                        });
-                        this._map.set(type, fns);
-                    }
-                }
-            }
-            _removeByEuid(type, euid) {
-                let fns = this._map.get(type);
-                if (!E(fns)) {
-                    fns.remove(fn => {
-                        return fn['euid'] === euid;
-                    });
-                    this._map.set(type, fns);
-                }
-            }
-            _euid(h, one, type) {
-                let me = this, euid = h['euid'] || EUID++, fn = function () {
-                    if (one)
-                        me._removeByEuid(type, euid);
-                    return h.apply(this, arguments);
-                };
-                fn['euid'] = h['euid'] = euid;
-                return fn;
-            }
-            on(types, handler, once) {
-                if (this.isDestroyed())
-                    return false;
-                types.split(' ').forEach((tp) => {
-                    this._add(tp, this._euid(handler, once, tp));
-                });
-                return true;
-            }
-            original(type, euid) {
-                let fns = this._map.get(type);
-                if (arguments.length >= 1) {
-                    if (!E(fns)) {
-                        let i = fns.findIndex(fn => {
-                            return fn['euid'] === euid;
-                        });
-                        if (i > -1)
-                            return fns[i];
-                    }
-                    return null;
-                }
-                return fns || null;
-            }
-            types() {
-                return Array.from(this._map.keys());
-            }
-            off(types, handler) {
-                if (this.isDestroyed())
-                    return false;
-                if (types) {
-                    types.split(' ').forEach((tp) => {
-                        this._remove(tp, handler);
-                    });
-                }
-                else {
-                    this._map.clear();
-                }
-                return true;
-            }
-            _call(e, fn, args, that) {
-                let evt = e['originalEvent'] ? e['originalEvent'] : e, arr = [evt];
-                if (args && args.length > 0)
-                    arr = arr.concat(args);
-                let rst = fn.apply(that || this._ctx, arr);
-                if (rst === false) {
-                    evt.stopPropagation();
-                    evt.preventDefault();
-                }
-            }
-            fire(e, args, that) {
-                let is = util.Types.isString(e), fns = this._map.get(is ? e : e.type);
-                if (!E(fns)) {
-                    let evt = is ? new CustomEvent(e) : e;
-                    fns.forEach(fn => { this._call(evt, fn, args, that); });
-                }
-            }
-        }
-        util.EventBus = EventBus;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var EventBus = JS.util.EventBus;
-if (self['HTMLElement'])
-    (function () {
-        const D = document, HP = HTMLElement.prototype, oa = HP.append, op = HP.prepend, or = HP.remove, _ad = function (html) {
-            if (!html)
-                return;
-            let div = D.createElement('div'), nodes = null, fg = D.createDocumentFragment();
-            div.innerHTML = html;
-            nodes = div.childNodes;
-            for (let i = 0, len = nodes.length; i < len; i++) {
-                fg.appendChild(nodes[i].cloneNode(true));
-            }
-            this.appendChild(fg);
-            nodes = null;
-            fg = null;
-        }, _pd = function (html) {
-            if (!html)
-                return;
-            let div = D.createElement('div'), nodes = null, fg = D.createDocumentFragment();
-            div.innerHTML = html;
-            nodes = div.childNodes;
-            for (let i = 0, len = nodes.length; i < len; i++) {
-                fg.appendChild(nodes[i].cloneNode(true));
-            }
-            this.insertBefore(fg, this.firstChild);
-            nodes = null;
-            fg = null;
-        };
-        HP.append = function (...nodes) {
-            nodes.forEach(n => {
-                typeof n == 'string' ? _ad.call(this, n) : oa.call(this, n.cloneNode(true));
-            });
-        };
-        HP.prepend = function (...nodes) {
-            nodes.forEach(n => {
-                typeof n == 'string' ? _pd.call(this, n) : op.call(this, n);
-            });
-        };
-        HP.box = function () {
-            let box = this.computedStyle();
-            return {
-                x: parseFloat(box.left) + System.display().docScrollX,
-                y: parseFloat(box.top) + System.display().docScrollY,
-                w: parseFloat(box.width),
-                h: parseFloat(box.height)
-            };
-        };
-        HP.attr = function (key, val) {
-            if (arguments.length == 1)
-                return this.getAttribute(key);
-            this.setAttribute(key, val);
-            return this;
-        };
-        let _on = function (type, fn, opts) {
-            if (!this['_bus'])
-                this['_bus'] = new EventBus(this);
-            let bus = this['_bus'], cb = e => {
-                bus.fire(e);
-            }, once = (opts && opts['once']) ? true : false;
-            bus.on(type, fn, once);
-            if (this.addEventListener)
-                this.addEventListener(type, cb, opts);
-        };
-        HP.on = function (type, fn, opts) {
-            let types = type.split(' ');
-            types.forEach(t => {
-                _on.call(this, t, fn, opts);
-            });
-            return this;
-        };
-        let _rm = function (type, fn, opts) {
-            if (!fn)
-                return;
-            if (this.removeEventListener)
-                this.removeEventListener(type, fn, opts || false);
-        }, _rms = function (type, fns, opts) {
-            if (fns)
-                fns.forEach(f => { _rm.call(this, type, f, opts); });
-        }, _off = function (type, fn, opts) {
-            let bus = this['_bus'];
-            if (bus) {
-                let oFn = fn ? bus.original(type, fn['euid']) : undefined;
-                bus.off(type, oFn);
-                _rm.call(this, type, oFn, opts);
-            }
-            else {
-                _rm.call(this, type, fn, opts);
-            }
-        };
-        HP.off = function (type, fn, capture) {
-            if (!type) {
-                let bus = this['_bus'];
-                if (bus) {
-                    let types = bus.types();
-                    for (let i = 0, len = types.length; i < len; i++) {
-                        let ty = types[i];
-                        _rms.call(this, ty, bus.original(ty), capture);
-                    }
-                    bus.off();
-                }
-            }
-            else {
-                let types = type.split(' ');
-                types.forEach(t => {
-                    _off.call(this, t, fn, capture);
-                });
-            }
-            return this;
-        };
-        HP.find = HP.querySelector;
-        HP.findAll = HP.querySelectorAll;
-        HP.computedStyle = function (p) {
-            return document.defaultView.getComputedStyle(this, p || null);
-        };
-        let _getV = function () {
-            if (this instanceof HTMLTextAreaElement) {
-                return this.value || '';
-            }
-            else if (this instanceof HTMLInputElement) {
-                if (this.type == 'checkbox') {
-                    let chks = document.getElementsByName(this.name);
-                    if (chks.length > 0) {
-                        let a = [];
-                        [].forEach.call(chks, function (chk) {
-                            if (chk.checked)
-                                a.push(chk.value);
-                        });
-                        return a;
-                    }
-                    return this.checked ? [this.value] : [];
-                }
-                if (this.type == 'radio') {
-                    let rds = document.getElementsByName(this.name);
-                    if (rds.length > 0) {
-                        for (let i = 0, l = rds.length; i < l; i++) {
-                            let rd = rds.item(i);
-                            if (rd.checked)
-                                return rd.value;
-                        }
-                        return null;
-                    }
-                    return this.checked ? this.value : null;
-                }
-                return this.value || '';
-            }
-            else if (this instanceof HTMLSelectElement) {
-                let opts = this.findAll('option:checked');
-                if (opts.length > 0) {
-                    let a = [];
-                    for (let i = 0, l = opts.length; i < l; i++) {
-                        let opt = opts.item(i);
-                        if (this.multiple) {
-                            if (opt.selected)
-                                a.push(opt.value);
-                        }
-                        else {
-                            if (opt.selected)
-                                return opt.value;
-                        }
-                    }
-                    return a;
-                }
-                return [];
-            }
-            return undefined;
-        }, _setV = function (v) {
-            if (this instanceof HTMLTextAreaElement) {
-                this.value = v || '';
-            }
-            else if (this instanceof HTMLInputElement) {
-                if (this.type == 'checkbox') {
-                    let chks = document.getElementsByName(this.name), vs = v;
-                    if (chks.length > 0) {
-                        [].forEach.call(chks, function (chk) {
-                            chk.checked = vs.indexOf(chk.value) > -1;
-                        });
-                    }
-                    else {
-                        if (vs.indexOf(this.value) > -1)
-                            this.checked = true;
-                    }
-                    return this;
-                }
-                if (this.type == 'radio') {
-                    let rds = document.getElementsByName(this.name);
-                    if (rds.length > 0) {
-                        for (let i = 0, l = rds.length; i < l; i++) {
-                            let rd = rds.item(i);
-                            if (v == rd.value) {
-                                rd.checked = true;
-                                return this;
-                            }
-                        }
-                    }
-                    else {
-                        if (v == this.value)
-                            this.checked = true;
-                    }
-                    return this;
-                }
-                this.value = v;
-            }
-            else if (this instanceof HTMLSelectElement) {
-                let opts = this.findAll('option'), vs = typeof v == 'string' ? [v] : v;
-                if (opts.length > 0) {
-                    for (let i = 0, l = opts.length; i < l; i++) {
-                        let opt = opts.item(i);
-                        opt.selected = vs.indexOf(opt.value) > -1;
-                    }
-                }
-            }
-            return this;
-        };
-        HP.val = function (v) {
-            return arguments.length == 0 ? _getV.call(this) : _setV.call(this, v);
-        };
-        let hyphenCase = (name) => {
-            return name.replace(/([A-Z])/g, (a, b) => { return '-' + b.toLowerCase(); });
-        }, setCssValue = (st, k, v) => {
-            if (v === undefined) {
-                st.removeProperty(hyphenCase(k));
-            }
-            else if (v != null) {
-                st.setProperty(hyphenCase(k), absVal(v, k, st), v.endsWith(' !important') ? 'important' : '');
-            }
-        }, absVal = (v, k, st) => {
-            if (v.startsWith('+=') || v.startsWith('-=')) {
-                let ov = parseFloat(st.getPropertyValue(k)), nv = parseFloat(v.replace('=', ''));
-                return ov + nv + 'px';
-            }
-            return v;
-        };
-        HP.css = function (name, val) {
-            if (arguments.length == 1) {
-                if (typeof name == 'string') {
-                    return this.style.getPropertyValue(hyphenCase(name));
-                }
-                else {
-                    let s = '';
-                    Jsons.forEach(name, (v, k) => {
-                        if (v === undefined) {
-                            this.style.removeProperty(hyphenCase(k));
-                        }
-                        else if (v != null) {
-                            s += `${hyphenCase(k)}:${absVal(v, k, this.style)};`;
-                        }
-                    });
-                    this.style.cssText += s;
-                }
-            }
-            else {
-                setCssValue(this.style, name, val + '');
-            }
-            return this;
-        };
-        HP.empty = function (s) {
-            let chs = this.findAll(s || '*');
-            if (chs.length > 0)
-                [].forEach.call(chs, function (node) {
-                    if (node.nodeType == 1)
-                        node.off().remove();
-                });
-            return this;
-        };
-        HP.remove = function (s) {
-            this.empty.call(this, s);
-            if (!s)
-                or.call(this.off());
-        };
-        let DP = Document.prototype;
-        DP.on = HP.addEventListener;
-        DP.off = HP.removeEventListener;
-        let WP = Window.prototype;
-        WP.on = HP.addEventListener;
-        WP.off = HP.removeEventListener;
-    })();
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        let D, _head = () => { return D.querySelector('head'); }, _uncached = (url) => {
-            return `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`;
-        };
-        if (self['HTMLElement'])
-            D = document;
-        class Dom {
-            static $1(selector) {
-                return typeof selector == 'string' ? D.querySelector(selector) : selector;
-            }
-            static $L(selector) {
-                return D.querySelectorAll(selector);
-            }
-            static rename(node, newTagName) {
-                let newNode = D.createElement(newTagName), aNames = node['getAttributeNames']();
-                if (aNames)
-                    aNames.forEach(name => {
-                        newNode.setAttribute(name, node.getAttribute(name));
-                    });
-                newNode.append.apply(newNode, node.childNodes);
-                node.parentNode.replaceChild(newNode, node);
-            }
-            static applyStyle(code, id) {
-                if (!code)
-                    return;
-                this.$1('head').append(`<style${id ? ' id="' + id + '"' : ''}>${code}</style>`);
-            }
-            static applyHtml(html, appendTo, ignore) {
-                if (!html)
-                    return Promise.reject(null);
-                return util.Promises.create(function () {
-                    let doc = typeof html == 'string' ? new DOMParser().parseFromString(html, 'text/html') : html, url = doc.URL, el = Dom.$1(appendTo || D.body);
-                    el.append.apply(el, doc.body.childNodes);
-                    let ignoreCss = ignore === true || (ignore && ignore.css) ? true : false;
-                    if (!ignoreCss) {
-                        let cssFiles = doc.querySelectorAll('link[rel=stylesheet]');
-                        if (cssFiles) {
-                            for (let i = 0, len = cssFiles.length; i < len; i++) {
-                                let css = cssFiles[i], href = css.getAttribute('href');
-                                if (href)
-                                    Dom.loadCSS(href, false);
-                            }
-                        }
-                    }
-                    let ignoreScript = ignore === true || (ignore && ignore.script) ? true : false;
-                    if (!ignoreScript) {
-                        let scs = doc.getElementsByTagName('script'), syncs = [], back = () => {
-                            syncs = null;
-                            scs = null;
-                            if (typeof html == 'string')
-                                doc = null;
-                            this.resolve(url);
-                        };
-                        if (scs && scs.length > 0) {
-                            for (let i = 0, len = scs.length; i < len; i++) {
-                                let sc = scs[i];
-                                sc.src ? (sc.async ? Dom.loadJS(sc.src, true) : syncs.push(Dom.loadJS(sc.src, false))) : eval(sc.text);
-                            }
-                            util.Promises.order(syncs).then(() => {
-                                back();
-                            }).catch((u) => {
-                                JSLogger.error('Load inner script fail: ' + u + '\n; parent html:' + url);
-                                back();
-                            });
-                        }
-                        else {
-                            back();
-                        }
-                    }
-                    else {
-                        if (typeof html == 'string')
-                            doc = null;
-                        this.resolve(url);
-                    }
-                });
-            }
-            static loadCSS(url, async = false, uncached) {
-                if (!url)
-                    return Promise.reject(null);
-                return util.Promises.create(function () {
-                    let k = D.createElement('link'), back = () => {
-                        k.onload = k.onerror = k['onreadystatechange'] = null;
-                        k = null;
-                        this.resolve(url);
-                    };
-                    k.type = 'text/css';
-                    k.rel = 'stylesheet';
-                    k.charset = 'utf-8';
-                    if (!async) {
-                        k['onreadystatechange'] = () => {
-                            if (k['readyState'] == 'loaded' || k['readyState'] == 'complete')
-                                back();
-                        };
-                        k.onload = k.onerror = back;
-                    }
-                    k.href = uncached ? _uncached(url) : url;
-                    _head().appendChild(k);
-                    if (async)
-                        back();
-                });
-            }
-            static loadJS(url, async = false, uncached) {
-                if (!url)
-                    return Promise.reject(null);
-                return util.Promises.create(function () {
-                    let s = D.createElement('script'), back = () => {
-                        s.onload = s.onerror = s['onreadystatechange'] = null;
-                        s = null;
-                        this.resolve(url);
-                    };
-                    s.type = 'text/javascript';
-                    s.async = async;
-                    if (!async) {
-                        s['onreadystatechange'] = () => {
-                            if (s['readyState'] == 'loaded' || s['readyState'] == 'complete')
-                                back();
-                        };
-                        s.onload = s.onerror = back;
-                    }
-                    s.src = uncached ? _uncached(url) : url;
-                    _head().appendChild(s);
-                    if (async)
-                        back();
-                });
-            }
-            static loadHTML(url, async, opts) {
-                if (!url)
-                    return Promise.reject(null);
-                return util.Promises.create(function () {
-                    Http.get({
-                        responseType: 'html',
-                        url: url,
-                        cache: false,
-                        async: async
-                    }).then((res) => {
-                        let appendTo = opts && opts.appendTo, ignore = opts && opts.ignore, prehandle = opts && opts.prehandle;
-                        Dom.applyHtml(prehandle ? prehandle(res.data) : res.data, appendTo, ignore).then(() => {
-                            this.resolve(url);
-                        });
-                    });
-                });
-            }
-        }
-        util.Dom = Dom;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Dom = JS.util.Dom;
-const $1 = Dom.$1;
-const $L = Dom.$L;
-var JS;
-(function (JS) {
-    JS.version = '2.6.0';
-    function config(d, v) {
-        let l = arguments.length;
-        if (l == 0)
-            return _cfg;
-        if (!d)
-            return;
-        if (typeof d === 'string') {
-            if (l == 1) {
-                return _cfg[d];
-            }
-            else {
-                _cfg[d] = v;
-                return;
-            }
-        }
-        else {
-            for (let k in d) {
-                if (d.hasOwnProperty(k))
-                    _cfg[k] = d[k];
-            }
-        }
-    }
-    JS.config = config;
-    let P = Promises, _cfg = {}, _ldd = {}, _ts = (uri) => {
-        let c = JS.config('cachedImport');
-        if (c === true)
-            return uri;
-        let s = '_=' + (c ? c : '' + Date.now());
-        return uri.lastIndexOf('?') > 0 ? `${uri}&${s}` : `${uri}?${s}`;
-    }, _min = (uri, type) => {
-        if (JS.config('minImport')) {
-            if (uri.endsWith('.min.' + type))
-                return uri;
-            if (uri.endsWith('.' + type))
-                return uri.slice(0, uri.length - type.length - 1) + '.min.' + type;
-        }
-        else
-            return uri;
-    }, _impLib = (lib) => {
-        let async = lib.endsWith('#async'), libName = async ? lib.slice(0, lib.length - 6) : lib, paths = JS.config('libs')[libName];
-        if (paths) {
-            let ps = typeof paths == 'string' ? [paths] : paths, tasks = [];
-            ps.forEach(path => {
-                if (path.startsWith('$')) {
-                    tasks.push(_impLib(path.slice(1)));
-                }
-                else {
-                    tasks.push(_impFile(path + (async ? '#async' : '')));
-                }
-            });
-            return P.newPlan(P.order, [tasks]);
-        }
-        else {
-            console.error('Not found the <' + libName + '> library in JSDK settings.');
-            return P.resolvePlan(null);
-        }
-    }, _impFile = (url) => {
-        let u = url;
-        if (url.startsWith('!')) {
-            let jr = JS.config('jsdkRoot');
-            jr = jr ? jr : (JS.config('libRoot') + '/jsdk/' + JS.version);
-            u = jr + url.slice(1);
-        }
-        else if (url.startsWith('~')) {
-            u = JS.config('libRoot') + url.slice(1);
-        }
-        let us = u.split('#'), len = us.length, u0 = us[0], ayc = len > 1 && us[1] == 'async';
-        if (_ldd[u0])
-            return P.resolvePlan(null);
-        _ldd[u0] = 1;
-        if (u0.endsWith('.js')) {
-            return P.newPlan(Dom.loadJS, [_ts(_min(u0, 'js')), ayc]);
-        }
-        else if (u0.endsWith('.css')) {
-            return P.newPlan(Dom.loadCSS, [_ts(_min(u0, 'css')), ayc]);
-        }
-        else {
-            return P.newPlan(Dom.loadHTML, [_ts(u0), ayc]);
-        }
-    };
-    function imports(url) {
-        if (JS.config('closeImport'))
-            return Promise.resolve();
-        let uris = typeof url === 'string' ? [url] : url, tasks = [];
-        uris.forEach(uri => {
-            tasks.push(uri.startsWith('$') ? _impLib(uri.slice(1)) : _impFile(uri));
-        });
-        return P.order(tasks);
-    }
-    JS.imports = imports;
-})(JS || (JS = {}));
 var JS;
 (function (JS) {
     let net;
@@ -3130,10 +2293,10 @@ var Dates = JS.util.Dates;
             return fu + '0.' + Strings.padEnd('', -1 * dws, '0') + n;
         return n.slice(0, dws - 1) + '.' + n.slice(dws);
     };
-    $N.round = function (digit) {
-        if (this.isNaN() || this.isInt() || !N.isFinite(digit))
+    $N.round = function (d) {
+        if (this.isNaN() || this.isInt() || !N.isFinite(d))
             return N(this);
-        let d = digit || 0, pow = Math.pow(10, d);
+        let n = (!d || d < 0) ? 0 : d, pow = Math.pow(10, n);
         return Math.round(this * pow) / pow;
     };
     $N.toInt = function () {
@@ -3456,6 +2619,84 @@ var StateError = JS.lang.StateError;
 var ParseError = JS.lang.ParseError;
 var NetworkError = JS.lang.NetworkError;
 var TimeoutError = JS.lang.TimeoutError;
+(function () {
+    var AP = Array.prototype;
+    AP.add = function (obj, from) {
+        let m = this;
+        if (obj == void 0)
+            return m;
+        let a = obj instanceof Array ? obj : [obj], i = from == void 0 ? m.length : (from < 0 ? 0 : from);
+        AP.splice.apply(m, [i, 0].concat(a));
+        return m;
+    };
+    AP.remove = function (f) {
+        let i = typeof f === 'number' ? f : this.findIndex(f);
+        if (i < 0 || i >= this.length)
+            return false;
+        this.splice(i, 1);
+        return true;
+    };
+}());
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        let E = util.Check.isEmpty, AS = Array.prototype.slice;
+        class Arrays {
+            static newArray(a, from) {
+                return a == void 0 ? [] : AS.apply(a, [from == void 0 ? 0 : from]);
+            }
+            static toArray(a) {
+                return a == void 0 ? [] : (util.Types.isArray(a) ? a : [a]);
+            }
+            static equal(a1, a2, eq) {
+                if (a1 === a2)
+                    return true;
+                let y1 = E(a1), y2 = E(a2);
+                if (y1 && y2)
+                    return true;
+                if (y1 !== y2)
+                    return false;
+                if (a1.length != a2.length)
+                    return false;
+                return a1.every((item1, i) => {
+                    return eq ? eq(item1, a2[i], i) : item1 === a2[i];
+                });
+            }
+            static equalToString(a1, a2) {
+                if (a1 === a2)
+                    return true;
+                if (a1 == void 0 && a2 == void 0)
+                    return true;
+                if (!a1 || !a2)
+                    return false;
+                if (a1.length != a2.length)
+                    return false;
+                return a1.toString() == a2.toString();
+            }
+            static same(a1, a2, eq) {
+                if (a1 === a2 || (E(a1) && E(a2)))
+                    return true;
+                if (a1.length != a2.length)
+                    return false;
+                let na = a2.slice(), fail = a1.some(t1 => {
+                    let r = na.remove(t2 => {
+                        return eq ? eq(t1, t2) : t1 === t2;
+                    });
+                    return !r;
+                });
+                if (fail)
+                    return false;
+                return na.length == 0;
+            }
+            static slice(args, fromIndex, endIndex) {
+                return AS.apply(args, [fromIndex || 0, endIndex || args.length]);
+            }
+        }
+        util.Arrays = Arrays;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Arrays = JS.util.Arrays;
 var JS;
 (function (JS) {
     let lang;
@@ -3882,7 +3123,7 @@ var JS;
                 this._bus.off(e);
             }
             static init(page) {
-                let T = this, p = Components.get(page);
+                let T = this, p = Compos.get(page);
                 T._page = p;
                 T._bus.context(T._page);
                 Bom.ready(() => {
@@ -3893,13 +3134,13 @@ var JS;
                 return this._page;
             }
             static view(v) {
-                return Components.get(v);
+                return Compos.get(v);
             }
             static redirect(url, query) {
                 let T = this, p = T._page;
                 if (p) {
                     T.fireEvent('leaving', [p]);
-                    Components.remove(p.className);
+                    Compos.remove(p.className);
                 }
                 let uri = new URI(url);
                 if (query)
@@ -4555,15 +3796,15 @@ var JS;
                     el.textContent = text;
             }
             drawImage(img, a) {
-                let src, sx, sy, sw, sh, dx, dy, dw, dh;
+                let pic, url, sx, sy, sw, sh, dx, dy, dw, dh;
                 if (img instanceof HTMLImageElement) {
-                    src = img;
+                    pic = img;
                     sx = sy = 0;
-                    sw = dw = src.width;
-                    sh = dh = src.height;
+                    sw = dw = pic.width;
+                    sh = dh = pic.height;
                 }
                 else {
-                    src = img.src;
+                    url = img.src instanceof HTMLImageElement ? img.src.src : img.src;
                     sx = img.x;
                     sy = img.y;
                     sw = dw = img.w;
@@ -4572,13 +3813,13 @@ var JS;
                 dx = a && a.x || 0;
                 dy = a && a.y || 0;
                 if (this._cfg.mode == 'canvas') {
-                    this._ctx.drawImage(src, sx, sy, sw, sh, dx, dy, dw, dh);
+                    this._ctx.drawImage(pic, sx, sy, sw, sh, dx, dy, dw, dh);
                 }
                 else {
                     this._div.append(Strings.nodeHTML('div', {
                         id: (a && a.id) || '',
                         draggable: a && a.draggable ? "true" : "false",
-                        style: `position:absolute;overflow:hidden;left:${dx}px;top:${dy}px;width:${sw}px;height:${sh}px;${a && a.opacity != void 0 ? `opacity:${a.opacity};` : ''}background:url('${src.src}') -${sx}px -${sy}px no-repeat;${a && a.zIndex != void 0 ? `z-index:${a.zIndex};` : ''}${a && a.style || ''}`
+                        style: `position:absolute;overflow:hidden;left:${dx}px;top:${dy}px;width:${sw}px;height:${sh}px;${a && a.opacity != void 0 ? `opacity:${a.opacity};` : ''}background:url('${url}') -${sx}px -${sy}px no-repeat;${a && a.zIndex != void 0 ? `z-index:${a.zIndex};` : ''}${a && a.style || ''}`
                     }));
                     if (a)
                         this._setAttrs(a);
@@ -5892,50 +5133,34 @@ var JS;
 (function (JS) {
     let util;
     (function (util) {
-        let LengthUnit;
-        (function (LengthUnit) {
-            LengthUnit["PCT"] = "%";
-            LengthUnit["PX"] = "px";
-            LengthUnit["IN"] = "in";
-            LengthUnit["CM"] = "cm";
-            LengthUnit["MM"] = "mm";
-            LengthUnit["EM"] = "em";
-            LengthUnit["EX"] = "ex";
-            LengthUnit["PT"] = "pt";
-            LengthUnit["PC"] = "pc";
-            LengthUnit["REM"] = "rem";
-        })(LengthUnit = util.LengthUnit || (util.LengthUnit = {}));
-        class Lengths {
-            static toNumber(len, unit = LengthUnit.PX) {
-                if (len == void 0)
-                    return 0;
-                if (util.Types.isNumeric(len))
-                    return Number(len);
-                let le = String(len);
-                if (le.endsWith('%'))
-                    return 0;
-                return Number(le.replace(new RegExp(`${unit}$`), ''));
+        let _num = (s) => {
+            let n = parseFloat(s);
+            return n.isNaN() ? 0 : n;
+        };
+        class CssTool {
+            static isHEX(a) {
+                return /^#[0-9A-F]{3,8}$/i.test(a);
             }
-            static toCSS(len, defaultVal, unit) {
-                if (len == void 0)
-                    return defaultVal || 'auto';
-                if (util.Types.isNumeric(len))
-                    return Number(len) + '' + (unit || LengthUnit.PX);
-                return String(len);
+            static isRGB(a) {
+                return /^rgb/.test(a);
             }
-        }
-        util.Lengths = Lengths;
-    })(util = JS.util || (JS.util = {}));
-})(JS || (JS = {}));
-var Lengths = JS.util.Lengths;
-var LengthUnit = JS.util.LengthUnit;
-var JS;
-(function (JS) {
-    let util;
-    (function (util) {
-        class Colors {
-            static hex2rgba(hex) {
-                if (!hex)
+            static isHSL(a) {
+                return /^hsl/.test(a);
+            }
+            static isColor(a) {
+                return this.isHEX(a) || this.isRGB(a) || this.isHSL(a);
+            }
+            static rgb2hex(r, g, b, a) {
+                let s = [r, g, b];
+                if (a != void 0)
+                    s.push(Number((a * 255).integralPart()));
+                return '#' + s.map(x => {
+                    let h = x.toString(16);
+                    return h.length === 1 ? '0' + h : h;
+                }).join('');
+            }
+            static hex2rgb(hex) {
+                if (!this.isHEX(hex))
                     return null;
                 let a = false, h = hex.slice(hex.startsWith('#') ? 1 : 0), l = h.length;
                 if (l == 4 || l == 8)
@@ -5950,31 +5175,51 @@ var JS;
                     a: a ? Number((n & 0x000000ff) / 255).round(2) : 1
                 };
             }
-            static rgba2hex(r, g, b, a) {
-                let s = [r, g, b];
-                if (a != void 0)
-                    s.push(Number((a * 255).integralPart()));
-                return '#' + s.map(x => {
-                    let h = x.toString(16);
-                    return h.length === 1 ? '0' + h : h;
-                }).join('');
-            }
-            static rgba2css(c) {
+            static rgbString(c) {
                 if (!c)
                     return '';
                 let has = c.a != void 0;
                 return `rgb${has ? 'a' : ''}(${c.r},${c.g},${c.b}${has ? `,${c.a}` : ''})`;
             }
-            static hsla2string(c) {
+            static toTRGB(s) {
+                if (s.startsWith('rgba(')) {
+                    let r = /^rgba\((.+),(.+),(.+),(.+)\)$/.exec(s);
+                    if (r)
+                        return {
+                            r: Number(r[1]),
+                            g: Number(r[2]),
+                            b: Number(r[3]),
+                            a: Number(r[4])
+                        };
+                }
+                else if (s.startsWith('rgb(')) {
+                    let r = /^rgb\((.+),(.+),(.+)\)$/.exec(s);
+                    if (r)
+                        return {
+                            r: Number(r[1]),
+                            g: Number(r[2]),
+                            b: Number(r[3])
+                        };
+                }
+                return null;
+            }
+            static convertToRGB(val) {
+                if (this.isHEX(val))
+                    return this.hex2rgb(val);
+                if (this.isHSL(val))
+                    return this.hsl2rgb(val);
+                return this.toTRGB(val);
+            }
+            static hslString(c) {
                 if (!c)
                     return '';
                 let has = c.a != void 0;
                 return `hsl(${c.h},${(c.s * 100).round(2)}%,${(c.l * 100).round(2)}%${has ? `,${c.a}` : ''})`;
             }
             static hsl2rgb(hsl) {
-                if (!hsl)
+                if (!this.isHSL(hsl))
                     return null;
-                let h = hsl.h, s = hsl.s, l = hsl.l, r, g, b;
+                let hsla = this.toTHSL(hsl), h = hsla.h, s = hsla.s, l = hsla.l, r, g, b;
                 if (s == 0) {
                     r = g = b = l;
                 }
@@ -6001,7 +5246,7 @@ var JS;
                     r: Math.round(r * 255),
                     g: Math.round(g * 255),
                     b: Math.round(b * 255),
-                    a: hsl.a
+                    a: hsla.a
                 };
             }
             static rgb2hsl(rgb) {
@@ -6036,38 +5281,53 @@ var JS;
                     a: rgb.a
                 };
             }
-            static css2rgba(css) {
-                if (!css)
-                    return null;
-                css = css.trim().toLowerCase();
-                if (css.startsWith('#'))
-                    return this.hex2rgba(css);
-                if (css.startsWith('rgba(')) {
-                    let r = /^rgba\((.+),(.+),(.+),(.+)\)$/.exec(css);
-                    if (r)
-                        return {
-                            r: Number(r[1]),
-                            g: Number(r[2]),
-                            b: Number(r[3]),
-                            a: Number(r[4])
-                        };
+            static hyphenCase(name) {
+                return name.replace(/([A-Z])/g, (a, b) => { return '-' + b.toLowerCase(); });
+            }
+            static numberOf(val) {
+                return util.Types.isNumber(val) ? val : _num(val);
+            }
+            static unitOf(val) {
+                if (val == void 0 || util.Types.isNumber(val))
+                    return '';
+                let split = /[+-]?\d*\.?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?(%|px|pt|em|rem|in|cm|mm|ex|ch|pc|vw|vh|vmin|vmax|deg|rad|turn)?$/.exec(val);
+                return split ? split[1] : '';
+            }
+            static calcValue(v, baseVal) {
+                if (!v)
+                    return baseVal + '';
+                if (v.indexOf(',') > 0 || v.indexOf(' ') > 0)
+                    return v;
+                let u = this.unitOf(v) || this.unitOf(baseVal) || 'px';
+                if (v.startsWith('+=') || v.startsWith('-=')) {
+                    let ov = this.numberOf(baseVal), nv = _num(v.replace('=', ''));
+                    return ov + nv + u;
                 }
-                if (css.startsWith('rgb(')) {
-                    let r = /^rgb\((.+),(.+),(.+)\)$/.exec(css);
-                    if (r)
-                        return {
-                            r: Number(r[1]),
-                            g: Number(r[2]),
-                            b: Number(r[3])
-                        };
+                else if (v.startsWith('*=')) {
+                    let ov = this.numberOf(baseVal), nv = _num(v.replace('*=', ''));
+                    return ov * nv + u;
                 }
-                return null;
+                return parseFloat(v).isNaN() ? v : (_num(v) + u);
+            }
+            static normValue(v, df, du) {
+                if (v == void 0)
+                    return df;
+                return util.Types.isNumber(v) ? (v + (du === undefined ? 'px' : (du || ''))) : v;
             }
         }
-        util.Colors = Colors;
+        CssTool.toTHSL = (h) => {
+            var hsl = /hsl\((\d+),\s*([\d.]+)%,\s*([\d.]+)%\)/g.exec(h) || /hsla\((\d+),\s*([\d.]+)%,\s*([\d.]+)%,\s*([\d.]+)\)/g.exec(h);
+            return {
+                h: parseInt(hsl[1], 10) / 360,
+                s: parseInt(hsl[2], 10) / 100,
+                l: parseInt(hsl[3], 10) / 100,
+                a: parseFloat(hsl[4]) || 1
+            };
+        };
+        util.CssTool = CssTool;
     })(util = JS.util || (JS.util = {}));
 })(JS || (JS = {}));
-var Colors = JS.util.Colors;
+var CssTool = JS.util.CssTool;
 var JS;
 (function (JS) {
     let fx;
@@ -6391,7 +5651,7 @@ var JS;
                 let cfg = this._config, titleAttrs = cfg.tip ? ` title=${cfg.tip}` : '';
                 if (cfg.title) {
                     let tValign = this._vAlign(), tHalign = this._hAlign(), p0 = tHalign == 'right' && cfg.titlePlace == 'top' ? 'p-0' : '', cls = `${p0} font-${cfg.sizeMode || 'md'} items-${tValign} items-${tHalign} ${cfg.colorMode ? 'text-' + cfg.colorMode : ''} ${cfg.titleCls || ''}"`;
-                    let style = Types.isDefined(cfg.titleWidth) ? `width:${Lengths.toCSS(cfg.titleWidth, '100%')};` : '';
+                    let style = Types.isDefined(cfg.titleWidth) ? `width:${CssTool.normValue(cfg.titleWidth, '100%')};` : '';
                     if (cfg.titleStyle)
                         style += cfg.titleStyle;
                     titleAttrs += ` class="${cls}"`;
@@ -6406,7 +5666,7 @@ var JS;
                 this._mainEl = this.widgetEl.find('[jsfx-role=main]');
             }
             _onBeforeRender() {
-                let cfg = this._config, w = Lengths.toCSS(cfg.width, '100%'), d = cfg.titlePlace == 'left' ? 'flex' : 'grid', css = {
+                let cfg = this._config, w = CssTool.normValue(cfg.width, '100%'), d = cfg.titlePlace == 'left' ? 'flex' : 'grid', css = {
                     'display': (w == 'auto' ? 'inline-' : '') + d,
                     'width': w
                 };
@@ -6822,7 +6082,7 @@ var JS;
                 }
                 return `
                 <div class="carousel-item ${is ? 'active' : ''}" jsfx-index="${i}">
-                    <img class="d-block w-100" src="${item.src}" style="height:${Lengths.toCSS(this._config.height, '100%')};" alt="${item.imgAlt || ''}">
+                    <img class="d-block w-100" src="${item.src}" style="height:${CssTool.normValue(this._config.height, '100%')};" alt="${item.imgAlt || ''}">
                     ${capHtml}
                 </div>
                 `;
@@ -6855,7 +6115,7 @@ var JS;
                 <ol class="carousel-indicators">
                     ${indsHtml}
                 </ol>
-                <div class="carousel-inner" style="height:${Lengths.toCSS(cfg.height, '100%')}">
+                <div class="carousel-inner" style="height:${CssTool.normValue(cfg.height, '100%')}">
                     ${itemsHtml}
                 </div>
                 <a class="carousel-control-prev" href="#${this.id}" role="button" data-slide="prev">
@@ -6867,7 +6127,7 @@ var JS;
                 `;
                 this.widgetEl.attr('data-ride', 'carousel');
                 this.widgetEl.addClass('carousel slide bg-light');
-                this.widgetEl.css({ 'width': Lengths.toCSS(cfg.width, '100%') });
+                this.widgetEl.css({ 'width': CssTool.normValue(cfg.width, '100%') });
                 this.widgetEl.html(html);
                 this.widgetEl.on('slide.bs.carousel', (e) => {
                     let from = e.from, to = e.to;
@@ -7627,10 +6887,10 @@ var JS;
                 `;
                 let html = `
                 <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="false" jsfx-role="main">
-                    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:${Lengths.toCSS(cfg.width, 'auto')}">
+                    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:${CssTool.normValue(cfg.width, 'auto')}">
                     <div class="modal-content" style="border-radius:${this._hasFaceMode(DialogFaceMode.round) ? '0.3rem' : '0px'}">
                         ${titleHtml}
-                        <div class="modal-body jsfx-dialog-body" style="height:${Lengths.toCSS(cfg.height, '100%')}">
+                        <div class="modal-body jsfx-dialog-body" style="height:${CssTool.normValue(cfg.height, '100%')}">
                         ${cHtml}
                         </div>
                         ${btnHtml}
@@ -8138,7 +7398,7 @@ var JS;
                 }
             }
             _thHtml(col, colNumber) {
-                let cfg = this._config, html = col.text, title = col.tip ? col.tip : col.text, sortDir = col.sortable === true ? 'desc' : '' + col.sortable, sort = col.sortable ? `<i id="${this.id + '_sort_' + col.field}" style="cursor:pointer;vertical-align:middle;" class="la la-arrow-${sortDir == 'asc' ? 'up' : 'down'}"></i>` : '', hasCheckbox = colNumber == 1 && cfg.checkable, width = Lengths.toCSS(col.width, '100%'), cell = `<div class="cell items-${cfg.headStyle.textAlign} items-middle" jsfx-col="${colNumber}" title="${title}">
+                let cfg = this._config, html = col.text, title = col.tip ? col.tip : col.text, sortDir = col.sortable === true ? 'desc' : '' + col.sortable, sort = col.sortable ? `<i id="${this.id + '_sort_' + col.field}" style="cursor:pointer;vertical-align:middle;" class="la la-arrow-${sortDir == 'asc' ? 'up' : 'down'}"></i>` : '', hasCheckbox = colNumber == 1 && cfg.checkable, width = CssTool.normValue(col.width, '100%'), cell = `<div class="cell items-${cfg.headStyle.textAlign} items-middle" jsfx-col="${colNumber}" title="${title}">
                     ${html}${sort ? sort : ''}</div>`;
                 if (col.sortable)
                     this._dataModel.addSorter(col.field, sortDir);
@@ -8147,7 +7407,7 @@ var JS;
                 </th>`;
             }
             _tdHtml(opt, html, title, col, row) {
-                let cfg = this._config, hasCheckbox = col == 0 && cfg.checkable, id = this.data()[row]['id'], width = Lengths.toCSS(opt.width, '100%'), cell = `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
+                let cfg = this._config, hasCheckbox = col == 0 && cfg.checkable, id = this.data()[row]['id'], width = CssTool.normValue(opt.width, '100%'), cell = `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
                     ${html}</div>`;
                 return `<td width="${width}" nowrap>
                 ${hasCheckbox ? `<div class="items-left items-middle" jsfx-row="${row}" jsfx-col="${col}"><span ${View.WIDGET_ATTRIBUTE}="checkbox" jsfx-id="${id}"/>${cell}</div>` : cell}
@@ -9885,7 +9145,7 @@ var JS;
                 let isVtl = this._hasFaceMode(TabFaceMode.vertical);
                 if (isVtl)
                     cls += ' flex-column';
-                let hHtml = `<ul id="${this.id}_headers" role="tablist" class="nav${cls} ${cfg.headCls || ''}" style="${cfg.headStyle || ''}">${heads}</ul>`, cHtml = `<div class="${isVtl ? 'vertical' : ''} tab-content" style="height:${Lengths.toCSS(cfg.height, '100%')};">${contents}</div>`, leftWidth = Lengths.toCSS(cfg.headLeftWidth, '100%');
+                let hHtml = `<ul id="${this.id}_headers" role="tablist" class="nav${cls} ${cfg.headCls || ''}" style="${cfg.headStyle || ''}">${heads}</ul>`, cHtml = `<div class="${isVtl ? 'vertical' : ''} tab-content" style="height:${CssTool.normValue(cfg.height, '100%')};">${contents}</div>`, leftWidth = CssTool.normValue(cfg.headLeftWidth, '100%');
                 return isVtl ?
                     `
                 <div class="w-100">
@@ -12244,7 +11504,7 @@ var JS;
 (function (JS) {
     let ioc;
     (function (ioc) {
-        class Components {
+        class Compos {
             static get(cmpt) {
                 let cmp;
                 if (Types.isString(cmpt)) {
@@ -12299,26 +11559,26 @@ var JS;
                 });
             }
         }
-        Components._cmps = {};
-        ioc.Components = Components;
+        Compos._cmps = {};
+        ioc.Compos = Compos;
     })(ioc = JS.ioc || (JS.ioc = {}));
 })(JS || (JS = {}));
-var Components = JS.ioc.Components;
+var Compos = JS.ioc.Compos;
 var JS;
 (function (JS) {
     let ioc;
     (function (ioc) {
-        function component(className) {
+        function compo(className) {
             return Annotations.define({
-                name: 'component',
+                name: 'compo',
                 handler: (anno, values, obj) => {
                     let className = values[0];
                     Class.reflect(obj, className);
-                    ioc.Components.add(Class.forName(className).name);
+                    ioc.Compos.add(Class.forName(className).name);
                 }
             }, arguments);
         }
-        ioc.component = component;
+        ioc.compo = compo;
         function inject() {
             return Annotations.define({
                 name: 'inject',
@@ -12328,8 +11588,129 @@ var JS;
         ioc.inject = inject;
     })(ioc = JS.ioc || (JS.ioc = {}));
 })(JS || (JS = {}));
-var component = JS.ioc.component;
+var compo = JS.ioc.compo;
 var inject = JS.ioc.inject;
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        let EUID = 1, E = util.Check.isEmpty;
+        class EventBus {
+            constructor(context) {
+                this._isD = false;
+                this._map = new Map();
+                this._ctx = util.Jsons.clone(context);
+            }
+            context(ctx) {
+                if (arguments.length == 0)
+                    return this._ctx;
+                this._ctx = ctx;
+            }
+            destroy() {
+                this.off();
+                this._ctx = null;
+                this._isD = true;
+            }
+            isDestroyed() {
+                return this._isD;
+            }
+            _add(type, h) {
+                let fns = this._map.get(type) || [];
+                fns[fns.length] = h;
+                this._map.set(type, fns);
+            }
+            _remove(type, h) {
+                if (!h) {
+                    this._map.set(type, []);
+                }
+                else {
+                    let fns = this._map.get(type);
+                    if (!E(fns)) {
+                        fns.remove(fn => {
+                            return fn['euid'] === h['euid'];
+                        });
+                        this._map.set(type, fns);
+                    }
+                }
+            }
+            _removeByEuid(type, euid) {
+                let fns = this._map.get(type);
+                if (!E(fns)) {
+                    fns.remove(fn => {
+                        return fn['euid'] === euid;
+                    });
+                    this._map.set(type, fns);
+                }
+            }
+            _euid(h, one, type) {
+                let me = this, euid = h['euid'] || EUID++, fn = function () {
+                    if (one)
+                        me._removeByEuid(type, euid);
+                    return h.apply(this, arguments);
+                };
+                fn['euid'] = h['euid'] = euid;
+                return fn;
+            }
+            on(types, handler, once) {
+                if (this.isDestroyed())
+                    return false;
+                types.split(' ').forEach((tp) => {
+                    this._add(tp, this._euid(handler, once, tp));
+                });
+                return true;
+            }
+            original(type, euid) {
+                let fns = this._map.get(type);
+                if (arguments.length >= 1) {
+                    if (!E(fns)) {
+                        let i = fns.findIndex(fn => {
+                            return fn['euid'] === euid;
+                        });
+                        if (i > -1)
+                            return fns[i];
+                    }
+                    return null;
+                }
+                return fns || null;
+            }
+            types() {
+                return Array.from(this._map.keys());
+            }
+            off(types, handler) {
+                if (this.isDestroyed())
+                    return false;
+                if (types) {
+                    types.split(' ').forEach((tp) => {
+                        this._remove(tp, handler);
+                    });
+                }
+                else {
+                    this._map.clear();
+                }
+                return true;
+            }
+            _call(e, fn, args, that) {
+                let evt = e['originalEvent'] ? e['originalEvent'] : e, arr = [evt];
+                if (args && args.length > 0)
+                    arr = arr.concat(args);
+                let rst = fn.apply(that || this._ctx, arr);
+                if (rst === false) {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+                }
+            }
+            fire(e, args, that) {
+                let is = util.Types.isString(e), fns = this._map.get(is ? e : e.type);
+                if (!E(fns)) {
+                    let evt = is ? new CustomEvent(e) : e;
+                    fns.forEach(fn => { this._call(evt, fn, args, that); });
+                }
+            }
+        }
+        util.EventBus = EventBus;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var EventBus = JS.util.EventBus;
 var JS;
 (function (JS) {
     let lang;
@@ -12652,7 +12033,7 @@ var JS;
                         x = d * Math.cos(rad);
                         y = d * Math.sin(rad);
                 }
-                return [x, y];
+                return [x.round(12), y.round(12)];
             }
             static xy2polar(x, y) {
                 return {
@@ -12682,10 +12063,9 @@ var JS;
             }
             static radian(x1, y1, x2, y2) {
                 let xx = x2 || 0, yy = y2 || 0;
-                if (Point2.isOrigin(x1, y1) && Point2.isOrigin(xx, yy))
+                if (this.isOrigin(x1, y1) && Point2.isOrigin(xx, yy))
                     return 0;
-                let rad = Math.atan2(y1 - yy, x1 - xx);
-                return rad < 0 ? 2 * Math.PI + rad : rad;
+                return Math.atan2(y1 - yy, x1 - xx);
             }
             set(p) {
                 if (Types.isArray(p)) {
@@ -12915,32 +12295,30 @@ var JS;
 (function (JS) {
     let math;
     (function (math) {
+        let PI = Math.PI;
         class Radians {
             static rad2deg(rad, limit) {
-                let r = rad * 180 / Math.PI;
+                let r = rad * 180 / PI;
                 return limit ? this.positive(r) : r;
             }
             static deg2rad(deg) {
-                return deg * Math.PI / 180;
+                return deg * PI / 180;
             }
             static positive(rad) {
                 return rad < 0 ? this.ONE_CYCLE + rad : rad;
             }
             static equal(rad1, rad2) {
-                return math.Floats.equal(rad1, rad2, 1e-14);
-            }
-            static equalAngle(rad1, rad2) {
-                return this.equal(this.positive(rad1 % this.ONE_CYCLE), this.positive(rad2 % this.ONE_CYCLE));
+                return rad1 == rad2 || math.Floats.equal(this.positive(rad1) % PI, this.positive(rad2) % PI, 1e-12);
             }
             static reverse(rad) {
-                return rad < Math.PI ? rad + Math.PI : rad - Math.PI;
+                return rad < PI ? rad + PI : rad - PI;
             }
         }
         Radians.EAST = 0;
-        Radians.SOUTH = 0.5 * Math.PI;
-        Radians.WEST = Math.PI;
-        Radians.NORTH = 1.5 * Math.PI;
-        Radians.ONE_CYCLE = 2 * Math.PI;
+        Radians.SOUTH = 0.5 * PI;
+        Radians.WEST = PI;
+        Radians.NORTH = 1.5 * PI;
+        Radians.ONE_CYCLE = 2 * PI;
         math.Radians = Radians;
     })(math = JS.math || (JS.math = {}));
 })(JS || (JS = {}));
@@ -13041,25 +12419,28 @@ var JS;
             radian() {
                 return math.Point2.radian(this.x, this.y);
             }
-            angle(v) {
-                if (v && v.isZero())
-                    throw new RangeError('Use zero vector');
-                let vv = v || Vector2.UnitX, vDot = this.dot(vv) / (this.length() * vv.length());
+            _angle(v) {
+                let vv = Vector2.UnitX, vDot = v.dot(vv) / (v.length() * vv.length());
                 if (vDot < -1.0)
                     vDot = -1.0;
                 if (vDot > 1.0)
                     vDot = 1.0;
                 return Math.acos(vDot);
             }
+            angle(v) {
+                if (v && v.isZero() && this.isZero())
+                    throw new RangeError('Can\'t with zero vector');
+                return Math.abs(this._angle(this) - this._angle(v));
+            }
             isZero() {
                 return this.x == 0 && this.y == 0;
             }
             verticalTo(v) {
-                return this.angle(v) == Math.PI / 2;
+                return math.Radians.equal(this.angle(v), Math.PI / 2);
             }
             parallelTo(v) {
                 let a = this.angle(v);
-                return a == 0 || a == Math.PI;
+                return math.Radians.equal(a, 0) || math.Radians.equal(a, Math.PI);
             }
             getNormL() {
                 return new Vector2(this.y, -this.x);
@@ -13222,7 +12603,7 @@ var JS;
                 ArcType[ArcType["OPEN"] = 0] = "OPEN";
                 ArcType[ArcType["PIE"] = 1] = "PIE";
             })(ArcType = geom.ArcType || (geom.ArcType = {}));
-            let M = Math, P = math.Point2, V = math.Vector2;
+            let P = math.Point2, V = math.Vector2;
             class Shapes {
                 static crossPoints(line, sh, unClosed) {
                     let isLine = !(line instanceof geom.Segment), vs = sh.vertexes(), ps = [], size = vs.length, isCollinear = vs.some((p1, i) => {
@@ -13450,7 +12831,7 @@ var JS;
                     let p4 = P.toPoint(p3).toward(10, rad).toArray(), p = this._cpOfLineLine(p1, p2, p3, p4);
                     if (!p)
                         return null;
-                    return V.toVector(p3, p4).angle(V.toVector(p3, p)) == 0 ? p : null;
+                    return V.toVector(p3, p4).parallelTo(V.toVector(p3, p)) ? p : null;
                 }
                 crossPoint(p) {
                     return this._cpOfLinePoint(this.p1(), this.p2(), p);
@@ -13607,7 +12988,7 @@ var JS;
                     let p4 = P.toPoint(p3).toward(10, rad).toArray(), p = this._cpOfSL(s1, L.toLine(p3, p4));
                     if (!p)
                         return null;
-                    return V.toVector(p3, p4).angle(V.toVector(p3, p)) == 0 ? p : null;
+                    return V.toVector(p3, p4).parallelTo(V.toVector(p3, p)) ? p : null;
                 }
                 crossSegment(s) {
                     return this._cpOfSS(this, s);
@@ -13728,27 +13109,8 @@ var JS;
                 bounds() {
                     if (this.isEmpty())
                         return null;
-                    let ps = this.vertexes(), pc = ps[0], a = [ps[1], ps[2]], p, va = V.toVector(pc, ps[1]), vb = V.toVector(pc, ps[2]), realAngle = R.deg2rad(this.angle()), minAngle = va.angle(vb), cache = {
-                        va: va,
-                        vb: vb,
-                        realRad: realAngle,
-                        minRad: minAngle
-                    };
-                    if (this.type == geom.ArcType.PIE)
-                        a.push(pc);
-                    p = this._crossByRay(R.EAST);
-                    if (this._inAngle(p, ps, cache))
-                        a.push(p);
-                    p = this._crossByRay(R.SOUTH);
-                    if (this._inAngle(p, ps, cache))
-                        a.push(p);
-                    p = this._crossByRay(R.WEST);
-                    if (this._inAngle(p, ps, cache))
-                        a.push(p);
-                    p = this._crossByRay(R.NORTH);
-                    if (this._inAngle(p, ps, cache))
-                        a.push(p);
-                    return this._bounds(a);
+                    let ps = this.vertexes();
+                    return new geom.Triangle().set(ps[0], ps[1], ps[2]).bounds();
                 }
                 arcLength() {
                     return this.r * M.abs(this.eAngle - this.sAngle);
@@ -13773,7 +13135,7 @@ var JS;
                     return this;
                 }
                 angle() {
-                    let dif = math.Radians.positive(this.eAngle) - math.Radians.positive(this.sAngle), d = R.rad2deg(dif) % 360;
+                    let dif = R.positive(this.eAngle - this.sAngle), d = R.rad2deg(dif) % 360;
                     return this.dir == 1 ? d : 360 - d;
                 }
                 moveTo(x, y) {
@@ -14858,6 +14220,357 @@ var JS;
 var VideoPlayer = JS.media.VideoPlayer;
 var JS;
 (function (JS) {
+    let net;
+    (function (net) {
+        class MIME {
+        }
+        MIME.exe = 'application/octet-stream';
+        MIME.bin = 'application/octet-stream';
+        MIME.eps = 'application/postscript';
+        MIME.word = 'application/vnd.ms-word';
+        MIME.xls = 'application/vnd.ms-excel';
+        MIME.ppt = 'application/vnd.ms-powerpoint';
+        MIME.mdb = 'application/x-msaccess';
+        MIME.pdf = 'application/pdf';
+        MIME.odt = 'application/vnd.oasis.opendocument.text';
+        MIME.swf = 'application/x-shockwave-flash';
+        MIME.apk = 'application/vnd.android.package-archive';
+        MIME.jar = 'application/java-archive';
+        MIME.dll = 'application/x-msdownload';
+        MIME.class = 'application/octet-stream';
+        MIME.gz = 'application/x-gzip';
+        MIME.tgz = 'application/x-gzip';
+        MIME.bz = 'application/x-bzip2';
+        MIME.zip = 'application/zip';
+        MIME.rar = 'application/x-rar';
+        MIME.tar = 'application/x-tar';
+        MIME.z = 'application/x-compress';
+        MIME.z7 = 'application/x-7z-compressed';
+        MIME.arj = 'application/arj';
+        MIME.lzh = 'application/x-lzh';
+        MIME.ZIPS = MIME.gz + ',' + MIME.tgz + ',' + MIME.bz + ',' + MIME.zip
+            + ',' + MIME.rar + ',' + MIME.tar + ',' + MIME.z + ',' + MIME.z7 + ',' + MIME.arj + ',' + MIME.lzh;
+        MIME.text = 'text/plain';
+        MIME.md = 'text/x-markdown';
+        MIME.html = 'text/html';
+        MIME.xml = 'text/xml';
+        MIME.css = 'text/css';
+        MIME.json = 'application/json,text/json';
+        MIME.js = 'application/javascript,text/javascript,application/ecmascript,application/x-ecmascript';
+        MIME.rtf = 'text/rtf';
+        MIME.rtfd = 'text/rtfd';
+        MIME.sql = 'text/x-sql';
+        MIME.sh = 'application/x-sh';
+        MIME.csv = 'text/csv';
+        MIME.svg = 'image/svg+xml';
+        MIME.jpg = 'image/jpeg';
+        MIME.gif = 'image/gif';
+        MIME.png = 'image/png';
+        MIME.webp = 'image/webp';
+        MIME.bmp = 'image/bmp,image/x-ms-bmp';
+        MIME.tif = 'image/tiff';
+        MIME.tga = 'image/x-targa';
+        MIME.pcx = 'image/x-pcx';
+        MIME.pic = 'image/x-pict';
+        MIME.ico = 'image/x-icon';
+        MIME.ai = 'application/illustrator';
+        MIME.psd = 'image/vnd.adobe.photoshop,image/x-photoshop';
+        MIME.WEB_IMAGES = MIME.svg + ',' + MIME.jpg + ',' + MIME.gif + ',' + MIME.png + ',' + MIME.webp;
+        MIME.IMAGES = MIME.WEB_IMAGES + ',' + MIME.bmp + ',' + MIME.tif + ',' + MIME.tga + ',' + MIME.pcx
+            + ',' + MIME.pic + ',' + MIME.ico + ',' + MIME.ai + ',' + MIME.psd;
+        MIME.wav = 'audio/wav,audio/x-wav';
+        MIME.ogg = 'audio/ogg';
+        MIME.mp4_a = 'audio/mp4';
+        MIME.webm_a = 'audio/webm';
+        MIME.wma = 'audio/x-ms-wma';
+        MIME.mp3 = 'audio/mpeg';
+        MIME.mid = 'audio/midi,audio/x-midi';
+        MIME.au = 'audio/basic';
+        MIME.aif = 'audio/x-aiff';
+        MIME.H5_AUDIOS = MIME.ogg + ',' + MIME.wav + ',' + MIME.mp4_a + ',' + MIME.webm_a;
+        MIME.AUDIOS = MIME.H5_AUDIOS + ',' + MIME.mp3 + ',' + MIME.mid + ',' + MIME.wma + ',' + MIME.au + ',' + MIME.aif;
+        MIME.ogv = 'video/ogg';
+        MIME.mp4_v = 'video/mp4';
+        MIME.webm_v = 'video/webm';
+        MIME.avi = 'video/x-msvideo';
+        MIME.dv = 'video/x-dv';
+        MIME.mpeg = 'video/mpeg';
+        MIME.mov = 'video/quicktime';
+        MIME.wmv = 'video/x-ms-wmv';
+        MIME.asf = 'video/x-ms-asf';
+        MIME.flv = 'video/x-flv';
+        MIME.mkv = 'video/x-matroska';
+        MIME.gpp3 = 'video/3gpp';
+        MIME.rm = 'application/vnd.rn-realmedia';
+        MIME.H5_VIDEOS = MIME.ogv + ',' + MIME.mp4_v + ',' + MIME.webm_v;
+        MIME.VIDEOS = MIME.H5_VIDEOS + ',' + MIME.avi + ',' + MIME.dv + ',' + MIME.mpeg + ',' + MIME.mov
+            + ',' + MIME.wmv + ',' + MIME.asf + ',' + MIME.flv + ',' + MIME.mkv + ',' + MIME.gpp3 + ',' + MIME.rm;
+        net.MIME = MIME;
+    })(net = JS.net || (JS.net = {}));
+})(JS || (JS = {}));
+var MIME = JS.net.MIME;
+var JS;
+(function (JS) {
+    let net;
+    (function (net) {
+        let Y = Types, J = Jsons, _judgeType = (t, dt) => {
+            if (net.MIME.text == t)
+                return 'text';
+            if (net.MIME.html = t)
+                return 'html';
+            if (net.MIME.xml == t)
+                return 'xml';
+            if (net.MIME.json.indexOf(t) > -1)
+                return 'json';
+            return dt;
+        }, _headers = (xhr) => {
+            let headers = {}, hString = xhr.getAllResponseHeaders(), hRegexp = /([^\s]*?):[ \t]*([^\r\n]*)/mg, match = null;
+            while ((match = hRegexp.exec(hString))) {
+                headers[match[1]] = match[2];
+            }
+            return headers;
+        }, _response = (req, xhr, error) => {
+            let type = req.responseType, headers = _headers(xhr);
+            if (!type && xhr.status > 0)
+                type = _judgeType(headers['Content-Type'], type);
+            return {
+                request: req,
+                url: xhr.responseURL,
+                raw: xhr.response,
+                type: type,
+                data: xhr.response,
+                status: xhr.status,
+                statusText: error || (xhr.status == 0 ? 'error' : xhr.statusText),
+                headers: headers,
+                xhr: xhr
+            };
+        }, _parseResponse = function (res, req, xhr) {
+            try {
+                let raw = req.responseType == 'xml' ? xhr.responseXML : xhr.response, cvt = req.converts && req.converts[res.type];
+                if (req.responseFilter)
+                    raw = req.responseFilter(raw, res.type);
+                res.data = cvt ? cvt(raw, res) : raw;
+            }
+            catch (e) {
+                res.statusText = 'parseerror';
+                if (req.error)
+                    req.error(res);
+                if (Http._ON['error'])
+                    Http._ON['error'](res);
+                this.reject(res);
+            }
+        }, _error = function (req, xhr, error) {
+            let res = _response(req, xhr, error);
+            if (req.error)
+                req.error(res);
+            if (Http._ON['error'])
+                Http._ON['error'](res);
+            this.reject(res);
+        }, CACHE = {
+            lastModified: {},
+            etag: {}
+        }, _done = function (oURL, req, xhr) {
+            if (xhr['_isTimeout'])
+                return;
+            let status = xhr.status, isSucc = status >= 200 && status < 300 || status === 304, res = _response(req, xhr);
+            if (isSucc) {
+                let modified = null;
+                if (req.ifModified) {
+                    modified = xhr.getResponseHeader('Last-Modified');
+                    if (modified)
+                        CACHE.lastModified[oURL] = modified;
+                    modified = xhr.getResponseHeader('etag');
+                    if (modified)
+                        CACHE.etag[oURL] = modified;
+                }
+                if (status === 204 || req.method === "HEAD") {
+                    res.statusText = 'nocontent';
+                }
+                else if (status === 304) {
+                    res.statusText = 'notmodified';
+                }
+                _parseResponse.call(this, res, req, xhr);
+            }
+            if (req.complete)
+                req.complete(res);
+            if (Http._ON['complete'])
+                Http._ON['complete'](res);
+            if (isSucc) {
+                if (req.success)
+                    req.success(res);
+                if (Http._ON['success'])
+                    Http._ON['success'](res);
+                this.resolve(res);
+            }
+            else
+                this.reject(res);
+        }, _queryString = function (data) {
+            if (Y.isString(data)) {
+                return encodeURI(data);
+            }
+            else if (Y.isJsonObject(data)) {
+                let str = '';
+                J.forEach(data, (v, k) => {
+                    str += `&${k}=${encodeURIComponent(v)}`;
+                });
+                return str;
+            }
+            return '';
+        }, _queryURL = (req) => {
+            let url = req.url.replace(/^\/\//, location.protocol + '//');
+            if (!Check.isEmpty(req.data))
+                url = `${url}${url.indexOf('?') < 0 ? '?' : ''}${_queryString(req.data)}`;
+            return url;
+        }, _finalURL = (url, cache) => {
+            url = url.replace(/([?&])_=[^&]*/, '$1');
+            if (!cache)
+                url = `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${Date.now()}`;
+            return url;
+        }, _send = function (req) {
+            if (!req.url)
+                JSLogger.error('Sent an ajax request without URL.');
+            req = J.union({
+                method: 'GET',
+                crossCookie: false,
+                async: true,
+                responseType: 'text',
+                cache: true
+            }, req);
+            let xhr = new XMLHttpRequest(), oURL = _queryURL(req), url = _finalURL(oURL, req.cache), reqType = req.requestMime, resType = req.responseType, headers = req.headers || {};
+            if (!reqType && (Y.isString(req.data) || Y.isJsonObject(req.data)))
+                reqType = 'application/x-www-form-urlencoded;charset=UTF-8';
+            xhr.open(req.method, url, req.async, req.username, req.password);
+            xhr.setRequestHeader('Accept', resType && net.MIME[resType] ? net.MIME[resType] + ',*/*;q=0.01' : '*/*');
+            if (reqType)
+                xhr.setRequestHeader('Content-Type', reqType);
+            if (!headers['X-Requested-With'])
+                headers['X-Requested-With'] = "XMLHttpRequest";
+            if (req.overrideResponseMime && xhr.overrideMimeType)
+                xhr.overrideMimeType(req.overrideResponseMime);
+            if (req.ifModified) {
+                if (CACHE.lastModified[oURL])
+                    xhr.setRequestHeader('If-Modified-Since', CACHE.lastModified[oURL]);
+                if (CACHE.etag[oURL])
+                    xhr.setRequestHeader('If-None-Match', CACHE.etag[oURL]);
+            }
+            for (let h in headers)
+                xhr.setRequestHeader(h, headers[h]);
+            if (req.progress)
+                xhr.onprogress = function (e) { req.progress(e, xhr); };
+            xhr.onerror = (e) => {
+                _error.call(this, req, xhr, 'error');
+            };
+            xhr.withCredentials = req.crossCookie;
+            let oAbort = xhr.abort;
+            xhr.abort = function () {
+                _error.call(this, req, xhr, xhr['_isTimeout'] ? 'timeout' : 'abort');
+                oAbort.call(this);
+            };
+            if (req.async) {
+                xhr.responseType = (resType == 'html' || resType == 'xml') ? 'document' : resType;
+                xhr.timeout = req.timeout || 0;
+                xhr.ontimeout = () => {
+                    _error.call(this, req, xhr, 'timeout');
+                };
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState == 4 && xhr.status > 0)
+                        _done.call(this, oURL, req, xhr);
+                };
+            }
+            let data = null;
+            if (req.method != 'HEAD' && req.method != 'GET') {
+                data = Y.isJsonObject(req.data) ? J.stringify(req.data) : req.data;
+            }
+            try {
+                if (req.async && req.timeout > 0) {
+                    var timer = self.setTimeout(function () {
+                        xhr['_isTimeout'] = true;
+                        xhr.abort();
+                        self.clearTimeout(timer);
+                    }, req.timeout);
+                }
+                xhr['timestamp'] = new Date().getTime();
+                xhr.send(data);
+            }
+            catch (e) {
+                _error.call(this, req, xhr, 'error');
+            }
+            if (!req.async && xhr.status > 0)
+                _done.call(this, oURL, req, xhr);
+        };
+        class Http {
+            static toRequest(quy) {
+                return Y.isString(quy) ? { url: quy } : quy;
+            }
+            static send(req) {
+                let q = this.toRequest(req);
+                return q.thread ? this._inThread(req) : this._inMain(req);
+            }
+            static _inMain(req) {
+                return Promises.create(function () {
+                    _send.call(this, req);
+                });
+            }
+            static get(req) {
+                let r = this.toRequest(req);
+                r.method = 'GET';
+                return this.send(r);
+            }
+            static post(req) {
+                let r = this.toRequest(req);
+                r.method = 'POST';
+                return this.send(r);
+            }
+            static upload(file, url) {
+                let fm;
+                if (file instanceof FormData) {
+                    fm = file;
+                }
+                else {
+                    fm = new FormData();
+                    fm.append(file.postName || 'file', file.data, file.fileName);
+                }
+                return this.send({
+                    url: url,
+                    method: 'POST',
+                    data: fm,
+                    requestMime: 'multipart/form-data'
+                });
+            }
+            static on(ev, fn) {
+                this._ON[ev] = fn;
+            }
+            static sendBeacon(e, fn, scope) {
+                window.addEventListener('unload', scope ? fn : function (e) { fn.call(scope, e); }, false);
+            }
+            static _inThread(req) {
+                let r = this.toRequest(req);
+                r.url = net.URI.toAbsoluteURL(r.url);
+                return Promises.create(function () {
+                    let ctx = this;
+                    new Thread({
+                        run: function () {
+                            this.onposted((request) => {
+                                self.Http._inMain(request).then((res) => {
+                                    delete res.xhr;
+                                    this.postMain(res);
+                                });
+                            });
+                        }
+                    }, typeof r.thread === 'boolean' ? null : r.thread).on('message', function (e, res) {
+                        ctx.resolve(res);
+                        this.terminate();
+                    }).start().postThread(r);
+                });
+            }
+        }
+        Http._ON = {};
+        net.Http = Http;
+    })(net = JS.net || (JS.net = {}));
+})(JS || (JS = {}));
+var Http = JS.net.Http;
+var JS;
+(function (JS) {
     let store;
     (function (store) {
         let T = Types, J = Jsons, TP = Type, S = J.stringify;
@@ -15134,12 +14847,13 @@ var JS;
             constructor() {
                 this._map = {};
             }
-            _load(id, url) {
+            _load(id, url, uncached) {
                 let m = this;
                 return Promises.create(function () {
                     let img = new Image();
                     img.onload = () => {
-                        m.set(id, img);
+                        if (!uncached)
+                            m.set(id, img);
                         this.resolve();
                     };
                     img.src = url;
@@ -15875,7 +15589,7 @@ var JS;
             static load(url, tests) {
                 let urls = typeof url == 'string' ? [url] : url, tasks = [];
                 urls.forEach(u => {
-                    tasks.push(Promises.newPlan(Dom.loadJS, [u]));
+                    tasks.push(Promises.newPlan(Loader.js, [u]));
                 });
                 Promises.order(tasks).then(() => {
                     if (tests)
@@ -15889,6 +15603,412 @@ var JS;
     })(unit = JS.unit || (JS.unit = {}));
 })(JS || (JS = {}));
 var TestRunner = JS.unit.TestRunner;
+if (self['HTMLElement'])
+    (function () {
+        const D = document, HP = HTMLElement.prototype, oa = HP.append, op = HP.prepend, or = HP.remove, _ad = function (html) {
+            if (!html)
+                return;
+            let div = D.createElement('div'), nodes = null, fg = D.createDocumentFragment();
+            div.innerHTML = html;
+            nodes = div.childNodes;
+            for (let i = 0, len = nodes.length; i < len; i++) {
+                fg.appendChild(nodes[i].cloneNode(true));
+            }
+            this.appendChild(fg);
+            nodes = null;
+            fg = null;
+        }, _pd = function (html) {
+            if (!html)
+                return;
+            let div = D.createElement('div'), nodes = null, fg = D.createDocumentFragment();
+            div.innerHTML = html;
+            nodes = div.childNodes;
+            for (let i = 0, len = nodes.length; i < len; i++) {
+                fg.appendChild(nodes[i].cloneNode(true));
+            }
+            this.insertBefore(fg, this.firstChild);
+            nodes = null;
+            fg = null;
+        };
+        HP.append = function (...nodes) {
+            nodes.forEach(n => {
+                typeof n == 'string' ? _ad.call(this, n) : oa.call(this, n.cloneNode(true));
+            });
+        };
+        HP.prepend = function (...nodes) {
+            nodes.forEach(n => {
+                typeof n == 'string' ? _pd.call(this, n) : op.call(this, n);
+            });
+        };
+        HP.box = function () {
+            let box = this.computedStyle();
+            return {
+                x: parseFloat(box.left) + System.display().docScrollX,
+                y: parseFloat(box.top) + System.display().docScrollY,
+                w: parseFloat(box.width),
+                h: parseFloat(box.height)
+            };
+        };
+        HP.attr = function (key, val) {
+            if (arguments.length == 1)
+                return this.getAttribute(key);
+            this.setAttribute(key, val);
+            return this;
+        };
+        let _on = function (type, fn, opts) {
+            if (!this['_bus'])
+                this['_bus'] = new EventBus(this);
+            let bus = this['_bus'], cb = e => {
+                bus.fire(e);
+            }, once = (opts && opts['once']) ? true : false;
+            bus.on(type, fn, once);
+            if (this.addEventListener)
+                this.addEventListener(type, cb, opts);
+        };
+        HP.on = function (type, fn, opts) {
+            let types = type.split(' ');
+            types.forEach(t => {
+                _on.call(this, t, fn, opts);
+            });
+            return this;
+        };
+        let _rm = function (type, fn, opts) {
+            if (!fn)
+                return;
+            if (this.removeEventListener)
+                this.removeEventListener(type, fn, opts || false);
+        }, _rms = function (type, fns, opts) {
+            if (fns)
+                fns.forEach(f => { _rm.call(this, type, f, opts); });
+        }, _off = function (type, fn, opts) {
+            let bus = this['_bus'];
+            if (bus) {
+                let oFn = fn ? bus.original(type, fn['euid']) : undefined;
+                bus.off(type, oFn);
+                _rm.call(this, type, oFn, opts);
+            }
+            else {
+                _rm.call(this, type, fn, opts);
+            }
+        };
+        HP.off = function (type, fn, capture) {
+            if (!type) {
+                let bus = this['_bus'];
+                if (bus) {
+                    let types = bus.types();
+                    for (let i = 0, len = types.length; i < len; i++) {
+                        let ty = types[i];
+                        _rms.call(this, ty, bus.original(ty), capture);
+                    }
+                    bus.off();
+                }
+            }
+            else {
+                let types = type.split(' ');
+                types.forEach(t => {
+                    _off.call(this, t, fn, capture);
+                });
+            }
+            return this;
+        };
+        HP.find = HP.querySelector;
+        HP.findAll = HP.querySelectorAll;
+        HP.computedStyle = function (p) {
+            return document.defaultView.getComputedStyle(this, p || null);
+        };
+        let _getV = function () {
+            if (this instanceof HTMLTextAreaElement) {
+                return this.value || '';
+            }
+            else if (this instanceof HTMLInputElement) {
+                if (this.type == 'checkbox') {
+                    let chks = document.getElementsByName(this.name);
+                    if (chks.length > 0) {
+                        let a = [];
+                        [].forEach.call(chks, function (chk) {
+                            if (chk.checked)
+                                a.push(chk.value);
+                        });
+                        return a;
+                    }
+                    return this.checked ? [this.value] : [];
+                }
+                if (this.type == 'radio') {
+                    let rds = document.getElementsByName(this.name);
+                    if (rds.length > 0) {
+                        for (let i = 0, l = rds.length; i < l; i++) {
+                            let rd = rds.item(i);
+                            if (rd.checked)
+                                return rd.value;
+                        }
+                        return null;
+                    }
+                    return this.checked ? this.value : null;
+                }
+                return this.value || '';
+            }
+            else if (this instanceof HTMLSelectElement) {
+                let opts = this.findAll('option:checked');
+                if (opts.length > 0) {
+                    let a = [];
+                    for (let i = 0, l = opts.length; i < l; i++) {
+                        let opt = opts.item(i);
+                        if (this.multiple) {
+                            if (opt.selected)
+                                a.push(opt.value);
+                        }
+                        else {
+                            if (opt.selected)
+                                return opt.value;
+                        }
+                    }
+                    return a;
+                }
+                return [];
+            }
+            return undefined;
+        }, _setV = function (v) {
+            if (this instanceof HTMLTextAreaElement) {
+                this.value = v || '';
+            }
+            else if (this instanceof HTMLInputElement) {
+                if (this.type == 'checkbox') {
+                    let chks = document.getElementsByName(this.name), vs = v;
+                    if (chks.length > 0) {
+                        [].forEach.call(chks, function (chk) {
+                            chk.checked = vs.indexOf(chk.value) > -1;
+                        });
+                    }
+                    else {
+                        if (vs.indexOf(this.value) > -1)
+                            this.checked = true;
+                    }
+                    return this;
+                }
+                if (this.type == 'radio') {
+                    let rds = document.getElementsByName(this.name);
+                    if (rds.length > 0) {
+                        for (let i = 0, l = rds.length; i < l; i++) {
+                            let rd = rds.item(i);
+                            if (v == rd.value) {
+                                rd.checked = true;
+                                return this;
+                            }
+                        }
+                    }
+                    else {
+                        if (v == this.value)
+                            this.checked = true;
+                    }
+                    return this;
+                }
+                this.value = v;
+            }
+            else if (this instanceof HTMLSelectElement) {
+                let opts = this.findAll('option'), vs = typeof v == 'string' ? [v] : v;
+                if (opts.length > 0) {
+                    for (let i = 0, l = opts.length; i < l; i++) {
+                        let opt = opts.item(i);
+                        opt.selected = vs.indexOf(opt.value) > -1;
+                    }
+                }
+            }
+            return this;
+        };
+        HP.val = function (v) {
+            return arguments.length == 0 ? _getV.call(this) : _setV.call(this, v);
+        };
+        let setCssValue = (el, k, v) => {
+            let st = el.style;
+            if (v === undefined) {
+                st.removeProperty(CssTool.hyphenCase(k));
+            }
+            else if (v != null) {
+                let w = v + '';
+                st.setProperty(CssTool.hyphenCase(k), CssTool.calcValue(w, el.css(k)), w.endsWith(' !important') ? 'important' : '');
+            }
+        };
+        HP.css = function (name, val) {
+            if (arguments.length == 1) {
+                if (typeof name == 'string') {
+                    let key = CssTool.hyphenCase(name);
+                    return this.style.getPropertyValue(key) || this.computedStyle().getPropertyValue(key);
+                }
+                else {
+                    let s = '';
+                    Jsons.forEach(name, (v, k) => {
+                        if (v != void 0)
+                            s += `${CssTool.hyphenCase(k)}:${CssTool.calcValue(v, this.style.getPropertyValue(k))};`;
+                    });
+                    this.style.cssText += s;
+                }
+            }
+            else {
+                setCssValue(this, name, val);
+            }
+            return this;
+        };
+        HP.empty = function (s) {
+            let chs = this.findAll(s || '*');
+            if (chs.length > 0)
+                [].forEach.call(chs, function (node) {
+                    if (node.nodeType == 1)
+                        node.off().remove();
+                });
+            return this;
+        };
+        HP.remove = function (s) {
+            this.empty.call(this, s);
+            if (!s)
+                or.call(this.off());
+        };
+        let DP = Document.prototype;
+        DP.on = HP.addEventListener;
+        DP.off = HP.removeEventListener;
+        let WP = Window.prototype;
+        WP.on = HP.addEventListener;
+        WP.off = HP.removeEventListener;
+    })();
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        let D;
+        if (self['HTMLElement'])
+            D = document;
+        class Dom {
+            static $1(selector) {
+                return typeof selector == 'string' ? D.querySelector(selector) : selector;
+            }
+            static $L(selector) {
+                return D.querySelectorAll(selector);
+            }
+            static rename(node, newTagName) {
+                let newNode = D.createElement(newTagName), aNames = node['getAttributeNames']();
+                if (aNames)
+                    aNames.forEach(name => {
+                        newNode.setAttribute(name, node.getAttribute(name));
+                    });
+                newNode.append.apply(newNode, node.childNodes);
+                node.parentNode.replaceChild(newNode, node);
+            }
+            static applyStyle(code, id) {
+                if (!code)
+                    return;
+                this.$1('head').append(`<style${id ? ' id="' + id + '"' : ''}>${code}</style>`);
+            }
+            static applyHtml(html, appendTo, ignore) {
+                if (!html)
+                    return Promise.reject(null);
+                return Promises.create(function () {
+                    let doc = typeof html == 'string' ? new DOMParser().parseFromString(html, 'text/html') : html, url = doc.URL, el = Dom.$1(appendTo || D.body);
+                    el.append.apply(el, doc.body.childNodes);
+                    let ignoreCss = ignore === true || (ignore && ignore.css) ? true : false;
+                    if (!ignoreCss) {
+                        let cssFiles = doc.querySelectorAll('link[rel=stylesheet]');
+                        if (cssFiles) {
+                            for (let i = 0, len = cssFiles.length; i < len; i++) {
+                                let css = cssFiles[i], href = css.getAttribute('href');
+                                if (href)
+                                    Loader.css(href, false);
+                            }
+                        }
+                    }
+                    let ignoreScript = ignore === true || (ignore && ignore.script) ? true : false;
+                    if (!ignoreScript) {
+                        let scs = doc.getElementsByTagName('script'), syncs = [], back = () => {
+                            syncs = null;
+                            scs = null;
+                            if (typeof html == 'string')
+                                doc = null;
+                            this.resolve(url);
+                        };
+                        if (scs && scs.length > 0) {
+                            for (let i = 0, len = scs.length; i < len; i++) {
+                                let sc = scs[i];
+                                sc.src ? (sc.async ? Loader.js(sc.src, true) : syncs.push(Loader.js(sc.src, false))) : eval(sc.text);
+                            }
+                            Promises.order(syncs).then(() => {
+                                back();
+                            }).catch((u) => {
+                                JSLogger.error('Load inner script fail: ' + u + '\n; parent html:' + url);
+                                back();
+                            });
+                        }
+                        else {
+                            back();
+                        }
+                    }
+                    else {
+                        if (typeof html == 'string')
+                            doc = null;
+                        this.resolve(url);
+                    }
+                });
+            }
+            static loadHTML(url, async, opts) {
+                if (!url)
+                    return Promise.reject(null);
+                return Promises.create(function () {
+                    Http.get({
+                        responseType: 'html',
+                        url: url,
+                        cache: false,
+                        async: async
+                    }).then((res) => {
+                        let fn = opts && opts.prehandle;
+                        Dom.applyHtml(fn ? fn(res.data) : res.data, opts && opts.appendTo, opts && opts.ignore).then(() => { this.resolve(url); });
+                    });
+                });
+            }
+        }
+        util.Dom = Dom;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Dom = JS.util.Dom;
+const $1 = Dom.$1;
+const $L = Dom.$L;
+var JS;
+(function (JS) {
+    let util;
+    (function (util) {
+        class Objects {
+            static readwrite(obj, props, listeners) {
+                let ps = typeof props == 'string' ? [props] : props, fs = listeners;
+                ps.forEach(p => {
+                    Object.defineProperty(obj, p, {
+                        configurable: true,
+                        enumerable: true,
+                        writable: true,
+                        get: () => {
+                            return obj[p];
+                        },
+                        set: (val) => {
+                            let oVal = obj[p];
+                            if (fs && fs.changing)
+                                fs.changing.call(obj, p, val, oVal);
+                            obj[p] = val;
+                            if (fs && fs.changed)
+                                fs.changed.call(obj, p, val, oVal);
+                        }
+                    });
+                });
+            }
+            static readonly(obj, props) {
+                let ps = typeof props == 'string' ? [props] : props;
+                ps.forEach(p => {
+                    Object.defineProperty(obj, p, {
+                        configurable: true,
+                        enumerable: true,
+                        writable: false
+                    });
+                });
+            }
+        }
+        util.Objects = Objects;
+    })(util = JS.util || (JS.util = {}));
+})(JS || (JS = {}));
+var Objects = JS.util.Objects;
 var JS;
 (function (JS) {
     let util;
@@ -15949,15 +16069,15 @@ var JS;
             TimerState[TimerState["PAUSED"] = 2] = "PAUSED";
         })(TimerState = util.TimerState || (util.TimerState = {}));
         class Timer {
-            constructor(tick, cfg) {
+            constructor(task, cfg) {
                 this._bus = new util.EventBus(this);
                 this._sta = TimerState.STOPPED;
                 this._ts = 0;
                 this._et = 0;
                 this._pt = 0;
                 this._count = 0;
-                this._tick = tick;
-                this.config(cfg);
+                this._task = task;
+                this._config(cfg);
             }
             on(type, fn) {
                 this._bus.on(type, fn);
@@ -15970,14 +16090,12 @@ var JS;
             count() {
                 return this._count;
             }
-            config(cfg) {
-                if (!cfg)
-                    return this._cfg;
+            _config(cfg) {
                 this._cfg = util.Jsons.union({
                     delay: 0,
                     loop: 1,
                     interval: 0,
-                    intervalMode: 'OF'
+                    intervalMode: 'BF'
                 }, this._cfg, cfg);
                 let c = this._cfg;
                 if (c.interval != void 0 && c.interval < 0)
@@ -15989,10 +16107,12 @@ var JS;
             }
             pause() {
                 let m = this;
-                if (m._sta != TimerState.RUNNING)
+                if (!m.isRunning())
                     return m;
-                m._sta = TimerState.PAUSED;
+                m._bus.fire('pausing', [m._count + 1]);
+                m._state(TimerState.PAUSED);
                 m._pt = System.highResTime();
+                m._bus.fire('paused', [m._count + 1]);
                 return m;
             }
             _cancelTimer() {
@@ -16003,7 +16123,7 @@ var JS;
             _reset() {
                 let m = this;
                 m._cancelTimer();
-                m._sta = TimerState.STOPPED;
+                m._state(TimerState.STOPPED);
                 m._count = 0;
                 m._ts0 = 0;
                 m._ts = 0;
@@ -16021,6 +16141,12 @@ var JS;
             getState() {
                 return this._sta;
             }
+            isRunning() {
+                return this.getState() == TimerState.RUNNING;
+            }
+            _state(s) {
+                this._sta = s;
+            }
             fps() {
                 return this._et == 0 ? 0 : 1000 / this._et;
             }
@@ -16028,56 +16154,64 @@ var JS;
                 let t = this._cfg.interval;
                 return t == 0 ? Infinity : 1000 / t;
             }
-            _cycle(skip) {
-                if (this._sta != TimerState.RUNNING)
+            looped() {
+                return this._count + 1;
+            }
+            _loopTask(skip) {
+                if (!this.isRunning())
                     return;
-                let p = this._cfg.loop;
-                if (this._count < p) {
-                    let t = 0, opts = this._cfg, t0 = System.highResTime();
-                    this._et = t0 - this._ts;
+                let T = this, p = T._cfg.loop;
+                if (T._count < p) {
+                    let t = 0, opts = T._cfg, t0 = System.highResTime();
+                    T._et = t0 - T._ts;
                     if (!skip) {
-                        let looping = this._count > 1 && this._count <= (p - 1);
-                        if (looping)
-                            this._bus.fire('looping', [this._count + 1]);
-                        ++this._count;
-                        this._tick.call(this, this._et);
+                        T._bus.fire('looping', [T._count + 1]);
+                        T._task.call(T, T._et);
+                        T._bus.fire('looped', [T._count + 1]);
                         let t1 = System.highResTime();
                         t = t1 - t0;
-                        if (looping)
-                            this._bus.fire('looped', [this._count]);
+                        ++T._count;
                     }
-                    this._ts = t0;
+                    T._ts = t0;
                     let d = opts.interval - t, needSkip = opts.intervalMode == 'OF' && d < 0;
-                    this._timer = setTimeout(() => { this._cycle(needSkip); }, opts.intervalMode == 'BF' ? opts.interval : (needSkip ? 0 : d));
+                    if (needSkip) {
+                        T._loopTask(needSkip);
+                    }
+                    else {
+                        T._timer = setTimeout(() => { T._loopTask(needSkip); }, opts.intervalMode == 'BF' ? opts.interval : d);
+                    }
                 }
                 else {
-                    this._finish();
+                    T._finish();
                 }
+            }
+            _start(begin) {
+                this._loopTask(!begin);
             }
             start() {
                 let T = this;
-                if (T._sta == TimerState.RUNNING)
+                if (this.isRunning())
                     return;
                 let first = false, wait = T._cfg.delay;
-                if (T._sta == TimerState.PAUSED) {
+                if (T.getState() == TimerState.PAUSED) {
                     wait = 0;
-                    let t = System.highResTime() - T._pt;
+                    let dt = System.highResTime() - T._pt;
+                    T._ts0 += dt;
+                    T._ts += dt;
                     T._pt = 0;
-                    T._ts0 += t;
-                    T._ts += t;
                 }
                 else {
                     first = true;
                     T._reset();
                 }
-                T._sta = TimerState.RUNNING;
+                T._state(TimerState.RUNNING);
                 T._timer = setTimeout(() => {
                     if (first) {
-                        T._ts0 = System.highResTime();
-                        T._ts = T._ts0;
+                        this._ts0 = System.highResTime();
+                        this._ts = this._ts0;
                         T._bus.fire('starting');
                     }
-                    T._cycle();
+                    T._start(first);
                 }, wait);
             }
         }

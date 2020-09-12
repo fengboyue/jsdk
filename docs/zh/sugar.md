@@ -30,7 +30,7 @@ JSDK已定义了以下注解函数，可以直接使用：
 @after|jsugar|method
 @around|jsugar|method
 @throws|jsugar|method
-@component|jsmvc|class
+@compo|jsmvc|class
 @inject|jsmvc|field
 @widget|jsfx|class
 
@@ -91,7 +91,7 @@ Class.reflect(Convid19, 'WHO.virus.Convid19');
 
 <b>［提示］</b>以下注解可标记一个类支持反射：
 - @klass
-- @component
+- @compo
 - @widget
 
 ### 反射的使用

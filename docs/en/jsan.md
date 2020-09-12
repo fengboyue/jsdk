@@ -1,116 +1,249 @@
-## JSAN
-JSAN is new animation module since version of 2.1.
-It contains 7 independent animation classes and 2 control animation classes.
+## Intro
+From version 2.7, <b>JSAN</b> provides two new classes (<b>TweenAnim</b> and <b>FrameAnim</b>) to replace many animation classes in the old version. The two animation-control classes in old version now be replaced by new control class <b>Timeline</b>.
 
-Animation Class|Introduction|Type
----|---|---
-MoveAnim|Move animation by (x,y)|
-TranslateAnim|Translate animation by (offsetX, offsetY)|
-FadeAnim|Opacity animation|
-GradientAnim|Gradient color animation|
-ScaleAnim|Scale animation|
-SkewAnim|Skew animation|
-RotateAnim|Rotate2D or Rotate3D animation|
-ParallelAnim|Execute a set of animations in parallel|control-type
-SequentialAnim|Execute a set of animations in sequential order|control-type
+## Tween Animation
 
-## Sample Code
-Use rotate animation as a sample:
+The tween animation will change one or some properties values of targets from begin value to end value within the specified duration. The change function from begin value to end value is called: <b>EasingFunction</b>。
+### Initialize
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_init.html?_=1"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe>
+
+### Set Tartgets
+Set Tartgets with CSS selector:
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_targets_selector.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+Set Tartgets with NodeList:
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_targets_nodelist.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+Set Tartgets with JS Object:
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_targets_object.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+Set Tartgets with array:
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_targets_array.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+### Animated Keys
+During the initialization, TweenAnim will automatically judge which property type that a <b>key</b> contained in the <b>keys</b> is of the targets.
+
+When <b>key</b> is <b>CSS property</b>:
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_keys_css.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+When <b>key</b> is <b>CSS Transfrom</b>:
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_keys_transform.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+When <b>key</b> is <b>Dom Attribute</b>:
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_keys_attr.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+When <b>key</b> is <b>JS Object Property</b>:
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_keys_property.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+### Animated Value Types
+ <iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_value_types.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+### Easing Function
+Standard Easing Functions:
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_easings.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+STEPS Easing Function:
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_easing_steps.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+Custom Easing Function:
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_easing_custom.html"  
+frameborder=0  
+allowfullscreen>
+</iframe>  
+
+### Controls
+
+Play, Pause, Stop and Replay:
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_controls.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+Seek Play:
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_controls_seek.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+### Events
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_events.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+## Frame Animation
+Frame animation will change background image of HTMLElement in specified duration, that it will produce an animation effect similar to movie or GIF.
+
+### Image Frame
+We usually concentrate many image frames in one image file, and use CSS style to display an image frame.
+
+For example, in <code>1945.gif</code> there are eight image frames:<br>
+<img src="assets/images/plane-frames.png" />
+
+We can define a <b>ImageFrameSet</b> to represent the eight frames:
 ```javascript
-let anim1 = new RotateAnim({
-    easing: Easings.BACK_IN_OUT,
-    duration: 5000,//5s
-    el: '#xxx',    //html element its id is "xxx"
-    frames: {
-        from: 45,  //angle value in 0~360
-        to: 180    //angle value in 0~360
+let fs = <ImageFrameSet>{
+    src: '../js2d/1945.gif',
+    w: 32,
+    h: 32,
+    items: [       //8 frames offset data
+        [4, 4],    //[offsetX, offsetY]
+        ...          
+        [228, 228]
+    ]
+})
+```
+
+When all the frames in a set are aligned in a row or column, it can be defined in a simpler way:<br>
+Using offset data of the first frame and the total number of all frames, <b>FrameAnim</b> class will automatically calculate all frame data.
+```javascript
+let fs = <ImageFrameSet>{
+    src: '../js2d/1945.gif',
+    w: 32,
+    h: 32,
+    items: {
+        ox: 4,     //first frame's offsetX
+        oy: 4,     //first frame's offsetY
+        split: 1,  //split width between every frame
+        axis: 'x', //aligned direction
+        total: 8   //total frames number
     }
-});
-anim1.play()
-```
-You can <code> pause </code> or <code> stop </code> this animation:
-```javascript
-anim1.pause();
-```
-The above animation is 2D rotation. You can modify it to 3D rotate animation:
-```javascript
-let anim2 = new RotateAnim({
-    easing: Easings.BACK_IN_OUT,
-    duration: 5000,
-    el: '#xxx',  
-    frames: {
-        from: {
-            aX: 45, aY: 120, aZ: 180  //set angles of x and y and z 
-        },
-        to: {
-            aX: 180, aY: 180, aZ: 120
-        }
-    }
-});
-anim2.play();
+})
 ```
 
-## Easing Function
-You should notice the value of <code>easing</code> in the animation config, which is a commonly used function in animation. It provides the effect of accelerating or decelerating the animation. If you don't set this parameter, the default value is: <code>Easings.LINEAR</code>, which is uniform velocity.
+### Initialize
+Initialize a FrameAnim object with a <b>ImageFrameSet</b>:
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/frame_init.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
 
-In essence, the easing function is a function related to t(current time), d(duration), begin(begin value) and end(end value):
-```javascript
-/**
- * @param {number} t elapsed time
- * @param {number} b begin
- * @param {number} c increment = end - begin
- * @param {number} d duration time
- * @returns {number}
- */
-export type EasingFunction = (t: number, b: number, c: number, d: number, ...args) => number;
-```
-* *JSAN has defined more than 30 kinds of common easing functions. Of course, you can also use your own easing functions.*
+### Controls
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/frame_controls.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
 
-## Multi animations control
-Many times, we need to execute a set of animations in sequential order or parallel to achieve the effect of combined animation.
+### Events
+The event types supported by frame animation are same as that of tween animation. Please refer to the events chapter of tween animation.
 
-For example, we define two animations, a gradient animation and a translate animation:
-```javascript
-let anim1 = new GradientAnim({
-    duration: 5000,
-    el: '#xxx',
-    frames: {
-        from: {
-            backgroundColor: '#00FF00'
-        },
-        to: {
-            backgroundColor: '#1E90FF'
-        }
-    }
-});
 
-let anim2 = new TranslateAnim({
-    duration: 5000,
-    el: '#xxx',
-    frames: {
-        frames: {
-            from: { oX: 0 },
-            to: { oX: 200 }
-        }
-    }
-});
-```
+## Multi-Animations Controls
+<b>Timeline</b> class can controls the sequential and parallel execution of multi-animations.
 
-If we play these two animations in sequential order, we'll see that the element completes the gradient background color first, and then starts to move:
-```javascript
-let anim = new SequentialAnim({
-    anims: [anim1,anim2]
-});
-anim.play();
-```
+### Sequential Animations
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/timeline_tween_order.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
 
-If we play these two animations in parallel, we'll see that the element moves and fades the background color at same time:
-```javascript
-let anim = new ParallelAnim({
-    anims: [anim1,anim2]
-});
-anim.play();
-```
+### Parallel Animation
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/timeline_tween_parallel.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
 
-## More Examples
-Please see more animation examples in <code>examples/jsan</code> directory.
+### Composite Frame Animations
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/timeline_frame.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 

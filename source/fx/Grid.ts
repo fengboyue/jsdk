@@ -368,7 +368,7 @@ module JS {
                     sortDir = col.sortable === true ? 'desc' : '' + col.sortable,
                     sort = col.sortable ? `<i id="${this.id + '_sort_' + col.field}" style="cursor:pointer;vertical-align:middle;" class="la la-arrow-${sortDir == 'asc' ? 'up' : 'down'}"></i>` : '',
                     hasCheckbox = colNumber == 1 && cfg.checkable,
-                    width = Lengths.toCSS(col.width,'100%'),
+                    width = CssTool.normValue(col.width,'100%'),
                     cell =
                         `<div class="cell items-${cfg.headStyle.textAlign} items-middle" jsfx-col="${colNumber}" title="${title}">
                     ${html}${sort ? sort : ''}</div>`;
@@ -382,7 +382,7 @@ module JS {
                 let cfg = <GridConfig>this._config,
                     hasCheckbox = col == 0 && cfg.checkable,
                     id = this.data()[row]['id'],
-                    width = Lengths.toCSS(opt.width,'100%'),
+                    width = CssTool.normValue(opt.width,'100%'),
                     cell =
                         `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
                     ${html}</div>`;

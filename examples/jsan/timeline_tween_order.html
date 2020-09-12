@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css?_=1" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?_=34"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+    
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">Timeline ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                    <div class="line">
+                        <div class="square shadow"></div>
+                        <div class="square el"></div>
+                    </div>
+                    <div class="line">
+                        <div class="square shadow"></div>
+                        <div class="square el"></div>
+                    </div>
+                    <div class="line">
+                        <div class="square shadow"></div>
+                        <div class="square el"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Sequential Play</h2>
+            </header>
+            <div class="info-output">
+                <p>Timelines let you can play multiple animations together.
+                By default each animation added to the timeline starts after the previous animation ends.
+                </p>
+
+                <p>Creating a timeline:</p>
+                <pre><code class="hljs javascript">let myTimeline = new.Timeline(config);</code></pre>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>argument</td>
+                            <td>Type</td>
+                            <td>Info</td>
+                            <td>REQUIRED</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>config</td>
+                            <td>TimelineInit</td>
+                            <td>The follow properties will be inherited by child animations:<br>duration<br>delay<br>endDelay<br>autoreset
+                            </td>
+                            <td>Y</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Add a child animation to a timeline:</p>
+                <pre><code class="hljs javascript">myTimeline.add(animInit);</code></pre>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>argument</td>
+                            <td>Type</td>
+                            <td>Info</td>
+                            <td>REQUIRED</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>animInit</td>
+                            <td>TimedTweenAnimInit or <br>TimedFrameAnimInit</td>
+                            <td>The child animation config, override the timeline default config
+                            </td>
+                            <td>Y</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">let anim = new Timeline({
+    targets: '.el',
+    autoreset: false
+})
+.add({
+    type: 'tween',
+    keys: { top: '-=25' }
+})
+.add({
+    type: 'tween',
+    keys: { left: '+=250' }
+})
+.add({
+    type: 'tween',
+    keys: { top: '+=50' }
+})
+.add({
+    type: 'tween',
+    keys: { left: '-=250' }
+})
+.add({
+    type: 'tween',
+    keys: { top: '-=25' }
+})
+
+$1('#demo').on('click', () => {
+    anim.play()
+})</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="timeline_tween_order.js"></script>
+</body>
+
+</html>

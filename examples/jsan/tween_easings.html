@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css?_=2" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?_=1"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">TWEEN ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Standard Easing Functions</h2>
+            </header>
+            <div class="info-output">
+                <p>
+                To use <a href="http://robertpenner.com/easing/">standard easing functions</a>.
+                </p>
+                <pre><code class="hljs javascript">easing: 'QUAD_IN_OUT'</code></pre>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <td>type</td>
+                            <td>description</td>
+                            <td>example</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>string</td>
+                            <td>standard function name</td>
+                            <td>'LINEAR'</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">let demoContentEl = $1('.demo-content'),
+fragment = document.createDocumentFragment(),
+easings = [
+    'LINEAR',
+    'QUAD_IN',
+    'QUAD_OUT',
+    'QUAD_IN_OUT',
+    'CUBIC_IN',
+    'CUBIC_OUT',
+    'CUBIC_IN_OUT',
+    'QUART_IN',
+    'QUART_OUT',
+    'QUART_IN_OUT',
+    'QUINT_IN',
+    'QUINT_OUT',
+    'QUINT_IN_OUT',
+    'SINE_IN',
+    'SINE_OUT',
+    'SINE_IN_OUT',
+    'EXPO_IN',
+    'EXPO_OUT',
+    'EXPO_IN_OUT',
+    'CIRC_IN',
+    'CIRC_OUT',
+    'CIRC_IN_OUT',
+    'ELASTIC_IN',
+    'ELASTIC_OUT',
+    'ELASTIC_IN_OUT',
+    'BACK_IN',
+    'BACK_OUT',
+    'BACK_IN_OUT',
+    'BOUNCE_IN',
+    'BOUNCE_OUT',
+    'BOUNCE_IN_OUT'];
+
+function createEasingDemo(easing) {
+    var demoEl = document.createElement('div');
+    demoEl.classList.add('stretched', 'square', 'el');
+    new TweenAnim({
+        keys: {
+            translateX: 250
+        },
+        direction: 'alternate',
+        loop: true,
+        delay: 200,
+        endDelay: 200,
+        duration: 2000,
+        easing: easing
+    }).targets(demoEl).play();
+    fragment.appendChild(demoEl);
+}
+
+easings.forEach(function (easeName) {
+    createEasingDemo(easeName);
+});
+
+demoContentEl.innerHTML = '';
+demoContentEl.appendChild(fragment);</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="tween_easings.js?_=1"></script>
+</body>
+
+</html>

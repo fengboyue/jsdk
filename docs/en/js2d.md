@@ -1,4 +1,4 @@
-<b>JS.d2.Display</b> the core class of <b>js2d</b> module provides the functions of drawing, updating and clearing 2D shapes, texts and images.
+<b>JS.d2.Display</b> the core class of <b>JS2D</b> module provides the functions of drawing, updating and clearing 2D shapes, texts and images.
 The <b>Display</b> class can be seen as a two-dimensional canvas, it supports two drawing modes: 
 <code>canvas</code> and <code>div</code>.
 

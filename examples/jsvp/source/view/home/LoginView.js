@@ -74,7 +74,7 @@ var AppDemo;
                 }
             };
             LoginView = __decorate([
-                component('AppDemo.view.home.LoginView')
+                compo('AppDemo.view.home.LoginView')
             ], LoginView);
             home.LoginView = LoginView;
         })(home = view.home || (view.home = {}));

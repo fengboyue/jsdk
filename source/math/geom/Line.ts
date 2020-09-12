@@ -274,7 +274,7 @@ module JS {
                         p = this._cpOfLineLine(p1, p2, p3, p4);
                     if (!p) return null;
 
-                    return V.toVector(p3, p4).angle(V.toVector(p3, p)) == 0 ? p : null
+                    return V.toVector(p3, p4).parallelTo(V.toVector(p3, p)) ? p : null
                 }
 
                 /**

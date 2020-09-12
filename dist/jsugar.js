@@ -1,10 +1,5 @@
 //# sourceURL=../dist/jsugar.js
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 var Reflect;
 (function (Reflect) {
     var A = Array, U8A = Uint8Array, TE = TypeError, OP = Object.prototype, MP = Map.prototype, WMP = WeakMap.prototype, SP = Set.prototype, $o = "object", $f = "function", $u = "undefined", TO = function (v, s) { return typeof v === s; };

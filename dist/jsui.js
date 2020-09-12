@@ -1,10 +1,5 @@
 //# sourceURL=../dist/jsui.js
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 var JS;
 (function (JS) {
     let input;

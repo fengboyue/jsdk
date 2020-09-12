@@ -1,25 +1,20 @@
 //# sourceURL=../dist/jsmvc.js
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 var JS;
 (function (JS) {
     let ioc;
     (function (ioc) {
-        function component(className) {
+        function compo(className) {
             return Annotations.define({
-                name: 'component',
+                name: 'compo',
                 handler: (anno, values, obj) => {
                     let className = values[0];
                     Class.reflect(obj, className);
-                    ioc.Components.add(Class.forName(className).name);
+                    ioc.Compos.add(Class.forName(className).name);
                 }
             }, arguments);
         }
-        ioc.component = component;
+        ioc.compo = compo;
         function inject() {
             return Annotations.define({
                 name: 'inject',
@@ -29,13 +24,13 @@ var JS;
         ioc.inject = inject;
     })(ioc = JS.ioc || (JS.ioc = {}));
 })(JS || (JS = {}));
-var component = JS.ioc.component;
+var compo = JS.ioc.compo;
 var inject = JS.ioc.inject;
 var JS;
 (function (JS) {
     let ioc;
     (function (ioc) {
-        class Components {
+        class Compos {
             static get(cmpt) {
                 let cmp;
                 if (Types.isString(cmpt)) {
@@ -90,11 +85,11 @@ var JS;
                 });
             }
         }
-        Components._cmps = {};
-        ioc.Components = Components;
+        Compos._cmps = {};
+        ioc.Compos = Compos;
     })(ioc = JS.ioc || (JS.ioc = {}));
 })(JS || (JS = {}));
-var Components = JS.ioc.Components;
+var Compos = JS.ioc.Compos;
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);

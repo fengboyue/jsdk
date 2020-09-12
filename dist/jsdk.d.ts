@@ -1,9 +1,4 @@
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 /// <reference path="../libs/reflect/2.0.1/Reflect.d.ts" />
 /// <reference path="../libs/ua-parser/0.7.20/ua-parser.d.ts" />
 /// <reference path="../libs/jquery/3.2.1/jquery.d.ts" />
@@ -27,55 +22,80 @@ declare module JS {
             RUNNING = 1,
             PAUSED = 2
         }
+        type AnimDirection = 'forward' | 'backward' | 'alternate';
+        type AnimEvents = 'starting' | 'finished' | 'pausing' | 'paused' | 'looping' | 'looped' | 'updating' | 'updated';
         class AnimInit {
-            target?: HTMLElement | string;
-            autoReverse?: boolean;
-            autoReset?: boolean;
+            targets?: AnimTargets;
             duration?: number;
-            loop?: boolean | number;
             delay?: number;
-            direction?: 'forward' | 'backward';
-            onStarting?: EventHandler<Anim>;
-            onFinished?: EventHandler<Anim>;
+            endDelay?: number;
+            autoreset?: boolean;
+            direction?: AnimDirection;
+            loop?: boolean | number;
+            on?: {
+                starting?: EventHandler<Anim>;
+                finished?: EventHandler<Anim>;
+                pausing?: EventHandler<Anim>;
+                paused?: EventHandler<Anim>;
+                looping?: EventHandler1<Anim, number>;
+                looped?: EventHandler1<Anim, number>;
+                updating?: EventHandler3<Anim, number, number, number>;
+                updated?: EventHandler3<Anim, number, number, number>;
+            };
         }
+        type AnimTargets = object | string | HTMLElement | Array<object | string | HTMLElement> | NodeListOf<HTMLElement>;
         abstract class Anim {
             protected _cfg: AnimInit;
-            protected _timer: AnimTimer;
+            protected _timer: Timer;
             protected _dir: 'forward' | 'backward';
             protected _loop: number;
+            protected _targets: Array<HTMLElement | object>;
+            protected _bus: EventBus;
             constructor(cfg: AnimInit);
-            protected _init(): void;
-            protected _convertFrame(f: KeyFrame): number | JsonObject<number> | JsonObject<JsonObject<number>>;
-            config(): AnimInit;
-            config(cfg: AnimInit): this;
+            config<T extends AnimInit>(): T;
+            on(ev: string, fn: EventHandler<this>): this;
+            off(ev?: string): this;
+            private _tars;
+            targets(t: AnimTargets): this;
             direction(): 'forward' | 'backward';
             direction(d: 'forward' | 'backward'): this;
             getState(): AnimState;
+            isRunning(): boolean;
             getLooped(): number;
-            abstract play(t?: number): this;
-            protected _resetEl(): void;
+            abstract play(): Promise<boolean>;
             protected _reset(): void;
+            protected _resetTargets(): void;
+            protected _setupTimer(): void;
             pause(): this;
             stop(): this;
+            replay(): void;
         }
     }
 }
 import AnimState = JS.an.AnimState;
 import AnimInit = JS.an.AnimInit;
 import Anim = JS.an.Anim;
+import AnimTargets = JS.an.AnimTargets;
 declare module JS {
     namespace an {
+        type AnimTimerEvents = TimerEvents | 'updating' | 'updated';
         type AnimTimerInit = {
             delay?: number;
-            duration?: number;
+            endDelay?: number;
+            duration: number;
             loop?: boolean | number;
         };
         class AnimTimer extends Timer {
             protected _cfg: AnimTimerInit;
             constructor(tick: TimerTask, cfg?: AnimTimerInit);
-            protected _loop(begin?: boolean): void;
-            protected _cycle(): void;
+            private _runTask;
+            private _loopEnd;
+            private _loopTick;
             protected _cancelTimer(): void;
+            pause(): this;
+            tick(ts: number): void;
+            private _loop;
+            start(): void;
         }
     }
 }
@@ -116,38 +136,63 @@ declare module JS {
             static BOUNCE_IN: EasingFunction;
             static BOUNCE_OUT: EasingFunction;
             static BOUNCE_IN_OUT: EasingFunction;
+            static STEPS: EasingFunction;
         }
     }
 }
 import EasingFunction = JS.an.EasingFunction;
 import Easings = JS.an.Easings;
 declare module JS {
+    namespace util {
+        type ImageFrame = {
+            src: string | HTMLImageElement;
+            w: number;
+            h: number;
+            x: number;
+            y: number;
+        };
+        type ImageFrameOffsets = {
+            ox: number;
+            oy: number;
+            split?: number;
+            axis: 'x' | '-x' | 'y' | '-y';
+            total: number;
+        };
+        type ImageFrameOffset = [number, number];
+        type ImageFrameSet = {
+            src: string | HTMLImageElement;
+            w: number;
+            h: number;
+            items: Array<ImageFrameOffset> | ImageFrameOffsets;
+        };
+        class Images {
+            static parseFrames(frames: ImageFrameSet): ImageFrame[];
+        }
+    }
+}
+import ImageFrame = JS.util.ImageFrame;
+import ImageFrameOffsets = JS.util.ImageFrameOffsets;
+import ImageFrameOffset = JS.util.ImageFrameOffset;
+import ImageFrameSet = JS.util.ImageFrameSet;
+import Images = JS.util.Images;
+declare module JS {
     namespace an {
         class FrameAnimInit extends AnimInit {
-            frames: KeyFrames;
-            easing?: EasingFunction;
+            frames: ImageFrameSet;
+            onUpdateImage?: (el: HTMLElement | object, fr: ImageFrame) => void;
         }
-        abstract class FrameAnim extends Anim {
+        class FrameAnim extends Anim {
             protected _cfg: FrameAnimInit;
-            protected _el: HTMLElement;
-            protected _frame: KeyFrame;
-            private _from;
-            private _to;
             private _frames;
             constructor(cfg: FrameAnimInit);
-            protected abstract _onUpdate(newFrame: KeyFrame): void;
-            private _parseFrames;
-            config<T extends FrameAnimInit>(): T;
-            config<T extends FrameAnimInit>(cfg: T): this;
-            private _num;
-            protected _newFrame(from: KeyFrame, to: KeyFrame, t: number, d: number, e: EasingFunction): number | JsonObject<number> | JsonObject<JsonObject<number>>;
-            protected _newVal(t: number, d: number, from: number, to: number, e: EasingFunction, base: number): number;
-            private _calc;
-            private _reset4loop;
+            private _updateImage;
+            private _fi;
             protected _reset(): void;
-            private _resetFrame;
-            play(): this;
-            stop(): this;
+            protected _resetTargets(): void;
+            private _updateFrame;
+            private _lt;
+            protected _setupTimer(): void;
+            play(): Promise<boolean>;
         }
     }
 }
@@ -155,270 +200,77 @@ import FrameAnimInit = JS.an.FrameAnimInit;
 import FrameAnim = JS.an.FrameAnim;
 declare module JS {
     namespace an {
-        type FadeKeyFrame = number;
-        type FadeKeyFrames = {
-            from?: FadeKeyFrame;
-            to?: FadeKeyFrame;
-            "0%"?: FadeKeyFrame;
-            "100%"?: FadeKeyFrame;
-            [key: string]: FadeKeyFrame;
-        };
-        class FadeAnimInit extends FrameAnimInit {
-            frames: FadeKeyFrames;
+        interface TimedTweenAnimInit extends TweenAnimInit {
+            type: 'tween';
         }
-        class FadeAnim extends FrameAnim {
-            private _o;
-            constructor(cfg: FadeAnimInit);
-            config<T extends FrameAnimInit>(): T;
-            config<T extends FrameAnimInit>(cfg: T): this;
-            protected _onUpdate(f: FadeKeyFrame): void;
-            protected _resetEl(): void;
+        interface TimedFrameAnimInit extends FrameAnimInit {
+            type: 'frame';
+        }
+        class TimelineInit {
+            targets?: AnimTargets;
+            duration?: number;
+            delay?: number;
+            endDelay?: number;
+            autoreset?: boolean;
+            on?: {
+                starting?: EventHandler<Anim>;
+                finished?: EventHandler<Anim>;
+            };
+        }
+        class Timeline {
+            protected _cfg: TimelineInit;
+            protected _targets: Array<HTMLElement | object>;
+            private _seqAnims;
+            private _synAnims;
+            protected _bus: EventBus;
+            constructor(cfg: TimelineInit);
+            on(ev: string, fn: EventHandler<this>): this;
+            off(ev?: string): this;
+            private _tars;
+            add(a: TimedTweenAnimInit | TimedFrameAnimInit, start?: number): this;
+            private _isRunning;
+            private _seqFinished;
+            private _synFinished;
+            private _resolve;
+            play(): Promise<boolean>;
         }
     }
 }
-import FadeKeyFrame = JS.an.FadeKeyFrame;
-import FadeKeyFrames = JS.an.FadeKeyFrames;
-import FadeAnimInit = JS.an.FadeAnimInit;
-import FadeAnim = JS.an.FadeAnim;
+import TimelineInit = JS.an.TimelineInit;
+import Timeline = JS.an.Timeline;
 declare module JS {
     namespace an {
-        type GradientKeyFrame = {
-            color?: HEX;
-            backgroundColor?: HEX;
-            borderColor?: HEX;
-            borderTopColor?: HEX;
-            borderRightColor?: HEX;
-            borderBottomColor?: HEX;
-            borderLeftColor?: HEX;
-        };
-        type GradientKeyFrames = {
-            from?: GradientKeyFrame;
-            to?: GradientKeyFrame;
-            "0%"?: GradientKeyFrame;
-            "100%"?: GradientKeyFrame;
-            [key: string]: GradientKeyFrame;
-        };
-        class GradientAnimInit extends FrameAnimInit {
-            frames: GradientKeyFrames;
+        type AnimatedValueFunction = (target: HTMLElement | object, index: number, total: number) => number | string | Array<number | string>;
+        export type AnimatedValueType = CssValueString | number | Array<number | string> | AnimatedValueFunction;
+        export class TweenAnimInit extends AnimInit {
+            keys: JsonObject<AnimatedValueType>;
+            easing?: keyof typeof Easings | ((target: HTMLElement | object, i: number, total: number) => EasingFunction);
+            round?: number;
         }
-        class GradientAnim extends FrameAnim {
-            private _cls;
-            constructor(cfg: GradientAnimInit);
-            config<T extends FrameAnimInit>(): T;
-            config<T extends FrameAnimInit>(cfg: T): this;
-            private _newColor;
-            protected _convertFrame(f: GradientKeyFrame): JsonObject<TRGBA>;
-            protected _newFrame(from: JsonObject<TRGBA>, to: JsonObject<TRGBA>, t: number, d: number, e: EasingFunction): JsonObject<TRGBA>;
-            protected _onUpdate(j: JsonObject<TRGBA>): void;
-            protected _resetEl(): void;
+        export class TweenAnim extends Anim {
+            protected _cfg: TweenAnimInit;
+            private _iniValues;
+            constructor(cfg: TweenAnimInit);
+            private _getValues;
+            private _saveIniValues;
+            protected _resetTargets(): void;
+            private _calc;
+            private _calcColor;
+            private _calcPercent;
+            private _calcNormal;
+            private _calcNormalVal;
+            private _updateTargets;
+            seek(dt: number): void;
+            protected _setupTimer(): void;
+            private _prepare;
+            play(): Promise<boolean>;
         }
+        export {};
     }
 }
-import GradientKeyFrame = JS.an.GradientKeyFrame;
-import GradientKeyFrames = JS.an.GradientKeyFrames;
-import GradientAnimInit = JS.an.GradientAnimInit;
-import GradientAnim = JS.an.GradientAnim;
-declare module JS {
-    namespace an {
-        type KeyFrame = number | JsonObject<number> | JsonObject<JsonObject<number>> | any;
-        type KeyFrames = {
-            from?: KeyFrame;
-            to?: KeyFrame;
-            "0%"?: KeyFrame;
-            "100%"?: KeyFrame;
-            [key: string]: KeyFrame;
-        };
-    }
-}
-import KeyFrame = JS.an.KeyFrame;
-import KeyFrames = JS.an.KeyFrames;
-declare module JS {
-    namespace an {
-        type MoveKeyFrame = {
-            x?: number;
-            y?: number;
-        };
-        type MoveKeyFrames = {
-            from?: MoveKeyFrame;
-            to?: MoveKeyFrame;
-            "0%"?: MoveKeyFrame;
-            "100%"?: MoveKeyFrame;
-            [key: string]: MoveKeyFrame;
-        };
-        class MoveAnimInit extends FrameAnimInit {
-            frames: MoveKeyFrames;
-        }
-        class MoveAnim extends FrameAnim {
-            private _xy;
-            constructor(cfg: MoveAnimInit);
-            config<T extends FrameAnimInit>(): T;
-            config<T extends FrameAnimInit>(cfg: T): this;
-            protected _onUpdate(f: MoveKeyFrame): void;
-            protected _resetEl(): void;
-        }
-    }
-}
-import MoveKeyFrame = JS.an.MoveKeyFrame;
-import MoveKeyFrames = JS.an.MoveKeyFrames;
-import MoveAnimInit = JS.an.MoveAnimInit;
-import MoveAnim = JS.an.MoveAnim;
-declare module JS {
-    namespace an {
-        class ParallelAnimInit extends AnimInit {
-            anims: Anim[];
-            target?: HTMLElement | string;
-        }
-        class ParallelAnim extends Anim {
-            protected _cfg: ParallelAnimInit;
-            private _plans;
-            private _sta;
-            constructor(cfg: ParallelAnimInit);
-            getState(): AnimState;
-            config(): ParallelAnimInit;
-            config(cfg: ParallelAnimInit): this;
-            play(): this;
-            pause(): this;
-            stop(): this;
-        }
-    }
-}
-import ParallelAnimInit = JS.an.ParallelAnimInit;
-import ParallelAnim = JS.an.ParallelAnim;
-declare module JS {
-    namespace an {
-        type RotateKeyFrame = number | {
-            aX?: number;
-            aY?: number;
-            aZ?: number;
-        };
-        type RotateKeyFrames = {
-            from?: RotateKeyFrame;
-            to?: RotateKeyFrame;
-            "0%"?: RotateKeyFrame;
-            "100%"?: RotateKeyFrame;
-            [key: string]: RotateKeyFrame;
-        };
-        class RotateAnimInit extends FrameAnimInit {
-            frames: RotateKeyFrames;
-        }
-        class RotateAnim extends FrameAnim {
-            constructor(cfg: RotateAnimInit);
-            protected _newVal(t: number, d: number, from: number, to: number, e: EasingFunction, base: number): number;
-            protected _onUpdate(v: RotateKeyFrame): void;
-            protected _resetEl(): void;
-        }
-    }
-}
-import RotateKeyFrame = JS.an.RotateKeyFrame;
-import RotateKeyFrames = JS.an.RotateKeyFrames;
-import RotateAnimInit = JS.an.RotateAnimInit;
-import RotateAnim = JS.an.RotateAnim;
-declare module JS {
-    namespace an {
-        type ScaleKeyFrame = number | {
-            sX?: number;
-            sY?: number;
-            sZ?: number;
-        };
-        type ScaleKeyFrames = {
-            from?: ScaleKeyFrame;
-            to?: ScaleKeyFrame;
-            "0%"?: ScaleKeyFrame;
-            "100%"?: ScaleKeyFrame;
-            [key: string]: ScaleKeyFrame;
-        };
-        class ScaleAnimInit extends FrameAnimInit {
-            frames: ScaleKeyFrames;
-        }
-        class ScaleAnim extends FrameAnim {
-            constructor(cfg: ScaleAnimInit);
-            protected _resetEl(): void;
-            protected _onUpdate(v: ScaleKeyFrame): void;
-        }
-    }
-}
-import ScaleKeyFrame = JS.an.ScaleKeyFrame;
-import ScaleKeyFrames = JS.an.ScaleKeyFrames;
-import ScaleAnimInit = JS.an.ScaleAnimInit;
-import ScaleAnim = JS.an.ScaleAnim;
-declare module JS {
-    namespace an {
-        class SequentialAnimInit extends AnimInit {
-            anims: Anim[];
-            target?: HTMLElement | string;
-        }
-        class SequentialAnim extends Anim {
-            protected _cfg: SequentialAnimInit;
-            private _i;
-            private _sta;
-            constructor(cfg: SequentialAnimInit);
-            config(): SequentialAnimInit;
-            config(cfg: SequentialAnimInit): this;
-            play(): this;
-            pause(): this;
-            stop(): this;
-        }
-    }
-}
-import SequentialAnimInit = JS.an.SequentialAnimInit;
-import SequentialAnim = JS.an.SequentialAnim;
-declare module JS {
-    namespace an {
-        type SkewKeyFrame = {
-            aX?: number;
-            aY?: number;
-        };
-        type SkewKeyFrames = {
-            from?: SkewKeyFrame;
-            to?: SkewKeyFrame;
-            "0%"?: SkewKeyFrame;
-            "100%"?: SkewKeyFrame;
-            [key: string]: SkewKeyFrame;
-        };
-        class SkewAnimInit extends FrameAnimInit {
-            frames: SkewKeyFrames;
-            firstMode?: 'both' | 'x' | 'y';
-        }
-        class SkewAnim extends FrameAnim {
-            constructor(cfg: SkewAnimInit);
-            protected _init(): void;
-            protected _resetEl(): void;
-            protected _onUpdate(f: SkewKeyFrame): void;
-        }
-    }
-}
-import SkewKeyFrame = JS.an.SkewKeyFrame;
-import SkewKeyFrames = JS.an.SkewKeyFrames;
-import SkewAnimInit = JS.an.SkewAnimInit;
-import SkewAnim = JS.an.SkewAnim;
-declare module JS {
-    namespace an {
-        type TranslateKeyFrame = {
-            oX?: number;
-            oY?: number;
-            oZ?: number;
-        };
-        type TranslateKeyFrames = {
-            from?: TranslateKeyFrame;
-            to?: TranslateKeyFrame;
-            "0%"?: TranslateKeyFrame;
-            "100%"?: TranslateKeyFrame;
-            [key: string]: TranslateKeyFrame;
-        };
-        class TranslateAnimInit extends FrameAnimInit {
-            frames: TranslateKeyFrames;
-        }
-        class TranslateAnim extends FrameAnim {
-            constructor(cfg: TranslateAnimInit);
-            protected _resetEl(): void;
-            protected _onUpdate(f: TranslateKeyFrame): void;
-        }
-    }
-}
-import TranslateKeyFrame = JS.an.TranslateKeyFrame;
-import TranslateKeyFrames = JS.an.TranslateKeyFrames;
-import TranslateAnimInit = JS.an.TranslateAnimInit;
-import TranslateAnim = JS.an.TranslateAnim;
+import TweenAnimInit = JS.an.TweenAnimInit;
+import TweenAnim = JS.an.TweenAnim;
+import AnimatedValueType = JS.an.AnimatedValueType;
 declare module JS {
     namespace app {
         interface Api<T> extends HttpRequest {
@@ -427,6 +279,60 @@ declare module JS {
     }
 }
 import Api = JS.app.Api;
+interface Promise<T> {
+    always(fn: (this: this, v: any, success: boolean) => any | Promise<any>): Promise<T>;
+}
+declare module JS {
+    namespace core {
+        type PromiseContext<T> = {
+            resolve: (value: T) => void;
+            reject: (value: T) => void;
+        };
+        type PromisePlan<T> = (...args: any[]) => Promise<T>;
+        type PromisePlans<T> = Array<PromisePlan<T>>;
+        class Promises {
+            static create<T>(fn: (this: PromiseContext<T>, ...args: any[]) => void, ...args: any[]): Promise<T>;
+            static createPlan<T>(fn: (this: PromiseContext<T>, ...args: any[]) => void): PromisePlan<T>;
+            static newPlan<T>(p: PromisePlan<T>, args?: any[], ctx?: any): PromisePlan<T>;
+            static resolvePlan<T>(v: any): PromisePlan<T>;
+            static rejectPlan<T>(v: any): PromisePlan<T>;
+            static order<T>(ps: PromisePlans<T>): Promise<void>;
+            static all<T>(ps: PromisePlans<T>): Promise<T[]>;
+            static race<T>(ps: PromisePlans<T>): Promise<any>;
+        }
+    }
+}
+import Promises = JS.core.Promises;
+import PromiseContext = JS.core.PromiseContext;
+import PromisePlan = JS.core.PromisePlan;
+import PromisePlans = JS.core.PromisePlans;
+declare module JS {
+    namespace core {
+        class Loader {
+            static css(url: string, async?: boolean, uncached?: boolean): Promise<string>;
+            static js(url: string, async?: boolean, uncached?: boolean): Promise<string>;
+        }
+    }
+}
+import Loader = JS.core.Loader;
+declare module JS {
+    let version: string;
+    type JSDKConfig = {
+        closeImport?: boolean;
+        cachedImport?: boolean | string;
+        minImport?: boolean;
+        jsdkRoot?: string;
+        libRoot?: string;
+        libs?: {
+            [key: string]: string | Array<string>;
+        };
+    };
+    function config(): JSDKConfig;
+    function config(opts: JSDKConfig): void;
+    function config<T>(key: keyof JSDKConfig): T;
+    function config(key: keyof JSDKConfig, val: any): void;
+    function imports(url: string | string[]): Promise<any>;
+}
 declare module JS {
     namespace lang {
         type PrimitiveType = null | undefined | string | number | boolean | String | Number | Boolean;
@@ -486,6 +392,7 @@ declare module JS {
             static isObject(obj: any): boolean;
             static isJsonObject(obj: any): boolean;
             static isArray(obj: any): boolean;
+            static isArrayLike(obj: any): boolean;
             static isError(obj: any): boolean;
             static isFile(obj: any): boolean;
             static isFormData(obj: any): boolean;
@@ -541,51 +448,6 @@ declare module JS {
     }
 }
 import Check = JS.util.Check;
-interface Array<T> {
-    add(a: T | T[], from?: number): this;
-    remove(index: number): boolean;
-    remove(find: (item: T, i: number, array: Array<T>) => boolean): boolean;
-}
-declare module JS {
-    namespace util {
-        class Arrays {
-            static newArray(a: ArrayLike<any>, from?: number): Array<any>;
-            static toArray<T>(a: T | T[]): T[];
-            static equal<T, K>(a1: Array<T>, a2: Array<K>, eq?: (item1: T, item2: K, index: number) => boolean): boolean;
-            static equalToString(a1: Array<any>, a2: Array<any>): boolean;
-            static same<T1, T2>(a1: Array<T1>, a2: Array<T2>, eq?: (t1: T1, t2: T2) => boolean): boolean;
-            static slice(args: ArrayLike<any>, fromIndex?: number, endIndex?: number): Array<any>;
-        }
-    }
-}
-import Arrays = JS.util.Arrays;
-interface Promise<T> {
-    always(fn: (this: this, v: any, success: boolean) => any | Promise<any>): Promise<T>;
-}
-declare module JS {
-    namespace util {
-        type PromiseContext<T> = {
-            resolve: (value: T) => void;
-            reject: (value: T) => void;
-        };
-        type PromisePlan<T> = (...args: any[]) => Promise<T>;
-        type PromisePlans<T> = Array<PromisePlan<T>>;
-        class Promises {
-            static create<T>(fn: (this: PromiseContext<T>, ...args: any[]) => void, ...args: any[]): Promise<T>;
-            static createPlan<T>(fn: (this: PromiseContext<T>, ...args: any[]) => void): PromisePlan<T>;
-            static newPlan<T>(p: PromisePlan<T>, args?: any[], ctx?: any): PromisePlan<T>;
-            static resolvePlan<T>(v: any): PromisePlan<T>;
-            static rejectPlan<T>(v: any): PromisePlan<T>;
-            static order<T>(plans: PromisePlans<T>): Promise<void>;
-            static all<T>(plans: PromisePlans<T>): Promise<T[]>;
-            static race<T>(plans: PromisePlans<T>): Promise<any>;
-        }
-    }
-}
-import Promises = JS.util.Promises;
-import PromiseContext = JS.util.PromiseContext;
-import PromisePlan = JS.util.PromisePlan;
-import PromisePlans = JS.util.PromisePlans;
 declare module JS {
     namespace util {
         class Jsons {
@@ -610,281 +472,6 @@ declare module JS {
     }
 }
 import Jsons = JS.util.Jsons;
-declare module JS {
-    namespace net {
-        class MIME {
-            static exe: string;
-            static bin: string;
-            static eps: string;
-            static word: string;
-            static xls: string;
-            static ppt: string;
-            static mdb: string;
-            static pdf: string;
-            static odt: string;
-            static swf: string;
-            static apk: string;
-            static jar: string;
-            static dll: string;
-            static class: string;
-            static gz: string;
-            static tgz: string;
-            static bz: string;
-            static zip: string;
-            static rar: string;
-            static tar: string;
-            static z: string;
-            static z7: string;
-            static arj: string;
-            static lzh: string;
-            static ZIPS: string;
-            static text: string;
-            static md: string;
-            static html: string;
-            static xml: string;
-            static css: string;
-            static json: string;
-            static js: string;
-            static rtf: string;
-            static rtfd: string;
-            static sql: string;
-            static sh: string;
-            static csv: string;
-            static svg: string;
-            static jpg: string;
-            static gif: string;
-            static png: string;
-            static webp: string;
-            static bmp: string;
-            static tif: string;
-            static tga: string;
-            static pcx: string;
-            static pic: string;
-            static ico: string;
-            static ai: string;
-            static psd: string;
-            static WEB_IMAGES: string;
-            static IMAGES: string;
-            static wav: string;
-            static ogg: string;
-            static mp4_a: string;
-            static webm_a: string;
-            static wma: string;
-            static mp3: string;
-            static mid: string;
-            static au: string;
-            static aif: string;
-            static H5_AUDIOS: string;
-            static AUDIOS: string;
-            static ogv: string;
-            static mp4_v: string;
-            static webm_v: string;
-            static avi: string;
-            static dv: string;
-            static mpeg: string;
-            static mov: string;
-            static wmv: string;
-            static asf: string;
-            static flv: string;
-            static mkv: string;
-            static gpp3: string;
-            static rm: string;
-            static H5_VIDEOS: string;
-            static VIDEOS: string;
-        }
-    }
-}
-import MIME = JS.net.MIME;
-declare module JS {
-    namespace net {
-        type HttpResponseType = 'xml' | 'html' | 'json' | 'text' | 'arraybuffer' | 'blob';
-        interface HttpRequest {
-            thread?: boolean | ThreadPreload;
-            url: string;
-            async?: boolean;
-            cache?: boolean;
-            requestMime?: string | false;
-            converts?: {
-                html?: <T>(data: HTMLDocument) => T;
-                xml?: <T>(data: XMLDocument) => T;
-                text?: <T>(data: string) => T;
-                json?: <T>(data: JsonObject) => T;
-                arraybuffer?: <T>(data: ArrayBuffer) => T;
-                blob?: <T>(data: Blob) => T;
-            };
-            data?: string | JsonObject | FormData | ArrayBuffer | Blob;
-            responseFilter?(raw: any, type: HttpResponseType): any;
-            responseType?: HttpResponseType;
-            headers?: JsonObject<string | null | undefined>;
-            ifModified?: boolean;
-            method?: 'HEAD' | 'GET' | 'POST' | 'OPTIONS' | 'PUT' | 'DELETE';
-            overrideResponseMime?: string;
-            username?: string;
-            password?: string;
-            timeout?: number;
-            crossCookie?: boolean;
-            complete?: ((res: HttpResponse) => void);
-            success?: ((res: HttpResponse) => void);
-            error?: ((res: HttpResponse) => void);
-            progress?: ((e: ProgressEvent, xhr: XMLHttpRequest) => void);
-        }
-        interface HttpResponse {
-            request: HttpRequest;
-            type: HttpResponseType;
-            raw: any;
-            data: any;
-            status: number;
-            statusText: 'timeout' | 'abort' | 'parseerror' | 'nocontent' | 'notmodified' | string;
-            headers: JsonObject<string>;
-            xhr: XMLHttpRequest;
-        }
-        type HttpResponseConvert<INPUT, OUTPUT> = (data: INPUT, res: HttpResponse) => OUTPUT;
-        class Http {
-            static toRequest(quy: string | HttpRequest): HttpRequest;
-            static send(req: HttpRequest | URLString): Promise<HttpResponse>;
-            private static _inMain;
-            static get(req: HttpRequest | URLString): Promise<HttpResponse>;
-            static post(req: HttpRequest | URLString): Promise<HttpResponse>;
-            static upload(file: {
-                data: Blob;
-                postName?: string;
-                fileName?: string;
-            } | FormData, url: URLString): Promise<HttpResponse>;
-            static _ON: JsonObject<(res: HttpResponse) => void>;
-            static on(ev: 'complete', fn: (res: HttpResponse) => void): any;
-            static on(ev: 'success', fn: (res: HttpResponse) => void): any;
-            static on(ev: 'error', fn: (res: HttpResponse) => void): any;
-            static sendBeacon(e: 'beforeunload' | 'unload', fn: (evt: Event) => void, scope?: any): void;
-            private static _inThread;
-        }
-    }
-}
-import Http = JS.net.Http;
-import HttpRequest = JS.net.HttpRequest;
-import HttpResponse = JS.net.HttpResponse;
-declare module JS {
-    namespace util {
-        type EventHandler<T = any> = (this: T, e: Event, ...args: any[]) => boolean | void;
-        type EventHandler1<T, ARG1> = (this: T, e: Event, ARG1: any) => boolean | void;
-        type EventHandler2<T, ARG1, ARG2> = (this: T, e: Event, ARG1: any, ARG2: any) => boolean | void;
-        type EventHandler3<T, ARG1, ARG2, ARG3> = (this: T, e: Event, ARG1: any, ARG2: any, ARG3: any) => boolean | void;
-        class EventBus {
-            private _ctx;
-            private _isD;
-            private _map;
-            constructor(context?: any);
-            context(): any;
-            context(ctx: any): void;
-            destroy(): void;
-            isDestroyed(): boolean;
-            private _add;
-            private _remove;
-            private _removeByEuid;
-            private _euid;
-            on<H = EventHandler>(types: string, handler: H, once?: boolean): boolean;
-            original(type: string): EventHandler[];
-            original(type: string, euid: number): EventHandler;
-            types(): string[];
-            off(types?: string, handler?: EventHandler): boolean;
-            private _call;
-            fire(e: string | Event, args?: Array<any>, that?: any): void;
-        }
-    }
-}
-import EventHandler = JS.util.EventHandler;
-import EventHandler1 = JS.util.EventHandler1;
-import EventHandler2 = JS.util.EventHandler2;
-import EventHandler3 = JS.util.EventHandler3;
-import EventBus = JS.util.EventBus;
-interface HTMLElement {
-    box(): {
-        x: number;
-        y: number;
-        w: number;
-        h: number;
-    };
-    attr(key: string): string;
-    attr(key: string, val: string): this;
-    on(type: string, listener: (this: HTMLElement, e: Event) => boolean | void, useCapture?: boolean): this;
-    on(type: string, listener: (this: HTMLElement, e: Event) => boolean | void, options?: {
-        capture?: boolean;
-        once?: boolean;
-        passive?: boolean;
-    }): this;
-    off(type?: string, listener?: (this: HTMLElement, e: Event) => boolean | void, capture?: boolean): this;
-    find(selector: string): HTMLElement;
-    findAll(selector: string): NodeListOf<HTMLElement>;
-    computedStyle(pseudo?: string): CSSStyleDeclaration;
-    val(): string | string[];
-    val(v: string | string[]): this;
-    css(name: string): string;
-    css(name: string, val: string | number | JS.util.CssOffsetValue): this;
-    css(props: JsonObject<string>): this;
-    empty(): this;
-    remove(selector?: string): void;
-}
-interface Document {
-    on(type: string, listener: (this: Document, e: Event) => boolean | void, useCapture?: boolean): this;
-    on(type: string, listener: (this: Document, e: Event) => boolean | void, options?: {
-        capture?: boolean;
-        once?: boolean;
-        passive?: boolean;
-    }): this;
-    off(type?: string, listener?: (this: Document, e: Event) => boolean | void): this;
-}
-interface Window {
-    on(type: string, listener: (this: Window, e: Event) => boolean | void, useCapture?: boolean): this;
-    on(type: string, listener: (this: Window, e: Event) => boolean | void, options?: {
-        capture?: boolean;
-        once?: boolean;
-        passive?: boolean;
-    }): this;
-    off(type?: string, listener?: (this: Window, e: Event) => boolean | void): this;
-}
-declare module JS {
-    namespace util {
-        type CssOffsetValue = string;
-        class Dom {
-            static $1(selector: string | HTMLElement): HTMLElement;
-            static $L(selector: string): NodeListOf<HTMLElement>;
-            static rename(node: Element, newTagName: string): void;
-            static applyStyle(code: string, id?: string): void;
-            static applyHtml(html: string | HTMLDocument, appendTo?: string | HTMLElement, ignore?: {
-                script?: boolean;
-                css?: boolean;
-            } | boolean): Promise<string>;
-            static loadCSS(url: string, async?: boolean, uncached?: boolean): Promise<string>;
-            static loadJS(url: string, async?: boolean, uncached?: boolean): Promise<string>;
-            static loadHTML(url: string, async?: boolean, opts?: {
-                appendTo?: string | HTMLElement;
-                ignore?: {
-                    script?: boolean;
-                    css?: boolean;
-                } | boolean;
-                prehandle?: (doc: HTMLDocument) => HTMLDocument;
-            }): Promise<string>;
-        }
-    }
-}
-import Dom = JS.util.Dom;
-declare const $1: typeof Dom.$1;
-declare const $L: typeof Dom.$L;
-declare module JS {
-    let version: string;
-    type JSDKConfig = {
-        closeImport?: boolean;
-        cachedImport?: boolean | string;
-        minImport?: boolean;
-        jsdkRoot?: string;
-        libRoot?: string;
-        libs?: JsonObject<string | Array<string>>;
-    };
-    function config(): JSDKConfig;
-    function config(opts: JSDKConfig): void;
-    function config<T>(key: keyof JSDKConfig): T;
-    function config(key: keyof JSDKConfig, val: any): void;
-    function imports(url: string | string[]): Promise<any>;
-}
 declare module JS {
     namespace net {
         type URLString = string;
@@ -1107,6 +694,24 @@ import StateError = JS.lang.StateError;
 import ParseError = JS.lang.ParseError;
 import NetworkError = JS.lang.NetworkError;
 import TimeoutError = JS.lang.TimeoutError;
+interface Array<T> {
+    add(a: T | T[], from?: number): this;
+    remove(index: number): boolean;
+    remove(find: (item: T, i: number, array: Array<T>) => boolean): boolean;
+}
+declare module JS {
+    namespace util {
+        class Arrays {
+            static newArray(a: ArrayLike<any>, from?: number): Array<any>;
+            static toArray<T>(a: T | T[]): T[];
+            static equal<T, K>(a1: Array<T>, a2: Array<K>, eq?: (item1: T, item2: K, index: number) => boolean): boolean;
+            static equalToString(a1: Array<any>, a2: Array<any>): boolean;
+            static same<T1, T2>(a1: Array<T1>, a2: Array<T2>, eq?: (t1: T1, t2: T2) => boolean): boolean;
+            static slice(args: ArrayLike<any>, fromIndex?: number, endIndex?: number): Array<any>;
+        }
+    }
+}
+import Arrays = JS.util.Arrays;
 declare module JS {
     namespace lang {
         class AssertError extends JSError {
@@ -1315,7 +920,7 @@ declare module JS {
             defaultConfig?: IWidgetConfig;
             widgetConfigs?: JsonObject<ViewWidgetConfig | IWidgetConfig>;
         }
-        abstract class View implements IComponent {
+        abstract class View implements ICompo {
             protected _widgets: JsonObject<IWidget>;
             protected _model: Modelable<any>;
             protected _eventBus: EventBus;
@@ -1352,7 +957,7 @@ import View = JS.view.View;
 declare module JS {
     namespace app {
         type PageEvents = 'fullscreening' | 'fullscreened' | 'normalscreening' | 'normalscreened' | 'leaving' | 'close';
-        abstract class Page implements IComponent {
+        abstract class Page implements ICompo {
             initialize(): void;
             destroy(): void;
             abstract enter(): any;
@@ -1490,7 +1095,7 @@ declare module JS {
 import JsonProxy = JS.model.JsonProxy;
 declare module JS {
     namespace app {
-        abstract class Service implements IComponent {
+        abstract class Service implements ICompo {
             initialize(): void;
             destroy(): void;
             static DEFAULT_PROXY: Klass<AjaxProxy>;
@@ -1543,9 +1148,9 @@ declare module JS {
             }>;
         };
         interface D2ElementAttributes {
-            x?: number | JS.util.CssOffsetValue;
-            y?: number | JS.util.CssOffsetValue;
-            opacity?: number | JS.util.CssOffsetValue;
+            x?: number | CssValueString;
+            y?: number | CssValueString;
+            opacity?: number | CssValueString;
             zIndex?: number;
             style?: string;
             draggable?: boolean;
@@ -1632,7 +1237,7 @@ declare module JS {
             drawText(t: D2Text, style?: TextDrawStyle, a?: D2NewElementAttributes): void;
             changeText(id: string, text: string): void;
             drawImage(img: HTMLImageElement | {
-                src: HTMLImageElement;
+                src: string | HTMLImageElement;
                 x: number;
                 y: number;
                 w: number;
@@ -2072,28 +1677,6 @@ import ListModelEvents = JS.model.ListModelEvents;
 import ListModelListeners = JS.model.ListModelListeners;
 declare module JS {
     namespace util {
-        enum LengthUnit {
-            PCT = "%",
-            PX = "px",
-            IN = "in",
-            CM = "cm",
-            MM = "mm",
-            EM = "em",
-            EX = "ex",
-            PT = "pt",
-            PC = "pc",
-            REM = "rem"
-        }
-        class Lengths {
-            static toNumber(len: string | number, unit?: LengthUnit): number;
-            static toCSS(len: string | number, defaultVal: string, unit?: LengthUnit): string;
-        }
-    }
-}
-import Lengths = JS.util.Lengths;
-import LengthUnit = JS.util.LengthUnit;
-declare module JS {
-    namespace util {
         type HEX = string;
         type RGBA = string;
         type TRGBA = {
@@ -2109,15 +1692,28 @@ declare module JS {
             l: number;
             a?: number;
         };
-        type Color = HEX | RGBA | HSLA;
-        class Colors {
-            static hex2rgba(hex: HEX): TRGBA;
-            static rgba2hex(r: number, g: number, b: number, a?: number): HEX;
-            static rgba2css(c: TRGBA): RGBA;
-            static hsla2string(c: THSLA): HSLA;
-            static hsl2rgb(hsl: THSLA): TRGBA;
+        type CssColor = HEX | RGBA | HSLA;
+        type CssUnit = '%' | 'px' | 'pt' | 'em' | 'rem' | 'in' | 'cm' | 'mm' | 'ex' | 'ch' | 'pc' | 'vw' | 'vh' | 'vmin' | 'vmax' | 'deg' | 'rad' | 'turn';
+        type CssValueString = string;
+        class CssTool {
+            static isHEX(a: string): boolean;
+            static isRGB(a: string): boolean;
+            static isHSL(a: string): boolean;
+            static isColor(a: string): boolean;
+            static rgb2hex(r: number, g: number, b: number, a?: number): HEX;
+            static hex2rgb(hex: HEX): TRGBA;
+            static rgbString(c: TRGBA): RGBA;
+            static toTRGB(s: RGBA): TRGBA;
+            static convertToRGB(val: string): TRGBA;
+            static hslString(c: THSLA): HSLA;
+            static toTHSL: (h: HSLA) => THSLA;
+            static hsl2rgb(hsl: HSLA): TRGBA;
             static rgb2hsl(rgb: TRGBA): THSLA;
-            static css2rgba(css: string): TRGBA;
+            static hyphenCase(name: string): string;
+            static numberOf(val: string | number): number;
+            static unitOf(val: string | number): string;
+            static calcValue(v: CssValueString, baseVal: string | number): string;
+            static normValue(v: string | number, defaultVal: string, defaultUnit?: string): string;
         }
     }
 }
@@ -2126,8 +1722,10 @@ import RGBA = JS.util.RGBA;
 import TRGBA = JS.util.TRGBA;
 import HSLA = JS.util.HSLA;
 import THSLA = JS.util.THSLA;
-import Color = JS.util.Color;
-import Colors = JS.util.Colors;
+import CssUnit = JS.util.CssUnit;
+import CssColor = JS.util.CssColor;
+import CssValueString = JS.util.CssValueString;
+import CssTool = JS.util.CssTool;
 declare module JS {
     namespace ui {
         type LR = 'left' | 'right';
@@ -4230,11 +3828,11 @@ import Class = JS.sugar.Class;
 import klass = JS.sugar.klass;
 declare module JS {
     namespace ioc {
-        interface IComponent {
+        interface ICompo {
             initialize(): any;
             destroy(): any;
         }
-        class Components {
+        class Compos {
             private static _cmps;
             static get<T>(klassName: string): T;
             static get<T>(klass: Klass<T>): T;
@@ -4247,16 +3845,50 @@ declare module JS {
         }
     }
 }
-import IComponent = JS.ioc.IComponent;
-import Components = JS.ioc.Components;
+import ICompo = JS.ioc.ICompo;
+import Compos = JS.ioc.Compos;
 declare module JS {
     namespace ioc {
-        function component(className: string): any;
+        function compo(className: string): any;
         function inject(): any;
     }
 }
-import component = JS.ioc.component;
+import compo = JS.ioc.compo;
 import inject = JS.ioc.inject;
+declare module JS {
+    namespace util {
+        type EventHandler<T = any> = (this: T, e: Event, ...args: any[]) => boolean | void;
+        type EventHandler1<T, ARG1> = (this: T, e: Event, ARG1: any) => boolean | void;
+        type EventHandler2<T, ARG1, ARG2> = (this: T, e: Event, ARG1: any, ARG2: any) => boolean | void;
+        type EventHandler3<T, ARG1, ARG2, ARG3> = (this: T, e: Event, ARG1: any, ARG2: any, ARG3: any) => boolean | void;
+        class EventBus {
+            private _ctx;
+            private _isD;
+            private _map;
+            constructor(context?: any);
+            context(): any;
+            context(ctx: any): void;
+            destroy(): void;
+            isDestroyed(): boolean;
+            private _add;
+            private _remove;
+            private _removeByEuid;
+            private _euid;
+            on<H = EventHandler>(types: string, handler: H, once?: boolean): boolean;
+            original(type: string): EventHandler[];
+            original(type: string, euid: number): EventHandler;
+            types(): string[];
+            off(types?: string, handler?: EventHandler): boolean;
+            private _call;
+            fire(e: string | Event, args?: Array<any>, that?: any): void;
+        }
+    }
+}
+import EventHandler = JS.util.EventHandler;
+import EventHandler1 = JS.util.EventHandler1;
+import EventHandler2 = JS.util.EventHandler2;
+import EventHandler3 = JS.util.EventHandler3;
+import EventBus = JS.util.EventBus;
 declare module JS {
     namespace lang {
         type ThreadRunner = {
@@ -4420,7 +4052,6 @@ declare module JS {
             static deg2rad(deg: number): number;
             static positive(rad: number): number;
             static equal(rad1: number, rad2: number): boolean;
-            static equalAngle(rad1: number, rad2: number): boolean;
             static reverse(rad: number): number;
         }
     }
@@ -4460,7 +4091,8 @@ declare module JS {
             dot(v: Vector2): number;
             normalize(): this;
             radian(): number;
-            angle(v: Vector2): number;
+            _angle(v: Vector2): number;
+            angle(v?: Vector2): number;
             isZero(): boolean;
             verticalTo(v: Vector2): boolean;
             parallelTo(v: Vector2): boolean;
@@ -4980,6 +4612,158 @@ declare module JS {
 import VideoPlayerInit = JS.media.VideoPlayerInit;
 import VideoPlayer = JS.media.VideoPlayer;
 declare module JS {
+    namespace net {
+        class MIME {
+            static exe: string;
+            static bin: string;
+            static eps: string;
+            static word: string;
+            static xls: string;
+            static ppt: string;
+            static mdb: string;
+            static pdf: string;
+            static odt: string;
+            static swf: string;
+            static apk: string;
+            static jar: string;
+            static dll: string;
+            static class: string;
+            static gz: string;
+            static tgz: string;
+            static bz: string;
+            static zip: string;
+            static rar: string;
+            static tar: string;
+            static z: string;
+            static z7: string;
+            static arj: string;
+            static lzh: string;
+            static ZIPS: string;
+            static text: string;
+            static md: string;
+            static html: string;
+            static xml: string;
+            static css: string;
+            static json: string;
+            static js: string;
+            static rtf: string;
+            static rtfd: string;
+            static sql: string;
+            static sh: string;
+            static csv: string;
+            static svg: string;
+            static jpg: string;
+            static gif: string;
+            static png: string;
+            static webp: string;
+            static bmp: string;
+            static tif: string;
+            static tga: string;
+            static pcx: string;
+            static pic: string;
+            static ico: string;
+            static ai: string;
+            static psd: string;
+            static WEB_IMAGES: string;
+            static IMAGES: string;
+            static wav: string;
+            static ogg: string;
+            static mp4_a: string;
+            static webm_a: string;
+            static wma: string;
+            static mp3: string;
+            static mid: string;
+            static au: string;
+            static aif: string;
+            static H5_AUDIOS: string;
+            static AUDIOS: string;
+            static ogv: string;
+            static mp4_v: string;
+            static webm_v: string;
+            static avi: string;
+            static dv: string;
+            static mpeg: string;
+            static mov: string;
+            static wmv: string;
+            static asf: string;
+            static flv: string;
+            static mkv: string;
+            static gpp3: string;
+            static rm: string;
+            static H5_VIDEOS: string;
+            static VIDEOS: string;
+        }
+    }
+}
+import MIME = JS.net.MIME;
+declare module JS {
+    namespace net {
+        type HttpResponseType = 'xml' | 'html' | 'json' | 'text' | 'arraybuffer' | 'blob';
+        interface HttpRequest {
+            thread?: boolean | ThreadPreload;
+            url: string;
+            async?: boolean;
+            cache?: boolean;
+            requestMime?: string | false;
+            converts?: {
+                html?: <T>(data: HTMLDocument) => T;
+                xml?: <T>(data: XMLDocument) => T;
+                text?: <T>(data: string) => T;
+                json?: <T>(data: JsonObject) => T;
+                arraybuffer?: <T>(data: ArrayBuffer) => T;
+                blob?: <T>(data: Blob) => T;
+            };
+            data?: string | JsonObject | FormData | ArrayBuffer | Blob;
+            responseFilter?(raw: any, type: HttpResponseType): any;
+            responseType?: HttpResponseType;
+            headers?: JsonObject<string | null | undefined>;
+            ifModified?: boolean;
+            method?: 'HEAD' | 'GET' | 'POST' | 'OPTIONS' | 'PUT' | 'DELETE';
+            overrideResponseMime?: string;
+            username?: string;
+            password?: string;
+            timeout?: number;
+            crossCookie?: boolean;
+            complete?: ((res: HttpResponse) => void);
+            success?: ((res: HttpResponse) => void);
+            error?: ((res: HttpResponse) => void);
+            progress?: ((e: ProgressEvent, xhr: XMLHttpRequest) => void);
+        }
+        interface HttpResponse {
+            request: HttpRequest;
+            type: HttpResponseType;
+            raw: any;
+            data: any;
+            status: number;
+            statusText: 'timeout' | 'abort' | 'parseerror' | 'nocontent' | 'notmodified' | string;
+            headers: JsonObject<string>;
+            xhr: XMLHttpRequest;
+        }
+        type HttpResponseConvert<INPUT, OUTPUT> = (data: INPUT, res: HttpResponse) => OUTPUT;
+        class Http {
+            static toRequest(quy: string | HttpRequest): HttpRequest;
+            static send(req: HttpRequest | URLString): Promise<HttpResponse>;
+            private static _inMain;
+            static get(req: HttpRequest | URLString): Promise<HttpResponse>;
+            static post(req: HttpRequest | URLString): Promise<HttpResponse>;
+            static upload(file: {
+                data: Blob;
+                postName?: string;
+                fileName?: string;
+            } | FormData, url: URLString): Promise<HttpResponse>;
+            static _ON: JsonObject<(res: HttpResponse) => void>;
+            static on(ev: 'complete', fn: (res: HttpResponse) => void): any;
+            static on(ev: 'success', fn: (res: HttpResponse) => void): any;
+            static on(ev: 'error', fn: (res: HttpResponse) => void): any;
+            static sendBeacon(e: 'beforeunload' | 'unload', fn: (evt: Event) => void, scope?: any): void;
+            private static _inThread;
+        }
+    }
+}
+import Http = JS.net.Http;
+import HttpRequest = JS.net.HttpRequest;
+import HttpResponse = JS.net.HttpResponse;
+declare module JS {
     namespace store {
         type StorePrimitiveType = PrimitiveType | Date | JsonObject<PrimitiveType> | Array<PrimitiveType>;
         export type StoreDataType = StorePrimitiveType | JsonObject<StorePrimitiveType> | Array<StorePrimitiveType>;
@@ -5053,6 +4837,7 @@ declare module JS {
         interface RemoteImage {
             id: string;
             url: string;
+            uncached?: boolean;
         }
         class ImageCache {
             private _map;
@@ -5310,6 +5095,88 @@ declare module JS {
     }
 }
 import TestRunner = JS.unit.TestRunner;
+interface HTMLElement {
+    box(): {
+        x: number;
+        y: number;
+        w: number;
+        h: number;
+    };
+    attr(key: string): string;
+    attr(key: string, val: string): this;
+    on(type: string, listener: (this: HTMLElement, e: Event) => boolean | void, useCapture?: boolean): this;
+    on(type: string, listener: (this: HTMLElement, e: Event) => boolean | void, options?: {
+        capture?: boolean;
+        once?: boolean;
+        passive?: boolean;
+    }): this;
+    off(type?: string, listener?: (this: HTMLElement, e: Event) => boolean | void, capture?: boolean): this;
+    find(selector: string): HTMLElement;
+    findAll(selector: string): NodeListOf<HTMLElement>;
+    computedStyle(pseudo?: string): CSSStyleDeclaration;
+    val(): string | string[];
+    val(v: string | string[]): this;
+    css(name: string): string;
+    css(name: string, val: CssValueString | number): this;
+    css(props: JsonObject<string>): this;
+    empty(): this;
+    remove(selector?: string): void;
+}
+interface Document {
+    on(type: string, listener: (this: Document, e: Event) => boolean | void, useCapture?: boolean): this;
+    on(type: string, listener: (this: Document, e: Event) => boolean | void, options?: {
+        capture?: boolean;
+        once?: boolean;
+        passive?: boolean;
+    }): this;
+    off(type?: string, listener?: (this: Document, e: Event) => boolean | void): this;
+}
+interface Window {
+    on(type: string, listener: (this: Window, e: Event) => boolean | void, useCapture?: boolean): this;
+    on(type: string, listener: (this: Window, e: Event) => boolean | void, options?: {
+        capture?: boolean;
+        once?: boolean;
+        passive?: boolean;
+    }): this;
+    off(type?: string, listener?: (this: Window, e: Event) => boolean | void): this;
+}
+declare module JS {
+    namespace util {
+        class Dom {
+            static $1(selector: string | HTMLElement): HTMLElement;
+            static $L(selector: string): NodeListOf<HTMLElement>;
+            static rename(node: Element, newTagName: string): void;
+            static applyStyle(code: string, id?: string): void;
+            static applyHtml(html: string | HTMLDocument, appendTo?: string | HTMLElement, ignore?: {
+                script?: boolean;
+                css?: boolean;
+            } | boolean): Promise<string>;
+            static loadHTML(url: string, async?: boolean, opts?: {
+                appendTo?: string | HTMLElement;
+                ignore?: {
+                    script?: boolean;
+                    css?: boolean;
+                } | boolean;
+                prehandle?: (doc: HTMLDocument) => HTMLDocument;
+            }): Promise<string>;
+        }
+    }
+}
+import Dom = JS.util.Dom;
+declare const $1: typeof Dom.$1;
+declare const $L: typeof Dom.$L;
+declare module JS {
+    namespace util {
+        class Objects {
+            static readwrite<T = object>(obj: T, props: string | string[], listeners?: {
+                changing?: (this: T, propName: string, newVal: any, oldVal: any) => void | any;
+                changed?: (this: T, propName: string, newVal: any, oldVal: any) => void;
+            }): void;
+            static readonly(obj: object, props: string | string[]): void;
+        }
+    }
+}
+import Objects = JS.util.Objects;
 declare module JS {
     namespace util {
         class Random {
@@ -5334,7 +5201,7 @@ declare module JS {
             interval?: number;
             intervalMode?: 'OF' | 'BF';
         };
-        type TimerEvents = 'starting' | 'finished' | 'looping' | 'looped';
+        type TimerEvents = 'starting' | 'finished' | 'looping' | 'looped' | 'pausing' | 'paused';
         enum TimerState {
             STOPPED = 0,
             RUNNING = 1,
@@ -5343,7 +5210,7 @@ declare module JS {
         class Timer {
             protected _bus: EventBus;
             protected _cfg: TimerInit;
-            protected _tick: TimerTask;
+            protected _task: TimerTask;
             protected _timer: any;
             protected _sta: TimerState;
             protected _ts0: any;
@@ -5351,21 +5218,24 @@ declare module JS {
             protected _et: number;
             protected _pt: number;
             protected _count: number;
-            constructor(tick: TimerTask, cfg?: TimerInit);
-            on(type: string, fn: EventHandler<this>): this;
-            off(type: string, fn?: EventHandler<this>): this;
+            constructor(task: TimerTask, cfg?: TimerInit);
+            on(type: TimerEvents, fn: EventHandler<this>): this;
+            off(type: TimerEvents, fn?: EventHandler<this>): this;
             count(): number;
-            config(): TimerInit;
-            config(cfg?: TimerInit): this;
+            private _config;
             pause(): this;
             protected _cancelTimer(): void;
             protected _reset(): void;
             stop(): this;
             protected _finish(): void;
             getState(): TimerState;
+            isRunning(): boolean;
+            protected _state(s: TimerState): void;
             fps(): number;
             maxFPS(): number;
-            protected _cycle(skip?: boolean): void;
+            looped(): number;
+            private _loopTask;
+            protected _start(begin: boolean): void;
             start(): void;
         }
     }

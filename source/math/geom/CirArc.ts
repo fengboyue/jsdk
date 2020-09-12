@@ -166,31 +166,32 @@ module JS {
                 bounds(): Rect {
                     if (this.isEmpty()) return null;
 
-                    let ps = this.vertexes(),
-                        pc = ps[0], a = [ps[1], ps[2]], p: ArrayPoint2,
-                        va = V.toVector(pc, ps[1]),
-                        vb = V.toVector(pc, ps[2]),
-                        realAngle = R.deg2rad(this.angle()),
-                        minAngle = va.angle(vb),
-                        cache = {
-                            va: va,
-                            vb: vb,
-                            realRad: realAngle,
-                            minRad: minAngle
-                        }
-                    if (this.type == ArcType.PIE) a.push(pc);
+                    let ps = this.vertexes();
+                    return new Triangle().set(ps[0],ps[1],ps[2]).bounds()
+                    //     pc = ps[0], a = [ps[1], ps[2]], p: ArrayPoint2,
+                    //     va = V.toVector(pc, ps[1]),
+                    //     vb = V.toVector(pc, ps[2]),
+                    //     realAngle = R.deg2rad(this.angle()),
+                    //     minAngle = va.angle(vb),
+                    //     cache = {
+                    //         va: va,
+                    //         vb: vb,
+                    //         realRad: realAngle,
+                    //         minRad: minAngle
+                    //     }
+                    // if (this.type == ArcType.PIE) a.push(pc);
 
-                    //判断圆的矩形的每条边的最短向量夹角是否在弧线角度内：是则加入边界点数据
-                    p = this._crossByRay(R.EAST);
-                    if (this._inAngle(p, ps, cache)) a.push(p)
-                    p = this._crossByRay(R.SOUTH);
-                    if (this._inAngle(p, ps, cache)) a.push(p)
-                    p = this._crossByRay(R.WEST);
-                    if (this._inAngle(p, ps, cache)) a.push(p)
-                    p = this._crossByRay(R.NORTH);
-                    if (this._inAngle(p, ps, cache)) a.push(p)
+                    // //判断圆的矩形的每条边的最短向量夹角是否在弧线角度内：是则加入边界点数据
+                    // p = this._crossByRay(R.EAST);
+                    // if (this._inAngle(p, ps, cache)) a.push(p)
+                    // p = this._crossByRay(R.SOUTH);
+                    // if (this._inAngle(p, ps, cache)) a.push(p)
+                    // p = this._crossByRay(R.WEST);
+                    // if (this._inAngle(p, ps, cache)) a.push(p)
+                    // p = this._crossByRay(R.NORTH);
+                    // if (this._inAngle(p, ps, cache)) a.push(p)
 
-                    return this._bounds(a)
+                    // return this._bounds(a)
                 }
 
                 arcLength() {
@@ -230,7 +231,7 @@ module JS {
                  * Returns the angle[0,360) in degree.
                  */
                 angle() {
-                    let dif = Radians.positive(this.eAngle) - Radians.positive(this.sAngle),
+                    let dif = R.positive(this.eAngle - this.sAngle),
                         d = R.rad2deg(dif) % 360;
                     return this.dir == 1 ? d : 360 - d
                 }

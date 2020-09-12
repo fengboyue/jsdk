@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+    
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">TWEEN ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                    <div class="line">
+                        <div class="square shadow"></div>
+                        <div class="square el"></div>
+                    </div>
+                    <div class="line">
+                        <div class="square shadow"></div>
+                        <div class="square el"></div>
+                    </div>
+                    <div class="line">
+                        <div class="square shadow"></div>
+                        <div class="square el"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Value Types</h2>
+            </header>
+            <div class="info-output">
+                <p>The supported types of a key parameter.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>type</td>
+                            <td>format</td>
+                            <td>example</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>number</td>
+                            <td></td>
+                            <td>translateX: 250</td>
+                        </tr>
+                        <tr>
+                            <td>numeric string</td>
+                            <td></td>
+                            <td>translateX: '250px'</td>
+                        </tr>
+                        <tr>
+                            <td>relative string</td>
+                            <td></td>
+                            <td>left: '+=25'</td>
+                        </tr>
+                        <tr>
+                            <td>hex|rgb|hsl</td>
+                            <td></td>
+                            <td>backgroundColor: '#D2691E'</td>
+                        </tr>
+                        <tr>
+                            <td>array</td>
+                            <td>[from, to]</td>
+                            <td>left: [0, '+=25px']</td>
+                        </tr>
+                        <tr>
+                            <td>numeric function</td>
+                            <td><pre style="width:280px">[ARGUMENTS LIST]
+//The curently animated element                                
+target: HTMLElement|object 
+
+//The index of the current element
+index: number 
+
+//The total number of elements
+targetsLength: number </pre></td>
+                            <td>scale: function(el, i, l) {
+return (l - i) + 1.25;
+}</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">new TweenAnim({
+    keys: {
+        left: '+=250',
+        backgroundColor: ['#FFF', '#D2691E'],
+        scale: function (el, i, l) {
+            return (l - i) / l * 1.25
+        },
+        translateY: function (el, i) {
+            return 50 * i
+        },
+        rotate: function(el, i) { return 360 * ++i }
+    },
+    direction: 'alternate',
+    loop: true,
+    duration: 1500,
+    easing: 'EXPO_IN_OUT'
+}).targets('.el');</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="tween_value_types.js?_=1"></script>
+</body>
+
+</html>

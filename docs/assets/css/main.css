@@ -32,7 +32,8 @@ td::before {
     content: none !important;
 }
 
-.sidebar-nav>ul>li:nth-child(3)>a::after {
+.sidebar-nav>ul>li:nth-child(3)>a::after,
+.sidebar-nav>ul>li:nth-child(10)>a::after {
     color: #ff00ff;
     content: "  Update";
     font-style: italic;
@@ -40,10 +41,10 @@ td::before {
     font-weight: 500;
 } 
 
-.sidebar-nav>ul>li:nth-child(12)>a::after {
+/* .sidebar-nav>ul>li:nth-child(12)>a::after {
     color: red;
     content: "  New";
     font-style: italic;
     font-size: smaller;
     font-weight: 500;
-} 
+}  */

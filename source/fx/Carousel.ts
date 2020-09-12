@@ -143,7 +143,7 @@ module JS {
                 }
                 return `
                 <div class="carousel-item ${is ? 'active' : ''}" jsfx-index="${i}">
-                    <img class="d-block w-100" src="${item.src}" style="height:${Lengths.toCSS(this._config.height, '100%')};" alt="${item.imgAlt || ''}">
+                    <img class="d-block w-100" src="${item.src}" style="height:${CssTool.normValue(this._config.height, '100%')};" alt="${item.imgAlt || ''}">
                     ${capHtml}
                 </div>
                 `
@@ -179,7 +179,7 @@ module JS {
                 <ol class="carousel-indicators">
                     ${indsHtml}
                 </ol>
-                <div class="carousel-inner" style="height:${Lengths.toCSS(cfg.height,'100%')}">
+                <div class="carousel-inner" style="height:${CssTool.normValue(cfg.height,'100%')}">
                     ${itemsHtml}
                 </div>
                 <a class="carousel-control-prev" href="#${this.id}" role="button" data-slide="prev">
@@ -191,7 +191,7 @@ module JS {
                 `
                 this.widgetEl.attr('data-ride', 'carousel');
                 this.widgetEl.addClass('carousel slide bg-light');
-                this.widgetEl.css({ 'width': Lengths.toCSS(cfg.width,'100%') })
+                this.widgetEl.css({ 'width': CssTool.normValue(cfg.width,'100%') })
                 this.widgetEl.html(html);
 
                 this.widgetEl.on('slide.bs.carousel', (e) => {

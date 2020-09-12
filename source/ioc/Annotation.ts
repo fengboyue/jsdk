@@ -6,21 +6,21 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
-/// <reference path="Components.ts"/>
+/// <reference path="Compos.ts"/>
 module JS {
 
     export namespace ioc {
 
             /**
-             * The @component annotation
+             * The @compo annotation
              * @param className the component full name
              */
-            export function component(className: string): any {
+            export function compo(className: string): any {
                 return Annotations.define({
-                    name: 'component', handler: (anno: string, values: Array<any>, obj: Klass<any> | object) => {
+                    name: 'compo', handler: (anno: string, values: Array<any>, obj: Klass<any> | object) => {
                         let className = values[0];
                         Class.reflect(<Klass<any>>obj, className);
-                        Components.add(Class.forName(className).name);
+                        Compos.add(Class.forName(className).name);
                     }
                 }, arguments);
             }
@@ -39,5 +39,5 @@ module JS {
 }
 
 //预定义短类名
-import component = JS.ioc.component;
+import compo = JS.ioc.compo;
 import inject = JS.ioc.inject;

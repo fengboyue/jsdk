@@ -1,10 +1,5 @@
 //# sourceURL=../dist/js2d.js
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 var JS;
 (function (JS) {
     let d2;
@@ -354,15 +349,15 @@ var JS;
                     el.textContent = text;
             }
             drawImage(img, a) {
-                let src, sx, sy, sw, sh, dx, dy, dw, dh;
+                let pic, url, sx, sy, sw, sh, dx, dy, dw, dh;
                 if (img instanceof HTMLImageElement) {
-                    src = img;
+                    pic = img;
                     sx = sy = 0;
-                    sw = dw = src.width;
-                    sh = dh = src.height;
+                    sw = dw = pic.width;
+                    sh = dh = pic.height;
                 }
                 else {
-                    src = img.src;
+                    url = img.src instanceof HTMLImageElement ? img.src.src : img.src;
                     sx = img.x;
                     sy = img.y;
                     sw = dw = img.w;
@@ -371,13 +366,13 @@ var JS;
                 dx = a && a.x || 0;
                 dy = a && a.y || 0;
                 if (this._cfg.mode == 'canvas') {
-                    this._ctx.drawImage(src, sx, sy, sw, sh, dx, dy, dw, dh);
+                    this._ctx.drawImage(pic, sx, sy, sw, sh, dx, dy, dw, dh);
                 }
                 else {
                     this._div.append(Strings.nodeHTML('div', {
                         id: (a && a.id) || '',
                         draggable: a && a.draggable ? "true" : "false",
-                        style: `position:absolute;overflow:hidden;left:${dx}px;top:${dy}px;width:${sw}px;height:${sh}px;${a && a.opacity != void 0 ? `opacity:${a.opacity};` : ''}background:url('${src.src}') -${sx}px -${sy}px no-repeat;${a && a.zIndex != void 0 ? `z-index:${a.zIndex};` : ''}${a && a.style || ''}`
+                        style: `position:absolute;overflow:hidden;left:${dx}px;top:${dy}px;width:${sw}px;height:${sh}px;${a && a.opacity != void 0 ? `opacity:${a.opacity};` : ''}background:url('${url}') -${sx}px -${sy}px no-repeat;${a && a.zIndex != void 0 ? `z-index:${a.zIndex};` : ''}${a && a.style || ''}`
                     }));
                     if (a)
                         this._setAttrs(a);

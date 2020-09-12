@@ -173,18 +173,22 @@ module JS {
             radian(): number {
                 return Point2.radian(this.x, this.y)
             }
+
+            _angle(v: Vector2){
+                let vv = Vector2.UnitX,
+                vDot = v.dot(vv) / (v.length() * vv.length());
+                if (vDot < -1.0) vDot = -1.0;
+                if (vDot > 1.0) vDot = 1.0;
+                return Math.acos(vDot);
+            }
             /** 
              * Returns the angle in radians between this vector and an vector or X-axis.
              * The return value is constrained to the range [0,PI]. 
              * @throws {RangeError} when v is zero vector
              */
-            angle(v: Vector2): number {
-                if (v && v.isZero()) throw new RangeError('Use zero vector')
-                let vv = v || Vector2.UnitX,
-                    vDot = this.dot(vv) / (this.length() * vv.length());
-                if (vDot < -1.0) vDot = -1.0;
-                if (vDot > 1.0) vDot = 1.0;
-                return Math.acos(vDot);
+            angle(v?: Vector2): number {
+                if (v && v.isZero() && this.isZero()) throw new RangeError('Can\'t with zero vector')
+                return Math.abs(this._angle(this)-this._angle(v));
             }
 
             isZero() {
@@ -196,7 +200,7 @@ module JS {
              * 是否垂直于向量v。
              */
             verticalTo(v: Vector2): boolean {
-                return this.angle(v) == Math.PI / 2
+                return Radians.equal(this.angle(v), Math.PI / 2)
             }
 
             /**
@@ -205,7 +209,7 @@ module JS {
              */
             parallelTo(v: Vector2): boolean {
                 let a = this.angle(v);
-                return a == 0 || a == Math.PI
+                return Radians.equal(a, 0) || Radians.equal(a, Math.PI)
             }
 
             /**

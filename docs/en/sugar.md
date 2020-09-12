@@ -30,7 +30,7 @@ Annotation|In Module|Scope
 @after|jsugar|method
 @around|jsugar|method
 @throws|jsugar|method
-@component|jsmvc|class
+@compo|jsmvc|class
 @inject|jsmvc|field
 @widget|jsfx|class
 
@@ -93,7 +93,7 @@ Class.reflect(Convid19, 'WHO.virus.Convid19');
 
 <b>Tip:</b> The following annotations can mark a class to support reflection:
 - @klass
-- @component
+- @compo
 - @widget
 
 ### Use of Reflections

@@ -223,8 +223,8 @@ module JS {
                 if (isVtl) cls += ' flex-column';
 
                 let hHtml = `<ul id="${this.id}_headers" role="tablist" class="nav${cls} ${cfg.headCls || ''}" style="${cfg.headStyle || ''}">${heads}</ul>`,
-                    cHtml = `<div class="${isVtl ? 'vertical' : ''} tab-content" style="height:${Lengths.toCSS(cfg.height, '100%')};">${contents}</div>`,
-                    leftWidth = Lengths.toCSS(cfg.headLeftWidth, '100%');
+                    cHtml = `<div class="${isVtl ? 'vertical' : ''} tab-content" style="height:${CssTool.normValue(cfg.height, '100%')};">${contents}</div>`,
+                    leftWidth = CssTool.normValue(cfg.headLeftWidth, '100%');
 
                 return isVtl ?
                     `

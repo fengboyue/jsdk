@@ -8,7 +8,7 @@ JSVP是一个由JSDK推荐的应用层开发架构，它包括三层：页面层
 >
 > Page层：是页面内所有Views的控制器，也是页面级或应用级的事件处理器。每个页面应对应一个Page类。
 
-* *所有Service类、View类、Page类都必须使用@component注解*
+* *所有Service类、View类、Page类都必须使用@compo注解*
 * *Service类中仅可使用@inject注解自动注入其他Service类，不应该用到任何View类或Page类*
 * *View类中仅可使用@inject注解自动注入其他View类或Service类，尽可能少用到Page类*
 * *Page类中仅可使用@inject注解自动注入View类或Service类，不应该用到其他Page类*

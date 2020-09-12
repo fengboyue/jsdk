@@ -102,19 +102,20 @@ In real development, you don't need to load the entire <code>jsdk.js</code>, but
 ### JSDK Modules List
 Module Name|Remarks|Includes|Self Depends|3rd Depends|Min Sizes
 ---|---|---|---|---|---
-jscore|core module|JS.util.* <br>JS.net.* <br>JS.lang.*  ||No|76 kb
-jsugar|syntax sugars:<br>reflect/annotation/aop/mixin|JS.sugar.* |jscore|No|28 kb
-jsds|data structures+stores|JS.ds.*<br>JS.store.* |jscore |No|13 kb
+jscore|micro kernel|JS.core.* ||No|4 kb
+jslang|basic module|JS.util.* <br>JS.net.* <br>JS.lang.*  |jscore|No|74 kb
+jsugar|syntax sugars:<br>reflect/annotation/aop/mixin|JS.sugar.* |jslang|No|28 kb
+jsds|data structures+stores|JS.ds.*<br>JS.store.* |jslang |No|13 kb
 jsmedia|audio+video|JS.media.* |jsds |No|5 kb
-jsmath|math tools|JS.math.* |jscore |No|38 kb
+jsmath|math tools|JS.math.* |jslang |No|38 kb
+jsan|animations|JS.an.* |jslang |No|18 kb
 js2d|2d drawing|JS.d2.* |jsmath |No|9 kb
 jsui|ui+events|JS.input.*<br>JS.ui.* |jsds |Optional:<br>clipboard/polymer|16 kb
 jsmvc|model+views+component|JS.ioc.* <br>JS.model.* <br>JS.view.* |jsugar<br>jsui |Optional:<br>handlebars|29 kb
-jsan|animations|JS.an.* |jsui |No|17 kb
 jsfx|widgets |JS.fx.* |jsmvc|Yes|js: 112 kb<br>css: 104 kb
 jsvp|app framework|JS.app.* |jsmvc|No|4 kb
 jsunit|unit-test framework|JS.unit.* |jsugar|Optional:<br>ua-parser|js: 9 kb<br>css: 669 b
-jsdk|all above modules|JS.* ||Yes|js: 334 kb
+jsdk|all above modules|JS.* ||Yes|js: 338 kb
 
 ### Custom JSDK Module 
 When you need smaller module file, you can modify the build script in <code>build/</code> directory. 

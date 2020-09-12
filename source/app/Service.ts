@@ -14,7 +14,7 @@ module JS {
     export namespace app {
 
         @klass('JS.app.Service')
-        export abstract class Service implements IComponent {
+        export abstract class Service implements ICompo {
 
             public initialize() { };
 

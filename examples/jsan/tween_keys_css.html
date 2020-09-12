@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css?_=11" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?_=33"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+    
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">TWEEN ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                    <div class="line">
+                        <div class="square shadow"></div>
+                        <div class="square el"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Keys: CSS PROPERTY</h2>
+            </header>
+            <div class="info-output">
+                <p>Any numeric CSS property or color property can be animated.</p>
+                <p class="bubble warning">Most CSS properties will cause layout changes or repaint, and will result in choppy animation. Prioritize opacity and CSS transforms as much as possible.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Example</td>
+                            <td>Value</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>opacity</td>
+                            <td>.5</td>
+                        </tr>
+                        <tr>
+                            <td>left</td>
+                            <td>'100px' or 100</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">new TweenAnim({
+    keys: {
+        left: 250,
+        borderRadius: ['0%', '50%'],
+        backgroundColor: '#FFF'
+    }
+}).targets('.el');</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="tween_keys_css.js"></script>
+</body>
+
+</html>

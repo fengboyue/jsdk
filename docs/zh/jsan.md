@@ -1,115 +1,251 @@
-## JSAN
-JSAN是2.1版本开始新提供的动画库，它包含7个独立动画类与2个控制型动画类。
+## 简介
+<b>JSAN</b> 从 2.7 版本开始提供全新精简设计的两个动画类取代旧版诸多动画类。
+新版两个动画类：补间动画类 <b>TweenAnim</b> 与帧动画类 <b>FrameAnim</b>。
+旧版有并行、串行两种动画控制类，现在被动画控制类 <b>Timeline</b> 取代。
 
-动画类名|简介|类型
----|---|---
-MoveAnim|位移动画|
-TranslateAnim|偏移动画|
-FadeAnim|透明度动画|
-GradientAnim|渐变色动画|
-ScaleAnim|缩放动画|
-SkewAnim|倾斜动画|
-RotateAnim|旋转动画|
-ParallelAnim|并行动画|控制型
-SequentialAnim|串行动画|控制性
+## 补间动画
 
-## 示例代码
-以旋转动画为例：
+补间动画会在指定的持续时间内，把目标对象的属性值从初始值不断变化到最终值。初始值到最终值的变化函数称为缓动函数 <b>EasingFunction</b>。
+### 初始化
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_init.html?_=1"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe>
+
+### 设定目标
+用CSS selector设定目标：
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_targets_selector.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+将NodeList设定为目标：
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_targets_nodelist.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+将JS Object设定为目标：
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_targets_object.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+将一组对象设定为目标：
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_targets_array.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+### 可变属性
+补间动画在初始化时，会自动判断 <b>keys</b> 所包含的属性 <b>key</b> 是目标的哪种属性。
+
+当 <b>key</b> 为 <b>CSS Property</b> 时：
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_keys_css.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+当 <b>key</b> 为 <b>CSS Transfrom</b> 时：
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_keys_transform.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+当 <b>key</b> 为 <b>Dom Attribute</b> 时：
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_keys_attr.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+当 <b>key</b> 为 <b>JS Object Property</b> 时：
+<iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_keys_property.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+### 可变属性的值类型
+ <iframe  
+ height=600 
+ width=90% 
+ src="/jsdk/examples/jsan/tween_value_types.html"  
+ frameborder=0  
+ allowfullscreen>
+ </iframe> 
+
+### 缓动函数
+标准缓动函数：
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_easings.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+步进缓动函数：
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_easing_steps.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+自定义缓动函数：
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_easing_custom.html"  
+frameborder=0  
+allowfullscreen>
+</iframe>  
+
+### 控制
+
+播放、暂停、停止与重新播放：
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_controls.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+进度式播放：
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_controls_seek.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+### 事件
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/tween_events.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+## 帧动画
+帧动画会在指定的持续时间内，不断改变DOM对象的背景图，会产生一种类似于电影或GIF动画的效果。
+
+### 图像帧
+我们通常将多个图像帧集中在同一个图片文件内，用CSS样式来控制显示某一帧图像。
+
+比如，在<code>1945.gif</code>中有以下八帧图像：<br>
+<img src="assets/images/plane-frames.png" />
+
+我们可以定义一个图像帧集合来表示这八帧图像：
 ```javascript
-let anim1 = new RotateAnim({
-    easing: Easings.BACK_IN_OUT,
-    duration: 5000,//5s
-    el: '#xxx',    //html element its id is "xxx"
-    frames: {
-        from: 45,  //angle value in 0~360
-        to: 180    //angle value in 0~360
+let fs = <ImageFrameSet>{
+    src: '../js2d/1945.gif',
+    w: 32,
+    h: 32,
+    items: [       //8 frames offset data
+        [4, 4],    //[offsetX, offsetY]
+        ...          
+        [228, 228]
+    ]
+})
+```
+
+当一个集合中的所有帧图像是连续排成行或列，可以用更简单的方式来定义：<br>
+仅需第一帧的位置数据与帧数量，FrameAnim类会自动计算出所有的帧数据。
+```javascript
+let fs = <ImageFrameSet>{
+    src: '../js2d/1945.gif',
+    w: 32,
+    h: 32,
+    items: {
+        ox: 4,     //first frame's offsetX
+        oy: 4,     //first frame's offsetY
+        split: 1,  //split width between every frame
+        axis: 'x', //aligned direction
+        total: 8   //total frames number
     }
-});
-anim1.play()
-```
-执行<code>pause</code>或<code>stop</code>就可以暂停或停止：
-```javascript
-anim1.pause();
-```
-上述旋转动画是以2D方式旋转，你可以稍作修改为3D旋转动画：
-```javascript
-let anim2 = new RotateAnim({
-    easing: Easings.BACK_IN_OUT,
-    duration: 5000,
-    el: '#xxx',  
-    frames: {
-        from: {
-            aX: 45, aY: 120, aZ: 180  //set angles of x and y and z 
-        },
-        to: {
-            aX: 180, aY: 180, aZ: 120
-        }
-    }
-});
-anim2.play();
+})
 ```
 
-## 缓动函数
-你应该注意到动画参数中<code>easing</code>的值，这是动画中常用的缓动函数，它提供了让动画加速或减速的效果。如果你不设置该参数，缺省值就是：<code>Easings.LINEAR</code>，即匀速动画。
+### 初始化
+用图像帧集合来初始化一个帧动画实例：
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/frame_init.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
 
-本质上，缓动函数是一个与t（当前时刻）、d（播放时长）、begin（开始值）、end（结束值）相关的函数：
-```javascript
-/**
- * @param {number} t elapsed time
- * @param {number} b begin
- * @param {number} c increment = end - begin
- * @param {number} d duration time
- * @returns {number}
- */
-export type EasingFunction = (t: number, b: number, c: number, d: number, ...args) => number;
-```
-* *JSAN中已经预定义好了30多种常见的缓动函数，当然你也可以使用自己定义的缓动函数。*
+### 控制
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/frame_controls.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
+
+### 事件
+帧动画支持的事件类型与补间动画一致，可查阅补间动画的事件章节。
+
 
 ## 多动画控制
-很多时候，我们需要串行执行或并行执行一组动画，以达到组合式动画的效果。
+用 <b>Timeline</b> 类可以控制多个动画的串、并行执行。
 
-举例，我们先定义两个动画，一个渐变色动画，一个偏移动画：
-```javascript
-let anim1 = new GradientAnim({
-    duration: 5000,
-    el: '#xxx',
-    frames: {
-        from: {
-            backgroundColor: '#00FF00'
-        },
-        to: {
-            backgroundColor: '#1E90FF'
-        }
-    }
-});
+### 串行动画
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/timeline_tween_order.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
 
-let anim2 = new TranslateAnim({
-    duration: 5000,
-    el: '#xxx',
-    frames: {
-        frames: {
-            from: { oX: 0 },
-            to: { oX: 200 }
-        }
-    }
-});
-```
+### 并行动画
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/timeline_tween_parallel.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 
 
-如果我们串行执行这两个动画，将会看到该元素先完成渐变背景色，再开始平移：
-```javascript
-let anim = new SequentialAnim({
-    anims: [anim1,anim2]
-});
-anim.play();
-```
-
-如果我们并行执行这两个动画，将会看到该元素一边移动一边渐变背景色：
-```javascript
-let anim = new ParallelAnim({
-    anims: [anim1,anim2]
-});
-anim.play();
-```
-
-## 更多示例
-请去<code>examples/jsan</code>目录中查看更多动画示例。
+### 复合式帧动画
+<iframe  
+height=600 
+width=90% 
+src="/jsdk/examples/jsan/timeline_frame.html"  
+frameborder=0  
+allowfullscreen>
+</iframe> 

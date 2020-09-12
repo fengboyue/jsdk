@@ -125,13 +125,13 @@ new Timer(()=>{
 ```
 
 ### Execution Modes
-The parameter <code>intervalMode</code> of <code>Timer</code> class provides two interval execution modes: <code>OF</code> mode and <code>BF</code> mode. The default mode is <code>OF</code>.
+The parameter <code>intervalMode</code> of <code>Timer</code> class provides two interval execution modes: <code>OF</code> mode and <code>BF</code> mode. The default mode is <code>BF</code>.
 
-In <code>OF</code> mode, the timer will maintain a fixed frequency (frame rate) to execute task as quickly as possible. When the execution time of task is longer than or equal to the interval time, the timer will immediately execute the next task without waiting. The execution mode with variable interval time avoids longer delay caused by time-consuming task, so it has higher execution efficiency.
+In <code>OF</code> mode, the timer will maintain a fixed frequency (frame rate) to execute task as quickly as possible. When the execution time of task is longer than or equal to the interval time, the timer will immediately execute the next task without waiting. The execution mode with variable interval time avoids longer delay caused by time-consuming task, so it has higher execution efficiency(But may give up some executions of the task).
 
 In <code>BF</code> mode, no matter how long the task is executed, the timer keeps a fixed interval to execute next task. Therefore, a time-consuming task will directly affect the execution frequency. This is same execution mode with the traditional <code>setInterval</code>.
 
-Only when the execution time of a task is infinitely close to zero, the two modes are equivalent. Most of times, you need <code>OF</code> mode.
+Only when the execution time of a task is infinitely close to zero, the two modes are equivalent. 
 
 <b>Used in Animations and Games</b>
 >

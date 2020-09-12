@@ -199,7 +199,7 @@ var JS;
             }
         };
         MyFormView = __decorate([
-            component('JS.examples.MyFormView')
+            compo('JS.examples.MyFormView')
         ], MyFormView);
         examples.MyFormView = MyFormView;
     })(examples = JS.examples || (JS.examples = {}));

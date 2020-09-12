@@ -10,7 +10,7 @@ Detailed description:
 >
 > Page layer: is the controller of all views within the page, and also the event processor at page level or application level. Each html should have a page class.
 
-* *All service classes, view classes and page classes must use @component annotation*
+* *All service classes, view classes and page classes must use @compo annotation*
 * *All service classes only can use @inject to inject other service classes, should not use any view class or page class*
 * *All view classes only can use @inject to inject other view class or service classes, should use page classes as little as possible*
 * *All page classes only can use @inject to inject other view class or service classes, should not use any other page class*

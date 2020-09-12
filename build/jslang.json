@@ -1,0 +1,17 @@
+{
+    "extends":"../build/base",
+    "compilerOptions": {
+        "outFile": "../dist/jslang.js",
+        "noResolve": true,
+        "noLib": true
+    },
+    "include": [
+        "../source/lang/Type.ts",
+        "../source/util/Types.ts",
+        "../source/util/Check.ts",
+        "../source/util/*.ts",
+        "../source/net/*.ts",
+        "../source/lang/JSError.ts",
+        "../source/lang/*.ts"
+    ]
+} 

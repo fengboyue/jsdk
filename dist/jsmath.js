@@ -1,10 +1,5 @@
 //# sourceURL=../dist/jsmath.js
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 var JS;
 (function (JS) {
     let math;
@@ -116,7 +111,7 @@ var JS;
                         x = d * Math.cos(rad);
                         y = d * Math.sin(rad);
                 }
-                return [x, y];
+                return [x.round(12), y.round(12)];
             }
             static xy2polar(x, y) {
                 return {
@@ -146,10 +141,9 @@ var JS;
             }
             static radian(x1, y1, x2, y2) {
                 let xx = x2 || 0, yy = y2 || 0;
-                if (Point2.isOrigin(x1, y1) && Point2.isOrigin(xx, yy))
+                if (this.isOrigin(x1, y1) && Point2.isOrigin(xx, yy))
                     return 0;
-                let rad = Math.atan2(y1 - yy, x1 - xx);
-                return rad < 0 ? 2 * Math.PI + rad : rad;
+                return Math.atan2(y1 - yy, x1 - xx);
             }
             set(p) {
                 if (Types.isArray(p)) {
@@ -379,32 +373,30 @@ var JS;
 (function (JS) {
     let math;
     (function (math) {
+        let PI = Math.PI;
         class Radians {
             static rad2deg(rad, limit) {
-                let r = rad * 180 / Math.PI;
+                let r = rad * 180 / PI;
                 return limit ? this.positive(r) : r;
             }
             static deg2rad(deg) {
-                return deg * Math.PI / 180;
+                return deg * PI / 180;
             }
             static positive(rad) {
                 return rad < 0 ? this.ONE_CYCLE + rad : rad;
             }
             static equal(rad1, rad2) {
-                return math.Floats.equal(rad1, rad2, 1e-14);
-            }
-            static equalAngle(rad1, rad2) {
-                return this.equal(this.positive(rad1 % this.ONE_CYCLE), this.positive(rad2 % this.ONE_CYCLE));
+                return rad1 == rad2 || math.Floats.equal(this.positive(rad1) % PI, this.positive(rad2) % PI, 1e-12);
             }
             static reverse(rad) {
-                return rad < Math.PI ? rad + Math.PI : rad - Math.PI;
+                return rad < PI ? rad + PI : rad - PI;
             }
         }
         Radians.EAST = 0;
-        Radians.SOUTH = 0.5 * Math.PI;
-        Radians.WEST = Math.PI;
-        Radians.NORTH = 1.5 * Math.PI;
-        Radians.ONE_CYCLE = 2 * Math.PI;
+        Radians.SOUTH = 0.5 * PI;
+        Radians.WEST = PI;
+        Radians.NORTH = 1.5 * PI;
+        Radians.ONE_CYCLE = 2 * PI;
         math.Radians = Radians;
     })(math = JS.math || (JS.math = {}));
 })(JS || (JS = {}));
@@ -505,25 +497,28 @@ var JS;
             radian() {
                 return math.Point2.radian(this.x, this.y);
             }
-            angle(v) {
-                if (v && v.isZero())
-                    throw new RangeError('Use zero vector');
-                let vv = v || Vector2.UnitX, vDot = this.dot(vv) / (this.length() * vv.length());
+            _angle(v) {
+                let vv = Vector2.UnitX, vDot = v.dot(vv) / (v.length() * vv.length());
                 if (vDot < -1.0)
                     vDot = -1.0;
                 if (vDot > 1.0)
                     vDot = 1.0;
                 return Math.acos(vDot);
             }
+            angle(v) {
+                if (v && v.isZero() && this.isZero())
+                    throw new RangeError('Can\'t with zero vector');
+                return Math.abs(this._angle(this) - this._angle(v));
+            }
             isZero() {
                 return this.x == 0 && this.y == 0;
             }
             verticalTo(v) {
-                return this.angle(v) == Math.PI / 2;
+                return math.Radians.equal(this.angle(v), Math.PI / 2);
             }
             parallelTo(v) {
                 let a = this.angle(v);
-                return a == 0 || a == Math.PI;
+                return math.Radians.equal(a, 0) || math.Radians.equal(a, Math.PI);
             }
             getNormL() {
                 return new Vector2(this.y, -this.x);
@@ -686,7 +681,7 @@ var JS;
                 ArcType[ArcType["OPEN"] = 0] = "OPEN";
                 ArcType[ArcType["PIE"] = 1] = "PIE";
             })(ArcType = geom.ArcType || (geom.ArcType = {}));
-            let M = Math, P = math.Point2, V = math.Vector2;
+            let P = math.Point2, V = math.Vector2;
             class Shapes {
                 static crossPoints(line, sh, unClosed) {
                     let isLine = !(line instanceof geom.Segment), vs = sh.vertexes(), ps = [], size = vs.length, isCollinear = vs.some((p1, i) => {
@@ -914,7 +909,7 @@ var JS;
                     let p4 = P.toPoint(p3).toward(10, rad).toArray(), p = this._cpOfLineLine(p1, p2, p3, p4);
                     if (!p)
                         return null;
-                    return V.toVector(p3, p4).angle(V.toVector(p3, p)) == 0 ? p : null;
+                    return V.toVector(p3, p4).parallelTo(V.toVector(p3, p)) ? p : null;
                 }
                 crossPoint(p) {
                     return this._cpOfLinePoint(this.p1(), this.p2(), p);
@@ -1071,7 +1066,7 @@ var JS;
                     let p4 = P.toPoint(p3).toward(10, rad).toArray(), p = this._cpOfSL(s1, L.toLine(p3, p4));
                     if (!p)
                         return null;
-                    return V.toVector(p3, p4).angle(V.toVector(p3, p)) == 0 ? p : null;
+                    return V.toVector(p3, p4).parallelTo(V.toVector(p3, p)) ? p : null;
                 }
                 crossSegment(s) {
                     return this._cpOfSS(this, s);
@@ -1357,27 +1352,8 @@ var JS;
                 bounds() {
                     if (this.isEmpty())
                         return null;
-                    let ps = this.vertexes(), pc = ps[0], a = [ps[1], ps[2]], p, va = V.toVector(pc, ps[1]), vb = V.toVector(pc, ps[2]), realAngle = R.deg2rad(this.angle()), minAngle = va.angle(vb), cache = {
-                        va: va,
-                        vb: vb,
-                        realRad: realAngle,
-                        minRad: minAngle
-                    };
-                    if (this.type == geom.ArcType.PIE)
-                        a.push(pc);
-                    p = this._crossByRay(R.EAST);
-                    if (this._inAngle(p, ps, cache))
-                        a.push(p);
-                    p = this._crossByRay(R.SOUTH);
-                    if (this._inAngle(p, ps, cache))
-                        a.push(p);
-                    p = this._crossByRay(R.WEST);
-                    if (this._inAngle(p, ps, cache))
-                        a.push(p);
-                    p = this._crossByRay(R.NORTH);
-                    if (this._inAngle(p, ps, cache))
-                        a.push(p);
-                    return this._bounds(a);
+                    let ps = this.vertexes();
+                    return new geom.Triangle().set(ps[0], ps[1], ps[2]).bounds();
                 }
                 arcLength() {
                     return this.r * M.abs(this.eAngle - this.sAngle);
@@ -1402,7 +1378,7 @@ var JS;
                     return this;
                 }
                 angle() {
-                    let dif = math.Radians.positive(this.eAngle) - math.Radians.positive(this.sAngle), d = R.rad2deg(dif) % 360;
+                    let dif = R.positive(this.eAngle - this.sAngle), d = R.rad2deg(dif) % 360;
                     return this.dir == 1 ? d : 360 - d;
                 }
                 moveTo(x, y) {

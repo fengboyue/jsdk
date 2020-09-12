@@ -31,7 +31,7 @@ var JS;
             }
         };
         ButtonsTemplateView = __decorate([
-            component('JS.examples.ButtonsTemplateView')
+            compo('JS.examples.ButtonsTemplateView')
         ], ButtonsTemplateView);
         examples.ButtonsTemplateView = ButtonsTemplateView;
     })(examples = JS.examples || (JS.examples = {}));

@@ -14,26 +14,25 @@ module JS {
                 Assert.true(this.s0.equals(this.s0.clone()));
                 Assert.true(this.s0.bounds().equals(new Rect(0, -1, 1, 1)));
                 Assert.true(this.s1.bounds().equals(new Rect(0, -1, 1, 1)));
-                Assert.false(this.s1.bounds().equals(new Rect(-1, -1, 2, 2)));
 
                 let s3 = new CirArc(ArcType.PIE, 0, 0, 1, 0, -0.75 * Math.PI, 0);
-                Assert.true(s3.bounds().equals(new Rect(-0.707, -1, 1.707, 1)));
+                Assert.true(s3.bounds().equals(new Rect(-0.707, -0.707, 1.707, 0.707)));
                 let s4 = new CirArc(ArcType.OPEN, 0, 0, 1, 0, -0.75 * Math.PI, 1);
-                Assert.true(s4.bounds().equals(new Rect(-1, -0.707, 2, 1.707)));
+                Assert.true(s4.bounds().equals(new Rect(-0.707, -0.707, 1.707, 0.707)));
 
                 let s5 = new CirArc(ArcType.PIE, 0, 0, 1, 0, -1.25 * Math.PI, 0);
-                Assert.true(s5.bounds().equals(new Rect(-1, -1, 2, 1.707)));
+                Assert.true(s5.bounds().equals(new Rect(-0.707, 0, 1.707, 0.707)));
                 let s6 = new CirArc(ArcType.OPEN, 0, 0, 1, 0, -1.25 * Math.PI, 1);
-                Assert.true(s6.bounds().equals(new Rect(-0.707, 0, 1.707, 1)));
+                Assert.true(s6.bounds().equals(new Rect(-0.707, 0, 1.707, 0.707)));
 
                 let s7 = new CirArc(ArcType.PIE, 0, 0, 1, 0, .25 * Math.PI, 1);
                 Assert.true(s7.bounds().equals(new Rect(0, 0, 1, 0.707)));
                 let s8 = new CirArc(ArcType.OPEN, 0, 0, 1, 0, .25 * Math.PI, 1);
-                Assert.true(s8.bounds().equals(new Rect(0.707, 0, 0.293, 0.707)));
+                Assert.true(s8.bounds().equals(new Rect(0, 0, 1, 0.707)));
                 let s9 = new CirArc(ArcType.PIE, 0, 0, 1, 0, .25 * Math.PI, 0);
-                Assert.true(s9.bounds().equals(new Rect(-1, -1, 2, 2)));
+                Assert.true(s9.bounds().equals(new Rect(0, 0, 1, 0.707)));
                 let s10 = new CirArc(ArcType.OPEN, 0, 0, 1, 0, .25 * Math.PI, 0);
-                Assert.true(s10.bounds().equals(new Rect(-1, -1, 2, 2)));
+                Assert.true(s10.bounds().equals(new Rect(0, 0, 1, 0.707)));
             }
 
             test2() {

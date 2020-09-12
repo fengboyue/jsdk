@@ -1,4 +1,4 @@
-//JSDK 2.6.0
+//JSDK 2.7.0
 JS.config({
     closeImport: false,
     cachedImport: true,
@@ -6,14 +6,24 @@ JS.config({
     jsdkRoot: null,
     libRoot: '/jsdk/libs',        
     libs: {
+        'jslang': [
+            '!/jslang.js'
+        ],
         'jsds': [
+            '$jslang',
             '!/jsds.js'
         ],
         'jsugar': [
+            '$jslang',
             '!/jsugar.js'
         ],
         'jsmath': [
+            '$jslang',
             '!/jsmath.js'
+        ],
+        'jsan': [
+            '$jslang',
+            '!/jsan.js'
         ],
         'js2d': [
             '$jsmath',
@@ -31,9 +41,6 @@ JS.config({
             '$jsugar',
             '$jsui',
             '!/jsmvc.js'
-        ],
-        'jsan': [
-            '!/jsan.js'
         ],
         'jsvp': [
             '$jsmvc',

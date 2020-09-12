@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css?_=9" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?_=34"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+    
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">TWEEN ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                    <pre class="battery-log"></pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Keys: JS Object Property</h2>
+            </header>
+            <div class="info-output">
+                <p>Any Object property containing a numerical value can be animated.
+                </p>
+                <p>More details about accepted values in the values section.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Example</td>
+                            <td>Value</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>charged</td>
+                            <td>'100%'</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">let logEl = $1('.battery-log');
+let battery = {
+    charged: '0%',
+    cycles: 120
+};
+new TweenAnim({
+    keys: {
+        charged: '100%',
+        cycles: 130
+    },
+    on: {
+        updated: function () {
+            logEl.innerHTML = Jsons.stringify(battery);
+        }
+    }
+}).targets(battery);</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="tween_keys_property.js"></script>
+</body>
+
+</html>

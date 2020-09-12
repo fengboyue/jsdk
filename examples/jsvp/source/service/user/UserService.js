@@ -19,7 +19,7 @@ var AppDemo;
                 }
             };
             UserService = __decorate([
-                component('AppDemo.service.user.UserService')
+                compo('AppDemo.service.user.UserService')
             ], UserService);
             user.UserService = UserService;
         })(user = service.user || (service.user = {}));

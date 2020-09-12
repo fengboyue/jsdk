@@ -1,23 +1,23 @@
-<b>jsmath</b> 模块提供了二维／三维向量类以及多种坐标系与平面几何图形的相关类及运算工具。
+<b>JSMATH</b> 模块提供了二维／三维向量类以及多种坐标系与平面几何图形的相关类及运算工具。
 这些类及运算方法主要用于2D/3D的动画、绘图及游戏领域。
 
 ## 点
-<b>JS.math.ArrayPoint2</b> 是数组格式的二维直角坐标点；<b>JS.math.ArrayPoint3</b> 则是数组格式的三维直角坐标点。
+<b>ArrayPoint2</b> 是数组格式的二维直角坐标；<b>ArrayPoint3</b> 则数组格式的三维直角坐标。
 ```javascript
 let p1: ArrayPoint2 = [1, -1]; //x = 1, y = -1
 let p2: ArrayPoint3 = [1, -1, 0]; //x = 1, y = -1, z = 0
 ```
-<b>JS.math.PolarPoint2</b>是JSON格式的二维极坐标点；<b>JS.math.PolarPoint2</b> 则是JSON格式的三维极坐标点。
+<b>PolarPoint2</b>是JSON格式的二维极坐标；<b>PolarPoint2</b> 则是JSON格式的三维极坐标。
 ```javascript
 export type PolarPoint2 = { d: number, a: number };
 export type PolarPoint3 = { d: number, ax: number, az: number };
 ```
 
-<b>JS.math.Point2</b> 是二维直角坐标点类：
+<b>Point2</b> 是一个表示二维直角坐标点的类：
 ```javascript
 let p1 = new Point2(1, -1);
 ```
-* 同理<b>JS.math.Point3</b>是三维直角坐标点类
+* 同理，<b>Point3</b> 是表示三维直角坐标点的类
 
 <b>Point2</b> 类与 <b>ArrayPoint2</b> 不同的是：它不仅携带坐标数据还自带了很多有用的方法。<br>
 比如，求点[1,-1]与点[-1,1]间的距离：
@@ -54,12 +54,12 @@ Radians.deg2rad(90); //equals Math.PI/2
 ```
 
 ## 向量
-向量是非常有用的数学（或物理学）概念。
-一个向量代表了一个点A到另一个点B的方向与长度。
+向量是非常有用的数学（或物理学）概念。<br>
+向量代表了一个点A到另一个点B的方向与长度。
 
 当A、B两点重合时，向量的长度为零，则此向量为<b>零向量</b>；长度为1的向量称之为<b>单位向量</b>；与当前向量垂直的向量，称之为<b>法向量</b>；位于2D向量左侧的为<b>左法向量</b>，位于2D向量右侧的为<b>右法向量</b>。另外，向量的四则运算在几何学和物理学上都有明确意义。这里不做详细描述，具体请参看相关的数学教材。
 
-如何获得一个向量呢？我们可以这样构造出一个从点p1到点p2的向量：
+如何获得一个向量呢？我们可以这样构造出从点p1到点p2的向量：
 ```javascript
 let v1 = Vector2.toVector([1,-1],[-1,1]); //p1(1,-1) -> p2(-1,1)
 ```
@@ -103,10 +103,10 @@ Segment| A line segment in 2D
 Rect| A rectangle in 2D
 Triangle| A triangle in 2D
 Circle| A circle in 2D
-Ellipse| A ellipse parallel to XY axis in 2D
-CirArc| An arc in circle in 2D
+Ellipse| An ellipse parallel to XY axis in 2D
+CirArc| An arc of circle in 2D
 Polygon| A closed polygon in 2D
-Polyline| A unclosed poly segments in 2D
+Polyline| An unclosed poly segments in 2D
 
 ### 位置判定
 比如，判定点[1,1]是否在某个图形内或边线上：

@@ -2,6 +2,7 @@ select {
     width: 100%;
     border: solid 1px #c9c9c9;
     overflow-x: auto;
+    overflow-y: auto;
     height: 400px;
 }
 

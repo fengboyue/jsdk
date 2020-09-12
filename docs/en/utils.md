@@ -18,7 +18,7 @@ Konsole.clear();
 
 ## Log
 ### Usage of Log class
-Instantiate a Log object before you need to output log info:
+Initialize a Log object before you need to output log info:
 ```javascript
 let myLogger = new Log('My Logger', LogLevel.INFO); //set output level is INFO
 ```

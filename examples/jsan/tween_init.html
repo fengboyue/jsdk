@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css?_=10" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?_=34"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+    
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">TWEEN ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                    <div class="line">
+                        <div class="square shadow"></div>
+                        <div class="square el"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Init Parameters</h2>
+            </header>
+            <div class="info-output">
+                <p>Init a tween animation.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>name</td>
+                            <td>type</td>
+                            <td>default</td>
+                            <td>info</td>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>keys</td>
+                            <td>JsonObject<br>&lt;string|number|[number,number]&gt;</td>
+                            <td></td>
+                            <td>Targets's properties or attributes or styles</td>
+                        </tr>
+                        <tr>
+                            <td>duration</td>
+                            <td>number</td>
+                            <td>1000(ms)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>delay</td>
+                            <td>number</td>
+                            <td>0(ms)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>endDelay</td>
+                            <td>number</td>
+                            <td>0(ms)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>direction</td>
+                            <td>'forward'|'backword'|'alternate'</td>
+                            <td>'forward'</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>loop</td>
+                            <td>boolean|number</td>
+                            <td>1</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>autoreset</td>
+                            <td>boolean</td>
+                            <td>true</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>round</td>
+                            <td>number</td>
+                            <td>3</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>easing</td>
+                            <td>function</td>
+                            <td>Easings.LINEAR</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">new TweenAnim({
+    keys: {
+        translateX: 250
+    },
+    duration: 1000,
+    delay: 500,
+    endDelay: 500,
+    direction: 'alternate',
+    loop: true,
+    autoreset: true,
+    round: 0,
+    easing: 'BACK_IN_OUT'
+}).targets('.el');</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="tween_init.js"></script>
+</body>
+
+</html>

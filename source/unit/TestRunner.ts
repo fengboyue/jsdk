@@ -7,7 +7,6 @@
  * @author Frank.Feng
  */
 /// <reference path="../util/Numbers.ts"/>
-/// <reference path="../util/Dom.ts"/>
 /// <reference path="TestSuite.ts"/>
 /// <reference path="TestUI.ts"/>
 
@@ -55,7 +54,7 @@ module JS {
                 let urls = typeof url=='string'?[url]:<string[]>url, tasks:PromisePlans<any> = [];
 
                 urls.forEach(u=>{
-                    tasks.push(Promises.newPlan(Dom.loadJS, [u]))
+                    tasks.push(Promises.newPlan(Loader.js, [u]))
                 })
                 Promises.order(tasks).then(()=>{
                     if(tests) this.addTests(tests);

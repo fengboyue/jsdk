@@ -8,7 +8,7 @@ module AppDemo {
 
         export namespace user {
 
-            @component('AppDemo.page.user.UserPage')
+            @compo('AppDemo.page.user.UserPage')
             export class UserPage extends Page {
 
                 @inject()

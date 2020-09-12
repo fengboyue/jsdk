@@ -262,7 +262,7 @@ So JSDK provides <b>FormView</b> class to manage all widgets in a form, batch si
 ```javascript
 module JS {
     export namespace examples {
-        @component('JS.examples.MyFormView')
+        @compo('JS.examples.MyFormView')
         export class MyFormView extends FormView {
             initialize() {
                 this._config = {
@@ -317,7 +317,7 @@ JS.imports([
     fv.initialize();
     fv.render();
     //or: 
-    //let fv = Components.get<MyFormView>(MyFormView);
+    //let fv = Compos.get<MyFormView>(MyFormView);
     //fv.render();
 })
 ```

@@ -6,7 +6,7 @@ module AppDemo {
     export namespace service {
         export namespace user {
 
-            @component('AppDemo.service.user.UserService')
+            @compo('AppDemo.service.user.UserService')
             export class UserService extends Service {
 
                 public readUserById(id: number): Promise<User> {

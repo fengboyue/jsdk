@@ -5,7 +5,7 @@ module AppDemo {
     export namespace view {
         export namespace user {
 
-            @component('AppDemo.view.user.UserView')
+            @compo('AppDemo.view.user.UserView')
             export class UserView extends FormView {
                 
                 initialize() {

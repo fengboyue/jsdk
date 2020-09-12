@@ -58,7 +58,7 @@ var AppDemo;
                 __metadata("design:type", UserService)
             ], UserPage.prototype, "userService", void 0);
             UserPage = __decorate([
-                component('AppDemo.page.user.UserPage')
+                compo('AppDemo.page.user.UserPage')
             ], UserPage);
             user_1.UserPage = UserPage;
         })(user = page.user || (page.user = {}));

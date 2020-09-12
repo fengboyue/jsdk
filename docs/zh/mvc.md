@@ -305,9 +305,9 @@ let view = new SimpleView({
 view.render();
 ```
 
-换一种方式，我们也可以定义一个 <b>SimpleView</b> 的子类，用 <b>@component</b> 标记为IOC组件：
+换一种方式，我们也可以定义一个 <b>SimpleView</b> 的子类，用 <b>@compo</b> 标记为IOC组件：
 ```javascript
-@component('JS.sample.ButtonsView')
+@compo('JS.sample.ButtonsView')
 export class ButtonsView extends SimpleView {
 
     initialize() {
@@ -335,7 +335,7 @@ export class ButtonsView extends SimpleView {
 
 当被依赖注入时就会被自动实例化：
 ```javascript
-@component('JS.sample.ClassA') 
+@compo('JS.sample.ClassA') 
 export class ClassA {
     @inject()
     public view: ButtonsView = null;  //必须初始化为null，因为TS在编译时会忽略没有初始化的类属性
@@ -344,7 +344,7 @@ export class ClassA {
 
 或者当IOC容器查找时也会被自动实例化：
 ```javascript
-let view = Components.get<ButtonsView>(ButtonsView);
+let view = Compos.get<ButtonsView>(ButtonsView);
 ```
 
 ### 模版视图
@@ -401,15 +401,15 @@ view.data([{
 ```
 
 ## 组件与IOC容器
-<b>JS.ioc.Components</b> 是一个IOC容器，提供对容器中所有IOC组件对象的注册、初始化、销毁等功能，并且能有效节约内存开销。
+<b>JS.ioc.Compos</b> 是一个IOC容器，提供对容器中所有IOC组件对象的注册、初始化、销毁等功能，并且能有效节约内存开销。
 - *IOC容器目前仅支持单例模式*
 
 ### 定义组件类
-使用 <b>@component</b> 注解定义一个IOC组件，则表示此类将被IOC容器管理：
+使用 <b>@compo</b> 注解定义一个IOC组件，则表示此类将被IOC容器管理：
 ```javascript
 module JS {
     export namespace sample {
-        @component('JS.sample.ClassA') //参数必须为类的正确全名
+        @compo('JS.sample.ClassA') //参数必须为类的正确全名
         export class ClassA {
         }
     }
@@ -417,9 +417,9 @@ module JS {
 ```
 
 ### 组件查找
-<b>Components</b>可以通过<code>get</code>访问查找组件对象：
+<b>Compos</b>可以通过<code>get</code>访问查找组件对象：
 ```javascript
-let clsA = Components.get<ClassA>(ClassA);
+let clsA = Compos.get<ClassA>(ClassA);
 Konsole.print(clsA.a);
 ```
 
@@ -428,11 +428,11 @@ Konsole.print(clsA.a);
 ```javascript
 module JS {
     export namespace sample {
-        @component('JS.sample.ClassB') 
+        @compo('JS.sample.ClassB') 
         export class ClassB {
         }
 
-        @component('JS.sample.ClassA') 
+        @compo('JS.sample.ClassA') 
         export class ClassA {
             @inject()
             public a: ClassB = null;  //必须初始化为null，因为TS在编译时会忽略没有初始化的类属性

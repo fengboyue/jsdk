@@ -1,10 +1,5 @@
 //# sourceURL=../dist/jsunit.js
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 var JS;
 (function (JS) {
     let unit;
@@ -332,7 +327,7 @@ var JS;
             static load(url, tests) {
                 let urls = typeof url == 'string' ? [url] : url, tasks = [];
                 urls.forEach(u => {
-                    tasks.push(Promises.newPlan(Dom.loadJS, [u]));
+                    tasks.push(Promises.newPlan(Loader.js, [u]));
                 });
                 Promises.order(tasks).then(() => {
                     if (tests)

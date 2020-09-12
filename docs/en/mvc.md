@@ -304,9 +304,9 @@ let view = new SimpleView({
 view.render();
 ```
 
-In another way, you can also define a subclass of <b>SimpleView</b> and mark it as IOC component with <b>@component</b>:
+In another way, you can also define a subclass of <b>SimpleView</b> and mark it as IOC component with <b>@compo</b>:
 ```javascript
-@component('JS.sample.ButtonsView')
+@compo('JS.sample.ButtonsView')
 export class ButtonsView extends SimpleView {
 
     initialize() {
@@ -334,7 +334,7 @@ export class ButtonsView extends SimpleView {
 
 It will be automatically instantiated when it is injected by other components:
 ```javascript
-@component('JS.sample.ClassA') 
+@compo('JS.sample.ClassA') 
 export class ClassA {
     @inject()
     public view: ButtonsView = null;//Must be initialized to null because TS ignores uninitialized class properties at compile time
@@ -343,7 +343,7 @@ export class ClassA {
 
 Or it will be automatically instantiated when the IOC container gets it:
 ```javascript
-let view = Components.get<ButtonsView>(ButtonsView);
+let view = Compos.get<ButtonsView>(ButtonsView);
 ```
 
 ### Template View
@@ -354,7 +354,7 @@ Because <b>TemplateView</b> will merge data with its template to generate HTML f
 <div id="buttons"></div>
 ```
 
-Instantiate a <b>TemplateView</b> object:
+Initialize a <b>TemplateView</b> object:
 ```javascript
 JS.imports([
     '$handlebars', //Must import handlebars as tpl engine
@@ -400,15 +400,15 @@ view.data([{
 ```
 
 ## Component & IOC Container
-The <b>JS.ioc.Components</b> is IOC container. It can register, initialize and destroy all IOC components in it and save memory cost effectively.
+The <b>JS.ioc.Compos</b> is IOC container. It can register, initialize and destroy all IOC components in it and save memory cost effectively.
 - *The IOC container only supports single instance mode*
 
 ### Define IOC Component
-Use <code>@component</code> to mark a IOC component class, indicates that this class will be managed by the IOC container:
+Use <code>@compo</code> to mark a IOC component class, indicates that this class will be managed by the IOC container:
 ```javascript
 module JS {
     export namespace sample {
-        @component('JS.sample.ClassA') //Argument must be full name of the class
+        @compo('JS.sample.ClassA') //Argument must be full name of the class
         export class ClassA {
         }
     }
@@ -416,9 +416,9 @@ module JS {
 ```
 
 ### Dependency Lookup
-<b>Components</b> can lookups the component object through get method by the class name or constructor:
+<b>Compos</b> can lookups the component object through get method by the class name or constructor:
 ```javascript
-let clsA = Components.get<ClassA>(ClassA);
+let clsA = Compos.get<ClassA>(ClassA);
 Konsole.print(clsA.a);
 ```
 
@@ -427,11 +427,11 @@ Suppose the type of property <code>a</code> in component <b>ClassA</b> is compon
 ```javascript
 module JS {
     export namespace sample {
-        @component('JS.sample.ClassB') 
+        @compo('JS.sample.ClassB') 
         export class ClassB {
         }
 
-        @component('JS.sample.ClassA') 
+        @compo('JS.sample.ClassA') 
         export class ClassA {
             @inject()
             public a: ClassB = null;  //Must be initialized to null because TS ignores uninitialized class properties at compile time

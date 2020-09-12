@@ -45,7 +45,7 @@ var AppDemo;
                 __metadata("design:type", LoginView)
             ], LoginPage.prototype, "loginView", void 0);
             LoginPage = __decorate([
-                component('AppDemo.page.home.LoginPage')
+                compo('AppDemo.page.home.LoginPage')
             ], LoginPage);
             home.LoginPage = LoginPage;
         })(home = page.home || (page.home = {}));

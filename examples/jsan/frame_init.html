@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css?_=9" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?_=34"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+    
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">Frame ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                    <div class="line">
+                        <div class="p38" style="margin:0 auto;"></div>
+                    </div>
+                    <div class="line">
+                        <div class="a5m"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Init Parameters</h2>
+            </header>
+            <div class="info-output">
+                <p>Init a frame animation.
+                </p>
+                <pre><code class="hljs javascript">new FrameAnim({frames: framesConfig});</code></pre>
+
+                <p>frames: ImageFrameSet</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>property</td>
+                            <td>type</td>
+                            <td>required</td>
+                            <td>info</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>src</td>
+                            <td>string | HTMLImageElement</td>
+                            <td>Y</td>
+                            <td>The image url or object</td>
+                        </tr>
+                        <tr>
+                            <td>w</td>
+                            <td>number</td>
+                            <td>Y</td>
+                            <td>width</td>
+                        </tr>
+                        <tr>
+                            <td>h</td>
+                            <td>number</td>
+                            <td>Y</td>
+                            <td>height</td>
+                        </tr>
+                        <tr>
+                            <td>items</td>
+                            <td>ImageFrameOffset[] | ImageFrameOffsets</td>
+                            <td>Y</td>
+                            <td>The frames data</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>items: ImageFrameOffset [ ]</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>property</td>
+                            <td>type</td>
+                            <td>info</td>
+                            <td>example</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ImageFrameOffset</td>
+                            <td>[number, number]</td>
+                            <td>The offsetX and offsetY of a frame in the image</td>
+                            <td>[100 , 200]</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>items: ImageFrameOffsets</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>property</td>
+                            <td>type</td>
+                            <td>required</td>
+                            <td>info</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ox</td>
+                            <td>number</td>
+                            <td>Y</td>
+                            <td>The offsetX of the first frame</td>
+                        </tr>
+                        <tr>
+                            <td>oy</td>
+                            <td>number</td>
+                            <td>Y</td>
+                            <td>The offsetY of the first frame</td>
+                        </tr>
+                        <tr>
+                            <td>split</td>
+                            <td>number</td>
+                            <td></td>
+                            <td>The split width between frames.<br>The default value is 0.</td>
+                        </tr>
+                        <tr>
+                            <td>axis</td>
+                            <td>'x'|'-x'|'y'|'-y'</td>
+                            <td>Y</td>
+                            <td>The frames be aligned by the axis</td>
+                        </tr>
+                        <tr>
+                            <td>total</td>
+                            <td>number</td>
+                            <td>Y</td>
+                            <td>The frames number</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">let anim1 = new FrameAnim({
+    frames: {
+        src: '../js2d/1945.gif',
+        w: 65,
+        h: 65,
+        items: {
+            ox: 4,
+            oy: 400,
+            split: 1,
+            axis: 'x',
+            total: 3
+        }
+    },
+    duration: 200,
+    loop: true
+}).targets('.p38'),
+    anim2 = new FrameAnim({
+    frames: {
+        src: '../js2d/1945.gif',
+        w: 32,
+        h: 32,
+        items: {
+            ox: 4,
+            oy: 4,
+            split: 1,
+            axis: 'x',
+            total: 8
+        }
+    },
+    duration: 2000,
+    loop: true,
+    autoreset: true,
+    direction: 'backward'
+}).targets('.a5m');
+
+$1('#demo').on('click', () => {
+    anim1.play();
+    anim2.play();
+})</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="frame_init.js?_=11"></script>
+</body>
+
+</html>

@@ -46,7 +46,7 @@ module JS {
                     case 2: x = d; y = 0; break;
                     default: x = d * Math.cos(rad); y = d * Math.sin(rad)
                 }
-                return [x, y]
+                return [x.round(12), y.round(12)] //避免运算后的rad带来的精度误差
             }
 
             static xy2polar(x: number, y: number): PolarPoint2 {
@@ -88,13 +88,12 @@ module JS {
 
             /**
              * The radian between the line(p1, origin) or the line(p1, p2) and X-axis. <br>
-             * 计算点与X轴的夹角的弧度。
+             * 计算点到原点的连线与X轴的夹角的弧度。
              */
             static radian(x1: number, y1: number, x2?:number, y2?:number): number {
                 let xx = x2||0, yy = y2||0;
-                if (Point2.isOrigin(x1, y1) && Point2.isOrigin(xx, yy)) return 0;
-                let rad = Math.atan2(y1 - yy, x1 - xx);
-                return rad < 0 ? 2*Math.PI + rad : rad;
+                if (this.isOrigin(x1, y1) && Point2.isOrigin(xx, yy)) return 0;
+                return Math.atan2(y1 - yy, x1 - xx)
             }
 
             set(p: ArrayPoint2 | Point2 | PolarPoint2) {

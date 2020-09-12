@@ -186,10 +186,10 @@ interface Number {
         return n.slice(0, dws - 1) + '.' + n.slice(dws)
     }
 
-    $N.round = function (digit?: number): number {
-        if (this.isNaN() || this.isInt() || !N.isFinite(digit)) return N(this);
+    $N.round = function (d?: number): number {
+        if (this.isNaN() || this.isInt() || !N.isFinite(d)) return N(this);
 
-        let d = digit || 0, pow = Math.pow(10, d);
+        let n = (!d||d<0)? 0:d, pow = Math.pow(10, n);
         return Math.round(this * pow) / pow;
     }
 

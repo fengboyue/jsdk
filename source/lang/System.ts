@@ -6,7 +6,7 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
-/// <reference path="Kernel.ts"/>
+/// <reference path="../core/Kernel.ts"/>
 
 /// <reference path="../util/Dates.ts"/>
 /// <reference path="../util/Numbers.ts"/>

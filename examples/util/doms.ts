@@ -17,7 +17,7 @@ $1('#loadHtml').on('click',()=>{
     })
 })
 $1('#loadCss').on('click',()=>{
-    Dom.loadCSS('blue.css').then((url)=>{
+    Loader.css('blue.css').then((url)=>{
         JSLogger.info(url)
     })
 })

@@ -4,7 +4,7 @@ module JS {
 
     export namespace examples {
 
-            @component('JS.examples.ColorsTemplateView')
+            @compo('JS.examples.ColorsTemplateView')
             export class ColorsTemplateView extends TemplateView {
 
                 initialize() {

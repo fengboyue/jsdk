@@ -57,91 +57,91 @@ module JS {
              * Is a symbol.<br>
              * 是否是Symbol
              */
-            public static isSymbol(o: any): boolean {
+            static isSymbol(o: any): boolean {
                 return _of(o, 'symbol');
             }
             /**
              * Is a arguments object.<br>
              * 是否是Arguments对象
              */
-            public static isArguments(o: any): boolean {
+            static isArguments(o: any): boolean {
                 return _is(o, 'Arguments');
             }
             /**
              * Is not a number.<br>
              * 是否是非数字
              */
-            public static isNaN(n: any): boolean {
+            static isNaN(n: any): boolean {
                 return n != null && isNaN(<any>n);
             }
             /**
              * Is a number.<br>
              * 是否是数字
              */
-            public static isNumber(n: any): boolean {
+            static isNumber(n: any): boolean {
                 return _of(n, 'number');
             }
             /**
              * Is a numeric.<br>
              * 是否是数字类型
              */
-            public static isNumeric(n: any): boolean {
+            static isNumeric(n: any): boolean {
                 return ( this.isNumber(n) || this.isString(n) ) && !isNaN( n - parseFloat( n ) );
             }
             /**
              * Is a float number.<br>
              * 是否是浮点数
              */
-            public static isFloat(n: number | string | Number): boolean {
+            static isFloat(n: number | string | Number): boolean {
                 return Number(n).isFloat();
             }
             /**
              * Is an integer.<br>
              * 是否是整数
              */
-            public static isInt(n: number | string | Number): boolean {
+            static isInt(n: number | string | Number): boolean {
                 return Number(n).isInt();
             }
             /**
              * Is a boolean.<br>
              * 是不是布尔
              */
-            public static isBoolean(obj: any): boolean {
+            static isBoolean(obj: any): boolean {
                 return _of(obj, 'boolean');
             }
             /**
              * Is a string.<br>
              * 是不是字符串
              */
-            public static isString(obj: any): boolean {
+            static isString(obj: any): boolean {
                 return _of(obj, 'string');
             }
             /**
              * Is a date.<br>
              * 是不是日期型
              */
-            public static isDate(obj: any): boolean {
+            static isDate(obj: any): boolean {
                 return _is(obj, 'Date');
             }
             /**
              * Is not undefined or not null.<br>
              * 是不是已赋值: 非undefined或非null
              */
-            public static isDefined(obj: any): boolean {
+            static isDefined(obj: any): boolean {
                 return obj != void 0;
             }
             /**
              * Is null.<br>
              * 是不是Null
              */
-            public static isNull(obj: any): boolean {
+            static isNull(obj: any): boolean {
                 return obj === null;
             }
             /**
              * Is undefined.<br>
              * 是不是未赋值
              */
-            public static isUndefined(obj: any): boolean {
+            static isUndefined(obj: any): boolean {
                 return obj === void 0;
             }
 
@@ -149,14 +149,14 @@ module JS {
              * Is object.<br>
              * 是不是对象
              */
-            public static isObject(obj: any): boolean {
+            static isObject(obj: any): boolean {
                 return _is(obj, 'Object')
             }
             /**
              * Is json object.<br>
              * 是不是JSON对象
              */
-            public static isJsonObject(obj: any): boolean {
+            static isJsonObject(obj: any): boolean {
                 let OP = Object.prototype;
                 //对象不是object
                 if (!obj || OP.toString.call(obj) !== '[object Object]') return false;
@@ -173,14 +173,23 @@ module JS {
              * Is an array.<br>
              * 是不是数组
              */
-            public static isArray(obj: any): boolean {
+            static isArray(obj: any): boolean {
                 return Array.isArray(obj) || obj instanceof Array;
+            }
+            /**
+             * Is an array like.<br>
+             * 是不是类似数组
+             */
+            static isArrayLike(obj: any): boolean {
+                if(this.isString(obj)) return false;
+                let l = obj && obj['length'] || null;
+                return typeof l == 'number' && l >= 0 && l <= Number.MAX_SAFE_INTEGER;
             }
             /**
              * Is an error object.<br>
              * 是不是Error对象
              */
-            public static isError(obj: any): boolean {
+            static isError(obj: any): boolean {
                 return _of(obj, 'Error');
             }
 
@@ -188,21 +197,21 @@ module JS {
              * Is a file object.<br>
              * 是不是文件对象
              */
-            public static isFile(obj: any) {
+            static isFile(obj: any) {
                 return _is(obj, 'File')
             }
             /**
              * Is a formdata object.<br>
              * 是不是表单数据
              */
-            public static isFormData(obj) {
+            static isFormData(obj) {
                 return _is(obj, 'FormData')
             }
             /**
              * Is a blob object.<br>
              * 是不是二进制文件
              */
-            public static isBlob(obj) {
+            static isBlob(obj) {
                 return _is(obj, 'Blob')
             }
             /**
@@ -212,21 +221,21 @@ module JS {
              * @param fn function object
              * @param pure check whether it is a pure function which is not a class constructor, otherwise only check whether it is a function object
              */
-            public static isFunction(fn: any, pure?: boolean): boolean {
+            static isFunction(fn: any, pure?: boolean): boolean {
                 return _of(fn, 'function') && (!pure ? true : !this.equalKlass(fn));
             }
             /**
              * Is a RegExp object.<br>
              * 是不是正则表达式对象
              */
-            public static isRegExp(obj: any): boolean {
+            static isRegExp(obj: any): boolean {
                 return _is(obj, 'RegExp')
             }
             /**
              * Is an array buffer.<br>
              * 是不是数组缓冲
              */
-            public static isArrayBuffer(obj: any) {
+            static isArrayBuffer(obj: any) {
                 return _is(obj, 'ArrayBuffer')
             }
             
@@ -234,7 +243,7 @@ module JS {
              * Is typed array.<br>
              * 是不是类型数组 
              */
-            public static isTypedArray(value) {
+            static isTypedArray(value) {
                 return value && this.isNumber(value.length) && /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array]$/.test(toString.call(value));
             }
 
@@ -242,14 +251,14 @@ module JS {
              * Is an element.<br>
              * 是不是DOM元素
              */
-            public static isElement(el: any): boolean {
+            static isElement(el: any): boolean {
                 return el && typeof el === 'object' && (el.nodeType === 1 || el.nodeType === 9)//or el instanceof HTMLElement;
             }
             /**
              * Is a window object.<br>
              * 是不是Window
              */
-            public static isWindow(el: any): boolean {
+            static isWindow(el: any): boolean {
                 return el != null && el === el.window
             }
 
@@ -257,7 +266,7 @@ module JS {
              * Is an instance of the class.<br>
              * 是不是类的实例
              */
-            public static isKlass(obj: any, klass: Klass<any>): boolean {
+            static isKlass(obj: any, klass: Klass<any>): boolean {
                 if (!this.ofKlass(obj, klass)) return false;
                 return obj.constructor && obj.constructor === klass;
             }
@@ -266,7 +275,7 @@ module JS {
              * Is an instance of the class or its subclass.<br>
              * 是不是类或是其子类的实例
              */
-            public static ofKlass(obj: any, klass: Klass<any>): boolean {
+            static ofKlass(obj: any, klass: Klass<any>): boolean {
                 return obj instanceof klass
             }
 
@@ -277,7 +286,7 @@ module JS {
              * @param kls class object
              * @param klass the class object
              */
-            public static equalKlass(kls: any, klass?: Klass<any>): boolean {
+            static equalKlass(kls: any, klass?: Klass<any>): boolean {
                 if (!_isKlass(kls)) return false;
                 return klass ? (kls === klass) : true;
             }
@@ -286,7 +295,7 @@ module JS {
              * Kls1 is class or subclass of Kls2.<br>
              * 是不是类及其子类
              */
-            public static subklassOf(kls1: Klass<any>, kls2: Klass<any>): boolean {
+            static subklassOf(kls1: Klass<any>, kls2: Klass<any>): boolean {
                 if (kls2 === Object || kls1 === kls2) return true;
 
                 let superXls = _superklass(kls1);
@@ -302,7 +311,7 @@ module JS {
              * Returns type string of a object.<br>
              * 返回类型字符串
              */
-            public static type(obj: any): Type {
+            static type(obj: any): Type {
                 if (obj === null) return Type.null;
 
                 let type = typeof obj;

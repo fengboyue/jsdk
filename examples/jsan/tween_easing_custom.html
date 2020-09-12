@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JSDK Example</title>
+    <link rel="shortcut icon" href="#" />
+    <link href="anim.css?_=1" rel="stylesheet" type="text/css" />
+    <script src="/jsdk/dist/jscore.js?_=1"></script>
+    <script src="/jsdk/dist/jsdk-config.js"></script>
+
+</head>
+
+<body>
+    <div class="content">
+        <section class="pane demos">
+            <header>
+                <h2 class="demos-title">TWEEN ANIMATION</h2>
+            </header>
+            <div id="demo" class="demo">
+                <div class="demo-content">
+                    <div class="line">
+                        <div class="small square shadow"></div>
+                        <div class="small square el"></div>
+                    </div>
+                    <div class="line">
+                        <div class="small square shadow"></div>
+                        <div class="small square el"></div>
+                    </div>
+                    <div class="line">
+                        <div class="small square shadow"></div>
+                        <div class="small square el"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pane demo-info">
+            <header>
+                <h2>Custom Easing Function</h2>
+            </header>
+            <div class="info-output">
+                <p>Custom your easing function.
+                </p>
+                <pre><code class="hljs javascript">easing: (el, i, total) => {
+    return (t, b, c, d) => {
+        return ((i + 1) / total) * c * Math.sin(t / d * (Math.PI / 2)) + b
+    }
+}</code></pre>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <td>PARAMETER</td>
+                            <td>type</td>
+                            <td>example</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>t</td>
+                            <td>number</td>
+                            <td>The current time stamp</td>
+                        </tr>
+                        <tr>
+                            <td>b</td>
+                            <td>number</td>
+                            <td>The from number</td>
+                        </tr>
+                        <tr>
+                            <td>c</td>
+                            <td>number</td>
+                            <td>The increment number equals (to - from)</td>
+                        </tr>
+                        <tr>
+                            <td>d</td>
+                            <td>number</td>
+                            <td>The duration time</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="code-preview">
+                    <h2>CODE EXAMPLE</h2>
+                    <pre><code class="hljs javascript">new TweenAnim({
+    keys: {
+        translateX: 250
+    },
+    loop: 3,
+    duration: 2000,
+    easing: (el, i, total) => {
+      return (t, b, c, d) => {
+          return ((i + 1) / total) * c * Math.sin(t / d * (Math.PI / 2)) + b
+      }
+    }
+}).targets($L('.el'));</code></pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../env.js"></script>
+    <script src="tween_easing_custom.js?_=3"></script>
+</body>
+
+</html>

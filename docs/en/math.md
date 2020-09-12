@@ -1,23 +1,23 @@
-<b>jsmath</b> module provides 2D/3D vector classes, variety of coordinate systems and plane geometry classes and computing tools.
+<b>JSMATH</b> module provides 2D/3D vector classes, variety of coordinate systems and plane geometry classes and computing tools.
 These classes and tools are mainly used in 2D/3D animations, drawings and games.
 
 ## Point
-<b>JS.math.ArrayPoint2</b> is a 2D point of cartesian coordinates in array format;<b>JS.math.ArrayPoint3</b> is a 3D point of cartesian coordinates in array format.
+<b>ArrayPoint2</b> is a 2D point of cartesian coordinates in array format;<b>ArrayPoint3</b> is a 3D point of cartesian coordinates in array format.
 ```javascript
 let p1: ArrayPoint2 = [1, -1]; //x = 1, y = -1
 let p2: ArrayPoint3 = [1, -1, 0]; //x = 1, y = -1, z = 0
 ```
-<b>JS.math.PolarPoint2</b> is a 2D point of polar coordinates in JSON format;<b>JS.math.PolarPoint2</b> is a 3D point of polar coordinates in JSON format.
+<b>PolarPoint2</b> is a 2D point of polar coordinates in JSON format;<b>PolarPoint2</b> is a 3D point of polar coordinates in JSON format.
 ```javascript
 export type PolarPoint2 = { d: number, a: number };
 export type PolarPoint3 = { d: number, ax: number, az: number };
 ```
 
-<b>JS.math.Point2</b> is a 2D point class of cartesian coordinates:
+<b>Point2</b> is a 2D point class of cartesian coordinates:
 ```javascript
 let p1 = new Point2(1, -1);
 ```
-* And <b>JS.math.Point3</b> is a 3D point class of cartesian coordinates.
+* And <b>Point3</b> is a 3D point class of cartesian coordinates.
 
 The difference of <b>Point2</b> and <b>ArrayPoint2</b> is: It not only carries coordinate data, but also has many useful methods.<br>
 For example, calc the distance between point[1, -1] and point[-1,1]:
@@ -105,10 +105,10 @@ Segment| A line segment in 2D
 Rect| A rectangle in 2D
 Triangle| A triangle in 2D
 Circle| A circle in 2D
-Ellipse| A ellipse parallel to XY axis in 2D
-CirArc| An arc in circle in 2D
+Ellipse| An ellipse parallel to XY axis in 2D
+CirArc| An arc of circle in 2D
 Polygon| A closed polygon in 2D
-Polyline| A unclosed poly segments in 2D
+Polyline| An unclosed poly segments in 2D
 
 ### Position Determinations
 For example, determinate point [1,1] whether is in a shape or on the edge of a shape:

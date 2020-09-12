@@ -97,7 +97,7 @@ var AppDemo;
                 }
             };
             UserView = __decorate([
-                component('AppDemo.view.user.UserView')
+                compo('AppDemo.view.user.UserView')
             ], UserView);
             user.UserView = UserView;
         })(user = view.user || (view.user = {}));

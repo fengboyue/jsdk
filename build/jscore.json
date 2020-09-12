@@ -6,8 +6,6 @@
         "skipLibCheck": true
     },
     "include": [
-        "../source/util/*.ts",
-        "../source/net/*.ts",
-        "../source/lang/*.ts"
+        "../source/core/*.ts"
     ]
 } 

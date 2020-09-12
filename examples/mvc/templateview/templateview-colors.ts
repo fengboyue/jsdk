@@ -7,7 +7,7 @@ JS.imports([
 ]).then(()=>{
 
     $1('#btn1').on('click', () => {
-        let view = Components.get<ColorsTemplateView>(ColorsTemplateView);
+        let view = Compos.get<ColorsTemplateView>(ColorsTemplateView);
         view.data([{
             "name":"black",
             "color":"#000000"
@@ -21,7 +21,7 @@ JS.imports([
     })
 
     $1('#btn2').on('click', () => {
-        let view = Components.get<ColorsTemplateView>(ColorsTemplateView);
+        let view = Compos.get<ColorsTemplateView>(ColorsTemplateView);
         view.load('data.json');
     })
 })

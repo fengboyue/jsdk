@@ -16,7 +16,7 @@ module JS {
         export type PageEvents = 'fullscreening' | 'fullscreened' | 'normalscreening' | 'normalscreened' | 'leaving' | 'close';
 
         @klass('JS.app.Page')
-        export abstract class Page implements IComponent{
+        export abstract class Page implements ICompo{
             initialize() {}
             destroy() {}
 
@@ -37,7 +37,7 @@ module JS {
             private static _page: Page;
 
             public static init(page: Klass<Page>) {
-                let T = this, p = Components.get(page);
+                let T = this, p = Compos.get(page);
                 T._page = p;
                 T._bus.context(T._page);
                 Bom.ready(() => {
@@ -50,14 +50,14 @@ module JS {
             }
 
             public static view<V extends View>(v: Klass<V>): V {
-                return <V>Components.get(v);
+                return <V>Compos.get(v);
             }
 
             public static redirect(url:string, query?: string|JsonObject<string>) {
                 let T = this, p=T._page;
                 if (p) {
                     T.fireEvent(<PageEvents>'leaving', [p]);
-                    Components.remove((<Object>p).className)
+                    Compos.remove((<Object>p).className)
                 }
                 let uri = new URI(url);
                 if(query) Types.isString(query)?uri.queryString(<string>query):uri.queryObject(<JsonObject>query);

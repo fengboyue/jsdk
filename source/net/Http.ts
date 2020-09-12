@@ -6,7 +6,7 @@
  * @version 2.0.0
  * @author Frank.Feng
  */
-/// <reference path="../util/Promises.ts" /> 
+/// <reference path="../core/Promises.ts" /> 
 /// <reference path="../util/Types.ts" /> 
 /// <reference path="../util/Jsons.ts" /> 
 /// <reference path="MIME.ts" /> 

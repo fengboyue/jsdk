@@ -1,10 +1,5 @@
 //# sourceURL=../dist/jsfx.js
-/**
-* JSDK 2.6.0 
-* https://github.com/fengboyue/jsdk/
-* (c) 2007-2020 Frank.Feng<boyue.feng@foxmail.com>
-* MIT license
-*/
+//JSDK 2.7.0 MIT
 var JS;
 (function (JS) {
     let fx;
@@ -337,7 +332,7 @@ var JS;
                 let cfg = this._config, titleAttrs = cfg.tip ? ` title=${cfg.tip}` : '';
                 if (cfg.title) {
                     let tValign = this._vAlign(), tHalign = this._hAlign(), p0 = tHalign == 'right' && cfg.titlePlace == 'top' ? 'p-0' : '', cls = `${p0} font-${cfg.sizeMode || 'md'} items-${tValign} items-${tHalign} ${cfg.colorMode ? 'text-' + cfg.colorMode : ''} ${cfg.titleCls || ''}"`;
-                    let style = Types.isDefined(cfg.titleWidth) ? `width:${Lengths.toCSS(cfg.titleWidth, '100%')};` : '';
+                    let style = Types.isDefined(cfg.titleWidth) ? `width:${CssTool.normValue(cfg.titleWidth, '100%')};` : '';
                     if (cfg.titleStyle)
                         style += cfg.titleStyle;
                     titleAttrs += ` class="${cls}"`;
@@ -352,7 +347,7 @@ var JS;
                 this._mainEl = this.widgetEl.find('[jsfx-role=main]');
             }
             _onBeforeRender() {
-                let cfg = this._config, w = Lengths.toCSS(cfg.width, '100%'), d = cfg.titlePlace == 'left' ? 'flex' : 'grid', css = {
+                let cfg = this._config, w = CssTool.normValue(cfg.width, '100%'), d = cfg.titlePlace == 'left' ? 'flex' : 'grid', css = {
                     'display': (w == 'auto' ? 'inline-' : '') + d,
                     'width': w
                 };
@@ -3539,7 +3534,7 @@ var JS;
                 }
                 return `
                 <div class="carousel-item ${is ? 'active' : ''}" jsfx-index="${i}">
-                    <img class="d-block w-100" src="${item.src}" style="height:${Lengths.toCSS(this._config.height, '100%')};" alt="${item.imgAlt || ''}">
+                    <img class="d-block w-100" src="${item.src}" style="height:${CssTool.normValue(this._config.height, '100%')};" alt="${item.imgAlt || ''}">
                     ${capHtml}
                 </div>
                 `;
@@ -3572,7 +3567,7 @@ var JS;
                 <ol class="carousel-indicators">
                     ${indsHtml}
                 </ol>
-                <div class="carousel-inner" style="height:${Lengths.toCSS(cfg.height, '100%')}">
+                <div class="carousel-inner" style="height:${CssTool.normValue(cfg.height, '100%')}">
                     ${itemsHtml}
                 </div>
                 <a class="carousel-control-prev" href="#${this.id}" role="button" data-slide="prev">
@@ -3584,7 +3579,7 @@ var JS;
                 `;
                 this.widgetEl.attr('data-ride', 'carousel');
                 this.widgetEl.addClass('carousel slide bg-light');
-                this.widgetEl.css({ 'width': Lengths.toCSS(cfg.width, '100%') });
+                this.widgetEl.css({ 'width': CssTool.normValue(cfg.width, '100%') });
                 this.widgetEl.html(html);
                 this.widgetEl.on('slide.bs.carousel', (e) => {
                     let from = e.from, to = e.to;
@@ -3784,7 +3779,7 @@ var JS;
                 let isVtl = this._hasFaceMode(TabFaceMode.vertical);
                 if (isVtl)
                     cls += ' flex-column';
-                let hHtml = `<ul id="${this.id}_headers" role="tablist" class="nav${cls} ${cfg.headCls || ''}" style="${cfg.headStyle || ''}">${heads}</ul>`, cHtml = `<div class="${isVtl ? 'vertical' : ''} tab-content" style="height:${Lengths.toCSS(cfg.height, '100%')};">${contents}</div>`, leftWidth = Lengths.toCSS(cfg.headLeftWidth, '100%');
+                let hHtml = `<ul id="${this.id}_headers" role="tablist" class="nav${cls} ${cfg.headCls || ''}" style="${cfg.headStyle || ''}">${heads}</ul>`, cHtml = `<div class="${isVtl ? 'vertical' : ''} tab-content" style="height:${CssTool.normValue(cfg.height, '100%')};">${contents}</div>`, leftWidth = CssTool.normValue(cfg.headLeftWidth, '100%');
                 return isVtl ?
                     `
                 <div class="w-100">
@@ -3895,10 +3890,10 @@ var JS;
                 `;
                 let html = `
                 <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="false" jsfx-role="main">
-                    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:${Lengths.toCSS(cfg.width, 'auto')}">
+                    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:${CssTool.normValue(cfg.width, 'auto')}">
                     <div class="modal-content" style="border-radius:${this._hasFaceMode(DialogFaceMode.round) ? '0.3rem' : '0px'}">
                         ${titleHtml}
-                        <div class="modal-body jsfx-dialog-body" style="height:${Lengths.toCSS(cfg.height, '100%')}">
+                        <div class="modal-body jsfx-dialog-body" style="height:${CssTool.normValue(cfg.height, '100%')}">
                         ${cHtml}
                         </div>
                         ${btnHtml}
@@ -4361,7 +4356,7 @@ var JS;
                 }
             }
             _thHtml(col, colNumber) {
-                let cfg = this._config, html = col.text, title = col.tip ? col.tip : col.text, sortDir = col.sortable === true ? 'desc' : '' + col.sortable, sort = col.sortable ? `<i id="${this.id + '_sort_' + col.field}" style="cursor:pointer;vertical-align:middle;" class="la la-arrow-${sortDir == 'asc' ? 'up' : 'down'}"></i>` : '', hasCheckbox = colNumber == 1 && cfg.checkable, width = Lengths.toCSS(col.width, '100%'), cell = `<div class="cell items-${cfg.headStyle.textAlign} items-middle" jsfx-col="${colNumber}" title="${title}">
+                let cfg = this._config, html = col.text, title = col.tip ? col.tip : col.text, sortDir = col.sortable === true ? 'desc' : '' + col.sortable, sort = col.sortable ? `<i id="${this.id + '_sort_' + col.field}" style="cursor:pointer;vertical-align:middle;" class="la la-arrow-${sortDir == 'asc' ? 'up' : 'down'}"></i>` : '', hasCheckbox = colNumber == 1 && cfg.checkable, width = CssTool.normValue(col.width, '100%'), cell = `<div class="cell items-${cfg.headStyle.textAlign} items-middle" jsfx-col="${colNumber}" title="${title}">
                     ${html}${sort ? sort : ''}</div>`;
                 if (col.sortable)
                     this._dataModel.addSorter(col.field, sortDir);
@@ -4370,7 +4365,7 @@ var JS;
                 </th>`;
             }
             _tdHtml(opt, html, title, col, row) {
-                let cfg = this._config, hasCheckbox = col == 0 && cfg.checkable, id = this.data()[row]['id'], width = Lengths.toCSS(opt.width, '100%'), cell = `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
+                let cfg = this._config, hasCheckbox = col == 0 && cfg.checkable, id = this.data()[row]['id'], width = CssTool.normValue(opt.width, '100%'), cell = `<div class="cell items-${cfg.bodyStyle.textAlign} items-middle" jsfx-row="${row}" jsfx-col="${col}" title="${title}">
                     ${html}</div>`;
                 return `<td width="${width}" nowrap>
                 ${hasCheckbox ? `<div class="items-left items-middle" jsfx-row="${row}" jsfx-col="${col}"><span ${View.WIDGET_ATTRIBUTE}="checkbox" jsfx-id="${id}"/>${cell}</div>` : cell}

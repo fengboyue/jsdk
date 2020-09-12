@@ -7,7 +7,7 @@ JS.imports([
 ]).then(()=>{
 
     $1('#b1').on('click', () => {
-        let view = Components.get<ButtonsTemplateView>(ButtonsTemplateView);
+        let view = Compos.get<ButtonsTemplateView>(ButtonsTemplateView);
         view.data([{
             "name":"danger"
         },{

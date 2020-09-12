@@ -36,7 +36,7 @@ module JS {
         /**
          * An View is a widgets container which initialize, render and destroy its widgets.
          */
-        export abstract class View implements IComponent {
+        export abstract class View implements ICompo {
             protected _widgets: JsonObject<IWidget> = {};
             protected _model: Modelable<any>;
             protected _eventBus = new EventBus(this);

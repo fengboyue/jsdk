@@ -18,7 +18,7 @@ var JS;
             }
         };
         ColorsTemplateView = __decorate([
-            component('JS.examples.ColorsTemplateView')
+            compo('JS.examples.ColorsTemplateView')
         ], ColorsTemplateView);
         examples.ColorsTemplateView = ColorsTemplateView;
     })(examples = JS.examples || (JS.examples = {}));

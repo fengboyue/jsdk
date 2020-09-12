@@ -15,6 +15,27 @@ or via <code>npm</code>:
 npm install jsdk-offical -g
 ```
 
+## Usage
+Load the core file and global config file of JSDK in HTML:
+```html
+<script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/jscore.min.js"></script><!-- ziped: 4kb -->
+<script src="{PROJECT-URL}/libs/jsdk/{JSDK-VERSION}/jsdk-config.js"></script><!-- unziped: 5kb -->
+```
+Load your required library (or JS/CSS files) in TS/JS code and call its API:
+```javascript
+/// <reference path="../libs/jsdk/{JSDK-VERSION}/jsdk.d.ts" /> 
+JS.imports([
+    '$jsunit' //Suppose you need to load jsunit library for unit-test
+]).then(()=>{
+    TestRunner.addTests([
+        ......
+    ]);
+    TestRunner.run();
+});
+```
+* *For JSDK libraries, please read the chapter "Library Management"*
+
+
 ## Basic knowledge 
 JSDK 2.0+ was written in <code>ES6</code> and <code>TypeScript 2.0+</code>.
 
@@ -54,67 +75,11 @@ JSDK is licensed under the MIT license since version 2.0.
 
 ## Updates
 
-### v2.6.0 - 2020/9/1
-- Add val|css|empty|remove methods for HTMLElement.
-- Bugfix the return values by box() of HTMLElement.
-- New "js2d" module for 2D drawing.
-
-### v2.5.0 Milestone - 2020/8/21
-- Now "cachedImport" of global configuration supports custom timestamp string.
-- New "math" module for vector and geometry calculations.
-- New "jsugar" module for containing advanced syntax featues that already exists.
-- New "JS.net" package and Http class insteading of old Ajax class.
-- Rename NotHandleError class to RefusedError.
-- Rename Bundle class to I18N.
-- New DataCache class for binary files.
-- New ImageCache class for preload images.
-
-### v2.4.0 - 2020/8/3
-- Support drag/tap events for mobile browsers.
-- Rename system module to jscore.
-- Rename jsmv module to jsmvc.
-- Refactor some class of the input module.
-- Set the default interval time of SeqKeys to Infinity.
-- Change "canImport" to "closeImport" in global configuration.
-- Rename "minimize" to "minImport" in global configuration.
-- Add new "cachedImport" item in global configuration.
-
-### v2.3.1 - 2020/7/26
-- Fix a bug of EventBus's _call method caused by the last refactoring.
-- Fix a bug when Bom.ready() had been called many times.
-- Remove redundancy @aop annotation.
-- Refactor some methods of Page class.
-- Refactor App Event.
-- Minify size of source code.
-- Minify Reflect.js.
-
-### v2.3.0 - 2020/7/24
-- New "media" module supports advanced audio and video players.
-- Add interval time for Seqkeys in Keyboard class.
-- Ajax class supports new response type: arraybuffer.
-
-### v2.2.0 - 2020/7/17
-- New "input" module for complex key and mouse events.
-- Generate index.html for every directory of examples automatically.
-- Rename "importMode" to "canImport" in global configuration.
-- Now, if EventHandler function renturn false means that: evt.stopPropagation();evt.preventDefault().
-- Revise parts of contents in the guides.
-- Lightweight bugfixes & optimizes.
-
-### v2.1.0 - 2020/7/11
-- New "animation" module.
-- Add some useful methods to Colors class.
-- Add Type.json from Type.object which only presents class instance now.
-- Remove and modified some unused methods of Dates class and Date.prototye.
-- Remove some unused type definitions on Model classes.
-- Remove some unused jsdocs.
-- Redesign new stronger Timer class for constant interval time and calculation of FPS.
-- Move all Model and View classes to new "jsmv" module from old "jsui" module.
-- Rename the package of "JS.data.*" to "JS.ds.*" and create separated "jsds" module for keeping core module smaller.
-- Move the package of "JS.store.*" to "jsvp" module for keeping core module smaller.
-
-### v2.0.0 Milestone - 2020/6/16
-- Release all-new JDSK 2.0!
+### v2.7.0 - Milestone
+- Update "jscore" for micro kernel.
+- Update "jsan" for new tween and frame animations.
+- New tool classes such as CssTool, Images, Objects.
+- Fix some bugs.
 
 ## Old Versions
 The <a href="https://github.com/fengboyue/jsdk-0.x" target="_blank">

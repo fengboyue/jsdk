@@ -74,7 +74,7 @@ interface HTMLElement {
      * @param name
      * @param val 
      */
-    css(name: string, val: string | number | JS.util.CssOffsetValue): this;
+    css(name: string, val: CssValueString | number): this;
     /**
      * Sets a set of css name-value pairs
      * @param props 
@@ -345,39 +345,30 @@ if (self['HTMLElement']) //当前不在worker线程中
             return arguments.length == 0 ? _getV.call(this) : _setV.call(this, v);
         }
 
-        /** Convert 'backgroundColor' to 'background-color' */
-        let hyphenCase = (name: string) => {
-            return name.replace(/([A-Z])/g, (a, b: string) => { return '-' + b.toLowerCase() })
-        }, setCssValue = (st: CSSStyleDeclaration, k: string, v: string) => {
+        let setCssValue = (el:HTMLElement, k: string, v: string|number) => {
+            let st = el.style;
             if (v === undefined) {
-                st.removeProperty(hyphenCase(k))
+                st.removeProperty(CssTool.hyphenCase(k))
             } else if (v != null) {
-                st.setProperty(hyphenCase(k), absVal(v, k, st), v.endsWith(' !important') ? 'important' : '')
+                let w = v+'';
+                st.setProperty(CssTool.hyphenCase(k), CssTool.calcValue(w, el.css(k)), w.endsWith(' !important') ? 'important' : '')
             }
-        }, absVal = (v: string, k: string, st: CSSStyleDeclaration): string => {
-            if (v.startsWith('+=') || v.startsWith('-=')) {
-                let ov = parseFloat(st.getPropertyValue(k)), nv = parseFloat(v.replace('=', ''));
-                return ov + nv + 'px'
-            }
-            return v
-        }
+        };
+
         HP.css = function (this: HTMLElement, name: string | JsonObject<string>, val?: string | number): any {
             if (arguments.length == 1) {
                 if (typeof name == 'string') {
-                    return this.style.getPropertyValue(hyphenCase(<string>name))
+                    let key = CssTool.hyphenCase(<string>name);
+                    return this.style.getPropertyValue(key) || this.computedStyle().getPropertyValue(key)
                 } else {
                     let s = '';
                     Jsons.forEach(name, (v, k) => {
-                        if (v === undefined) {
-                            this.style.removeProperty(hyphenCase(k))
-                        } else if (v != null) {
-                            s += `${hyphenCase(k)}:${absVal(v, k, this.style)};`
-                        }
+                        if (v != void 0) s += `${CssTool.hyphenCase(k)}:${CssTool.calcValue(v, this.style.getPropertyValue(k))};`
                     })
                     this.style.cssText += s
                 }
             } else {
-                setCssValue(this.style, <string>name, val + '')
+                setCssValue(this, <string>name, val)
             }
 
             return this
@@ -409,17 +400,7 @@ module JS {
 
     export namespace util {
 
-        /**
-         * The css offset value is a string starting with += or -= to increment or decrement the current value. 
-         * For example, if an element's padding-left was 10px, .css( "padding-left", "+=15" ) would result in a total padding-left of 25px.
-         */
-        export type CssOffsetValue = string;
-
-        let D: Document,
-            _head = () => { return D.querySelector('head') },
-            _uncached = (url: string) => {
-                return `${url}${url.indexOf('?') < 0 ? '?' : '&'}_=${new Date().getTime()}`
-            }
+        let D: Document;
         if (self['HTMLElement']) D = document;//当前不在worker线程中    
 
         /**
@@ -479,7 +460,7 @@ module JS {
                         if (cssFiles) {
                             for (let i = 0, len = cssFiles.length; i < len; i++) {
                                 let css = cssFiles[i], href = css.getAttribute('href');
-                                if (href) Dom.loadCSS(href, false)
+                                if (href) Loader.css(href, false)
                             }
                         }
                     }
@@ -495,7 +476,7 @@ module JS {
                         if (scs && scs.length > 0) {
                             for (let i = 0, len = scs.length; i < len; i++) {
                                 let sc = scs[i];
-                                sc.src ? (sc.async ? Dom.loadJS(sc.src, true) : syncs.push(Dom.loadJS(sc.src, false))) : eval(sc.text)
+                                sc.src ? (sc.async ? Loader.js(sc.src, true) : syncs.push(Loader.js(sc.src, false))) : eval(sc.text)
                             }
                             Promises.order(syncs).then(() => {
                                 back()
@@ -513,51 +494,7 @@ module JS {
                 })
             }
 
-            public static loadCSS(url: string, async: boolean = false, uncached?: boolean) {
-                if (!url) return Promise.reject(null);
-                return Promises.create<string>(function () {
-                    let k = D.createElement('link'), back = () => {
-                        k.onload = k.onerror = k['onreadystatechange'] = null;
-                        k = null;
-                        this.resolve(url);
-                    };
-                    k.type = 'text/css';
-                    k.rel = 'stylesheet';
-                    k.charset = 'utf-8';
-                    if (!async) {
-                        k['onreadystatechange'] = () => {//兼容IE
-                            if (k['readyState'] == 'loaded' || k['readyState'] == 'complete') back()
-                        }
-                        k.onload = k.onerror = back
-                    }
-                    k.href = uncached ? _uncached(url) : url;
-                    _head().appendChild(k);
-                    if (async) back();
-                })
-            }
-            public static loadJS(url: string, async: boolean = false, uncached?: boolean) {
-                if (!url) return Promise.reject(null);
-                return Promises.create<string>(function () {
-                    let s = D.createElement('script'), back = () => {
-                        s.onload = s.onerror = s['onreadystatechange'] = null;
-                        s = null;
-                        this.resolve(url);
-                    };
-                    s.type = 'text/javascript';
-                    s.async = async;
-                    if (!async) {
-                        s['onreadystatechange'] = () => {//兼容IE
-                            if (s['readyState'] == 'loaded' || s['readyState'] == 'complete') back()
-                        }
-                        s.onload = s.onerror = back
-                    }
-                    s.src = uncached ? _uncached(url) : url;
-                    _head().appendChild(s);
-                    if (async) back();
-                })
-            }
-
-            public static loadHTML(
+            static loadHTML(
                 url: string, async?: boolean,
                 opts?: {
                     appendTo?: string | HTMLElement,
@@ -573,16 +510,12 @@ module JS {
                         cache: false,
                         async: async
                     }).then((res) => {
-                        let appendTo = opts && opts.appendTo,
-                            ignore = opts && opts.ignore,
-                            prehandle = opts && opts.prehandle;
-                        Dom.applyHtml(prehandle ? prehandle(res.data) : res.data, appendTo, ignore).then(() => {
-                            this.resolve(url)
-                        })
+                        let fn = opts && opts.prehandle;
+                        Dom.applyHtml(fn ? fn(res.data) : res.data, opts && opts.appendTo, opts && opts.ignore).then(() => { this.resolve(url) })
                     })
                 })
             }
-
+            
         }
     }
 }
